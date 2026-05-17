@@ -43,18 +43,36 @@ export default function Dashboard() {
   return (
     <div className="space-y-6">
       {/* Welcome Banner */}
-      <div className="relative rounded-2xl overflow-hidden p-6 md:p-8" style={{ background: 'linear-gradient(135deg, #0f766e 0%, #0891b2 50%, #0e7490 100%)' }}>
-        <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle at 20% 50%, white 1px, transparent 1px), radial-gradient(circle at 80% 20%, white 1px, transparent 1px)', backgroundSize: '60px 60px' }} />
+      <div className="relative rounded-2xl overflow-hidden p-6 md:p-8" style={{ background: 'linear-gradient(135deg, #0f172a 0%, #164e63 40%, #0f766e 100%)', boxShadow: '0 20px 60px rgba(6,182,212,0.1), inset 0 1px 0 rgba(255,255,255,0.05)' }}>
+        {/* Animated background elements */}
+        <div className="absolute inset-0">
+          <div className="absolute top-0 right-0 w-64 h-64 rounded-full opacity-20" style={{ background: 'radial-gradient(circle, rgba(6,182,212,0.4) 0%, transparent 60%)', filter: 'blur(40px)' }} />
+          <div className="absolute bottom-0 left-0 w-48 h-48 rounded-full opacity-15" style={{ background: 'radial-gradient(circle, rgba(168,85,247,0.5) 0%, transparent 60%)', filter: 'blur(30px)' }} />
+          <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\'40\' height=\'40\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M0 0h40v40H0z\' fill=\'none\'/%3E%3Ccircle cx=\'20\' cy=\'20\' r=\'1\' fill=\'white\'/%3E%3C/svg%3E")' }} />
+        </div>
         <div className="relative z-10">
           <div className="flex items-start justify-between">
             <div>
-              <h1 className="text-2xl md:text-3xl font-bold text-white">Selamat Datang! 👋</h1>
-              <p className="text-teal-100 text-sm md:text-base mt-2 max-w-md">
-                Pantau seluruh inventory kamu dari sini. {lowStock > 0 && <span className="text-amber-200 font-medium">{lowStock} produk perlu restock.</span>}
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-11 h-11 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, rgba(6,182,212,0.3), rgba(6,182,212,0.1))', border: '1px solid rgba(6,182,212,0.3)', boxShadow: '0 0 20px rgba(6,182,212,0.15)' }}>
+                  <svg className="w-5 h-5 text-cyan-300" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" />
+                  </svg>
+                </div>
+                <div>
+                  <h1 className="text-xl md:text-2xl font-bold text-white">Selamat Datang!</h1>
+                  <p className="text-cyan-200/60 text-xs">Inventory Dashboard</p>
+                </div>
+              </div>
+              <p className="text-slate-300 text-sm md:text-base max-w-md">
+                Pantau seluruh inventory kamu dari sini. {lowStock > 0 && <span className="text-amber-300 font-medium">{lowStock} produk perlu restock.</span>}
               </p>
             </div>
-            <div className="hidden md:flex items-center gap-3">
-              <Link href="/transactions" className="px-4 py-2.5 rounded-xl bg-white/20 backdrop-blur-sm text-white text-sm font-medium hover:bg-white/30 transition border border-white/10">
+            <div className="hidden md:flex items-center gap-2">
+              <Link href="/products" className="px-4 py-2.5 rounded-xl text-white text-sm font-medium hover:bg-white/10 transition border border-white/10 backdrop-blur-sm">
+                Produk
+              </Link>
+              <Link href="/transactions" className="px-4 py-2.5 rounded-xl text-white text-sm font-medium transition" style={{ background: 'linear-gradient(135deg, #06b6d4, #0891b2)', boxShadow: '0 4px 15px rgba(6,182,212,0.3)' }}>
                 + Transaksi
               </Link>
             </div>
@@ -62,17 +80,20 @@ export default function Dashboard() {
           
           {/* Quick Stats inside banner */}
           <div className="grid grid-cols-3 gap-3 mt-6">
-            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3 border border-white/10">
+            <div className="rounded-xl p-3.5 relative overflow-hidden" style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03))', border: '1px solid rgba(255,255,255,0.1)', backdropFilter: 'blur(8px)' }}>
+              <div className="absolute top-0 left-0 right-0 h-[1px]" style={{ background: 'linear-gradient(90deg, transparent, rgba(6,182,212,0.5), transparent)' }} />
               <p className="text-2xl md:text-3xl font-bold text-white">{totalUnits.toLocaleString()}</p>
-              <p className="text-teal-200 text-[11px] md:text-xs mt-0.5">Total Unit</p>
+              <p className="text-slate-400 text-[11px] md:text-xs mt-1 font-medium">Total Unit</p>
             </div>
-            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3 border border-white/10">
+            <div className="rounded-xl p-3.5 relative overflow-hidden" style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03))', border: '1px solid rgba(255,255,255,0.1)', backdropFilter: 'blur(8px)' }}>
+              <div className="absolute top-0 left-0 right-0 h-[1px]" style={{ background: 'linear-gradient(90deg, transparent, rgba(168,85,247,0.5), transparent)' }} />
               <p className="text-2xl md:text-3xl font-bold text-white">{total}</p>
-              <p className="text-teal-200 text-[11px] md:text-xs mt-0.5">Jenis Produk</p>
+              <p className="text-slate-400 text-[11px] md:text-xs mt-1 font-medium">Jenis Produk</p>
             </div>
-            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3 border border-white/10">
+            <div className="rounded-xl p-3.5 relative overflow-hidden" style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03))', border: '1px solid rgba(255,255,255,0.1)', backdropFilter: 'blur(8px)' }}>
+              <div className="absolute top-0 left-0 right-0 h-[1px]" style={{ background: 'linear-gradient(90deg, transparent, rgba(16,185,129,0.5), transparent)' }} />
               <p className="text-2xl md:text-3xl font-bold text-white">{categories.length}</p>
-              <p className="text-teal-200 text-[11px] md:text-xs mt-0.5">Kategori</p>
+              <p className="text-slate-400 text-[11px] md:text-xs mt-1 font-medium">Kategori</p>
             </div>
           </div>
         </div>
