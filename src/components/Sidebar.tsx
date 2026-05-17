@@ -1,5 +1,4 @@
 'use client'
-
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 
@@ -14,38 +13,33 @@ const navItems = [
 
 export default function Sidebar({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) {
   const pathname = usePathname()
-
   return (
     <>
-      {isOpen && <div className="fixed inset-0 bg-black/50 z-40 lg:hidden" onClick={onClose} />}
-      <aside className={`fixed lg:static inset-y-0 left-0 z-50 w-[220px] bg-dash-card border-r border-dash-border flex flex-col transition-transform duration-300 lg:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-        <div className="p-4 border-b border-dash-border">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-brand-500 flex items-center justify-center">
-              <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" />
-              </svg>
+      {isOpen && <div className="fixed inset-0 bg-black/20 z-40 lg:hidden" onClick={onClose} />}
+      <aside className={`fixed lg:static inset-y-0 left-0 z-50 w-[240px] bg-cozy-surface border-r border-cozy-border flex flex-col transition-transform duration-300 lg:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+        <div className="p-5 border-b border-cozy-border">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-2xl bg-cozy-navy flex items-center justify-center shadow-soft">
+              <svg className="w-5 h-5 text-cozy-gold" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" /></svg>
             </div>
-            <span className="text-sm font-semibold text-dash-text">InventoryPro</span>
+            <div>
+              <h1 className="text-base font-bold text-cozy-navy">InventoryPro</h1>
+              <p className="text-[11px] text-cozy-muted">Kelola stok mudah</p>
+            </div>
           </div>
         </div>
-        <nav className="flex-1 p-2 space-y-0.5 overflow-y-auto">
-          {navItems.map((item) => (
+        <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
+          {navItems.map(item => (
             <Link key={item.href} href={item.href} onClick={onClose} className={`nav-link ${pathname === item.href ? 'active' : ''}`}>
-              <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" d={item.icon} />
-              </svg>
-              <span className="text-[13px]">{item.label}</span>
+              <svg className="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d={item.icon} /></svg>
+              <span>{item.label}</span>
             </Link>
           ))}
         </nav>
-        <div className="p-3 border-t border-dash-border">
-          <div className="flex items-center gap-2 px-2">
-            <div className="w-7 h-7 rounded-full bg-dash-elevated border border-dash-border flex items-center justify-center text-[11px] font-medium text-dash-subtle">A</div>
-            <div className="flex-1 min-w-0">
-              <p className="text-[12px] font-medium text-dash-text truncate">Admin</p>
-              <p className="text-[10px] text-dash-subtle">admin@inv.pro</p>
-            </div>
+        <div className="p-4 border-t border-cozy-border">
+          <div className="flex items-center gap-3 px-2">
+            <div className="w-9 h-9 rounded-full bg-cozy-goldLight border-2 border-cozy-gold flex items-center justify-center text-sm font-bold text-cozy-navy">A</div>
+            <div><p className="text-sm font-semibold text-cozy-text">Admin</p><p className="text-[11px] text-cozy-muted">admin@inventory.pro</p></div>
           </div>
         </div>
       </aside>

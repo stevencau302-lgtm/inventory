@@ -4,89 +4,85 @@
 
 @layer base {
   body {
-    @apply bg-dash-surface text-dash-text antialiased;
-    font-family: 'IBM Plex Sans', system-ui, -apple-system, sans-serif;
+    @apply bg-cozy-bg text-cozy-text antialiased;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
   }
 }
 
 @layer components {
-  .dash-card {
-    @apply rounded-xl bg-dash-card border border-dash-border transition-all duration-200;
-    box-shadow: 0 0 0 1px rgba(255,255,255,0.03), 0 2px 8px rgba(0,0,0,0.3);
+  .cozy-card {
+    @apply rounded-2xl bg-cozy-surface border border-cozy-border transition-all duration-200;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04), 0 4px 24px rgba(0,0,0,0.04);
   }
-  .dash-card:hover {
-    border-color: rgba(255,255,255,0.08);
-    box-shadow: 0 0 0 1px rgba(255,255,255,0.06), 0 4px 16px rgba(0,0,0,0.4);
+  .cozy-card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06), 0 8px 32px rgba(0,0,0,0.04);
+    transform: translateY(-1px);
   }
-  .dash-btn {
-    @apply inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium 
-           border border-dash-border bg-dash-elevated text-dash-text
-           transition-all duration-150 cursor-pointer;
+  .cozy-btn {
+    @apply inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold
+           transition-all duration-150 cursor-pointer active:scale-[0.97];
   }
-  .dash-btn:hover {
-    @apply bg-dash-muted/30 border-dash-muted;
+  .cozy-btn-primary {
+    @apply cozy-btn bg-cozy-navy text-white;
+    box-shadow: 0 2px 8px rgba(27,46,75,0.2);
   }
-  .dash-btn:focus-visible {
-    @apply outline-none ring-2 ring-brand-500 ring-offset-2 ring-offset-dash-surface;
+  .cozy-btn-primary:hover {
+    @apply bg-cozy-navyLight;
+    box-shadow: 0 4px 16px rgba(27,46,75,0.25);
   }
-  .dash-btn-primary {
-    @apply dash-btn bg-brand-500 border-brand-500 text-white;
+  .cozy-btn-gold {
+    @apply cozy-btn bg-cozy-gold text-cozy-navy;
+    box-shadow: 0 2px 8px rgba(245,197,66,0.3);
   }
-  .dash-btn-primary:hover {
-    @apply bg-brand-600 border-brand-600;
+  .cozy-btn-ghost {
+    @apply cozy-btn bg-cozy-gray text-cozy-text border border-cozy-border;
   }
-  .dash-input {
-    @apply w-full px-3 py-2 rounded-lg text-sm text-dash-text placeholder-dash-subtle 
-           outline-none border border-dash-border bg-dash-surface
-           transition-all duration-150;
+  .cozy-btn-ghost:hover {
+    @apply bg-cozy-border;
   }
-  .dash-input:focus {
-    @apply border-brand-500 ring-1 ring-brand-500/30;
+  .cozy-input {
+    @apply w-full px-4 py-3 rounded-xl text-sm text-cozy-text placeholder-cozy-muted
+           outline-none border border-cozy-border bg-cozy-gray
+           transition-all duration-150 font-medium;
   }
-  .dash-badge {
-    @apply inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-medium border;
+  .cozy-input:focus {
+    @apply border-cozy-navy bg-white ring-2 ring-cozy-navy/10;
   }
-  .dash-badge-success { @apply bg-emerald-500/10 text-emerald-400 border-emerald-500/20; }
-  .dash-badge-warning { @apply bg-amber-500/10 text-amber-400 border-amber-500/20; }
-  .dash-badge-danger { @apply bg-red-500/10 text-red-400 border-red-500/20; }
+  .cozy-badge {
+    @apply inline-flex items-center px-2.5 py-1 rounded-lg text-[11px] font-semibold;
+  }
+  .cozy-badge-success { @apply bg-emerald-50 text-emerald-600; }
+  .cozy-badge-warning { @apply bg-amber-50 text-amber-600; }
+  .cozy-badge-danger { @apply bg-red-50 text-red-600; }
 
   .nav-link {
-    @apply flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-normal text-dash-subtle 
-           hover:text-dash-text hover:bg-dash-elevated transition-all duration-150;
+    @apply flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-cozy-subtle
+           hover:text-cozy-text hover:bg-cozy-gray transition-all duration-150;
   }
   .nav-link.active {
-    @apply text-dash-text bg-dash-elevated border border-dash-border;
-    box-shadow: 0 0 0 1px rgba(255,255,255,0.03);
+    @apply text-cozy-navy bg-cozy-goldLight font-semibold;
   }
 
   /* Aliases */
-  .glass-card { @apply dash-card; }
-  .stat-card { @apply dash-card p-4; }
-  .form-input { @apply dash-input; }
-  .btn-primary { @apply dash-btn-primary; }
-  .btn-ghost { @apply dash-btn; }
-  .badge { @apply dash-badge; }
-  .badge-success { @apply dash-badge-success; }
-  .badge-warning { @apply dash-badge-warning; }
-  .badge-danger { @apply dash-badge-danger; }
+  .glass-card { @apply cozy-card; }
+  .stat-card { @apply cozy-card p-5; }
+  .form-input { @apply cozy-input; }
+  .btn-primary { @apply cozy-btn-primary; }
+  .btn-ghost { @apply cozy-btn-ghost; }
+  .badge { @apply cozy-badge; }
+  .badge-success { @apply cozy-badge-success; }
+  .badge-warning { @apply cozy-badge-warning; }
+  .badge-danger { @apply cozy-badge-danger; }
 }
 
-.safe-area-bottom {
-  padding-bottom: env(safe-area-inset-bottom, 0px);
-}
+.safe-area-bottom { padding-bottom: env(safe-area-inset-bottom, 0px); }
 
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #27272a; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #3f3f46; }
+::-webkit-scrollbar-thumb { background: #e8e6e1; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #d1cfc9; }
 
-@keyframes slideIn {
-  from { transform: translateX(100%); opacity: 0; }
-  to { transform: translateX(0); opacity: 1; }
-}
-@keyframes slideOut {
-  from { transform: translateX(0); opacity: 1; }
-  to { transform: translateX(100%); opacity: 0; }
-}
+@keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+@keyframes slideOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
 .toast-enter { animation: slideIn 0.3s ease-out; }
 .toast-exit { animation: slideOut 0.3s ease-in forwards; }
