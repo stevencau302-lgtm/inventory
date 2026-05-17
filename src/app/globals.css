@@ -16,14 +16,14 @@
   }
   .nav-link.active {
     @apply text-white border;
-    background: linear-gradient(135deg, rgba(99,102,241,0.2), rgba(99,102,241,0.1));
-    border-color: rgba(99,102,241,0.3);
-    box-shadow: 0 0 20px rgba(99,102,241,0.1);
+    background: linear-gradient(135deg, rgba(6,182,212,0.2), rgba(6,182,212,0.08));
+    border-color: rgba(6,182,212,0.3);
+    box-shadow: 0 0 20px rgba(6,182,212,0.08);
   }
   .nav-link.active::before {
     content: '';
     @apply absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-[60%] rounded-r-full;
-    background: #6366f1;
+    background: #06b6d4;
   }
   .glass-card {
     @apply rounded-2xl transition-all duration-300;
@@ -47,8 +47,8 @@
     background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
   }
   .stat-card:hover {
-    border-color: rgba(99,102,241,0.3);
-    box-shadow: 0 8px 32px rgba(99,102,241,0.1);
+    border-color: rgba(6,182,212,0.3);
+    box-shadow: 0 8px 32px rgba(6,182,212,0.08);
     transform: translateY(-4px);
   }
   .form-input {
@@ -57,16 +57,16 @@
     border: 1px solid rgba(255,255,255,0.08);
   }
   .form-input:focus {
-    border-color: #6366f1;
-    box-shadow: 0 0 0 2px rgba(99,102,241,0.2);
+    border-color: #06b6d4;
+    box-shadow: 0 0 0 2px rgba(6,182,212,0.2);
   }
   .btn-primary {
     @apply inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium text-white transition-all duration-200;
-    background: linear-gradient(135deg, #6366f1, #4f46e5);
-    box-shadow: 0 4px 15px rgba(99,102,241,0.25);
+    background: linear-gradient(135deg, #06b6d4, #0891b2);
+    box-shadow: 0 4px 15px rgba(6,182,212,0.25);
   }
   .btn-primary:hover {
-    background: linear-gradient(135deg, #4f46e5, #4338ca);
+    background: linear-gradient(135deg, #0891b2, #0e7490);
     transform: scale(0.98);
   }
   .btn-ghost {
