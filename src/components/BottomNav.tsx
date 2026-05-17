@@ -13,36 +13,28 @@ const navItems = [
 
 export default function BottomNav() {
   const pathname = usePathname()
-
   return (
-    <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-paper-surface border-t border-paper-300 safe-area-bottom">
+    <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-dash-card/95 backdrop-blur-md border-t border-dash-border safe-area-bottom">
       <div className="flex items-center justify-around h-14 px-2 max-w-lg mx-auto">
         {navItems.map((item) => {
           if (item.label === 'add') {
             return (
               <Link key={item.href} href={item.href} className="relative -top-3">
-                <div className="w-12 h-12 rounded-full bg-[#111111] flex items-center justify-center active:scale-95 transition shadow-paper-md">
-                  <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                <div className="w-11 h-11 rounded-full bg-brand-500 flex items-center justify-center active:scale-95 transition shadow-glow-blue">
+                  <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                   </svg>
                 </div>
               </Link>
             )
           }
-
           const isActive = pathname === item.href
           return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`flex flex-col items-center gap-0.5 py-1 px-3 transition-all ${
-                isActive ? 'text-[#111827]' : 'text-[#111827]/40'
-              }`}
-            >
+            <Link key={item.href} href={item.href} className={`flex flex-col items-center gap-0.5 py-1 px-3 transition-all ${isActive ? 'text-dash-text' : 'text-dash-subtle'}`}>
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={isActive ? 2 : 1.5} stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" d={item.icon} />
               </svg>
-              <span className={`text-[10px] ${isActive ? 'font-medium' : 'font-normal'}`}>{item.label}</span>
+              <span className={`text-[10px] ${isActive ? 'font-medium' : ''}`}>{item.label}</span>
             </Link>
           )
         })}

@@ -4,76 +4,71 @@
 
 @layer base {
   body {
-    @apply bg-paper-warm text-[#111827] antialiased;
-    font-family: 'Roboto', system-ui, -apple-system, sans-serif;
+    @apply bg-dash-surface text-dash-text antialiased;
+    font-family: 'IBM Plex Sans', system-ui, -apple-system, sans-serif;
   }
 }
 
 @layer components {
-  .paper-card {
-    @apply rounded-lg bg-paper-surface border border-paper-300 transition-all duration-200;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  .dash-card {
+    @apply rounded-xl bg-dash-card border border-dash-border transition-all duration-200;
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.03), 0 2px 8px rgba(0,0,0,0.3);
   }
-  .paper-card:hover {
-    box-shadow: 0 4px 6px rgba(0,0,0,0.05), 0 2px 4px rgba(0,0,0,0.03);
+  .dash-card:hover {
+    border-color: rgba(255,255,255,0.08);
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.06), 0 4px 16px rgba(0,0,0,0.4);
   }
-  .paper-btn {
-    @apply inline-flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium 
-           border border-paper-300 bg-paper-surface text-[#111827]
+  .dash-btn {
+    @apply inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium 
+           border border-dash-border bg-dash-elevated text-dash-text
            transition-all duration-150 cursor-pointer;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
   }
-  .paper-btn:hover {
-    @apply bg-paper-cream border-paper-400;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.06);
+  .dash-btn:hover {
+    @apply bg-dash-muted/30 border-dash-muted;
   }
-  .paper-btn:active {
-    @apply bg-paper-200;
-    box-shadow: none;
+  .dash-btn:focus-visible {
+    @apply outline-none ring-2 ring-brand-500 ring-offset-2 ring-offset-dash-surface;
   }
-  .paper-btn-primary {
-    @apply paper-btn bg-[#111111] text-white border-[#111111];
+  .dash-btn-primary {
+    @apply dash-btn bg-brand-500 border-brand-500 text-white;
   }
-  .paper-btn-primary:hover {
-    @apply bg-[#333333] border-[#333333] text-white;
+  .dash-btn-primary:hover {
+    @apply bg-brand-600 border-brand-600;
   }
-  .paper-btn-danger {
-    @apply paper-btn bg-accent-danger text-white border-accent-danger;
-  }
-  .paper-input {
-    @apply w-full px-3 py-2 rounded-md text-sm text-[#111827] placeholder-paper-500 
-           outline-none border border-paper-300 bg-paper-surface font-normal
+  .dash-input {
+    @apply w-full px-3 py-2 rounded-lg text-sm text-dash-text placeholder-dash-subtle 
+           outline-none border border-dash-border bg-dash-surface
            transition-all duration-150;
   }
-  .paper-input:focus {
-    @apply border-[#111111] ring-1 ring-[#111111];
+  .dash-input:focus {
+    @apply border-brand-500 ring-1 ring-brand-500/30;
   }
-  .paper-badge {
-    @apply inline-flex items-center px-2 py-0.5 rounded text-[12px] font-medium;
+  .dash-badge {
+    @apply inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-medium border;
   }
-  .paper-badge-success { @apply bg-green-50 text-accent-success border border-green-200; }
-  .paper-badge-warning { @apply bg-amber-50 text-accent-warning border border-amber-200; }
-  .paper-badge-danger { @apply bg-red-50 text-accent-danger border border-red-200; }
+  .dash-badge-success { @apply bg-emerald-500/10 text-emerald-400 border-emerald-500/20; }
+  .dash-badge-warning { @apply bg-amber-500/10 text-amber-400 border-amber-500/20; }
+  .dash-badge-danger { @apply bg-red-500/10 text-red-400 border-red-500/20; }
 
   .nav-link {
-    @apply flex items-center gap-3 px-3 py-2 rounded-md text-sm font-normal text-[#111827]/60 
-           hover:text-[#111827] hover:bg-paper-cream transition-all duration-150;
+    @apply flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-normal text-dash-subtle 
+           hover:text-dash-text hover:bg-dash-elevated transition-all duration-150;
   }
   .nav-link.active {
-    @apply text-[#111827] bg-paper-cream font-medium border border-paper-300;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+    @apply text-dash-text bg-dash-elevated border border-dash-border;
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.03);
   }
 
-  /* Compatibility aliases */
-  .glass-card { @apply paper-card; }
-  .stat-card { @apply paper-card p-4; }
-  .form-input { @apply paper-input; }
-  .btn-primary { @apply paper-btn-primary; }
-  .btn-ghost { @apply paper-btn; }
-  .badge { @apply paper-badge; }
-  .badge-success { @apply paper-badge-success; }
-  .badge-warning { @apply paper-badge-warning; }
-  .badge-danger { @apply paper-badge-danger; }
+  /* Aliases */
+  .glass-card { @apply dash-card; }
+  .stat-card { @apply dash-card p-4; }
+  .form-input { @apply dash-input; }
+  .btn-primary { @apply dash-btn-primary; }
+  .btn-ghost { @apply dash-btn; }
+  .badge { @apply dash-badge; }
+  .badge-success { @apply dash-badge-success; }
+  .badge-warning { @apply dash-badge-warning; }
+  .badge-danger { @apply dash-badge-danger; }
 }
 
 .safe-area-bottom {
@@ -82,8 +77,8 @@
 
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #D6D0C4; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #B8B0A0; }
+::-webkit-scrollbar-thumb { background: #27272a; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #3f3f46; }
 
 @keyframes slideIn {
   from { transform: translateX(100%); opacity: 0; }
