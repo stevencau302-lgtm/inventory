@@ -80,48 +80,75 @@ export default function Dashboard() {
 
       {/* Stat Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
-        <div className="stat-card">
+        {/* Stok Aman */}
+        <div className="stat-card group" style={{ borderTop: '2px solid #06b6d4' }}>
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0" style={{ background: 'rgba(6,182,212,0.15)' }}>
-              <svg className="w-5 h-5 text-cyan-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" /></svg>
+            <div className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 relative" style={{ background: 'linear-gradient(135deg, rgba(6,182,212,0.2), rgba(6,182,212,0.05))' }}>
+              <svg className="w-5 h-5 text-cyan-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+              <div className="absolute inset-0 rounded-xl bg-cyan-400/10 opacity-0 group-hover:opacity-100 blur-md transition-opacity" />
             </div>
             <div className="min-w-0">
-              <p className="text-xl md:text-2xl font-bold text-white">{inStock}</p>
-              <p className="text-[11px] text-slate-500">Stok Aman</p>
+              <p className="text-2xl md:text-3xl font-bold text-white">{inStock}</p>
+              <p className="text-[11px] text-slate-400 font-medium mt-0.5">Stok Aman</p>
             </div>
           </div>
+          <div className="mt-3 flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
+            <span className="text-[10px] text-slate-500">{total > 0 ? Math.round((inStock/total)*100) : 0}% dari total</span>
+          </div>
         </div>
-        <div className="stat-card">
+
+        {/* Stok Rendah */}
+        <div className="stat-card group" style={{ borderTop: '2px solid #f59e0b' }}>
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0" style={{ background: 'rgba(245,158,11,0.15)' }}>
+            <div className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 relative" style={{ background: 'linear-gradient(135deg, rgba(245,158,11,0.2), rgba(245,158,11,0.05))' }}>
               <svg className="w-5 h-5 text-amber-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" /></svg>
+              <div className="absolute inset-0 rounded-xl bg-amber-400/10 opacity-0 group-hover:opacity-100 blur-md transition-opacity" />
             </div>
             <div className="min-w-0">
-              <p className="text-xl md:text-2xl font-bold text-white">{lowStock}</p>
-              <p className="text-[11px] text-slate-500">Stok Rendah</p>
+              <p className="text-2xl md:text-3xl font-bold text-white">{lowStock}</p>
+              <p className="text-[11px] text-slate-400 font-medium mt-0.5">Stok Rendah</p>
             </div>
           </div>
+          <div className="mt-3 flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+            <span className="text-[10px] text-slate-500">Perlu perhatian</span>
+          </div>
         </div>
-        <div className="stat-card">
+
+        {/* Habis */}
+        <div className="stat-card group" style={{ borderTop: '2px solid #ef4444' }}>
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0" style={{ background: 'rgba(239,68,68,0.15)' }}>
+            <div className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 relative" style={{ background: 'linear-gradient(135deg, rgba(239,68,68,0.2), rgba(239,68,68,0.05))' }}>
               <svg className="w-5 h-5 text-red-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" /></svg>
+              <div className="absolute inset-0 rounded-xl bg-red-400/10 opacity-0 group-hover:opacity-100 blur-md transition-opacity" />
             </div>
             <div className="min-w-0">
-              <p className="text-xl md:text-2xl font-bold text-white">{outStock}</p>
-              <p className="text-[11px] text-slate-500">Habis</p>
+              <p className="text-2xl md:text-3xl font-bold text-white">{outStock}</p>
+              <p className="text-[11px] text-slate-400 font-medium mt-0.5">Habis</p>
             </div>
           </div>
+          <div className="mt-3 flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-red-400" />
+            <span className="text-[10px] text-slate-500">Segera restock</span>
+          </div>
         </div>
-        <div className="stat-card">
+
+        {/* Total Nilai */}
+        <div className="stat-card group" style={{ borderTop: '2px solid #a855f7' }}>
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0" style={{ background: 'rgba(168,85,247,0.15)' }}>
+            <div className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 relative" style={{ background: 'linear-gradient(135deg, rgba(168,85,247,0.2), rgba(168,85,247,0.05))' }}>
               <svg className="w-5 h-5 text-purple-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+              <div className="absolute inset-0 rounded-xl bg-purple-400/10 opacity-0 group-hover:opacity-100 blur-md transition-opacity" />
             </div>
             <div className="min-w-0">
               <p className="text-lg md:text-xl font-bold text-white truncate">{formatRp(totalValue)}</p>
-              <p className="text-[11px] text-slate-500">Total Nilai</p>
+              <p className="text-[11px] text-slate-400 font-medium mt-0.5">Total Nilai</p>
             </div>
+          </div>
+          <div className="mt-3 flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-purple-400" />
+            <span className="text-[10px] text-slate-500">{totalUnits.toLocaleString()} unit</span>
           </div>
         </div>
       </div>
