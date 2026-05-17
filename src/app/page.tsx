@@ -43,25 +43,25 @@ export default function Dashboard() {
   return (
     <div className="space-y-6">
       {/* Welcome Banner */}
-      <div className="relative rounded-2xl overflow-hidden p-6 md:p-8" style={{ background: 'linear-gradient(135deg, #0f172a 0%, #164e63 40%, #0f766e 100%)', boxShadow: '0 20px 60px rgba(6,182,212,0.1), inset 0 1px 0 rgba(255,255,255,0.05)' }}>
+      <div className="relative rounded-2xl overflow-hidden p-6 md:p-8" style={{ background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 40%, #1e1b4b 100%)', boxShadow: '0 20px 60px rgba(99,102,241,0.08), inset 0 1px 0 rgba(255,255,255,0.05)' }}>
         {/* Animated background elements */}
         <div className="absolute inset-0">
-          <div className="absolute top-0 right-0 w-64 h-64 rounded-full opacity-20" style={{ background: 'radial-gradient(circle, rgba(6,182,212,0.4) 0%, transparent 60%)', filter: 'blur(40px)' }} />
-          <div className="absolute bottom-0 left-0 w-48 h-48 rounded-full opacity-15" style={{ background: 'radial-gradient(circle, rgba(168,85,247,0.5) 0%, transparent 60%)', filter: 'blur(30px)' }} />
+          <div className="absolute top-0 right-0 w-64 h-64 rounded-full opacity-20" style={{ background: 'radial-gradient(circle, rgba(99,102,241,0.4) 0%, transparent 60%)', filter: 'blur(40px)' }} />
+          <div className="absolute bottom-0 left-0 w-48 h-48 rounded-full opacity-15" style={{ background: 'radial-gradient(circle, rgba(59,130,246,0.4) 0%, transparent 60%)', filter: 'blur(30px)' }} />
           <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\'40\' height=\'40\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M0 0h40v40H0z\' fill=\'none\'/%3E%3Ccircle cx=\'20\' cy=\'20\' r=\'1\' fill=\'white\'/%3E%3C/svg%3E")' }} />
         </div>
         <div className="relative z-10">
           <div className="flex items-start justify-between">
             <div>
               <div className="flex items-center gap-3 mb-3">
-                <div className="w-11 h-11 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, rgba(6,182,212,0.3), rgba(6,182,212,0.1))', border: '1px solid rgba(6,182,212,0.3)', boxShadow: '0 0 20px rgba(6,182,212,0.15)' }}>
-                  <svg className="w-5 h-5 text-cyan-300" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                <div className="w-11 h-11 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, rgba(99,102,241,0.3), rgba(99,102,241,0.1))', border: '1px solid rgba(99,102,241,0.3)', boxShadow: '0 0 20px rgba(99,102,241,0.15)' }}>
+                  <svg className="w-5 h-5 text-indigo-300" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" />
                   </svg>
                 </div>
                 <div>
                   <h1 className="text-xl md:text-2xl font-bold text-white">Selamat Datang!</h1>
-                  <p className="text-cyan-200/60 text-xs">Inventory Dashboard</p>
+                  <p className="text-indigo-200/60 text-xs">Inventory Dashboard</p>
                 </div>
               </div>
               <p className="text-slate-300 text-sm md:text-base max-w-md">
@@ -72,7 +72,7 @@ export default function Dashboard() {
               <Link href="/products" className="px-4 py-2.5 rounded-xl text-white text-sm font-medium hover:bg-white/10 transition border border-white/10 backdrop-blur-sm">
                 Produk
               </Link>
-              <Link href="/transactions" className="px-4 py-2.5 rounded-xl text-white text-sm font-medium transition" style={{ background: 'linear-gradient(135deg, #06b6d4, #0891b2)', boxShadow: '0 4px 15px rgba(6,182,212,0.3)' }}>
+              <Link href="/transactions" className="px-4 py-2.5 rounded-xl text-white text-sm font-medium transition" style={{ background: 'linear-gradient(135deg, #6366f1, #4f46e5)', boxShadow: '0 4px 15px rgba(99,102,241,0.3)' }}>
                 + Transaksi
               </Link>
             </div>
@@ -81,12 +81,12 @@ export default function Dashboard() {
           {/* Quick Stats inside banner */}
           <div className="grid grid-cols-3 gap-3 mt-6">
             <div className="rounded-xl p-3.5 relative overflow-hidden" style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03))', border: '1px solid rgba(255,255,255,0.1)', backdropFilter: 'blur(8px)' }}>
-              <div className="absolute top-0 left-0 right-0 h-[1px]" style={{ background: 'linear-gradient(90deg, transparent, rgba(6,182,212,0.5), transparent)' }} />
+              <div className="absolute top-0 left-0 right-0 h-[1px]" style={{ background: 'linear-gradient(90deg, transparent, rgba(99,102,241,0.5), transparent)' }} />
               <p className="text-2xl md:text-3xl font-bold text-white">{totalUnits.toLocaleString()}</p>
               <p className="text-slate-400 text-[11px] md:text-xs mt-1 font-medium">Total Unit</p>
             </div>
             <div className="rounded-xl p-3.5 relative overflow-hidden" style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03))', border: '1px solid rgba(255,255,255,0.1)', backdropFilter: 'blur(8px)' }}>
-              <div className="absolute top-0 left-0 right-0 h-[1px]" style={{ background: 'linear-gradient(90deg, transparent, rgba(168,85,247,0.5), transparent)' }} />
+              <div className="absolute top-0 left-0 right-0 h-[1px]" style={{ background: 'linear-gradient(90deg, transparent, rgba(59,130,246,0.5), transparent)' }} />
               <p className="text-2xl md:text-3xl font-bold text-white">{total}</p>
               <p className="text-slate-400 text-[11px] md:text-xs mt-1 font-medium">Jenis Produk</p>
             </div>
@@ -102,11 +102,11 @@ export default function Dashboard() {
       {/* Stat Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
         {/* Stok Aman */}
-        <div className="stat-card group" style={{ borderTop: '2px solid #06b6d4' }}>
+        <div className="stat-card group" style={{ borderTop: '2px solid #6366f1' }}>
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 relative" style={{ background: 'linear-gradient(135deg, rgba(6,182,212,0.2), rgba(6,182,212,0.05))' }}>
-              <svg className="w-5 h-5 text-cyan-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-              <div className="absolute inset-0 rounded-xl bg-cyan-400/10 opacity-0 group-hover:opacity-100 blur-md transition-opacity" />
+            <div className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 relative" style={{ background: 'linear-gradient(135deg, rgba(99,102,241,0.2), rgba(99,102,241,0.05))' }}>
+              <svg className="w-5 h-5 text-indigo-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+              <div className="absolute inset-0 rounded-xl bg-indigo-400/10 opacity-0 group-hover:opacity-100 blur-md transition-opacity" />
             </div>
             <div className="min-w-0">
               <p className="text-2xl md:text-3xl font-bold text-white">{inStock}</p>
@@ -114,7 +114,7 @@ export default function Dashboard() {
             </div>
           </div>
           <div className="mt-3 flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
+            <span className="w-1.5 h-1.5 rounded-full bg-indigo-400" />
             <span className="text-[10px] text-slate-500">{total > 0 ? Math.round((inStock/total)*100) : 0}% dari total</span>
           </div>
         </div>
@@ -180,7 +180,7 @@ export default function Dashboard() {
         <div className="lg:col-span-2 glass-card overflow-hidden">
           <div className="flex items-center justify-between p-4 md:p-5 border-b border-white/5">
             <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-cyan-400" />
+              <div className="w-2 h-2 rounded-full bg-indigo-400" />
               <h2 className="font-semibold text-white text-sm">Aktivitas Produk</h2>
             </div>
             <Link href="/products" className="text-xs text-brand-400 hover:text-brand-300 font-medium transition flex items-center gap-1">
