@@ -28,7 +28,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
 
       <aside className={`
         fixed lg:static inset-y-0 left-0 z-50 w-[260px] 
-        bg-gradient-to-b from-slate-900 to-brand-950 
+        bg-gradient-to-b from-slate-900 to-slate-950 
         border-r border-white/5 flex flex-col
         transition-transform duration-300 lg:translate-x-0
         ${isOpen ? 'translate-x-0' : '-translate-x-full'}
