@@ -24,33 +24,32 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
     <>
       {/* Backdrop */}
       {isOpen && (
-        <div className="fixed inset-0 bg-black/50 z-40 lg:hidden" onClick={onClose} />
+        <div className="fixed inset-0 bg-black/30 z-40 lg:hidden" onClick={onClose} />
       )}
 
       <aside className={`
         fixed lg:static inset-y-0 left-0 z-50 w-[260px] 
-        bg-gradient-to-b from-slate-900 to-slate-950 
-        border-r border-white/5 flex flex-col
+        bg-white border-r-[3px] border-slate-900 flex flex-col
         transition-transform duration-300 lg:translate-x-0
         ${isOpen ? 'translate-x-0' : '-translate-x-full'}
       `}>
         {/* Logo */}
-        <div className="p-6 border-b border-white/5">
+        <div className="p-5 border-b-[3px] border-slate-900">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center shadow-lg shadow-brand-500/25">
-              <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+            <div className="w-11 h-11 rounded-xl bg-neo-blue border-[2.5px] border-slate-900 flex items-center justify-center" style={{ boxShadow: '3px 3px 0px 0px #1e293b' }}>
+              <svg className="w-5 h-5 text-slate-900" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" />
               </svg>
             </div>
             <div>
-              <h1 className="text-lg font-bold text-white">Inventory<span className="text-brand-400">Pro</span></h1>
-              <p className="text-[11px] text-slate-500">Management System</p>
+              <h1 className="text-lg font-black text-slate-900">Inventory<span className="text-brand-600">Pro</span></h1>
+              <p className="text-[11px] text-slate-500 font-medium">Management System</p>
             </div>
           </div>
         </div>
 
         {/* Nav */}
-        <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
+        <nav className="flex-1 p-3 space-y-1.5 overflow-y-auto">
           {navItems.map((item) => {
             const isActive = pathname === item.href
             return (
@@ -60,7 +59,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                 onClick={onClose}
                 className={`nav-link ${isActive ? 'active' : ''}`}
               >
-                <svg className="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                <svg className="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" d={item.icon} />
                 </svg>
                 <span>{item.label}</span>
@@ -70,14 +69,14 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
         </nav>
 
         {/* User */}
-        <div className="p-4 border-t border-white/5">
-          <div className="flex items-center gap-3 px-3 py-2">
-            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-brand-400 to-purple-600 flex items-center justify-center text-sm font-bold text-white">
+        <div className="p-4 border-t-[3px] border-slate-900">
+          <div className="flex items-center gap-3 px-2">
+            <div className="w-10 h-10 rounded-full bg-neo-purple border-[2.5px] border-slate-900 flex items-center justify-center text-sm font-black text-slate-900">
               A
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-white truncate">Admin</p>
-              <p className="text-[11px] text-slate-500">admin@inventory.pro</p>
+              <p className="text-sm font-bold text-slate-900 truncate">Admin</p>
+              <p className="text-[11px] text-slate-500 font-medium">admin@inventory.pro</p>
             </div>
           </div>
         </div>

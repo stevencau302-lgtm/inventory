@@ -10,21 +10,37 @@ const config: Config = {
     extend: {
       colors: {
         brand: {
-          50: '#eef2ff',
-          100: '#e0e7ff',
-          200: '#c7d2fe',
-          300: '#a5b4fc',
-          400: '#818cf8',
-          500: '#6366f1',
-          600: '#4f46e5',
-          700: '#4338ca',
-          800: '#3730a3',
-          900: '#312e81',
-          950: '#1e1b4b',
+          50: '#f0f4ff',
+          100: '#dbe4ff',
+          200: '#bac8ff',
+          300: '#91a7ff',
+          400: '#88aaee',
+          500: '#5c7cfa',
+          600: '#4c6ef5',
+          700: '#4263eb',
+          800: '#3b5bdb',
+          900: '#364fc7',
+          950: '#2b4094',
+        },
+        neo: {
+          yellow: '#fdfd96',
+          green: '#77dd77',
+          blue: '#88aaee',
+          pink: '#ffb3ba',
+          purple: '#b5a8d5',
+          orange: '#ffcba4',
+          red: '#ff6b6b',
+          bg: '#e8e4d9',
         }
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif']
+      },
+      boxShadow: {
+        'neo': '4px 4px 0px 0px #1e293b',
+        'neo-sm': '2px 2px 0px 0px #1e293b',
+        'neo-lg': '6px 6px 0px 0px #1e293b',
+        'neo-xl': '8px 8px 0px 0px #1e293b',
       }
     },
   },
