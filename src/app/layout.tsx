@@ -3,6 +3,7 @@
 import './globals.css'
 import { useState } from 'react'
 import Sidebar from '@/components/Sidebar'
+import BottomNav from '@/components/BottomNav'
 import { ToastProvider } from '@/components/Toast'
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -13,6 +14,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <title>InventoryPro - Modern Inventory Management</title>
         <meta name="description" content="Modern inventory management system built with Next.js" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
@@ -24,7 +26,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             
             <main className="flex-1 flex flex-col overflow-hidden">
               {/* Header */}
-              <header className="h-16 border-b border-white/5 bg-slate-900/50 backdrop-blur-xl flex items-center justify-between px-4 md:px-6 shrink-0">
+              <header className="h-14 lg:h-16 border-b border-white/5 bg-slate-900/50 backdrop-blur-xl flex items-center justify-between px-4 md:px-6 shrink-0">
                 <div className="flex items-center gap-3">
                   <button 
                     onClick={() => setSidebarOpen(true)} 
@@ -55,12 +57,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 </div>
               </header>
 
-              {/* Content */}
-              <div className="flex-1 overflow-y-auto p-4 md:p-6">
+              {/* Content - extra padding bottom on mobile for bottom nav */}
+              <div className="flex-1 overflow-y-auto p-4 md:p-6 pb-24 lg:pb-6">
                 {children}
               </div>
             </main>
           </div>
+
+          {/* Mobile Bottom Navigation */}
+          <BottomNav />
         </ToastProvider>
       </body>
     </html>
