@@ -17,7 +17,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&family=PT+Mono&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet" />
       </head>
       <body>
         <ToastProvider>
@@ -26,31 +26,26 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             
             <main className="flex-1 flex flex-col overflow-hidden">
               {/* Header */}
-              <header className="h-16 border-b-[3px] border-slate-900 bg-white flex items-center justify-between px-4 md:px-6 shrink-0">
+              <header className="h-14 border-b border-paper-300 bg-paper-surface flex items-center justify-between px-4 md:px-6 shrink-0">
                 <div className="flex items-center gap-3">
                   <button 
                     onClick={() => setSidebarOpen(true)} 
-                    className="lg:hidden w-10 h-10 rounded-lg bg-neo-yellow border-[2.5px] border-slate-900 flex items-center justify-center text-slate-900 hover:bg-neo-orange transition"
-                    style={{ boxShadow: '2px 2px 0px 0px #1e293b' }}
+                    className="lg:hidden w-9 h-9 rounded-md border border-paper-300 bg-paper-surface flex items-center justify-center text-[#111827] hover:bg-paper-cream transition"
                   >
-                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
                     </svg>
                   </button>
                   <div className="hidden sm:block">
-                    <input 
-                      type="text" 
-                      placeholder="Cari produk..." 
-                      className="neo-input w-64 text-sm"
-                    />
+                    <input type="text" placeholder="Cari produk..." className="paper-input w-64" />
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <button className="relative w-10 h-10 rounded-lg bg-neo-pink border-[2.5px] border-slate-900 flex items-center justify-center text-slate-900 hover:bg-neo-orange transition" style={{ boxShadow: '2px 2px 0px 0px #1e293b' }}>
-                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                  <button className="relative w-9 h-9 rounded-md border border-paper-300 bg-paper-surface flex items-center justify-center text-[#111827]/60 hover:text-[#111827] hover:bg-paper-cream transition">
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
                     </svg>
-                    <span className="absolute -top-1 -right-1 w-5 h-5 bg-neo-red rounded-full text-[10px] font-bold flex items-center justify-center text-white border-2 border-slate-900">3</span>
+                    <span className="absolute -top-1 -right-1 w-4 h-4 bg-accent-danger rounded-full text-[9px] font-medium flex items-center justify-center text-white">3</span>
                   </button>
                 </div>
               </header>

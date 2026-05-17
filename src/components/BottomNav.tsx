@@ -15,14 +15,14 @@ export default function BottomNav() {
   const pathname = usePathname()
 
   return (
-    <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t-[3px] border-slate-900 safe-area-bottom">
-      <div className="flex items-center justify-around h-16 px-2 max-w-lg mx-auto">
+    <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-paper-surface border-t border-paper-300 safe-area-bottom">
+      <div className="flex items-center justify-around h-14 px-2 max-w-lg mx-auto">
         {navItems.map((item) => {
           if (item.label === 'add') {
             return (
-              <Link key={item.href} href={item.href} className="relative -top-4">
-                <div className="w-14 h-14 rounded-xl bg-neo-green border-[3px] border-slate-900 flex items-center justify-center active:translate-y-1 transition" style={{ boxShadow: '3px 3px 0px 0px #1e293b' }}>
-                  <svg className="w-7 h-7 text-slate-900" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor">
+              <Link key={item.href} href={item.href} className="relative -top-3">
+                <div className="w-12 h-12 rounded-full bg-[#111111] flex items-center justify-center active:scale-95 transition shadow-paper-md">
+                  <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                   </svg>
                 </div>
@@ -35,17 +35,14 @@ export default function BottomNav() {
             <Link
               key={item.href}
               href={item.href}
-              className={`flex flex-col items-center gap-0.5 py-1 px-3 rounded-lg transition-all ${
-                isActive ? 'text-slate-900' : 'text-slate-400'
+              className={`flex flex-col items-center gap-0.5 py-1 px-3 transition-all ${
+                isActive ? 'text-[#111827]' : 'text-[#111827]/40'
               }`}
             >
-              <svg className={`w-5 h-5 ${isActive ? 'text-slate-900' : 'text-slate-400'}`} fill="none" viewBox="0 0 24 24" strokeWidth={isActive ? 2.5 : 1.5} stroke="currentColor">
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={isActive ? 2 : 1.5} stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" d={item.icon} />
               </svg>
-              <span className={`text-[10px] font-bold ${isActive ? 'text-slate-900' : 'text-slate-400'}`}>
-                {item.label}
-              </span>
-              {isActive && <span className="w-1.5 h-1.5 rounded-full bg-neo-blue border border-slate-900" />}
+              <span className={`text-[10px] ${isActive ? 'font-medium' : 'font-normal'}`}>{item.label}</span>
             </Link>
           )
         })}

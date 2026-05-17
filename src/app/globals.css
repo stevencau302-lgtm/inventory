@@ -4,97 +4,87 @@
 
 @layer base {
   body {
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
-    @apply bg-[#e8e4d9] text-slate-900 antialiased;
+    @apply bg-paper-warm text-[#111827] antialiased;
+    font-family: 'Roboto', system-ui, -apple-system, sans-serif;
   }
 }
 
 @layer components {
-  .neo-card {
-    @apply rounded-xl bg-white border-[3px] border-slate-900 transition-all duration-200;
-    box-shadow: 4px 4px 0px 0px #1e293b;
+  .paper-card {
+    @apply rounded-lg bg-paper-surface border border-paper-300 transition-all duration-200;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
   }
-  .neo-card:hover {
-    box-shadow: 6px 6px 0px 0px #1e293b;
-    transform: translate(-2px, -2px);
+  .paper-card:hover {
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05), 0 2px 4px rgba(0,0,0,0.03);
   }
-  .neo-btn {
-    @apply inline-flex items-center gap-2 px-5 py-2.5 rounded-lg font-semibold text-sm 
-           border-[2.5px] border-slate-900 transition-all duration-150 cursor-pointer;
-    box-shadow: 3px 3px 0px 0px #1e293b;
+  .paper-btn {
+    @apply inline-flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium 
+           border border-paper-300 bg-paper-surface text-[#111827]
+           transition-all duration-150 cursor-pointer;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
   }
-  .neo-btn:hover {
-    box-shadow: 5px 5px 0px 0px #1e293b;
-    transform: translate(-1px, -1px);
+  .paper-btn:hover {
+    @apply bg-paper-cream border-paper-400;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.06);
   }
-  .neo-btn:active {
-    box-shadow: 1px 1px 0px 0px #1e293b;
-    transform: translate(2px, 2px);
+  .paper-btn:active {
+    @apply bg-paper-200;
+    box-shadow: none;
   }
-  .neo-btn-primary {
-    @apply neo-btn bg-[#88aaee] text-slate-900;
+  .paper-btn-primary {
+    @apply paper-btn bg-[#111111] text-white border-[#111111];
   }
-  .neo-btn-success {
-    @apply neo-btn bg-[#77dd77] text-slate-900;
+  .paper-btn-primary:hover {
+    @apply bg-[#333333] border-[#333333] text-white;
   }
-  .neo-btn-danger {
-    @apply neo-btn bg-[#ff6b6b] text-white;
+  .paper-btn-danger {
+    @apply paper-btn bg-accent-danger text-white border-accent-danger;
   }
-  .neo-btn-warning {
-    @apply neo-btn bg-[#fdfd96] text-slate-900;
+  .paper-input {
+    @apply w-full px-3 py-2 rounded-md text-sm text-[#111827] placeholder-paper-500 
+           outline-none border border-paper-300 bg-paper-surface font-normal
+           transition-all duration-150;
   }
-  .neo-btn-ghost {
-    @apply neo-btn bg-white text-slate-900;
+  .paper-input:focus {
+    @apply border-[#111111] ring-1 ring-[#111111];
   }
-  .neo-input {
-    @apply w-full px-4 py-2.5 rounded-lg text-sm text-slate-900 placeholder-slate-400 
-           outline-none border-[2.5px] border-slate-900 bg-white font-medium;
-    box-shadow: 3px 3px 0px 0px #1e293b;
+  .paper-badge {
+    @apply inline-flex items-center px-2 py-0.5 rounded text-[12px] font-medium;
   }
-  .neo-input:focus {
-    box-shadow: 5px 5px 0px 0px #1e293b;
-    transform: translate(-1px, -1px);
-  }
-  .neo-badge {
-    @apply inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wide
-           border-[2px] border-slate-900;
-  }
-  .neo-badge-success { @apply bg-[#77dd77] text-slate-900; }
-  .neo-badge-warning { @apply bg-[#fdfd96] text-slate-900; }
-  .neo-badge-danger { @apply bg-[#ff6b6b] text-white; }
+  .paper-badge-success { @apply bg-green-50 text-accent-success border border-green-200; }
+  .paper-badge-warning { @apply bg-amber-50 text-accent-warning border border-amber-200; }
+  .paper-badge-danger { @apply bg-red-50 text-accent-danger border border-red-200; }
 
   .nav-link {
-    @apply flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-semibold text-slate-600 
-           hover:text-slate-900 hover:bg-[#fdfd96] transition-all duration-150 border-2 border-transparent;
+    @apply flex items-center gap-3 px-3 py-2 rounded-md text-sm font-normal text-[#111827]/60 
+           hover:text-[#111827] hover:bg-paper-cream transition-all duration-150;
   }
   .nav-link.active {
-    @apply text-slate-900 bg-[#88aaee] border-slate-900;
-    box-shadow: 3px 3px 0px 0px #1e293b;
+    @apply text-[#111827] bg-paper-cream font-medium border border-paper-300;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04);
   }
 
-  /* Keep old class names for compatibility */
-  .glass-card { @apply neo-card; }
-  .stat-card { @apply neo-card p-5; }
-  .form-input { @apply neo-input; }
-  .btn-primary { @apply neo-btn-primary; }
-  .btn-ghost { @apply neo-btn-ghost; }
-  .badge { @apply neo-badge; }
-  .badge-success { @apply neo-badge-success; }
-  .badge-warning { @apply neo-badge-warning; }
-  .badge-danger { @apply neo-badge-danger; }
+  /* Compatibility aliases */
+  .glass-card { @apply paper-card; }
+  .stat-card { @apply paper-card p-4; }
+  .form-input { @apply paper-input; }
+  .btn-primary { @apply paper-btn-primary; }
+  .btn-ghost { @apply paper-btn; }
+  .badge { @apply paper-badge; }
+  .badge-success { @apply paper-badge-success; }
+  .badge-warning { @apply paper-badge-warning; }
+  .badge-danger { @apply paper-badge-danger; }
 }
 
-/* Safe area for bottom nav */
 .safe-area-bottom {
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
-/* Scrollbar */
-::-webkit-scrollbar { width: 8px; }
-::-webkit-scrollbar-track { background: #e8e4d9; }
-::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #D6D0C4; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #B8B0A0; }
 
-/* Toast animation */
 @keyframes slideIn {
   from { transform: translateX(100%); opacity: 0; }
   to { transform: translateX(0); opacity: 1; }

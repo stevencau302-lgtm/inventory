@@ -28,22 +28,22 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
       )}
 
       <aside className={`
-        fixed lg:static inset-y-0 left-0 z-50 w-[260px] 
-        bg-white border-r-[3px] border-slate-900 flex flex-col
+        fixed lg:static inset-y-0 left-0 z-50 w-[240px] 
+        bg-paper-surface border-r border-paper-300 flex flex-col
         transition-transform duration-300 lg:translate-x-0
         ${isOpen ? 'translate-x-0' : '-translate-x-full'}
       `}>
         {/* Logo */}
-        <div className="p-5 border-b-[3px] border-slate-900">
+        <div className="p-4 border-b border-paper-300">
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-xl bg-neo-blue border-[2.5px] border-slate-900 flex items-center justify-center" style={{ boxShadow: '3px 3px 0px 0px #1e293b' }}>
-              <svg className="w-5 h-5 text-slate-900" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+            <div className="w-9 h-9 rounded-md bg-[#111111] flex items-center justify-center">
+              <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" />
               </svg>
             </div>
             <div>
-              <h1 className="text-lg font-black text-slate-900">Inventory<span className="text-brand-600">Pro</span></h1>
-              <p className="text-[11px] text-slate-500 font-medium">Management System</p>
+              <h1 className="text-base font-bold font-display text-[#111827]">InventoryPro</h1>
+              <p className="text-[11px] text-[#111827]/40">Management</p>
             </div>
           </div>
         </div>
@@ -69,14 +69,14 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
         </nav>
 
         {/* User */}
-        <div className="p-4 border-t-[3px] border-slate-900">
+        <div className="p-4 border-t border-paper-300">
           <div className="flex items-center gap-3 px-2">
-            <div className="w-10 h-10 rounded-full bg-neo-purple border-[2.5px] border-slate-900 flex items-center justify-center text-sm font-black text-slate-900">
+            <div className="w-8 h-8 rounded-full bg-paper-200 border border-paper-300 flex items-center justify-center text-xs font-medium text-[#111827]">
               A
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-bold text-slate-900 truncate">Admin</p>
-              <p className="text-[11px] text-slate-500 font-medium">admin@inventory.pro</p>
+              <p className="text-sm font-medium text-[#111827] truncate">Admin</p>
+              <p className="text-[11px] text-[#111827]/40">admin@inventory.pro</p>
             </div>
           </div>
         </div>
