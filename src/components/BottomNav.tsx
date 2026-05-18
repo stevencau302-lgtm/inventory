@@ -25,7 +25,7 @@ export default function BottomNav() {
           )
           const isActive = pathname === item.href
           return (
-            <Link key={item.href} href={item.href} className={`flex flex-col items-center gap-0.5 py-1 px-3 transition ${isActive ? 'text-cozy-navy dark:text-cozy-gold' : 'text-cozy-muted dark:text-[#6b7280]'}`}>
+            <Link key={item.href} href={item.href} className={`flex flex-col items-center gap-0.5 py-1 px-3 transition ${isActive ? 'text-cozy-navy dark:text-cozy-gold' : 'text-cozy-subtle dark:text-[#d1d5db]'}`}>
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={isActive ? 2 : 1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d={item.icon} /></svg>
               <span className={`text-[10px] ${isActive ? 'font-semibold' : ''}`}>{item.label}</span>
             </Link>
