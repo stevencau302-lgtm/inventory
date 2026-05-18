@@ -73,8 +73,8 @@ export default function ProductsPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold">Produk</h1>
-          <p className="text-slate-500 text-sm mt-1">{filtered.length} produk ditemukan</p>
+          <h1 className="text-2xl md:text-3xl font-bold text-cozy-text dark:text-[#fafafa]">Produk</h1>
+          <p className="text-cozy-muted text-sm mt-1">{filtered.length} produk ditemukan</p>
         </div>
         <button onClick={() => { setEditProduct(null); setModalOpen(true) }} className="btn-primary">
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">

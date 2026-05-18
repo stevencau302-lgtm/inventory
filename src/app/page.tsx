@@ -52,19 +52,19 @@ export default function Dashboard() {
         <div className="cozy-card p-4"><p className="text-[11px] text-cozy-muted font-medium uppercase">Stok Aman</p><p className="text-2xl font-bold text-emerald-600 mt-1">{inStock}</p></div>
         <div className="cozy-card p-4"><p className="text-[11px] text-cozy-muted font-medium uppercase">Stok Rendah</p><p className="text-2xl font-bold text-amber-600 mt-1">{lowStock}</p></div>
         <div className="cozy-card p-4"><p className="text-[11px] text-cozy-muted font-medium uppercase">Habis</p><p className="text-2xl font-bold text-red-500 mt-1">{outStock}</p></div>
-        <div className="cozy-card p-4"><p className="text-[11px] text-cozy-muted font-medium uppercase">Total Nilai</p><p className="text-lg font-bold text-cozy-navy mt-1 truncate">{formatRp(totalValue)}</p></div>
+        <div className="cozy-card p-4"><p className="text-[11px] text-cozy-muted font-medium uppercase">Total Nilai</p><p className="text-lg font-bold text-cozy-navy dark:text-cozy-gold mt-1 truncate">{formatRp(totalValue)}</p></div>
       </div>
 
       {/* Recent */}
       <div className="cozy-card overflow-hidden">
-        <div className="flex items-center justify-between px-5 py-3 border-b border-cozy-border">
-          <h2 className="text-sm font-semibold text-cozy-text">Produk Terbaru</h2>
-          <Link href="/products" className="text-[12px] text-cozy-navy font-semibold hover:underline">Lihat Semua</Link>
+        <div className="flex items-center justify-between px-5 py-3 border-b border-cozy-border dark:border-[#2a2a2e]">
+          <h2 className="text-sm font-semibold text-cozy-text dark:text-[#fafafa]">Produk Terbaru</h2>
+          <Link href="/products" className="text-[12px] text-cozy-navy dark:text-cozy-gold font-semibold hover:underline">Lihat Semua</Link>
         </div>
         {/* Desktop */}
         <div className="hidden md:block">
           <table className="w-full">
-            <thead><tr className="border-b border-cozy-border bg-cozy-gray">
+            <thead><tr className="border-b border-cozy-border dark:border-[#2a2a2e] bg-cozy-gray dark:bg-[#1c1c1f]">
               <th className="text-left px-5 py-2.5 text-[11px] font-semibold text-cozy-muted uppercase">Produk</th>
               <th className="text-left px-5 py-2.5 text-[11px] font-semibold text-cozy-muted uppercase">Kategori</th>
               <th className="text-left px-5 py-2.5 text-[11px] font-semibold text-cozy-muted uppercase">Stok</th>
@@ -72,23 +72,23 @@ export default function Dashboard() {
               <th className="text-left px-5 py-2.5 text-[11px] font-semibold text-cozy-muted uppercase">Status</th>
             </tr></thead>
             <tbody>{recent.map(p => (
-              <tr key={p.id} className="border-b border-cozy-border/50 hover:bg-cozy-gray/50 transition">
-                <td className="px-5 py-3"><div className="flex items-center gap-2.5"><div className="w-8 h-8 rounded-xl bg-cozy-goldLight flex items-center justify-center text-[11px] font-bold text-cozy-navy">{p.name.substring(0,2).toUpperCase()}</div><span className="text-sm font-medium text-cozy-text">{p.name}</span></div></td>
-                <td className="px-5 py-3 text-sm text-cozy-subtle">{p.category}</td>
-                <td className="px-5 py-3 text-sm font-semibold text-cozy-text">{p.stock}</td>
-                <td className="px-5 py-3 text-sm text-cozy-subtle">{formatRp(p.price)}</td>
+              <tr key={p.id} className="border-b border-cozy-border/50 dark:border-[#2a2a2e]/50 hover:bg-cozy-gray/50 dark:hover:bg-[#1c1c1f]/50 transition">
+                <td className="px-5 py-3"><div className="flex items-center gap-2.5"><div className="w-8 h-8 rounded-xl bg-cozy-goldLight dark:bg-cozy-gold/20 flex items-center justify-center text-[11px] font-bold text-cozy-navy dark:text-cozy-gold">{p.name.substring(0,2).toUpperCase()}</div><span className="text-sm font-medium text-cozy-text dark:text-[#fafafa]">{p.name}</span></div></td>
+                <td className="px-5 py-3 text-sm text-cozy-subtle dark:text-[#9ca3af]">{p.category}</td>
+                <td className="px-5 py-3 text-sm font-semibold text-cozy-text dark:text-[#fafafa]">{p.stock}</td>
+                <td className="px-5 py-3 text-sm text-cozy-subtle dark:text-[#9ca3af]">{formatRp(p.price)}</td>
                 <td className="px-5 py-3"><StatusBadge product={p} /></td>
               </tr>
             ))}</tbody>
           </table>
         </div>
         {/* Mobile */}
-        <div className="md:hidden divide-y divide-cozy-border/50">
+        <div className="md:hidden divide-y divide-cozy-border/50 dark:divide-[#2a2a2e]/50">
           {recent.map(p => (
             <div key={p.id} className="p-4 flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-cozy-goldLight flex items-center justify-center text-[11px] font-bold text-cozy-navy shrink-0">{p.name.substring(0,2).toUpperCase()}</div>
-              <div className="flex-1 min-w-0"><p className="text-sm font-medium text-cozy-text truncate">{p.name}</p><p className="text-[11px] text-cozy-muted">{p.category} · Stok: {p.stock}</p></div>
-              <div className="text-right shrink-0"><p className="text-sm font-semibold text-cozy-text">{formatRp(p.price)}</p><StatusBadge product={p} /></div>
+              <div className="w-10 h-10 rounded-xl bg-cozy-goldLight dark:bg-cozy-gold/20 flex items-center justify-center text-[11px] font-bold text-cozy-navy dark:text-cozy-gold shrink-0">{p.name.substring(0,2).toUpperCase()}</div>
+              <div className="flex-1 min-w-0"><p className="text-sm font-medium text-cozy-text dark:text-[#fafafa] truncate">{p.name}</p><p className="text-[11px] text-cozy-muted">{p.category} · Stok: {p.stock}</p></div>
+              <div className="text-right shrink-0"><p className="text-sm font-semibold text-cozy-text dark:text-[#fafafa]">{formatRp(p.price)}</p><StatusBadge product={p} /></div>
             </div>
           ))}
         </div>

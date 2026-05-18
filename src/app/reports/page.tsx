@@ -37,8 +37,8 @@ export default function ReportsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl md:text-3xl font-bold">Laporan</h1>
-        <p className="text-slate-500 text-sm mt-1">Ringkasan inventory kamu</p>
+        <h1 className="text-2xl md:text-3xl font-bold text-cozy-text dark:text-[#fafafa]">Laporan</h1>
+        <p className="text-cozy-muted text-sm mt-1">Ringkasan inventory kamu</p>
       </div>
 
       {/* Summary Cards */}
@@ -52,8 +52,8 @@ export default function ReportsPage() {
       {/* Category Breakdown */}
       <div className="glass-card overflow-hidden">
         <div className="p-5 border-b border-white/5">
-          <h2 className="font-semibold text-white">Nilai Per Kategori</h2>
-          <p className="text-xs text-slate-500 mt-1">Distribusi nilai inventory berdasarkan kategori</p>
+          <h2 className="font-semibold text-cozy-text dark:text-[#fafafa]">Nilai Per Kategori</h2>
+          <p className="text-xs text-cozy-muted mt-1">Distribusi nilai inventory berdasarkan kategori</p>
         </div>
         <div className="p-5 space-y-4">
           {topCategory.map(cat => {
@@ -63,15 +63,15 @@ export default function ReportsPage() {
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-3">
                     <div className="w-3 h-3 rounded-full" style={{ background: cat.color }} />
-                    <span className="text-sm font-medium text-white">{cat.name}</span>
-                    <span className="text-xs text-slate-500">{cat.count} produk</span>
+                    <span className="text-sm font-medium text-cozy-text dark:text-[#fafafa]">{cat.name}</span>
+                    <span className="text-xs text-cozy-muted">{cat.count} produk</span>
                   </div>
                   <div className="text-right">
-                    <span className="text-sm font-semibold text-white">{formatRp(cat.value)}</span>
-                    <span className="text-xs text-slate-500 ml-2">({pct.toFixed(1)}%)</span>
+                    <span className="text-sm font-semibold text-cozy-text dark:text-[#fafafa]">{formatRp(cat.value)}</span>
+                    <span className="text-xs text-cozy-muted ml-2">({pct.toFixed(1)}%)</span>
                   </div>
                 </div>
-                <div className="h-2 rounded-full bg-slate-800 overflow-hidden">
+                <div className="h-2 rounded-full bg-cozy-border dark:bg-[#2a2a2e] overflow-hidden">
                   <div 
                     className="h-full rounded-full transition-all duration-700 ease-out"
                     style={{ width: `${pct}%`, background: cat.color }}
@@ -97,8 +97,8 @@ export default function ReportsPage() {
               </svg>
             </div>
             <div>
-              <h3 className="font-semibold text-white text-sm">Stok Rendah</h3>
-              <p className="text-xs text-slate-500">{lowStock.length} produk perlu restock</p>
+              <h3 className="font-semibold text-cozy-text dark:text-[#fafafa] text-sm">Stok Rendah</h3>
+              <p className="text-xs text-cozy-muted">{lowStock.length} produk perlu restock</p>
             </div>
           </div>
           <div className="divide-y divide-white/[0.03]">
@@ -109,13 +109,13 @@ export default function ReportsPage() {
                     {p.name.substring(0, 2).toUpperCase()}
                   </div>
                   <div>
-                    <p className="text-sm text-white font-medium">{p.name}</p>
-                    <p className="text-[11px] text-slate-500">{p.category}</p>
+                    <p className="text-sm text-cozy-text dark:text-[#fafafa] font-medium">{p.name}</p>
+                    <p className="text-[11px] text-cozy-muted">{p.category}</p>
                   </div>
                 </div>
                 <div className="text-right">
                   <p className="text-sm font-semibold text-amber-400">{p.stock}</p>
-                  <p className="text-[10px] text-slate-500">min: {p.minStock}</p>
+                  <p className="text-[10px] text-cozy-muted">min: {p.minStock}</p>
                 </div>
               </div>
             ))}
@@ -132,8 +132,8 @@ export default function ReportsPage() {
               </svg>
             </div>
             <div>
-              <h3 className="font-semibold text-white text-sm">Stok Habis</h3>
-              <p className="text-xs text-slate-500">{outStock.length} produk habis</p>
+              <h3 className="font-semibold text-cozy-text dark:text-[#fafafa] text-sm">Stok Habis</h3>
+              <p className="text-xs text-cozy-muted">{outStock.length} produk habis</p>
             </div>
           </div>
           <div className="divide-y divide-white/[0.03]">
@@ -144,14 +144,14 @@ export default function ReportsPage() {
                     {p.name.substring(0, 2).toUpperCase()}
                   </div>
                   <div>
-                    <p className="text-sm text-white font-medium">{p.name}</p>
-                    <p className="text-[11px] text-slate-500">{p.category}</p>
+                    <p className="text-sm text-cozy-text dark:text-[#fafafa] font-medium">{p.name}</p>
+                    <p className="text-[11px] text-cozy-muted">{p.category}</p>
                   </div>
                 </div>
                 <span className="badge badge-danger">Habis</span>
               </div>
             ))}
-            {outStock.length === 0 && <p className="px-5 py-6 text-center text-slate-500 text-sm">Tidak ada produk habis</p>}
+            {outStock.length === 0 && <p className="px-5 py-6 text-center text-cozy-muted text-sm">Tidak ada produk habis</p>}
           </div>
         </div>
       </div>
@@ -173,8 +173,8 @@ function ReportStat({ label, value, icon, color }: { label: string, value: strin
           {icon}
         </div>
         <div className="min-w-0">
-          <p className="text-lg font-bold text-white truncate">{value}</p>
-          <p className="text-[11px] text-slate-500">{label}</p>
+          <p className="text-lg font-bold text-cozy-text dark:text-[#fafafa] truncate">{value}</p>
+          <p className="text-[11px] text-cozy-muted">{label}</p>
         </div>
       </div>
     </div>

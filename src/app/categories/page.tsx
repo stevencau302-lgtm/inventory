@@ -51,8 +51,8 @@ export default function CategoriesPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold">Kategori</h1>
-          <p className="text-slate-500 text-sm mt-1">{categories.length} kategori tersedia</p>
+          <h1 className="text-2xl md:text-3xl font-bold text-cozy-text dark:text-[#fafafa]">Kategori</h1>
+          <p className="text-cozy-muted text-sm mt-1">{categories.length} kategori tersedia</p>
         </div>
         <button onClick={() => setModalOpen(true)} className="btn-primary">
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
@@ -84,11 +84,11 @@ export default function CategoriesPage() {
                   </svg>
                 </button>
               </div>
-              <h3 className="text-white font-semibold mt-4">{cat.name}</h3>
-              <p className="text-sm text-slate-500 mt-1">{count} produk</p>
+              <h3 className="text-cozy-text dark:text-[#fafafa] font-semibold mt-4">{cat.name}</h3>
+              <p className="text-sm text-cozy-muted mt-1">{count} produk</p>
               
               {/* Mini progress bar */}
-              <div className="mt-4 h-1.5 rounded-full bg-slate-700/50 overflow-hidden">
+              <div className="mt-4 h-1.5 rounded-full bg-cozy-border dark:bg-[#2a2a2e] overflow-hidden">
                 <div 
                   className="h-full rounded-full transition-all duration-500"
                   style={{ 

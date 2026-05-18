@@ -76,7 +76,7 @@ export default function SettingsPage() {
 
       {/* Data */}
       <div className="glass-card overflow-hidden">
-        <div className="p-5 border-b border-white/5">
+        <div className="p-5 border-b border-cozy-border dark:border-[#2a2a2e]">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-lg bg-emerald-500/15 flex items-center justify-center">
               <svg className="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
@@ -84,27 +84,27 @@ export default function SettingsPage() {
               </svg>
             </div>
             <div>
-              <h2 className="font-semibold text-white">Data</h2>
-              <p className="text-xs text-slate-500">{productCount} produk &middot; {catCount} kategori</p>
+              <h2 className="font-semibold text-cozy-text dark:text-[#fafafa]">Data</h2>
+              <p className="text-xs text-cozy-muted">{productCount} produk &middot; {catCount} kategori</p>
             </div>
           </div>
         </div>
-        <div className="divide-y divide-white/[0.03]">
+        <div className="divide-y divide-cozy-border dark:divide-[#2a2a2e]">
           <div className="p-5 flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-white">Reset Semua Data</p>
-              <p className="text-xs text-slate-500 mt-0.5">Hapus semua produk dan kategori</p>
+              <p className="text-sm font-medium text-cozy-text dark:text-[#fafafa]">Reset Semua Data</p>
+              <p className="text-xs text-cozy-muted mt-0.5">Hapus semua produk dan kategori</p>
             </div>
-            <button onClick={handleReset} className="px-3.5 py-1.5 rounded-lg bg-red-500/15 text-red-400 text-xs font-semibold hover:bg-red-500 hover:text-white transition">
+            <button onClick={handleReset} className="px-3.5 py-1.5 rounded-lg bg-red-500/15 text-red-500 dark:text-red-400 text-xs font-semibold hover:bg-red-500 hover:text-white transition">
               Reset
             </button>
           </div>
           <div className="p-5 flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-white">Load Data Contoh</p>
-              <p className="text-xs text-slate-500 mt-0.5">Isi dengan 15 produk dan 6 kategori contoh</p>
+              <p className="text-sm font-medium text-cozy-text dark:text-[#fafafa]">Load Data Contoh</p>
+              <p className="text-xs text-cozy-muted mt-0.5">Isi dengan 15 produk dan 6 kategori contoh</p>
             </div>
-            <button onClick={handleLoadSample} className="px-3.5 py-1.5 rounded-lg bg-brand-500/15 text-brand-400 text-xs font-semibold hover:bg-brand-500 hover:text-white transition">
+            <button onClick={handleLoadSample} className="px-3.5 py-1.5 rounded-lg bg-cozy-navy/15 text-cozy-navy dark:text-cozy-gold text-xs font-semibold hover:bg-cozy-navy hover:text-white transition">
               Load
             </button>
           </div>
@@ -119,10 +119,10 @@ export default function SettingsPage() {
               <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
             </svg>
           </div>
-          <h2 className="font-semibold text-white">Tentang</h2>
+          <h2 className="font-semibold text-cozy-text dark:text-[#fafafa]">Tentang</h2>
         </div>
-        <div className="space-y-2 text-sm text-slate-400">
-          <p><span className="text-white font-medium">InventoryPro</span> v1.0.0</p>
+        <div className="space-y-2 text-sm text-cozy-subtle dark:text-[#9ca3af]">
+          <p><span className="text-cozy-text dark:text-[#fafafa] font-medium">InventoryPro</span> v1.0.0</p>
           <p>Built with Next.js 14, Tailwind CSS, dan TypeScript</p>
           <p>Data disimpan di localStorage browser</p>
         </div>
