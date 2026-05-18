@@ -1,13 +1,20 @@
 'use client'
 
 import './globals.css'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Sidebar from '@/components/Sidebar'
 import BottomNav from '@/components/BottomNav'
 import { ToastProvider } from '@/components/Toast'
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
+
+  useEffect(() => {
+    const saved = localStorage.getItem('inv_theme')
+    if (saved === 'dark') {
+      document.documentElement.classList.add('dark')
+    }
+  }, [])
 
   return (
     <html lang="id">
@@ -23,7 +30,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <div className="flex h-screen overflow-hidden">
             <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
             <main className="flex-1 flex flex-col overflow-hidden">
-              <header className="h-14 bg-cozy-surface border-b border-cozy-border flex items-center justify-between px-4 md:px-6 shrink-0">
+              <header className="h-14 bg-cozy-surface dark:bg-[#111113] border-b border-cozy-border dark:border-[#2a2a2e] flex items-center justify-between px-4 md:px-6 shrink-0">
                 <div className="flex items-center gap-3">
                   <button onClick={() => setSidebarOpen(true)} className="lg:hidden w-9 h-9 rounded-xl bg-cozy-gray border border-cozy-border flex items-center justify-center text-cozy-text">
                     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" /></svg>

@@ -13,7 +13,7 @@ const navItems = [
 export default function BottomNav() {
   const pathname = usePathname()
   return (
-    <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-cozy-surface border-t border-cozy-border safe-area-bottom">
+    <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-cozy-surface dark:bg-[#111113] border-t border-cozy-border dark:border-[#2a2a2e] safe-area-bottom">
       <div className="flex items-center justify-around h-16 px-2 max-w-lg mx-auto">
         {navItems.map(item => {
           if (item.label === 'add') return (

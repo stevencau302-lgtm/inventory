@@ -12,7 +12,10 @@ export default function SettingsPage() {
   const { toast } = useToast()
 
   useEffect(() => {
-    setIsDark(document.documentElement.classList.contains('dark'))
+    const saved = localStorage.getItem('inv_theme')
+    const isDarkMode = saved === 'dark'
+    setIsDark(isDarkMode)
+    document.documentElement.classList.toggle('dark', isDarkMode)
     setProductCount(getProducts().length)
     setCatCount(getCategories().length)
     setMounted(true)
@@ -46,31 +49,24 @@ export default function SettingsPage() {
   return (
     <div className="space-y-6 max-w-2xl">
       <div>
-        <h1 className="text-2xl md:text-3xl font-bold">Pengaturan</h1>
-        <p className="text-slate-500 text-sm mt-1">Kelola preferensi aplikasi</p>
+        <h1 className="text-xl font-bold text-cozy-text dark:text-[#fafafa]">Pengaturan</h1>
+        <p className="text-sm text-cozy-muted mt-1">Kelola preferensi aplikasi</p>
       </div>
 
       {/* Appearance */}
-      <div className="glass-card overflow-hidden">
-        <div className="p-5 border-b border-white/5">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-lg bg-brand-500/15 flex items-center justify-center">
-              <svg className="w-4 h-4 text-brand-400" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M4.098 19.902a3.75 3.75 0 005.304 0l6.401-6.402M6.75 21A3.75 3.75 0 013 17.25V4.125C3 3.504 3.504 3 4.125 3h5.25c.621 0 1.125.504 1.125 1.125v4.072M6.75 21a3.75 3.75 0 003.75-3.75V8.197M6.75 21h13.125c.621 0 1.125-.504 1.125-1.125v-5.25c0-.621-.504-1.125-1.125-1.125h-4.072M10.5 8.197l2.88-2.88c.438-.439 1.15-.439 1.59 0l3.712 3.713c.44.44.44 1.152 0 1.59l-2.879 2.88M6.75 17.25h.008v.008H6.75v-.008z" />
-              </svg>
-            </div>
-            <h2 className="font-semibold text-white">Tampilan</h2>
-          </div>
+      <div className="cozy-card overflow-hidden">
+        <div className="p-5 border-b border-cozy-border dark:border-[#2a2a2e]">
+          <h2 className="font-semibold text-cozy-text dark:text-[#fafafa]">Tampilan</h2>
         </div>
-        <div className="divide-y divide-white/[0.03]">
+        <div className="divide-y divide-cozy-border dark:divide-[#2a2a2e]">
           <div className="p-5 flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-white">Mode Gelap</p>
-              <p className="text-xs text-slate-500 mt-0.5">Aktifkan tema gelap untuk kenyamanan mata</p>
+              <p className="text-sm font-medium text-cozy-text dark:text-[#fafafa]">Mode Gelap</p>
+              <p className="text-xs text-cozy-muted mt-0.5">Aktifkan tema gelap untuk kenyamanan mata</p>
             </div>
             <button 
               onClick={toggleDark}
-              className={`w-12 h-7 rounded-full relative transition-colors duration-300 ${isDark ? 'bg-brand-500' : 'bg-slate-600'}`}
+              className={`w-12 h-7 rounded-full relative transition-colors duration-300 ${isDark ? 'bg-cozy-gold' : 'bg-cozy-border'}`}
             >
               <span className={`absolute top-1 w-5 h-5 bg-white rounded-full shadow-md transition-all duration-300 ${isDark ? 'right-1' : 'left-1'}`} />
             </button>
