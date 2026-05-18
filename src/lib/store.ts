@@ -63,6 +63,25 @@ export function getStatusLabel(p: Product): string {
   return 'Habis'
 }
 
+export interface Transaction {
+  id: string
+  productId: string
+  productName: string
+  type: 'in' | 'out'
+  quantity: number
+  note: string
+  createdAt: string
+}
+
+export function getTransactions(): Transaction[] {
+  if (typeof window === 'undefined') return []
+  return JSON.parse(localStorage.getItem('inv_transactions') || '[]')
+}
+
+export function saveTransactions(transactions: Transaction[]) {
+  localStorage.setItem('inv_transactions', JSON.stringify(transactions))
+}
+
 export function loadSampleData() {
   const now = new Date().toISOString()
   const categories: Category[] = [
