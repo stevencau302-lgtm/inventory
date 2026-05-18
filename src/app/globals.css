@@ -21,8 +21,8 @@
   .dark .cozy-btn-ghost:hover { @apply bg-[#27272a]; }
   .dark .cozy-input { @apply bg-[#18181b] border-[#27272a] text-[#fafafa] placeholder-[#71717a]; }
   .dark .cozy-input:focus { @apply border-cozy-gold ring-2 ring-cozy-gold/20 bg-[#0a0a0b]; }
-  .dark .nav-link { @apply text-[#a1a1aa] hover:text-[#fafafa] hover:bg-[#18181b]; }
-  .dark .nav-link.active { @apply text-cozy-gold bg-[#18181b] border border-[#27272a]; }
+  .dark .nav-link { @apply text-[#d4d4d8] hover:text-[#fafafa] hover:bg-[#27272a]; }
+  .dark .nav-link.active { @apply text-cozy-gold bg-[#27272a] border border-[#3f3f46]; }
   .dark .glass-card { @apply bg-[#18181b] border-[#27272a]; }
   .dark .stat-card { @apply bg-[#18181b] border-[#27272a]; }
   .dark .text-cozy-text { color: #fafafa; }
