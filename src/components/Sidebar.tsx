@@ -17,14 +17,14 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean, onClose:
     <>
       {isOpen && <div className="fixed inset-0 bg-black/20 z-40 lg:hidden" onClick={onClose} />}
       <aside className={`fixed lg:static inset-y-0 left-0 z-50 w-[240px] bg-cozy-surface dark:bg-[#111113] border-r border-cozy-border dark:border-[#2a2a2e] flex flex-col transition-transform duration-300 lg:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-        <div className="p-5 border-b border-cozy-border">
+        <div className="p-5 border-b border-cozy-border dark:border-[#27272a]">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-2xl bg-cozy-navy flex items-center justify-center shadow-soft">
               <svg className="w-5 h-5 text-cozy-gold" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" /></svg>
             </div>
             <div>
-              <h1 className="text-base font-bold text-cozy-navy">InventoryPro</h1>
-              <p className="text-[11px] text-cozy-muted dark:text-[#6b7280]">Kelola stok mudah</p>
+              <h1 className="text-base font-bold text-cozy-navy dark:text-[#fafafa]">InventoryPro</h1>
+              <p className="text-[11px] text-cozy-muted dark:text-[#71717a]">Kelola stok mudah</p>
             </div>
           </div>
         </div>
@@ -36,10 +36,10 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean, onClose:
             </Link>
           ))}
         </nav>
-        <div className="p-4 border-t border-cozy-border">
+        <div className="p-4 border-t border-cozy-border dark:border-[#27272a]">
           <div className="flex items-center gap-3 px-2">
-            <div className="w-9 h-9 rounded-full bg-cozy-goldLight border-2 border-cozy-gold flex items-center justify-center text-sm font-bold text-cozy-navy">A</div>
-            <div><p className="text-sm font-semibold text-cozy-text">Admin</p><p className="text-[11px] text-cozy-muted">admin@inventory.pro</p></div>
+            <div className="w-9 h-9 rounded-full bg-cozy-goldLight dark:bg-cozy-gold/20 border-2 border-cozy-gold flex items-center justify-center text-sm font-bold text-cozy-navy dark:text-cozy-gold">A</div>
+            <div><p className="text-sm font-semibold text-cozy-text dark:text-[#fafafa]">Admin</p><p className="text-[11px] text-cozy-muted dark:text-[#71717a]">admin@inventory.pro</p></div>
           </div>
         </div>
       </aside>
