@@ -14,6 +14,8 @@
 
 @layer utilities {
   .dark .cozy-card { @apply bg-[#18181b] border-[#27272a]; box-shadow: none; }
+  .dark .cozy-card::before { background: radial-gradient(circle at top right, rgba(245,197,66,0.06), transparent 70%); }
+  .dark .cozy-card::after { background: radial-gradient(circle at bottom left, rgba(99,102,241,0.05), transparent 70%); }
   .dark .cozy-card:hover { @apply bg-[#1f1f23] border-[#3f3f46]; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
   .dark .cozy-btn-ghost { @apply bg-[#18181b] text-[#fafafa] border-[#27272a]; }
   .dark .cozy-btn-ghost:hover { @apply bg-[#27272a]; }
@@ -33,12 +35,33 @@
 
 @layer components {
   .cozy-card {
-    @apply rounded-xl bg-white border border-cozy-border transition-all duration-200 ease-out;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 1px 4px rgba(0,0,0,0.02);
+    @apply rounded-xl bg-white border border-cozy-border/80 transition-all duration-200 ease-out relative overflow-hidden;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 2px 6px rgba(0,0,0,0.02);
+  }
+  .cozy-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 80px;
+    height: 80px;
+    background: radial-gradient(circle at top right, rgba(99,102,241,0.04), transparent 70%);
+    pointer-events: none;
+  }
+  .cozy-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 60px;
+    height: 60px;
+    background: radial-gradient(circle at bottom left, rgba(245,197,66,0.04), transparent 70%);
+    pointer-events: none;
   }
   .cozy-card:hover {
     box-shadow: 0 2px 8px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
     transform: translateY(-1px);
+    border-color: rgba(99,102,241,0.15);
   }
   .cozy-btn {
     @apply inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold
@@ -85,7 +108,17 @@
   }
 
   .glass-card { @apply cozy-card; }
-  .stat-card { @apply cozy-card p-4; }
+  .stat-card { @apply cozy-card p-4 relative; }
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, rgba(99,102,241,0.5), rgba(245,197,66,0.3), transparent);
+    border-radius: 2px 2px 0 0;
+  }
   .form-input { @apply cozy-input; }
   .btn-primary { @apply cozy-btn-primary; }
   .btn-ghost { @apply cozy-btn-ghost; }
