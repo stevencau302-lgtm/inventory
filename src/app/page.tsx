@@ -20,79 +20,72 @@ export default function Dashboard() {
   const outStock = products.filter(p => p.stock === 0).length
   const totalValue = products.reduce((s, p) => s + p.price * p.stock, 0)
   const totalUnits = products.reduce((s, p) => s + p.stock, 0)
-  const recent = products.slice(0, 5)
+  const recent = products.slice(0, 4)
 
   return (
-    <div className="space-y-6 max-w-5xl">
-      {/* Welcome */}
-      <div className="cozy-card p-6 bg-cozy-navy text-white relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-32 h-32 rounded-full bg-cozy-gold/20 -translate-y-8 translate-x-8" />
+    <div className="space-y-4 md:space-y-5 max-w-5xl">
+      {/* Welcome - compact */}
+      <div className="cozy-card p-4 md:p-5 bg-cozy-navy !border-transparent text-white relative overflow-hidden">
+        <div className="absolute -top-6 -right-6 w-24 h-24 rounded-full bg-cozy-gold/10" />
         <div className="relative z-10">
-          <h1 className="text-xl font-bold">Halo, Admin! 👋</h1>
-          <p className="text-white/70 text-sm mt-1">Inventory kamu dalam kondisi baik hari ini.</p>
-          <div className="grid grid-cols-3 gap-3 mt-5">
-            <div className="bg-white/10 rounded-xl p-3 backdrop-blur-sm">
-              <p className="text-2xl font-bold text-cozy-gold">{totalUnits.toLocaleString()}</p>
-              <p className="text-white/60 text-[11px] mt-0.5">Total Unit</p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-lg font-bold">Halo, Admin! 👋</h1>
+              <p className="text-white/60 text-xs mt-0.5">Ringkasan hari ini</p>
             </div>
-            <div className="bg-white/10 rounded-xl p-3 backdrop-blur-sm">
-              <p className="text-2xl font-bold">{total}</p>
-              <p className="text-white/60 text-[11px] mt-0.5">Produk</p>
-            </div>
-            <div className="bg-white/10 rounded-xl p-3 backdrop-blur-sm">
-              <p className="text-2xl font-bold">{categories.length}</p>
-              <p className="text-white/60 text-[11px] mt-0.5">Kategori</p>
+            <div className="text-right">
+              <p className="text-xl font-bold text-cozy-gold">{totalUnits.toLocaleString()}</p>
+              <p className="text-white/50 text-[10px]">Total Unit</p>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        <div className="cozy-card p-4"><p className="text-[11px] text-cozy-muted font-medium uppercase">Stok Aman</p><p className="text-2xl font-bold text-emerald-600 mt-1">{inStock}</p></div>
-        <div className="cozy-card p-4"><p className="text-[11px] text-cozy-muted font-medium uppercase">Stok Rendah</p><p className="text-2xl font-bold text-amber-600 mt-1">{lowStock}</p></div>
-        <div className="cozy-card p-4"><p className="text-[11px] text-cozy-muted font-medium uppercase">Habis</p><p className="text-2xl font-bold text-red-500 mt-1">{outStock}</p></div>
-        <div className="cozy-card p-4"><p className="text-[11px] text-cozy-muted font-medium uppercase">Total Nilai</p><p className="text-lg font-bold text-cozy-navy dark:text-cozy-gold mt-1 truncate">{formatRp(totalValue)}</p></div>
+      {/* Stats - 2x2 grid, very compact */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5">
+        <StatCard label="Stok Aman" value={inStock} color="text-emerald-500 dark:text-emerald-400" />
+        <StatCard label="Stok Rendah" value={lowStock} color="text-amber-500 dark:text-amber-400" />
+        <StatCard label="Habis" value={outStock} color="text-red-500 dark:text-red-400" />
+        <StatCard label="Produk" value={total} color="text-cozy-navy dark:text-cozy-gold" />
       </div>
 
-      {/* Recent */}
+      {/* Total value bar */}
+      <div className="cozy-card p-3 flex items-center justify-between">
+        <span className="text-xs font-medium text-cozy-subtle dark:text-[#a1a1aa]">Total Nilai Inventory</span>
+        <span className="text-sm font-bold text-cozy-navy dark:text-cozy-gold">{formatRp(totalValue)}</span>
+      </div>
+
+      {/* Recent - compact list */}
       <div className="cozy-card overflow-hidden">
-        <div className="flex items-center justify-between px-5 py-3 border-b border-cozy-border dark:border-[#2a2a2e]">
-          <h2 className="text-sm font-semibold text-cozy-text dark:text-[#fafafa]">Produk Terbaru</h2>
-          <Link href="/products" className="text-[12px] text-cozy-navy dark:text-cozy-gold font-semibold hover:underline">Lihat Semua</Link>
+        <div className="flex items-center justify-between px-4 py-2.5 border-b border-cozy-border dark:border-[#27272a]">
+          <h2 className="text-xs font-semibold text-cozy-text dark:text-[#fafafa] uppercase tracking-wide">Terbaru</h2>
+          <Link href="/products" className="text-[11px] text-cozy-navy dark:text-cozy-gold font-semibold">Semua →</Link>
         </div>
-        {/* Desktop */}
-        <div className="hidden md:block">
-          <table className="w-full">
-            <thead><tr className="border-b border-cozy-border dark:border-[#2a2a2e] bg-cozy-gray dark:bg-[#1c1c1f]">
-              <th className="text-left px-5 py-2.5 text-[11px] font-semibold text-cozy-muted uppercase">Produk</th>
-              <th className="text-left px-5 py-2.5 text-[11px] font-semibold text-cozy-muted uppercase">Kategori</th>
-              <th className="text-left px-5 py-2.5 text-[11px] font-semibold text-cozy-muted uppercase">Stok</th>
-              <th className="text-left px-5 py-2.5 text-[11px] font-semibold text-cozy-muted uppercase">Harga</th>
-              <th className="text-left px-5 py-2.5 text-[11px] font-semibold text-cozy-muted uppercase">Status</th>
-            </tr></thead>
-            <tbody>{recent.map(p => (
-              <tr key={p.id} className="border-b border-cozy-border/50 dark:border-[#2a2a2e]/50 hover:bg-cozy-gray/50 dark:hover:bg-[#1c1c1f]/50 transition">
-                <td className="px-5 py-3"><div className="flex items-center gap-2.5"><div className="w-8 h-8 rounded-xl bg-cozy-goldLight dark:bg-cozy-gold/20 flex items-center justify-center text-[11px] font-bold text-cozy-navy dark:text-cozy-gold">{p.name.substring(0,2).toUpperCase()}</div><span className="text-sm font-medium text-cozy-text dark:text-[#fafafa]">{p.name}</span></div></td>
-                <td className="px-5 py-3 text-sm text-cozy-subtle dark:text-[#9ca3af]">{p.category}</td>
-                <td className="px-5 py-3 text-sm font-semibold text-cozy-text dark:text-[#fafafa]">{p.stock}</td>
-                <td className="px-5 py-3 text-sm text-cozy-subtle dark:text-[#9ca3af]">{formatRp(p.price)}</td>
-                <td className="px-5 py-3"><StatusBadge product={p} /></td>
-              </tr>
-            ))}</tbody>
-          </table>
-        </div>
-        {/* Mobile */}
-        <div className="md:hidden divide-y divide-cozy-border/50 dark:divide-[#2a2a2e]/50">
+        <div className="divide-y divide-cozy-border/50 dark:divide-[#27272a]/50">
           {recent.map(p => (
-            <div key={p.id} className="p-4 flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-cozy-goldLight dark:bg-cozy-gold/20 flex items-center justify-center text-[11px] font-bold text-cozy-navy dark:text-cozy-gold shrink-0">{p.name.substring(0,2).toUpperCase()}</div>
-              <div className="flex-1 min-w-0"><p className="text-sm font-medium text-cozy-text dark:text-[#fafafa] truncate">{p.name}</p><p className="text-[11px] text-cozy-muted">{p.category} · Stok: {p.stock}</p></div>
-              <div className="text-right shrink-0"><p className="text-sm font-semibold text-cozy-text dark:text-[#fafafa]">{formatRp(p.price)}</p><StatusBadge product={p} /></div>
+            <div key={p.id} className="px-4 py-2.5 flex items-center gap-3">
+              <div className="w-8 h-8 rounded-lg bg-cozy-gray dark:bg-[#27272a] flex items-center justify-center text-[10px] font-bold text-cozy-navy dark:text-cozy-gold shrink-0">{p.name.substring(0,2).toUpperCase()}</div>
+              <div className="flex-1 min-w-0">
+                <p className="text-[13px] font-medium text-cozy-text dark:text-[#fafafa] truncate">{p.name}</p>
+                <p className="text-[10px] text-cozy-muted dark:text-[#71717a]">{p.category}</p>
+              </div>
+              <div className="text-right shrink-0">
+                <p className="text-[12px] font-semibold text-cozy-text dark:text-[#e4e4e7]">{formatRp(p.price)}</p>
+                <StatusBadge product={p} />
+              </div>
             </div>
           ))}
         </div>
       </div>
+    </div>
+  )
+}
+
+function StatCard({ label, value, color }: { label: string, value: number, color: string }) {
+  return (
+    <div className="cozy-card p-3">
+      <p className="text-[10px] text-cozy-muted dark:text-[#71717a] font-medium uppercase tracking-wide">{label}</p>
+      <p className={`text-xl font-bold mt-0.5 ${color}`}>{value}</p>
     </div>
   )
 }
