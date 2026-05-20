@@ -23,7 +23,7 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean, onClose:
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-indigo-600 flex items-center justify-center shrink-0">
             <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" /></svg>
           </div>
-          <span className="ml-3 text-sm font-bold text-white whitespace-nowrap opacity-0 group-hover/sidebar:opacity-100 transition-opacity duration-200">InventoryPro</span>
+          <span className={`ml-3 text-sm font-bold text-white whitespace-nowrap transition-opacity duration-200 ${isOpen ? 'opacity-100' : 'opacity-0 group-hover/sidebar:opacity-100'}`}>InventoryPro</span>
         </div>
 
         {/* Nav */}
@@ -38,7 +38,7 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean, onClose:
                     : 'text-zinc-500 hover:text-zinc-200 hover:bg-white/[0.04] border border-transparent'
                 }`}>
                 <svg className="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d={item.icon} /></svg>
-                <span className="text-[13px] font-medium whitespace-nowrap opacity-0 group-hover/sidebar:opacity-100 transition-opacity duration-200">{item.label}</span>
+                <span className={`text-[13px] font-medium whitespace-nowrap transition-opacity duration-200 ${isOpen ? 'opacity-100' : 'opacity-0 group-hover/sidebar:opacity-100'}`}>{item.label}</span>
               </Link>
             )
           })}
@@ -48,7 +48,7 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean, onClose:
         <div className="p-3 border-t border-white/[0.06] overflow-hidden">
           <div className="flex items-center gap-3 px-1">
             <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-400 to-indigo-600 flex items-center justify-center text-[11px] font-bold text-white shrink-0">A</div>
-            <div className="opacity-0 group-hover/sidebar:opacity-100 transition-opacity duration-200 whitespace-nowrap">
+            <div className={`whitespace-nowrap transition-opacity duration-200 ${isOpen ? 'opacity-100' : 'opacity-0 group-hover/sidebar:opacity-100'}`}>
               <p className="text-xs font-semibold text-white">Admin</p>
               <p className="text-[10px] text-zinc-500">admin@inventory.pro</p>
             </div>
