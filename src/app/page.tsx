@@ -45,9 +45,9 @@ export default function Dashboard() {
   return (
     <div className="space-y-6">
       {/* Gradient Header */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#ea580c] via-[#78350f] to-[#1c1917] px-6 pt-8 pb-20">
-        <div className="absolute top-[-40%] right-[-8%] w-[400px] h-[400px] rounded-full bg-orange-500/[0.12] pointer-events-none" />
-        <div className="absolute bottom-[-30%] left-[10%] w-[250px] h-[250px] rounded-full bg-yellow-500/[0.06] pointer-events-none" />
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#4f46e5] via-[#312e81] to-[#0f0a2e] px-6 pt-8 pb-20">
+        <div className="absolute top-[-40%] right-[-8%] w-[400px] h-[400px] rounded-full bg-violet-500/[0.12] pointer-events-none" />
+        <div className="absolute bottom-[-30%] left-[10%] w-[250px] h-[250px] rounded-full bg-indigo-500/[0.08] pointer-events-none" />
         <div className="relative z-10 mb-6">
           <h1 className="text-2xl font-bold text-white">Dashboard Overview</h1>
           <p className="text-white/60 text-sm mt-1">Pantau performa inventory Anda secara real-time</p>
