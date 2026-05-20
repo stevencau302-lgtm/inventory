@@ -167,37 +167,46 @@ export default function TransactionsPage() {
         </button>
       </div>
 
-      {/* Transaction History Table */}
-      <div className="rounded-xl overflow-hidden border border-white/[0.08] bg-[#161616]">
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-white/5">
-                <th className="text-left px-5 py-3 text-[11px] font-semibold text-zinc-500 uppercase tracking-wider">Produk</th>
-                <th className="text-center px-3 py-3 text-[11px] font-semibold text-zinc-500 uppercase tracking-wider">Tipe</th>
-                <th className="text-center px-3 py-3 text-[11px] font-semibold text-zinc-500 uppercase tracking-wider">Jumlah</th>
-                <th className="text-left px-3 py-3 text-[11px] font-semibold text-zinc-500 uppercase tracking-wider">Tanggal</th>
-                <th className="text-left px-3 py-3 text-[11px] font-semibold text-zinc-500 uppercase tracking-wider">Catatan</th>
+      {/* Transaction History Table - Spreadsheet Style */}
+      <div className="overflow-hidden border border-white/10">
+        <div className="overflow-x-auto max-h-[500px]">
+          <table className="w-full border-collapse">
+            <thead className="sticky top-0 z-10">
+              <tr className="bg-zinc-800">
+                <th className="border border-white/10 w-[48px] px-2 py-2.5 text-center text-[11px] font-bold text-zinc-400 uppercase tracking-wide">No</th>
+                <th className="border border-white/10 px-3 py-2.5 text-left text-[11px] font-bold text-zinc-400 uppercase tracking-wide">Produk</th>
+                <th className="border border-white/10 w-[100px] px-2 py-2.5 text-center text-[11px] font-bold text-zinc-400 uppercase tracking-wide">Tipe</th>
+                <th className="border border-white/10 w-[80px] px-2 py-2.5 text-center text-[11px] font-bold text-zinc-400 uppercase tracking-wide">Jumlah</th>
+                <th className="border border-white/10 w-[180px] px-3 py-2.5 text-left text-[11px] font-bold text-zinc-400 uppercase tracking-wide">Tanggal</th>
+                <th className="border border-white/10 px-3 py-2.5 text-left text-[11px] font-bold text-zinc-400 uppercase tracking-wide">Catatan</th>
               </tr>
             </thead>
             <tbody>
-              {filteredTx.slice(0, 20).map(tx => (
-                <tr key={tx.id} className="border-b border-white/[0.03] hover:bg-white/[0.02] transition">
-                  <td className="px-5 py-3 text-sm font-medium text-white">{tx.productName}</td>
-                  <td className="px-3 py-3 text-center">
+              {filteredTx.slice(0, 20).map((tx, idx) => (
+                <tr key={tx.id} className={`hover:bg-indigo-900/20 transition ${idx % 2 === 1 ? 'bg-zinc-900/40' : 'bg-zinc-950'}`}>
+                  <td className="border border-white/10 px-2 py-2 text-center text-xs text-zinc-500">{idx + 1}</td>
+                  <td className="border border-white/10 px-3 py-2 text-sm font-medium text-white">{tx.productName}</td>
+                  <td className="border border-white/10 px-2 py-2 text-center">
                     <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold whitespace-nowrap ${tx.type === 'in' ? 'bg-emerald-500/15 text-emerald-400' : 'bg-red-500/15 text-red-400'}`}>
                       {tx.type === 'in' ? 'Masuk' : 'Keluar'}
                     </span>
                   </td>
-                  <td className="px-3 py-3 text-center text-sm font-semibold text-zinc-200">{tx.type === 'in' ? '+' : '-'}{tx.quantity}</td>
-                  <td className="px-3 py-3 text-xs text-zinc-500">{new Date(tx.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</td>
-                  <td className="px-3 py-3 text-xs text-zinc-500">{tx.note || '-'}</td>
+                  <td className="border border-white/10 px-2 py-2 text-center font-mono text-sm font-semibold text-zinc-200">{tx.type === 'in' ? '+' : '-'}{tx.quantity}</td>
+                  <td className="border border-white/10 px-3 py-2 text-xs text-zinc-500">{new Date(tx.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</td>
+                  <td className="border border-white/10 px-3 py-2 text-xs text-zinc-500">{tx.note || '-'}</td>
                 </tr>
               ))}
               {filteredTx.length === 0 && (
-                <tr><td colSpan={5} className="text-center py-12 text-zinc-500">Belum ada transaksi</td></tr>
+                <tr><td colSpan={6} className="border border-white/10 text-center py-12 text-zinc-500">Belum ada transaksi</td></tr>
               )}
             </tbody>
+            <tfoot>
+              <tr className="bg-zinc-800 border-t-2 border-white/20">
+                <td colSpan={3} className="border border-white/10 px-3 py-2.5 text-xs font-medium text-zinc-300">Total: {filteredTx.length} transaksi</td>
+                <td className="border border-white/10 px-2 py-2.5 text-center font-mono text-xs font-medium text-zinc-300">{filteredTx.reduce((s, t) => s + (t.type === 'in' ? t.quantity : -t.quantity), 0)}</td>
+                <td colSpan={2} className="border border-white/10 px-3 py-2.5 text-xs text-zinc-500">Net movement</td>
+              </tr>
+            </tfoot>
           </table>
         </div>
       </div>
