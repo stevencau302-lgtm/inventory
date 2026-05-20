@@ -211,13 +211,12 @@ export default function TransactionsPage() {
         </div>
       </div>
 
-      {/* Modal - Single Entry Form */}
+      {/* Full Page Form - Single Entry */}
       {modalOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4" onClick={() => setModalOpen(false)}>
-          <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
-          <div className="relative w-full max-w-lg rounded-2xl overflow-hidden border border-white/10 bg-[#111] shadow-2xl" onClick={e => e.stopPropagation()}>
+        <div className="fixed inset-0 z-[100] overflow-y-auto bg-[#09090B]">
+          <div className="min-h-full w-full max-w-2xl mx-auto px-4 py-6">
             {/* Modal Header */}
-            <div className="bg-gradient-to-r from-emerald-900 to-emerald-800 px-6 py-5 flex items-center justify-between">
+            <div className="bg-gradient-to-r from-emerald-900 to-emerald-800 px-6 py-5 flex items-center justify-between rounded-2xl mb-6">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center">
                   <svg className="w-5 h-5 text-emerald-300" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" /></svg>
@@ -232,7 +231,7 @@ export default function TransactionsPage() {
               </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="p-6 space-y-5">
+            <form onSubmit={handleSubmit} className="space-y-5 rounded-2xl border border-white/[0.08] bg-[#161616] p-6">
               {/* Tipe Transaksi */}
               <div>
                 <div className="flex items-center gap-2 mb-3">
@@ -269,9 +268,9 @@ export default function TransactionsPage() {
                   <svg className="w-4 h-4 text-indigo-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" /></svg>
                   <p className="text-xs font-semibold text-indigo-300">Detail Produk *</p>
                 </div>
-                <select value={selectedProduct} onChange={e => setSelectedProduct(e.target.value)} required className="form-input text-sm w-full">
-                  <option value="">Pilih Produk...</option>
-                  {products.map(p => <option key={p.id} value={p.id}>{p.name} (Stok: {p.stock})</option>)}
+                <select value={selectedProduct} onChange={e => setSelectedProduct(e.target.value)} required className="form-input text-sm w-full" style={{ color: '#fafafa', background: '#18181b' }}>
+                  <option value="" style={{ color: '#71717a' }}>Pilih Produk...</option>
+                  {products.map(p => <option key={p.id} value={p.id} style={{ color: '#fafafa', background: '#18181b' }}>{p.name} (Stok: {p.stock})</option>)}
                 </select>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
