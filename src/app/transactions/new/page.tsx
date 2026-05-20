@@ -122,8 +122,8 @@ export default function NewTransactionPage() {
   return (
     <div className="min-h-screen bg-[#09090B]">
       {/* Header */}
-      <div className="border-b border-white/[0.07] bg-[#09090B] sticky top-0 z-30">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4">
+      <div className="border-b border-white/[0.07]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
           <button
             onClick={() => router.push('/transactions')}
             className="flex items-center gap-1.5 text-sm text-zinc-400 hover:text-white transition mb-3"
@@ -366,7 +366,7 @@ export default function NewTransactionPage() {
 
             {/* Right Column - Summary */}
             <div className="hidden md:block md:col-span-5">
-              <div className="sticky top-[140px]">
+              <div className="sticky top-6">
                 <div className="bg-zinc-900 border border-white/[0.07] rounded-2xl p-6">
                   {/* Summary Header */}
                   <div className="flex items-center gap-2 mb-4">
