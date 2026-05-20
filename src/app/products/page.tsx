@@ -11,6 +11,7 @@ export default function ProductsPage() {
   const [search, setSearch] = useState('')
   const [filterCat, setFilterCat] = useState('')
   const [filterStatus, setFilterStatus] = useState('')
+  const [sortBy, setSortBy] = useState('name-asc')
   const [modalOpen, setModalOpen] = useState(false)
   const [editProduct, setEditProduct] = useState<Product | null>(null)
   const [mounted, setMounted] = useState(false)
@@ -36,6 +37,16 @@ export default function ProductsPage() {
     const matchCat = !filterCat || p.category === filterCat
     const matchStatus = !filterStatus || getStatus(p) === filterStatus
     return matchSearch && matchCat && matchStatus
+  }).sort((a, b) => {
+    switch (sortBy) {
+      case 'name-asc': return a.name.localeCompare(b.name)
+      case 'name-desc': return b.name.localeCompare(a.name)
+      case 'stock-asc': return a.stock - b.stock
+      case 'stock-desc': return b.stock - a.stock
+      case 'price-asc': return a.price - b.price
+      case 'price-desc': return b.price - a.price
+      default: return 0
+    }
   })
 
   const handleSave = (product: Product) => {
@@ -70,18 +81,28 @@ export default function ProductsPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl md:text-3xl font-bold text-cozy-text dark:text-[#fafafa]">Produk</h1>
-          <p className="text-cozy-muted text-sm mt-1">{filtered.length} produk ditemukan</p>
+      {/* Hero Banner */}
+      <div className="rounded-2xl border border-white/10 bg-gradient-to-r from-indigo-950/60 to-zinc-900 p-6 lg:p-8">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-xl bg-indigo-500/20 flex items-center justify-center shrink-0">
+              <svg className="w-6 h-6 text-indigo-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" /></svg>
+            </div>
+            <div>
+              <h1 className="text-2xl lg:text-3xl font-bold text-white">Master Produk</h1>
+              <p className="text-zinc-400 text-sm mt-0.5">{products.length} produk terdaftar</p>
+            </div>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <button className="px-4 py-2 rounded-lg border border-white/20 text-zinc-300 text-sm font-medium hover:bg-white/5 transition">Bulk Entry</button>
+            <button className="px-4 py-2 rounded-lg border border-white/20 text-zinc-300 text-sm font-medium hover:bg-white/5 transition">Match SKU</button>
+            <button className="px-4 py-2 rounded-lg border border-white/20 text-zinc-300 text-sm font-medium hover:bg-white/5 transition">Import Excel</button>
+            <button onClick={() => { setEditProduct(null); setModalOpen(true) }} className="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium transition flex items-center gap-2">
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+              Tambah Produk
+            </button>
+          </div>
         </div>
-        <button onClick={() => { setEditProduct(null); setModalOpen(true) }} className="btn-primary">
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-          </svg>
-          Tambah Produk
-        </button>
       </div>
 
       {/* Filters */}
@@ -98,6 +119,14 @@ export default function ProductsPage() {
             className="form-input pl-10"
           />
         </div>
+        <select value={sortBy} onChange={e => setSortBy(e.target.value)} className="form-input w-full sm:w-auto" style={{ background: '#18181b', border: '1px solid rgba(255,255,255,0.1)' }}>
+          <option value="name-asc">Nama (A-Z)</option>
+          <option value="name-desc">Nama (Z-A)</option>
+          <option value="stock-asc">Stok (Rendah)</option>
+          <option value="stock-desc">Stok (Tinggi)</option>
+          <option value="price-asc">Harga (Murah)</option>
+          <option value="price-desc">Harga (Mahal)</option>
+        </select>
         <select value={filterCat} onChange={e => setFilterCat(e.target.value)} className="form-input w-full sm:w-auto">
           <option value="">Semua Kategori</option>
           {categories.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
