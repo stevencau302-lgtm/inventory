@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { Product, Transaction, getProducts, getTransactions, saveProducts, saveTransactions, formatRp, uid, loadSampleData } from '@/lib/store'
 import { useToast } from '@/components/Toast'
 
@@ -18,6 +18,9 @@ export default function TransactionsPage() {
   const [modalOpen, setModalOpen] = useState(false)
   const [tabFilter, setTabFilter] = useState<TabFilter>('all')
   const [search, setSearch] = useState('')
+  const [productSearch, setProductSearch] = useState('')
+  const [showProductDropdown, setShowProductDropdown] = useState(false)
+  const productDropdownRef = useRef<HTMLDivElement>(null)
   const { toast } = useToast()
 
   useEffect(() => {
@@ -28,7 +31,30 @@ export default function TransactionsPage() {
     setMounted(true)
   }, [])
 
+  // Close product dropdown on outside click
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      if (productDropdownRef.current && !productDropdownRef.current.contains(e.target as Node)) {
+        setShowProductDropdown(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
+  }, [])
+
   if (!mounted) return null
+
+  const filteredProducts = products.filter(p =>
+    p.name.toLowerCase().includes(productSearch.toLowerCase()) ||
+    p.category.toLowerCase().includes(productSearch.toLowerCase())
+  )
+
+  const handleSelectProduct = (id: string) => {
+    setSelectedProduct(id)
+    const p = products.find(pr => pr.id === id)
+    if (p) setProductSearch(p.name)
+    setShowProductDropdown(false)
+  }
 
   const totalIn = transactions.filter(t => t.type === 'in').reduce((s, t) => s + t.quantity, 0)
   const totalOut = transactions.filter(t => t.type === 'out').reduce((s, t) => s + t.quantity, 0)
@@ -79,6 +105,7 @@ export default function TransactionsPage() {
 
     toast(type === 'in' ? `+${quantity} ${product.name} masuk` : `-${quantity} ${product.name} keluar`, 'success')
     setSelectedProduct('')
+    setProductSearch('')
     setQuantity(1)
     setNote('')
     setModalOpen(false)
@@ -99,7 +126,7 @@ export default function TransactionsPage() {
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            <button onClick={() => setModalOpen(true)} className="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-medium transition flex items-center gap-2">
+              <button onClick={() => setModalOpen(true)} className="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-medium transition flex items-center gap-2">
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
               Single Entry
             </button>
@@ -214,9 +241,9 @@ export default function TransactionsPage() {
       {/* Full Page Form - Single Entry */}
       {modalOpen && (
         <div className="fixed inset-0 z-[100] overflow-y-auto bg-[#09090B]">
-          <div className="min-h-full w-full max-w-2xl mx-auto px-4 py-6">
+          <div className="min-h-full w-full max-w-2xl mx-auto px-3 sm:px-4 py-4 sm:py-6">
             {/* Modal Header */}
-            <div className="bg-gradient-to-r from-emerald-900 to-emerald-800 px-6 py-5 flex items-center justify-between rounded-2xl mb-6">
+            <div className="bg-gradient-to-r from-emerald-900 to-emerald-800 px-4 sm:px-6 py-4 sm:py-5 flex items-center justify-between rounded-xl sm:rounded-2xl mb-4 sm:mb-6">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center">
                   <svg className="w-5 h-5 text-emerald-300" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" /></svg>
@@ -226,12 +253,12 @@ export default function TransactionsPage() {
                   <p className="text-emerald-200/70 text-xs">Input data barang masuk / keluar</p>
                 </div>
               </div>
-              <button onClick={() => setModalOpen(false)} className="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition">
+              <button onClick={() => { setModalOpen(false); setProductSearch(''); setSelectedProduct('') }} className="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition">
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
               </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-5 rounded-2xl border border-white/[0.08] bg-[#161616] p-6">
+            <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5 rounded-xl sm:rounded-2xl border border-white/[0.08] bg-[#161616] p-4 sm:p-6">
               {/* Tipe Transaksi */}
               <div>
                 <div className="flex items-center gap-2 mb-3">
@@ -268,10 +295,49 @@ export default function TransactionsPage() {
                   <svg className="w-4 h-4 text-indigo-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" /></svg>
                   <p className="text-xs font-semibold text-indigo-300">Detail Produk *</p>
                 </div>
-                <select value={selectedProduct} onChange={e => setSelectedProduct(e.target.value)} required className="form-input text-sm w-full" style={{ color: '#fafafa', background: '#18181b' }}>
-                  <option value="" style={{ color: '#71717a' }}>Pilih Produk...</option>
-                  {products.map(p => <option key={p.id} value={p.id} style={{ color: '#fafafa', background: '#18181b' }}>{p.name} (Stok: {p.stock})</option>)}
-                </select>
+                <div className="relative" ref={productDropdownRef}>
+                  <div className="relative">
+                    <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 pointer-events-none" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" /></svg>
+                    <input
+                      type="text"
+                      value={productSearch}
+                      onChange={e => { setProductSearch(e.target.value); setShowProductDropdown(true); setSelectedProduct('') }}
+                      onFocus={() => setShowProductDropdown(true)}
+                      className="form-input text-sm w-full pl-9"
+                      placeholder="Cari nama produk..."
+                      autoComplete="off"
+                      style={{ color: '#fafafa', background: '#18181b' }}
+                    />
+                    {productSearch && (
+                      <button type="button" onClick={() => { setProductSearch(''); setSelectedProduct(''); setShowProductDropdown(true) }} className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-white">
+                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                      </button>
+                    )}
+                  </div>
+                  {showProductDropdown && (
+                    <div className="absolute z-50 left-0 right-0 top-full mt-1 bg-[#1c1c1e] border border-white/10 rounded-xl shadow-lg max-h-48 overflow-y-auto">
+                      {filteredProducts.length === 0 ? (
+                        <div className="px-3 py-4 text-center text-xs text-zinc-500">Produk tidak ditemukan</div>
+                      ) : (
+                        filteredProducts.map(p => (
+                          <button
+                            key={p.id}
+                            type="button"
+                            onClick={() => handleSelectProduct(p.id)}
+                            className={`w-full flex items-center gap-2.5 px-3 py-2.5 text-left hover:bg-zinc-800 transition-colors first:rounded-t-xl last:rounded-b-xl ${selectedProduct === p.id ? 'bg-zinc-800' : ''}`}
+                          >
+                            <div className="w-7 h-7 rounded-lg bg-indigo-900/50 flex items-center justify-center text-[9px] font-bold text-indigo-300 shrink-0">{p.name.substring(0,2).toUpperCase()}</div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-[12px] font-medium text-white truncate">{p.name}</p>
+                              <p className="text-[10px] text-zinc-500">{p.category} · Stok: {p.stock}</p>
+                            </div>
+                            <span className="text-[10px] text-zinc-500 shrink-0">{formatRp(p.price)}</span>
+                          </button>
+                        ))
+                      )}
+                    </div>
+                  )}
+                </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <label className="text-[10px] text-zinc-500 uppercase tracking-wider mb-1 block">Jumlah *</label>
@@ -297,8 +363,11 @@ export default function TransactionsPage() {
               <div className="flex items-center justify-between pt-3 border-t border-white/[0.06]">
                 <p className="text-[10px] text-zinc-600">Field bertanda * wajib diisi</p>
                 <div className="flex gap-2">
-                  <button type="button" onClick={() => setModalOpen(false)} className="px-4 py-2 rounded-lg border border-white/20 text-zinc-300 text-sm font-medium hover:bg-white/5 transition">Batal</button>
-                  <button type="submit" className="px-5 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-medium transition">Catat Transaksi</button>
+                  <button type="button" onClick={() => { setModalOpen(false); setProductSearch(''); setSelectedProduct('') }} className="px-4 py-2 rounded-lg border border-white/20 text-zinc-300 text-sm font-medium hover:bg-white/5 transition">Batal</button>
+                  <button type="submit" className="px-5 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-medium transition flex items-center gap-2">
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" /></svg>
+                    Catat Transaksi
+                  </button>
                 </div>
               </div>
             </form>
