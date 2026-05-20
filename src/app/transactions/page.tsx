@@ -4,18 +4,20 @@ import { useEffect, useState } from 'react'
 import { Product, Transaction, getProducts, getTransactions, saveProducts, saveTransactions, formatRp, uid, loadSampleData } from '@/lib/store'
 import { useToast } from '@/components/Toast'
 
-type Tab = 'form' | 'history'
 type TransactionType = 'in' | 'out'
+type TabFilter = 'all' | 'in' | 'out'
 
 export default function TransactionsPage() {
   const [products, setProducts] = useState<Product[]>([])
   const [transactions, setTransactions] = useState<Transaction[]>([])
-  const [tab, setTab] = useState<Tab>('form')
   const [type, setType] = useState<TransactionType>('in')
   const [selectedProduct, setSelectedProduct] = useState('')
   const [quantity, setQuantity] = useState(1)
   const [note, setNote] = useState('')
   const [mounted, setMounted] = useState(false)
+  const [modalOpen, setModalOpen] = useState(false)
+  const [tabFilter, setTabFilter] = useState<TabFilter>('all')
+  const [search, setSearch] = useState('')
   const { toast } = useToast()
 
   useEffect(() => {
@@ -27,6 +29,17 @@ export default function TransactionsPage() {
   }, [])
 
   if (!mounted) return null
+
+  const totalIn = transactions.filter(t => t.type === 'in').reduce((s, t) => s + t.quantity, 0)
+  const totalOut = transactions.filter(t => t.type === 'out').reduce((s, t) => s + t.quantity, 0)
+  const inCount = transactions.filter(t => t.type === 'in').length
+  const outCount = transactions.filter(t => t.type === 'out').length
+
+  const filteredTx = transactions.filter(tx => {
+    const matchTab = tabFilter === 'all' || tx.type === tabFilter
+    const matchSearch = !search || tx.productName.toLowerCase().includes(search.toLowerCase())
+    return matchTab && matchSearch
+  })
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -68,142 +81,220 @@ export default function TransactionsPage() {
     setSelectedProduct('')
     setQuantity(1)
     setNote('')
+    setModalOpen(false)
   }
 
-  const selectedProductData = products.find(p => p.id === selectedProduct)
-
   return (
-    <div className="space-y-4 max-w-2xl mx-auto">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <h1 className="text-lg font-bold text-cozy-text dark:text-[#fafafa]">Transaksi</h1>
-        <span className="text-[11px] text-cozy-muted dark:text-[#71717a]">{transactions.length} riwayat</span>
+    <div className="space-y-6">
+      {/* Hero Banner */}
+      <div className="rounded-2xl border border-white/10 bg-gradient-to-r from-indigo-950/60 to-zinc-900 p-6 lg:p-8">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-xl bg-indigo-500/20 flex items-center justify-center shrink-0">
+              <svg className="w-6 h-6 text-indigo-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" /></svg>
+            </div>
+            <div>
+              <h1 className="text-2xl lg:text-3xl font-bold text-white">Transaksi Barang</h1>
+              <p className="text-zinc-400 text-sm mt-0.5">Catat setiap barang masuk dan keluar dengan cepat</p>
+            </div>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <button onClick={() => setModalOpen(true)} className="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-medium transition flex items-center gap-2">
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+              Single Entry
+            </button>
+            <button className="px-4 py-2 rounded-lg border border-white/20 text-zinc-300 text-sm font-medium hover:bg-white/5 transition">Bulk Entry</button>
+            <button className="px-4 py-2 rounded-lg border border-white/20 text-zinc-300 text-sm font-medium hover:bg-white/5 transition">Email Laporan</button>
+          </div>
+        </div>
       </div>
 
-      {/* Tabs */}
-      <div className="flex gap-1 p-1 bg-cozy-gray dark:bg-[#18181b] rounded-lg border border-cozy-border dark:border-[#27272a]">
-        <button onClick={() => setTab('form')} className={`flex-1 py-2 text-xs font-semibold rounded-md transition ${tab === 'form' ? 'bg-white dark:bg-[#27272a] text-cozy-text dark:text-[#fafafa] shadow-sm' : 'text-cozy-muted dark:text-[#71717a]'}`}>
-          Buat Baru
+      {/* Stat Cards */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <div className="rounded-xl p-5 bg-zinc-900/60 border border-white/[0.07] border-l-2 border-l-emerald-400">
+          <div className="flex items-center gap-2 mb-1.5">
+            <svg className="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941" /></svg>
+            <p className="text-xs text-zinc-400">Barang Masuk</p>
+          </div>
+          <p className="text-lg font-semibold text-white">{totalIn} unit</p>
+        </div>
+        <div className="rounded-xl p-5 bg-zinc-900/60 border border-white/[0.07] border-l-2 border-l-red-400">
+          <div className="flex items-center gap-2 mb-1.5">
+            <svg className="w-4 h-4 text-red-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6L9 12.75l4.286-4.286a11.948 11.948 0 014.306 6.43l.776 2.898m0 0l3.182-5.511m-3.182 5.51l-5.511-3.181" /></svg>
+            <p className="text-xs text-zinc-400">Barang Keluar</p>
+          </div>
+          <p className="text-lg font-semibold text-white">{totalOut} unit</p>
+        </div>
+        <div className="rounded-xl p-5 bg-zinc-900/60 border border-white/[0.07] border-l-2 border-l-indigo-400">
+          <div className="flex items-center gap-2 mb-1.5">
+            <svg className="w-4 h-4 text-indigo-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" /></svg>
+            <p className="text-xs text-zinc-400">Total Produk</p>
+          </div>
+          <p className="text-lg font-semibold text-white">{products.length}</p>
+        </div>
+        <div className="rounded-xl p-5 bg-zinc-900/60 border border-white/[0.07] border-l-2 border-l-zinc-400">
+          <div className="flex items-center gap-2 mb-1.5">
+            <svg className="w-4 h-4 text-zinc-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" /></svg>
+            <p className="text-xs text-zinc-400">Total Transaksi</p>
+          </div>
+          <p className="text-lg font-semibold text-white">{transactions.length}</p>
+        </div>
+      </div>
+
+      {/* Filter Bar */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div className="relative">
+          <svg className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" /></svg>
+          <input type="text" placeholder="Cari produk / SKU..." value={search} onChange={e => setSearch(e.target.value)} className="form-input pl-10" />
+        </div>
+        <select className="form-input" style={{ background: '#18181b', border: '1px solid rgba(255,255,255,0.1)' }}>
+          <option value="">Semua Tipe</option>
+          <option value="in">Barang Masuk</option>
+          <option value="out">Barang Keluar</option>
+        </select>
+      </div>
+
+      {/* Tab Pills */}
+      <div className="flex gap-2">
+        <button onClick={() => setTabFilter('all')} className={`px-4 py-2 rounded-lg text-sm font-medium transition ${tabFilter === 'all' ? 'bg-indigo-600 text-white' : 'bg-zinc-800 text-zinc-400 hover:text-white'}`}>
+          Semua <span className="ml-1.5 text-[10px] opacity-70">({transactions.length})</span>
         </button>
-        <button onClick={() => setTab('history')} className={`flex-1 py-2 text-xs font-semibold rounded-md transition ${tab === 'history' ? 'bg-white dark:bg-[#27272a] text-cozy-text dark:text-[#fafafa] shadow-sm' : 'text-cozy-muted dark:text-[#71717a]'}`}>
-          Riwayat
+        <button onClick={() => setTabFilter('in')} className={`px-4 py-2 rounded-lg text-sm font-medium transition ${tabFilter === 'in' ? 'bg-emerald-600 text-white' : 'bg-zinc-800 text-zinc-400 hover:text-white'}`}>
+          Barang Masuk <span className="ml-1.5 text-[10px] opacity-70">({inCount})</span>
+        </button>
+        <button onClick={() => setTabFilter('out')} className={`px-4 py-2 rounded-lg text-sm font-medium transition ${tabFilter === 'out' ? 'bg-red-600 text-white' : 'bg-zinc-800 text-zinc-400 hover:text-white'}`}>
+          Barang Keluar <span className="ml-1.5 text-[10px] opacity-70">({outCount})</span>
         </button>
       </div>
 
-      {/* Form Tab */}
-      {tab === 'form' && (
-        <form onSubmit={handleSubmit} className="space-y-3">
-          {/* Type selector */}
-          <div className="grid grid-cols-2 gap-2">
-            <button type="button" onClick={() => setType('in')}
-              className={`p-3 rounded-xl border text-left transition-all ${type === 'in' ? 'border-emerald-500 dark:border-emerald-400 bg-emerald-50 dark:bg-emerald-950/30' : 'border-cozy-border dark:border-[#27272a]'}`}>
-              <div className="flex items-center gap-2">
-                <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${type === 'in' ? 'bg-emerald-500' : 'bg-cozy-gray dark:bg-[#27272a]'}`}>
-                  <svg className={`w-4 h-4 ${type === 'in' ? 'text-white' : 'text-cozy-muted'}`} fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m0 0l6.75-6.75M12 19.5l-6.75-6.75" /></svg>
+      {/* Transaction History Table */}
+      <div className="rounded-xl overflow-hidden border border-white/[0.08] bg-[#161616]">
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead>
+              <tr className="border-b border-white/5">
+                <th className="text-left px-5 py-3 text-[11px] font-semibold text-zinc-500 uppercase tracking-wider">Produk</th>
+                <th className="text-center px-3 py-3 text-[11px] font-semibold text-zinc-500 uppercase tracking-wider">Tipe</th>
+                <th className="text-center px-3 py-3 text-[11px] font-semibold text-zinc-500 uppercase tracking-wider">Jumlah</th>
+                <th className="text-left px-3 py-3 text-[11px] font-semibold text-zinc-500 uppercase tracking-wider">Tanggal</th>
+                <th className="text-left px-3 py-3 text-[11px] font-semibold text-zinc-500 uppercase tracking-wider">Catatan</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredTx.slice(0, 20).map(tx => (
+                <tr key={tx.id} className="border-b border-white/[0.03] hover:bg-white/[0.02] transition">
+                  <td className="px-5 py-3 text-sm font-medium text-white">{tx.productName}</td>
+                  <td className="px-3 py-3 text-center">
+                    <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold whitespace-nowrap ${tx.type === 'in' ? 'bg-emerald-500/15 text-emerald-400' : 'bg-red-500/15 text-red-400'}`}>
+                      {tx.type === 'in' ? 'Masuk' : 'Keluar'}
+                    </span>
+                  </td>
+                  <td className="px-3 py-3 text-center text-sm font-semibold text-zinc-200">{tx.type === 'in' ? '+' : '-'}{tx.quantity}</td>
+                  <td className="px-3 py-3 text-xs text-zinc-500">{new Date(tx.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</td>
+                  <td className="px-3 py-3 text-xs text-zinc-500">{tx.note || '-'}</td>
+                </tr>
+              ))}
+              {filteredTx.length === 0 && (
+                <tr><td colSpan={5} className="text-center py-12 text-zinc-500">Belum ada transaksi</td></tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Modal - Single Entry Form */}
+      {modalOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4" onClick={() => setModalOpen(false)}>
+          <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
+          <div className="relative w-full max-w-lg rounded-2xl overflow-hidden border border-white/10 bg-[#111] shadow-2xl" onClick={e => e.stopPropagation()}>
+            {/* Modal Header */}
+            <div className="bg-gradient-to-r from-emerald-900 to-emerald-800 px-6 py-5 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center">
+                  <svg className="w-5 h-5 text-emerald-300" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" /></svg>
                 </div>
                 <div>
-                  <p className={`text-xs font-semibold ${type === 'in' ? 'text-emerald-700 dark:text-emerald-400' : 'text-cozy-subtle dark:text-[#a1a1aa]'}`}>Masuk</p>
-                  <p className="text-[10px] text-cozy-muted dark:text-[#71717a]">Stok +</p>
+                  <h2 className="text-lg font-bold text-white">Transaksi Baru</h2>
+                  <p className="text-emerald-200/70 text-xs">Input data barang masuk / keluar</p>
                 </div>
               </div>
-            </button>
-            <button type="button" onClick={() => setType('out')}
-              className={`p-3 rounded-xl border text-left transition-all ${type === 'out' ? 'border-red-500 dark:border-red-400 bg-red-50 dark:bg-red-950/30' : 'border-cozy-border dark:border-[#27272a]'}`}>
-              <div className="flex items-center gap-2">
-                <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${type === 'out' ? 'bg-red-500' : 'bg-cozy-gray dark:bg-[#27272a]'}`}>
-                  <svg className={`w-4 h-4 ${type === 'out' ? 'text-white' : 'text-cozy-muted'}`} fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 19.5v-15m0 0l-6.75 6.75M12 4.5l6.75 6.75" /></svg>
-                </div>
-                <div>
-                  <p className={`text-xs font-semibold ${type === 'out' ? 'text-red-700 dark:text-red-400' : 'text-cozy-subtle dark:text-[#a1a1aa]'}`}>Keluar</p>
-                  <p className="text-[10px] text-cozy-muted dark:text-[#71717a]">Stok -</p>
-                </div>
-              </div>
-            </button>
-          </div>
-
-          {/* Product select */}
-          <div className="space-y-1">
-            <label className="text-[10px] font-semibold text-cozy-muted dark:text-[#71717a] uppercase tracking-wider">Produk</label>
-            <select value={selectedProduct} onChange={e => setSelectedProduct(e.target.value)} required className="form-input text-sm">
-              <option value="">Pilih produk...</option>
-              {products.map(p => <option key={p.id} value={p.id}>{p.name} (Stok: {p.stock})</option>)}
-            </select>
-          </div>
-
-          {/* Selected info */}
-          {selectedProductData && (
-            <div className="flex items-center gap-3 p-3 rounded-lg bg-cozy-gray dark:bg-[#18181b] border border-cozy-border dark:border-[#27272a]">
-              <div className="w-9 h-9 rounded-lg bg-cozy-navy flex items-center justify-center text-[10px] font-bold text-cozy-gold">{selectedProductData.name.substring(0,2).toUpperCase()}</div>
-              <div className="flex-1 min-w-0">
-                <p className="text-[13px] font-medium text-cozy-text dark:text-[#fafafa] truncate">{selectedProductData.name}</p>
-                <p className="text-[10px] text-cozy-muted dark:text-[#71717a]">{selectedProductData.category} · {formatRp(selectedProductData.price)}</p>
-              </div>
-              <div className="text-right">
-                <p className="text-sm font-bold text-cozy-text dark:text-[#fafafa]">{selectedProductData.stock}</p>
-                <p className="text-[9px] text-cozy-muted dark:text-[#71717a]">stok</p>
-              </div>
-            </div>
-          )}
-
-          {/* Quantity */}
-          <div className="space-y-1">
-            <label className="text-[10px] font-semibold text-cozy-muted dark:text-[#71717a] uppercase tracking-wider">Jumlah</label>
-            <div className="flex items-center gap-2">
-              <button type="button" onClick={() => setQuantity(Math.max(1, quantity - 1))} className="w-10 h-10 rounded-lg bg-cozy-gray dark:bg-[#18181b] border border-cozy-border dark:border-[#27272a] flex items-center justify-center text-cozy-text dark:text-[#fafafa] active:scale-95 transition">
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 12h-15" /></svg>
-              </button>
-              <input type="number" min={1} value={quantity} onChange={e => setQuantity(Math.max(1, +e.target.value))} className="form-input text-center text-lg font-bold flex-1" />
-              <button type="button" onClick={() => setQuantity(quantity + 1)} className="w-10 h-10 rounded-lg bg-cozy-gray dark:bg-[#18181b] border border-cozy-border dark:border-[#27272a] flex items-center justify-center text-cozy-text dark:text-[#fafafa] active:scale-95 transition">
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+              <button onClick={() => setModalOpen(false)} className="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition">
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
               </button>
             </div>
-          </div>
 
-          {/* Note */}
-          <div className="space-y-1">
-            <label className="text-[10px] font-semibold text-cozy-muted dark:text-[#71717a] uppercase tracking-wider">Catatan (opsional)</label>
-            <input type="text" value={note} onChange={e => setNote(e.target.value)} className="form-input text-sm" placeholder="Catatan singkat..." />
-          </div>
-
-          {/* Submit */}
-          <button type="submit" className={`w-full py-3 rounded-xl text-white font-semibold text-sm transition-all active:scale-[0.98] flex items-center justify-center gap-2 ${type === 'in' ? 'bg-emerald-500 hover:bg-emerald-600' : 'bg-red-500 hover:bg-red-600'}`}>
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>
-            {type === 'in' ? 'Konfirmasi Masuk' : 'Konfirmasi Keluar'}
-          </button>
-        </form>
-      )}
-
-      {/* History Tab */}
-      {tab === 'history' && (
-        <div className="space-y-2">
-          {transactions.length === 0 ? (
-            <div className="text-center py-12">
-              <svg className="w-10 h-10 mx-auto text-cozy-muted dark:text-[#3f3f46] mb-3" fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg>
-              <p className="text-xs text-cozy-muted dark:text-[#71717a]">Belum ada riwayat transaksi</p>
-            </div>
-          ) : (
-            transactions.map(tx => (
-              <div key={tx.id} className="cozy-card p-3 flex items-center gap-3">
-                <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${tx.type === 'in' ? 'bg-emerald-100 dark:bg-emerald-950/40' : 'bg-red-100 dark:bg-red-950/40'}`}>
-                  {tx.type === 'in' ? (
-                    <svg className="w-4 h-4 text-emerald-600 dark:text-emerald-400" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m0 0l6.75-6.75M12 19.5l-6.75-6.75" /></svg>
-                  ) : (
-                    <svg className="w-4 h-4 text-red-600 dark:text-red-400" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 19.5v-15m0 0l-6.75 6.75M12 4.5l6.75 6.75" /></svg>
-                  )}
+            <form onSubmit={handleSubmit} className="p-6 space-y-5">
+              {/* Tipe Transaksi */}
+              <div>
+                <div className="flex items-center gap-2 mb-3">
+                  <svg className="w-4 h-4 text-zinc-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M3 7.5L7.5 3m0 0L12 7.5M7.5 3v13.5m13.5-4.5L16.5 21m0 0L12 16.5m4.5 4.5V7.5" /></svg>
+                  <p className="text-xs font-semibold text-zinc-300">Tipe Transaksi *</p>
                 </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-[13px] font-medium text-cozy-text dark:text-[#fafafa] truncate">{tx.productName}</p>
-                  <p className="text-[10px] text-cozy-muted dark:text-[#71717a]">
-                    {new Date(tx.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
-                    {tx.note && ` · ${tx.note}`}
-                  </p>
+                <div className="grid grid-cols-2 gap-3">
+                  <button type="button" onClick={() => setType('in')}
+                    className={`p-4 rounded-xl border text-left transition-all ${type === 'in' ? 'bg-emerald-500/20 border-emerald-500' : 'bg-zinc-800 border-white/10 hover:border-white/20'}`}>
+                    <div className="flex items-center gap-2.5">
+                      <svg className={`w-5 h-5 ${type === 'in' ? 'text-emerald-400' : 'text-zinc-500'}`} fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m0 0l6.75-6.75M12 19.5l-6.75-6.75" /></svg>
+                      <div>
+                        <p className={`text-sm font-semibold ${type === 'in' ? 'text-emerald-400' : 'text-zinc-300'}`}>Barang Masuk</p>
+                        <p className="text-[10px] text-zinc-500 mt-0.5">Stok barang akan bertambah</p>
+                      </div>
+                    </div>
+                  </button>
+                  <button type="button" onClick={() => setType('out')}
+                    className={`p-4 rounded-xl border text-left transition-all ${type === 'out' ? 'bg-red-500/20 border-red-500' : 'bg-zinc-800 border-white/10 hover:border-white/20'}`}>
+                    <div className="flex items-center gap-2.5">
+                      <svg className={`w-5 h-5 ${type === 'out' ? 'text-red-400' : 'text-zinc-500'}`} fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 19.5v-15m0 0l-6.75 6.75M12 4.5l6.75 6.75" /></svg>
+                      <div>
+                        <p className={`text-sm font-semibold ${type === 'out' ? 'text-red-400' : 'text-zinc-300'}`}>Barang Keluar</p>
+                        <p className="text-[10px] text-zinc-500 mt-0.5">Stok barang akan berkurang</p>
+                      </div>
+                    </div>
+                  </button>
                 </div>
-                <span className={`text-xs font-bold ${tx.type === 'in' ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>
-                  {tx.type === 'in' ? '+' : '-'}{tx.quantity}
-                </span>
               </div>
-            ))
-          )}
+
+              {/* Detail Produk */}
+              <div className="bg-indigo-950/40 rounded-xl px-4 py-4 space-y-3">
+                <div className="flex items-center gap-2 mb-1">
+                  <svg className="w-4 h-4 text-indigo-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" /></svg>
+                  <p className="text-xs font-semibold text-indigo-300">Detail Produk *</p>
+                </div>
+                <select value={selectedProduct} onChange={e => setSelectedProduct(e.target.value)} required className="form-input text-sm w-full">
+                  <option value="">Pilih Produk...</option>
+                  {products.map(p => <option key={p.id} value={p.id}>{p.name} (Stok: {p.stock})</option>)}
+                </select>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-[10px] text-zinc-500 uppercase tracking-wider mb-1 block">Jumlah *</label>
+                    <input type="number" min={1} value={quantity} onChange={e => setQuantity(Math.max(1, +e.target.value))} className="form-input text-sm" />
+                  </div>
+                  <div>
+                    <label className="text-[10px] text-zinc-500 uppercase tracking-wider mb-1 block">Tanggal</label>
+                    <input type="date" defaultValue={new Date().toISOString().split('T')[0]} className="form-input text-sm" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Keterangan */}
+              <div>
+                <div className="flex items-center gap-2 mb-2">
+                  <svg className="w-4 h-4 text-amber-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg>
+                  <p className="text-xs font-semibold text-amber-300">Keterangan</p>
+                </div>
+                <textarea value={note} onChange={e => setNote(e.target.value)} className="form-input text-sm w-full" rows={2} placeholder="Catatan Transaksi (Opsional)" />
+              </div>
+
+              {/* Footer */}
+              <div className="flex items-center justify-between pt-3 border-t border-white/[0.06]">
+                <p className="text-[10px] text-zinc-600">Field bertanda * wajib diisi</p>
+                <div className="flex gap-2">
+                  <button type="button" onClick={() => setModalOpen(false)} className="px-4 py-2 rounded-lg border border-white/20 text-zinc-300 text-sm font-medium hover:bg-white/5 transition">Batal</button>
+                  <button type="submit" className="px-5 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-medium transition">Catat Transaksi</button>
+                </div>
+              </div>
+            </form>
+          </div>
         </div>
       )}
     </div>
