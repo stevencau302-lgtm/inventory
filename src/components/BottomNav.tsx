@@ -20,17 +20,17 @@ export default function BottomNav() {
           if (item.label === 'add') return (
             <Link key={item.href} href={item.href} className="relative -top-5">
               <div className="w-14 h-14 rounded-2xl flex items-center justify-center active:scale-95 transition"
-                style={{ background: 'linear-gradient(135deg, #0d9488, #14b8a6)', boxShadow: '0 4px 20px rgba(20, 184, 166, 0.4)' }}>
+                style={{ background: 'linear-gradient(135deg, #ea580c, #f97316)', boxShadow: '0 4px 20px rgba(249, 115, 22, 0.4)' }}>
                 <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
               </div>
             </Link>
           )
           const isActive = pathname === item.href
           return (
-            <Link key={item.href} href={item.href} className={`flex flex-col items-center gap-1 py-1 px-3 transition relative ${isActive ? 'text-teal-400' : 'text-zinc-500'}`}>
+            <Link key={item.href} href={item.href} className={`flex flex-col items-center gap-1 py-1 px-3 transition relative ${isActive ? 'text-orange-400' : 'text-zinc-500'}`}>
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={isActive ? 2 : 1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d={item.icon} /></svg>
               <span className="text-[10px] font-medium">{item.label}</span>
-              {isActive && <span className="absolute -bottom-1 w-5 h-[3px] rounded-full bg-teal-400 shadow-[0_0_8px_rgba(45,212,191,0.5)]" />}
+              {isActive && <span className="absolute -bottom-1 w-5 h-[3px] rounded-full bg-orange-400 shadow-[0_0_8px_rgba(251,146,60,0.5)]" />}
             </Link>
           )
         })}

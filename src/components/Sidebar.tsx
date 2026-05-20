@@ -21,7 +21,7 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean, onClose:
         <div className="p-5 border-b border-white/[0.06]">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-2xl flex items-center justify-center"
-              style={{ background: 'linear-gradient(135deg, #0d9488, #14b8a6)', boxShadow: '0 2px 12px rgba(20,184,166,0.3)' }}>
+              style={{ background: 'linear-gradient(135deg, #ea580c, #f97316)', boxShadow: '0 2px 12px rgba(249,115,22,0.3)' }}>
               <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" /></svg>
             </div>
             <div>
@@ -40,7 +40,7 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean, onClose:
         </nav>
         <div className="p-4 border-t border-white/[0.06]">
           <div className="flex items-center gap-3 px-2">
-            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-teal-400 to-teal-600 flex items-center justify-center text-sm font-bold text-white">A</div>
+            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-sm font-bold text-white">A</div>
             <div><p className="text-sm font-semibold text-white">Admin</p><p className="text-[11px] text-zinc-500">admin@inventory.pro</p></div>
           </div>
         </div>
