@@ -45,7 +45,7 @@ export default function DashboardCharts({ products, transactions }: Props) {
                 contentStyle={{ background: '#1a1a1a', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', color: '#fafafa' }}
                 labelStyle={{ color: '#a1a1aa' }}
               />
-              <Bar dataKey="penjualan" fill="#f97316" radius={[6, 6, 0, 0]} />
+              <Bar dataKey="penjualan" fill="#6366f1" radius={[6, 6, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -69,7 +69,7 @@ export default function DashboardCharts({ products, transactions }: Props) {
               />
               <Legend wrapperStyle={{ fontSize: '12px', color: '#a1a1aa' }} />
               <Line type="monotone" dataKey="masuk" stroke="#10b981" strokeWidth={2.5} dot={{ fill: '#10b981', r: 4 }} name="Masuk" />
-              <Line type="monotone" dataKey="keluar" stroke="#f97316" strokeWidth={2.5} dot={{ fill: '#f97316', r: 4 }} name="Keluar" />
+              <Line type="monotone" dataKey="keluar" stroke="#6366f1" strokeWidth={2.5} dot={{ fill: '#6366f1', r: 4 }} name="Keluar" />
             </LineChart>
           </ResponsiveContainer>
         </div>

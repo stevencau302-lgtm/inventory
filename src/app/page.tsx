@@ -52,10 +52,10 @@ export default function Dashboard() {
 
       {/* Stat Cards - clean 4-column grid */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        <StatCard icon="box" label="Total Produk" value={String(totalProducts)} border="border-l-indigo-500" />
-        <StatCard icon="coins" label="Nilai Inventory" value={formatRp(totalValue)} border="border-l-emerald-500" />
-        <StatCard icon="alert" label="Stok Menipis" value={String(lowStock)} border="border-l-amber-500" />
-        <StatCard icon="x-circle" label="Stok Habis" value={String(outOfStock)} border="border-l-red-500" />
+        <StatCard icon="box" label="Total produk" value={String(totalProducts)} subtitle="+3 minggu ini" border="border-l-indigo-500" />
+        <StatCard icon="coins" label="Nilai inventory" value={formatRp(totalValue)} subtitle="+12% bulan ini" border="border-l-emerald-500" />
+        <StatCard icon="alert" label="Stok menipis" value={String(lowStock)} subtitle="Perlu restock" border="border-l-amber-500" />
+        <StatCard icon="x-circle" label="Stok habis" value={String(outOfStock)} subtitle="Barang kosong" border="border-l-red-500" />
       </div>
 
       {/* Charts */}
@@ -148,7 +148,7 @@ export default function Dashboard() {
   )
 }
 
-function StatCard({ icon, label, value, border }: { icon: string; label: string; value: string; border: string }) {
+function StatCard({ icon, label, value, subtitle, border }: { icon: string; label: string; value: string; subtitle: string; border: string }) {
   return (
     <div className={`rounded-xl p-4 bg-[#161616] border border-white/[0.08] border-l-2 ${border}`}>
       <div className="flex items-center gap-3 mb-2">
@@ -158,9 +158,10 @@ function StatCard({ icon, label, value, border }: { icon: string; label: string;
           {icon === 'alert' && <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" /></svg>}
           {icon === 'x-circle' && <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" /></svg>}
         </div>
-        <p className="text-[11px] text-zinc-500 font-normal uppercase tracking-wider">{label}</p>
+        <p className="text-xs text-zinc-400 font-normal">{label}</p>
       </div>
       <p className="text-lg font-semibold text-white whitespace-nowrap">{value}</p>
+      <p className="text-xs text-zinc-500 mt-1">{subtitle}</p>
     </div>
   )
 }
