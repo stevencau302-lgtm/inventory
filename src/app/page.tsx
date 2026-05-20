@@ -26,7 +26,7 @@ export default function Dashboard() {
   const recent = products.slice(0, 4)
 
   return (
-    <div className="space-y-4 max-w-[390px] mx-auto">
+    <div className="space-y-4 max-w-[390px] lg:max-w-4xl mx-auto">
       {/* Welcome Header */}
       <div className="glass-card p-4">
         <div className="flex items-center justify-between">
@@ -46,7 +46,7 @@ export default function Dashboard() {
       </div>
 
       {/* Metric Cards 2x2 */}
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         <MetricCard icon={<CheckIcon />} label="Stok Aman" value={inStock} color="emerald" />
         <MetricCard icon={<AlertIcon />} label="Stok Rendah" value={lowStock} color="amber" />
         <MetricCard icon={<XIcon />} label="Habis" value={outStock} color="red" />

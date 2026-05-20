@@ -16,7 +16,7 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean, onClose:
   return (
     <>
       {isOpen && <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 lg:hidden" onClick={onClose} />}
-      <aside className={`fixed lg:static inset-y-0 left-0 z-50 w-[260px] flex flex-col transition-transform duration-300 lg:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}
+      <aside className={`fixed lg:static inset-y-0 left-0 z-50 w-[260px] shrink-0 flex flex-col transition-transform duration-300 lg:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}
         style={{ background: 'rgba(10, 10, 15, 0.95)', borderRight: '1px solid rgba(255,255,255,0.06)', backdropFilter: 'blur(20px)' }}>
         <div className="p-5 border-b border-white/[0.06]">
           <div className="flex items-center gap-3">
