@@ -6,126 +6,65 @@
   body {
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
     @apply antialiased;
-    background: linear-gradient(180deg, #0A0A0F 0%, #12121A 100%);
-    color: #fafafa;
+    background: #0f1628;
+    color: #f1f5f9;
     min-height: 100vh;
   }
 }
 
 @layer components {
-  /* Premium Glass Card */
   .glass-card {
-    @apply rounded-[20px] relative overflow-hidden transition-all duration-200;
-    background: rgba(255, 255, 255, 0.03);
+    @apply rounded-2xl relative overflow-hidden transition-all duration-200;
+    background: rgba(30, 42, 66, 0.8);
     border: 1px solid rgba(255, 255, 255, 0.06);
     backdrop-filter: blur(12px);
   }
   .glass-card:hover {
-    background: rgba(255, 255, 255, 0.05);
     border-color: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
   }
 
-  /* Stat Card */
-  .stat-card {
-    @apply glass-card p-4;
-  }
-
-  /* Cozy Card alias */
-  .cozy-card {
-    @apply glass-card;
-  }
-
-  /* Form Input */
-  .form-input, .cozy-input {
+  .form-input {
     @apply w-full px-4 py-3 rounded-xl text-sm font-medium outline-none transition-all duration-150;
     background: rgba(255, 255, 255, 0.04);
     border: 1px solid rgba(255, 255, 255, 0.08);
-    color: #fafafa;
+    color: #f1f5f9;
   }
-  .form-input::placeholder, .cozy-input::placeholder {
-    color: #52525b;
-  }
-  .form-input:focus, .cozy-input:focus {
-    border-color: #f97316;
-    box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
-    background: rgba(255, 255, 255, 0.06);
+  .form-input::placeholder { color: #64748b; }
+  .form-input:focus {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
   }
 
-  /* Buttons */
-  .btn-primary, .cozy-btn-primary {
-    @apply inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold
-           transition-all duration-150 cursor-pointer active:scale-[0.97];
-    background: linear-gradient(135deg, #ea580c, #f97316);
+  .btn-primary {
+    @apply inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-150 cursor-pointer;
+    background: linear-gradient(135deg, #4f46e5, #6366f1);
     color: #fff;
-    box-shadow: 0 2px 12px rgba(249, 115, 22, 0.25);
+    box-shadow: 0 2px 12px rgba(99, 102, 241, 0.3);
   }
-  .btn-primary:hover, .cozy-btn-primary:hover {
-    box-shadow: 0 4px 20px rgba(249, 115, 22, 0.35);
-  }
+  .btn-primary:hover { box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4); transform: translateY(-1px); }
 
-  .btn-ghost, .cozy-btn-ghost {
-    @apply inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold
-           transition-all duration-150 cursor-pointer active:scale-[0.97];
+  .btn-ghost {
+    @apply inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-150 cursor-pointer;
     background: rgba(255, 255, 255, 0.04);
     border: 1px solid rgba(255, 255, 255, 0.08);
-    color: #d4d4d8;
+    color: #94a3b8;
   }
-  .btn-ghost:hover, .cozy-btn-ghost:hover {
-    background: rgba(255, 255, 255, 0.08);
-    color: #fafafa;
-  }
+  .btn-ghost:hover { background: rgba(255, 255, 255, 0.08); color: #f1f5f9; }
 
-  /* Badges with glow */
-  .badge, .cozy-badge {
+  .badge {
     @apply inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider;
   }
-  .badge-success, .cozy-badge-success {
-    background: rgba(16, 185, 129, 0.12);
-    color: #34d399;
-    box-shadow: 0 0 8px rgba(16, 185, 129, 0.15);
-  }
-  .badge-warning, .cozy-badge-warning {
-    background: rgba(245, 158, 11, 0.12);
-    color: #fbbf24;
-    box-shadow: 0 0 8px rgba(245, 158, 11, 0.15);
-  }
-  .badge-danger, .cozy-badge-danger {
-    background: rgba(239, 68, 68, 0.12);
-    color: #f87171;
-    box-shadow: 0 0 8px rgba(239, 68, 68, 0.15);
-  }
-
-  /* Nav Link */
-  .nav-link {
-    @apply flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150;
-    color: #a1a1aa;
-  }
-  .nav-link:hover {
-    color: #fafafa;
-    background: rgba(255, 255, 255, 0.05);
-  }
-  .nav-link.active {
-    color: #fb923c;
-    background: rgba(251, 146, 60, 0.08);
-    border: 1px solid rgba(251, 146, 60, 0.15);
-    font-weight: 600;
-  }
+  .badge-success { background: rgba(16, 185, 129, 0.15); color: #6ee7b7; }
+  .badge-warning { background: rgba(245, 158, 11, 0.15); color: #fcd34d; }
+  .badge-danger { background: rgba(239, 68, 68, 0.15); color: #fca5a5; }
 }
 
-.safe-area-bottom { padding-bottom: env(safe-area-inset-bottom, 0px); }
-
-::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar { width: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #27272a; border-radius: 4px; }
+::-webkit-scrollbar-thumb { background: #2d3a52; border-radius: 4px; }
 
 @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 @keyframes slideOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
 .toast-enter { animation: slideIn 0.3s ease-out; }
 .toast-exit { animation: slideOut 0.3s ease-in forwards; }
-
-@keyframes wave {
-  0%, 100% { transform: rotate(0deg); }
-  25% { transform: rotate(20deg); }
-  75% { transform: rotate(-10deg); }
-}
-.animate-wave { animation: wave 1.5s ease-in-out infinite; }
