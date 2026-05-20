@@ -45,7 +45,7 @@ export default function Dashboard() {
   return (
     <div className="space-y-6">
       {/* Gradient Header */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#7c2d12] via-[#9a3412] to-[#c2410c] px-6 pt-8 pb-20">
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#F97316] to-[#18181B] px-6 pt-8 pb-20">
         <div className="absolute top-[-40%] right-[-8%] w-[400px] h-[400px] rounded-full bg-orange-500/[0.12] pointer-events-none" />
         <div className="absolute bottom-[-30%] left-[10%] w-[250px] h-[250px] rounded-full bg-yellow-500/[0.06] pointer-events-none" />
         <div className="relative z-10 mb-6">
