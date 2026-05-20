@@ -265,24 +265,24 @@ export default function TransactionsPage() {
                   <svg className="w-4 h-4 text-zinc-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M3 7.5L7.5 3m0 0L12 7.5M7.5 3v13.5m13.5-4.5L16.5 21m0 0L12 16.5m4.5 4.5V7.5" /></svg>
                   <p className="text-xs font-semibold text-zinc-300">Tipe Transaksi *</p>
                 </div>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-2 gap-2 sm:gap-3">
                   <button type="button" onClick={() => setType('in')}
-                    className={`p-4 rounded-xl border text-left transition-all ${type === 'in' ? 'bg-emerald-500/20 border-emerald-500' : 'bg-zinc-800 border-white/10 hover:border-white/20'}`}>
-                    <div className="flex items-center gap-2.5">
-                      <svg className={`w-5 h-5 ${type === 'in' ? 'text-emerald-400' : 'text-zinc-500'}`} fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m0 0l6.75-6.75M12 19.5l-6.75-6.75" /></svg>
-                      <div>
-                        <p className={`text-sm font-semibold ${type === 'in' ? 'text-emerald-400' : 'text-zinc-300'}`}>Barang Masuk</p>
-                        <p className="text-[10px] text-zinc-500 mt-0.5">Stok barang akan bertambah</p>
+                    className={`p-3 sm:p-4 rounded-xl border text-left transition-all ${type === 'in' ? 'bg-emerald-500/20 border-emerald-500' : 'bg-zinc-800 border-white/10 hover:border-white/20'}`}>
+                    <div className="flex items-center gap-2">
+                      <svg className={`w-5 h-5 shrink-0 ${type === 'in' ? 'text-emerald-400' : 'text-zinc-500'}`} fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m0 0l6.75-6.75M12 19.5l-6.75-6.75" /></svg>
+                      <div className="min-w-0">
+                        <p className={`text-xs sm:text-sm font-semibold ${type === 'in' ? 'text-emerald-400' : 'text-zinc-300'}`}>Barang Masuk</p>
+                        <p className="text-[9px] sm:text-[10px] text-zinc-500 mt-0.5">Stok bertambah</p>
                       </div>
                     </div>
                   </button>
                   <button type="button" onClick={() => setType('out')}
-                    className={`p-4 rounded-xl border text-left transition-all ${type === 'out' ? 'bg-red-500/20 border-red-500' : 'bg-zinc-800 border-white/10 hover:border-white/20'}`}>
-                    <div className="flex items-center gap-2.5">
-                      <svg className={`w-5 h-5 ${type === 'out' ? 'text-red-400' : 'text-zinc-500'}`} fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 19.5v-15m0 0l-6.75 6.75M12 4.5l6.75 6.75" /></svg>
-                      <div>
-                        <p className={`text-sm font-semibold ${type === 'out' ? 'text-red-400' : 'text-zinc-300'}`}>Barang Keluar</p>
-                        <p className="text-[10px] text-zinc-500 mt-0.5">Stok barang akan berkurang</p>
+                    className={`p-3 sm:p-4 rounded-xl border text-left transition-all ${type === 'out' ? 'bg-red-500/20 border-red-500' : 'bg-zinc-800 border-white/10 hover:border-white/20'}`}>
+                    <div className="flex items-center gap-2">
+                      <svg className={`w-5 h-5 shrink-0 ${type === 'out' ? 'text-red-400' : 'text-zinc-500'}`} fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 19.5v-15m0 0l-6.75 6.75M12 4.5l6.75 6.75" /></svg>
+                      <div className="min-w-0">
+                        <p className={`text-xs sm:text-sm font-semibold ${type === 'out' ? 'text-red-400' : 'text-zinc-300'}`}>Barang Keluar</p>
+                        <p className="text-[9px] sm:text-[10px] text-zinc-500 mt-0.5">Stok berkurang</p>
                       </div>
                     </div>
                   </button>
@@ -290,7 +290,7 @@ export default function TransactionsPage() {
               </div>
 
               {/* Detail Produk */}
-              <div className="bg-indigo-950/40 rounded-xl px-4 py-4 space-y-3">
+              <div className="bg-indigo-950/40 rounded-xl px-3 sm:px-4 py-3 sm:py-4 space-y-3">
                 <div className="flex items-center gap-2 mb-1">
                   <svg className="w-4 h-4 text-indigo-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" /></svg>
                   <p className="text-xs font-semibold text-indigo-300">Detail Produk *</p>
@@ -360,11 +360,11 @@ export default function TransactionsPage() {
               </div>
 
               {/* Footer */}
-              <div className="flex items-center justify-between pt-3 border-t border-white/[0.06]">
-                <p className="text-[10px] text-zinc-600">Field bertanda * wajib diisi</p>
-                <div className="flex gap-2">
-                  <button type="button" onClick={() => { setModalOpen(false); setProductSearch(''); setSelectedProduct('') }} className="px-4 py-2 rounded-lg border border-white/20 text-zinc-300 text-sm font-medium hover:bg-white/5 transition">Batal</button>
-                  <button type="submit" className="px-5 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-medium transition flex items-center gap-2">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 border-t border-white/[0.06]">
+                <p className="text-[10px] text-zinc-600 hidden sm:block">Field bertanda * wajib diisi</p>
+                <div className="flex gap-2 w-full sm:w-auto">
+                  <button type="button" onClick={() => { setModalOpen(false); setProductSearch(''); setSelectedProduct('') }} className="flex-1 sm:flex-none px-4 py-2.5 sm:py-2 rounded-lg border border-white/20 text-zinc-300 text-sm font-medium hover:bg-white/5 transition">Batal</button>
+                  <button type="submit" className="flex-1 sm:flex-none px-5 py-2.5 sm:py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-medium transition flex items-center justify-center gap-2">
                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M5 3h11l5 5v11a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2z" /><path strokeLinecap="round" strokeLinejoin="round" d="M7 3v5h8V3" /><path strokeLinecap="round" strokeLinejoin="round" d="M7 21v-7h10v7" /></svg>
                     Catat Transaksi
                   </button>

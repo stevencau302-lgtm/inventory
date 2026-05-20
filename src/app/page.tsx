@@ -51,7 +51,7 @@ export default function Dashboard() {
       </div>
 
       {/* Stat Cards - clean 4-column grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
         <StatCard icon="box" label="Total produk" value={String(totalProducts)} subtitle="+3 minggu ini" border="border-l-indigo-500" />
         <StatCard icon="coins" label="Nilai inventory" value={formatRp(totalValue)} subtitle="+12% bulan ini" border="border-l-emerald-500" />
         <StatCard icon="alert" label="Stok menipis" value={String(lowStock)} subtitle="Perlu restock" border="border-l-amber-500" />
