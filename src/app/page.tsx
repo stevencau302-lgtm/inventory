@@ -7,71 +7,94 @@ export default function Dashboard() {
   const [products, setProducts] = useState<Product[]>([])
   const [categories, setCategories] = useState<Category[]>([])
   const [mounted, setMounted] = useState(false)
+  const [time, setTime] = useState('')
+
   useEffect(() => {
     let p = getProducts(); let c = getCategories()
     if (!p.length) { const d = loadSampleData(); p = d.products; c = d.categories }
     setProducts(p); setCategories(c); setMounted(true)
+    setTime(new Date().toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }))
   }, [])
+
   if (!mounted) return null
 
-  const total = products.length
   const inStock = products.filter(p => p.stock > p.minStock).length
   const lowStock = products.filter(p => p.stock > 0 && p.stock <= p.minStock).length
   const outStock = products.filter(p => p.stock === 0).length
+  const total = products.length
   const totalValue = products.reduce((s, p) => s + p.price * p.stock, 0)
-  const totalUnits = products.reduce((s, p) => s + p.stock, 0)
   const recent = products.slice(0, 4)
 
   return (
-    <div className="space-y-4 md:space-y-5 max-w-5xl">
-      {/* Welcome - compact */}
-      <div className="cozy-card p-4 md:p-5 bg-cozy-navy !border-transparent text-white relative overflow-hidden">
-        <div className="absolute -top-6 -right-6 w-24 h-24 rounded-full bg-cozy-gold/10" />
-        <div className="relative z-10">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-lg font-bold">Halo, Admin! 👋</h1>
-              <p className="text-white/60 text-xs mt-0.5">Ringkasan hari ini</p>
+    <div className="space-y-4 max-w-[390px] mx-auto">
+      {/* Welcome Header */}
+      <div className="glass-card p-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-11 h-11 rounded-full bg-gradient-to-br from-teal-400 to-teal-600 flex items-center justify-center text-white text-sm font-bold shadow-lg shadow-teal-500/20">
+              A
             </div>
-            <div className="text-right">
-              <p className="text-xl font-bold text-cozy-gold">{totalUnits.toLocaleString()}</p>
-              <p className="text-white/50 text-[10px]">Total Unit</p>
+            <div>
+              <div className="flex items-center gap-1.5">
+                <h1 className="text-[15px] font-bold text-white">Halo, Admin!</h1>
+                <span className="animate-wave inline-block">👋</span>
+              </div>
+              <p className="text-[11px] text-zinc-500 mt-0.5">{time}</p>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Stats - 2x2 grid, very compact */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5">
-        <StatCard label="Stok Aman" value={inStock} color="text-emerald-500 dark:text-emerald-400" />
-        <StatCard label="Stok Rendah" value={lowStock} color="text-amber-500 dark:text-amber-400" />
-        <StatCard label="Habis" value={outStock} color="text-red-500 dark:text-red-400" />
-        <StatCard label="Produk" value={total} color="text-cozy-navy dark:text-cozy-gold" />
+      {/* Metric Cards 2x2 */}
+      <div className="grid grid-cols-2 gap-3">
+        <MetricCard icon={<CheckIcon />} label="Stok Aman" value={inStock} color="emerald" />
+        <MetricCard icon={<AlertIcon />} label="Stok Rendah" value={lowStock} color="amber" />
+        <MetricCard icon={<XIcon />} label="Habis" value={outStock} color="red" />
+        <MetricCard icon={<BoxIcon />} label="Produk" value={total} color="blue" />
       </div>
 
-      {/* Total value bar */}
-      <div className="cozy-card p-3 flex items-center justify-between">
-        <span className="text-xs font-medium text-cozy-subtle dark:text-[#a1a1aa]">Total Nilai Inventory</span>
-        <span className="text-sm font-bold text-cozy-navy dark:text-cozy-gold">{formatRp(totalValue)}</span>
-      </div>
-
-      {/* Recent - compact list */}
-      <div className="cozy-card overflow-hidden">
-        <div className="flex items-center justify-between px-4 py-2.5 border-b border-cozy-border dark:border-[#27272a]">
-          <h2 className="text-xs font-semibold text-cozy-text dark:text-[#fafafa] uppercase tracking-wide">Terbaru</h2>
-          <Link href="/products" className="text-[11px] text-cozy-navy dark:text-cozy-gold font-semibold">Semua →</Link>
+      {/* Total Value Banner */}
+      <div className="glass-card p-4 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-xl bg-amber-500/10 flex items-center justify-center">
+            <svg className="w-4.5 h-4.5 text-amber-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+          </div>
+          <div>
+            <p className="text-[10px] text-zinc-500 font-medium uppercase tracking-wider">Total Nilai Inventory</p>
+            <p className="text-base font-bold text-amber-400 mt-0.5">{formatRp(totalValue)}</p>
+          </div>
         </div>
-        <div className="divide-y divide-cozy-border/50 dark:divide-[#27272a]/50">
-          {recent.map(p => (
-            <div key={p.id} className="px-4 py-2.5 flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-cozy-gray dark:bg-[#27272a] flex items-center justify-center text-[10px] font-bold text-cozy-navy dark:text-cozy-gold shrink-0">{p.name.substring(0,2).toUpperCase()}</div>
+        <div className="flex items-center gap-1 px-2 py-1 rounded-lg bg-emerald-500/10">
+          <svg className="w-3 h-3 text-emerald-400" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25" /></svg>
+          <span className="text-[10px] font-bold text-emerald-400">+12%</span>
+        </div>
+      </div>
+
+      {/* Recent Products */}
+      <div className="glass-card overflow-hidden">
+        <div className="flex items-center justify-between px-4 py-3 border-b border-white/[0.04]">
+          <h2 className="text-xs font-semibold text-zinc-300 uppercase tracking-wide">Produk Terbaru</h2>
+          <Link href="/products" className="px-3 py-1 rounded-full text-[10px] font-semibold text-teal-400 bg-teal-400/10 hover:bg-teal-400/15 transition">
+            Semua →
+          </Link>
+        </div>
+        <div className="divide-y divide-white/[0.04]">
+          {recent.map((p, i) => (
+            <div key={p.id} className="px-4 py-3 flex items-center gap-3">
+              <div className={`w-9 h-9 rounded-xl flex items-center justify-center text-[11px] font-bold text-white shrink-0 ${
+                ['bg-gradient-to-br from-violet-500 to-purple-600', 'bg-gradient-to-br from-blue-500 to-cyan-600', 'bg-gradient-to-br from-orange-500 to-red-500', 'bg-gradient-to-br from-emerald-500 to-teal-600'][i % 4]
+              }`}>
+                {p.name.substring(0, 2).toUpperCase()}
+              </div>
               <div className="flex-1 min-w-0">
-                <p className="text-[13px] font-medium text-cozy-text dark:text-[#fafafa] truncate">{p.name}</p>
-                <p className="text-[10px] text-cozy-muted dark:text-[#71717a]">{p.category}</p>
+                <p className="text-[13px] font-medium text-white truncate">{p.name}</p>
+                <p className="text-[10px] text-zinc-500 mt-0.5">
+                  <span className="px-1.5 py-0.5 rounded bg-white/[0.04] text-zinc-400">{p.category}</span>
+                </p>
               </div>
               <div className="text-right shrink-0">
-                <p className="text-[12px] font-semibold text-cozy-text dark:text-[#e4e4e7]">{formatRp(p.price)}</p>
-                <StatusBadge product={p} />
+                <p className="text-[12px] font-semibold text-zinc-200">{formatRp(p.price)}</p>
+                <StatusPill product={p} />
               </div>
             </div>
           ))}
@@ -81,17 +104,32 @@ export default function Dashboard() {
   )
 }
 
-function StatCard({ label, value, color }: { label: string, value: number, color: string }) {
+function MetricCard({ icon, label, value, color }: { icon: React.ReactNode, label: string, value: number, color: string }) {
+  const colors: Record<string, { bg: string, text: string }> = {
+    emerald: { bg: 'bg-emerald-500/10', text: 'text-emerald-400' },
+    amber: { bg: 'bg-amber-500/10', text: 'text-amber-400' },
+    red: { bg: 'bg-red-500/10', text: 'text-red-400' },
+    blue: { bg: 'bg-blue-500/10', text: 'text-blue-400' },
+  }
+  const c = colors[color]
   return (
-    <div className="cozy-card p-3">
-      <p className="text-[10px] text-cozy-muted dark:text-[#71717a] font-medium uppercase tracking-wide">{label}</p>
-      <p className={`text-xl font-bold mt-0.5 ${color}`}>{value}</p>
+    <div className="glass-card p-3.5">
+      <div className={`w-8 h-8 rounded-xl ${c.bg} flex items-center justify-center mb-2.5`}>
+        <div className={c.text}>{icon}</div>
+      </div>
+      <p className="text-[10px] text-zinc-500 font-medium uppercase tracking-wider">{label}</p>
+      <p className={`text-2xl font-bold mt-0.5 ${c.text}`}>{value}</p>
     </div>
   )
 }
 
-function StatusBadge({ product }: { product: Product }) {
+function StatusPill({ product }: { product: Product }) {
   const s = getStatus(product), l = getStatusLabel(product)
-  const c = s === 'in-stock' ? 'cozy-badge-success' : s === 'low-stock' ? 'cozy-badge-warning' : 'cozy-badge-danger'
-  return <span className={`cozy-badge ${c}`}>{l}</span>
+  const c = s === 'in-stock' ? 'badge-success' : s === 'low-stock' ? 'badge-warning' : 'badge-danger'
+  return <span className={`badge ${c} mt-1`}>{l}</span>
 }
+
+function CheckIcon() { return <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg> }
+function AlertIcon() { return <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" /></svg> }
+function XIcon() { return <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" /></svg> }
+function BoxIcon() { return <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" /></svg> }

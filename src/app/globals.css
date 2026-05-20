@@ -4,150 +4,128 @@
 
 @layer base {
   body {
-    @apply bg-cozy-bg text-cozy-text antialiased;
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    @apply antialiased;
+    background: linear-gradient(180deg, #0A0A0F 0%, #12121A 100%);
+    color: #fafafa;
+    min-height: 100vh;
   }
-  .dark body, html.dark body {
-    @apply bg-[#0a0a0b] text-[#fafafa];
-  }
-}
-
-@layer utilities {
-  .dark .cozy-card { @apply bg-[#18181b] border-[#27272a]; box-shadow: none; }
-  .dark .cozy-card::before { background: radial-gradient(circle at top right, rgba(245,197,66,0.06), transparent 70%); }
-  .dark .cozy-card::after { background: radial-gradient(circle at bottom left, rgba(99,102,241,0.05), transparent 70%); }
-  .dark .cozy-card:hover { @apply bg-[#1f1f23] border-[#3f3f46]; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
-  .dark .cozy-btn-ghost { @apply bg-[#18181b] text-[#fafafa] border-[#27272a]; }
-  .dark .cozy-btn-ghost:hover { @apply bg-[#27272a]; }
-  .dark .cozy-input { @apply bg-[#18181b] border-[#27272a] text-[#fafafa] placeholder-[#71717a]; }
-  .dark .cozy-input:focus { @apply border-cozy-gold ring-2 ring-cozy-gold/20 bg-[#0a0a0b]; }
-  .dark .nav-link { @apply text-[#d4d4d8] hover:text-[#fafafa] hover:bg-[#27272a]; }
-  .dark .nav-link.active { @apply text-cozy-gold bg-[#27272a] border border-[#3f3f46]; }
-  .dark .glass-card { @apply bg-[#18181b] border-[#27272a]; }
-  .dark .stat-card { @apply bg-[#18181b] border-[#27272a]; }
-  .dark .text-cozy-text { color: #fafafa; }
-  .dark .text-cozy-subtle { color: #a1a1aa; }
-  .dark .text-cozy-muted { color: #71717a; }
-  .dark .cozy-badge-success { @apply bg-emerald-950/50 text-emerald-400 ring-emerald-800/30; }
-  .dark .cozy-badge-warning { @apply bg-amber-950/50 text-amber-400 ring-amber-800/30; }
-  .dark .cozy-badge-danger { @apply bg-red-950/50 text-red-400 ring-red-800/30; }
 }
 
 @layer components {
-  .cozy-card {
-    @apply rounded-xl bg-white border border-cozy-border/80 transition-all duration-200 ease-out relative overflow-hidden;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 2px 6px rgba(0,0,0,0.02);
+  /* Premium Glass Card */
+  .glass-card {
+    @apply rounded-[20px] relative overflow-hidden transition-all duration-200;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(12px);
   }
-  .cozy-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 80px;
-    height: 80px;
-    background: radial-gradient(circle at top right, rgba(99,102,241,0.04), transparent 70%);
-    pointer-events: none;
+  .glass-card:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
   }
-  .cozy-card::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 60px;
-    height: 60px;
-    background: radial-gradient(circle at bottom left, rgba(245,197,66,0.04), transparent 70%);
-    pointer-events: none;
-  }
-  .cozy-card:hover {
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
-    transform: translateY(-1px);
-    border-color: rgba(99,102,241,0.15);
-  }
-  .cozy-btn {
-    @apply inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold
-           transition-all duration-150 cursor-pointer active:scale-[0.97];
-  }
-  .cozy-btn-primary {
-    @apply cozy-btn bg-cozy-navy text-white;
-    box-shadow: 0 1px 3px rgba(27,46,75,0.2);
-  }
-  .cozy-btn-primary:hover {
-    @apply bg-cozy-navyLight;
-    box-shadow: 0 2px 8px rgba(27,46,75,0.25);
-  }
-  .cozy-btn-gold {
-    @apply cozy-btn bg-cozy-gold text-cozy-navy;
-  }
-  .cozy-btn-ghost {
-    @apply cozy-btn bg-transparent text-cozy-text border border-cozy-border;
-  }
-  .cozy-btn-ghost:hover {
-    @apply bg-cozy-gray;
-  }
-  .cozy-input {
-    @apply w-full px-3.5 py-2.5 rounded-lg text-sm text-cozy-text placeholder-cozy-muted
-           outline-none border border-cozy-border bg-cozy-gray
-           transition-all duration-150 font-medium;
-  }
-  .cozy-input:focus {
-    @apply border-cozy-navy bg-white ring-2 ring-cozy-navy/10;
-  }
-  .cozy-badge {
-    @apply inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-semibold uppercase tracking-wider;
-  }
-  .cozy-badge-success { @apply bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100; }
-  .cozy-badge-warning { @apply bg-amber-50 text-amber-700 ring-1 ring-amber-100; }
-  .cozy-badge-danger { @apply bg-red-50 text-red-700 ring-1 ring-red-100; }
 
+  /* Stat Card */
+  .stat-card {
+    @apply glass-card p-4;
+  }
+
+  /* Cozy Card alias */
+  .cozy-card {
+    @apply glass-card;
+  }
+
+  /* Form Input */
+  .form-input, .cozy-input {
+    @apply w-full px-4 py-3 rounded-xl text-sm font-medium outline-none transition-all duration-150;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: #fafafa;
+  }
+  .form-input::placeholder, .cozy-input::placeholder {
+    color: #52525b;
+  }
+  .form-input:focus, .cozy-input:focus {
+    border-color: #2dd4bf;
+    box-shadow: 0 0 0 3px rgba(45, 212, 191, 0.1);
+    background: rgba(255, 255, 255, 0.06);
+  }
+
+  /* Buttons */
+  .btn-primary, .cozy-btn-primary {
+    @apply inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold
+           transition-all duration-150 cursor-pointer active:scale-[0.97];
+    background: linear-gradient(135deg, #0d9488, #14b8a6);
+    color: #fff;
+    box-shadow: 0 2px 12px rgba(20, 184, 166, 0.25);
+  }
+  .btn-primary:hover, .cozy-btn-primary:hover {
+    box-shadow: 0 4px 20px rgba(20, 184, 166, 0.35);
+  }
+
+  .btn-ghost, .cozy-btn-ghost {
+    @apply inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold
+           transition-all duration-150 cursor-pointer active:scale-[0.97];
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: #d4d4d8;
+  }
+  .btn-ghost:hover, .cozy-btn-ghost:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #fafafa;
+  }
+
+  /* Badges with glow */
+  .badge, .cozy-badge {
+    @apply inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider;
+  }
+  .badge-success, .cozy-badge-success {
+    background: rgba(16, 185, 129, 0.12);
+    color: #34d399;
+    box-shadow: 0 0 8px rgba(16, 185, 129, 0.15);
+  }
+  .badge-warning, .cozy-badge-warning {
+    background: rgba(245, 158, 11, 0.12);
+    color: #fbbf24;
+    box-shadow: 0 0 8px rgba(245, 158, 11, 0.15);
+  }
+  .badge-danger, .cozy-badge-danger {
+    background: rgba(239, 68, 68, 0.12);
+    color: #f87171;
+    box-shadow: 0 0 8px rgba(239, 68, 68, 0.15);
+  }
+
+  /* Nav Link */
   .nav-link {
-    @apply flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-cozy-subtle
-           hover:text-cozy-text hover:bg-cozy-gray transition-all duration-150;
+    @apply flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150;
+    color: #a1a1aa;
+  }
+  .nav-link:hover {
+    color: #fafafa;
+    background: rgba(255, 255, 255, 0.05);
   }
   .nav-link.active {
-    @apply text-cozy-navy bg-cozy-goldLight font-semibold;
+    color: #2dd4bf;
+    background: rgba(45, 212, 191, 0.08);
+    border: 1px solid rgba(45, 212, 191, 0.15);
+    font-weight: 600;
   }
-
-  .glass-card { @apply cozy-card; }
-  .stat-card { @apply cozy-card p-4 relative; }
-  .stat-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background: linear-gradient(90deg, rgba(99,102,241,0.5), rgba(245,197,66,0.3), transparent);
-    border-radius: 2px 2px 0 0;
-  }
-  .form-input { @apply cozy-input; }
-  .btn-primary { @apply cozy-btn-primary; }
-  .btn-ghost { @apply cozy-btn-ghost; }
-  .badge { @apply cozy-badge; }
-  .badge-success { @apply cozy-badge-success; }
-  .badge-warning { @apply cozy-badge-warning; }
-  .badge-danger { @apply cozy-badge-danger; }
 }
 
 .safe-area-bottom { padding-bottom: env(safe-area-inset-bottom, 0px); }
 
-/* Dark mode text overrides */
-.dark h1, .dark h2, .dark h3 { color: #fafafa; }
-.dark .text-slate-500 { color: #a1a1aa !important; }
-.dark .text-slate-400 { color: #d4d4d8 !important; }
-.dark .text-slate-300 { color: #e4e4e7 !important; }
-.dark .text-white { color: #fafafa; }
-.dark code.text-slate-400 { color: #d4d4d8 !important; background: #27272a; }
-.dark .bg-slate-800 { background: #27272a !important; }
-.dark .border-white\/5, .dark .border-white\/\[0\.03\] { border-color: #27272a !important; }
-.dark .divide-white\/5 > :not([hidden]) ~ :not([hidden]),
-.dark .divide-white\/\[0\.03\] > :not([hidden]) ~ :not([hidden]) { border-color: #27272a !important; }
-
-::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #d4d4d8; border-radius: 3px; }
-.dark ::-webkit-scrollbar-thumb { background: #3f3f46; }
+::-webkit-scrollbar-thumb { background: #27272a; border-radius: 4px; }
 
 @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 @keyframes slideOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
 .toast-enter { animation: slideIn 0.3s ease-out; }
 .toast-exit { animation: slideOut 0.3s ease-in forwards; }
+
+@keyframes wave {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(20deg); }
+  75% { transform: rotate(-10deg); }
+}
+.animate-wave { animation: wave 1.5s ease-in-out infinite; }
