@@ -115,31 +115,72 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Stock Alert Section */}
+      {/* Peringatan Section */}
       <div className="rounded-xl overflow-hidden border border-white/[0.08] bg-[#161616]">
-        <div className="px-5 py-4 border-b border-white/[0.06] flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center">
-            <svg className="w-4 h-4 text-amber-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" /></svg>
+        <div className="px-5 py-4 border-b border-white/[0.06] flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <svg className="w-5 h-5 text-amber-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" /></svg>
+            <h3 className="text-sm font-semibold text-white">Peringatan</h3>
           </div>
-          <h3 className="text-sm font-semibold text-white">Alert Stok Menipis</h3>
+          {(outOfStock + alertProducts.length) > 0 && (
+            <span className="w-6 h-6 rounded-full bg-red-500 text-white text-[11px] font-bold flex items-center justify-center">{outOfStock + alertProducts.length}</span>
+          )}
         </div>
-        <div className="p-5">
-          {alertProducts.length === 0 ? (
-            <div className="text-center py-8">
+        <div className="max-h-[320px] overflow-y-auto" style={{ scrollbarWidth: 'thin', scrollbarColor: '#3f3f46 transparent' }}>
+          {(outOfStock + alertProducts.length) === 0 ? (
+            <div className="text-center py-10 px-5">
               <svg className="w-12 h-12 mx-auto text-emerald-400/60 mb-3" fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
               <p className="text-zinc-500 text-sm">Semua produk stok aman</p>
             </div>
           ) : (
-            <div className="space-y-2">
-              {alertProducts.map(p => (
-                <div key={p.id} className="flex items-center justify-between px-4 py-3 rounded-lg border-l-2 border-l-amber-500 bg-white/[0.02] border border-white/[0.05]">
-                  <div>
-                    <p className="text-[13px] font-medium text-zinc-200">{p.name}</p>
-                    <p className="text-[11px] text-zinc-500 mt-0.5">{p.sku} — Min: {p.minStock}</p>
+            <div className="p-4 space-y-4">
+              {/* Stok Habis (merah) */}
+              {products.filter(p => p.stock === 0).length > 0 && (
+                <div>
+                  <p className="text-[11px] font-semibold text-red-400 uppercase tracking-wider mb-2 px-1">Stok Habis</p>
+                  <div className="space-y-1.5">
+                    {products.filter(p => p.stock === 0).map(p => (
+                      <div key={p.id} className="flex items-center justify-between px-4 py-3 rounded-lg border-l-2 border-l-red-500 bg-white/[0.01] border border-white/[0.04] hover:bg-white/[0.03] transition">
+                        <div className="flex items-center gap-3">
+                          <svg className="w-4 h-4 text-red-400 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" /></svg>
+                          <div>
+                            <p className="text-[13px] font-medium text-white">{p.name}</p>
+                            <p className="text-[11px] text-zinc-500 font-mono mt-0.5">{p.sku} — Min: {p.minStock}</p>
+                          </div>
+                        </div>
+                        <div className="text-right shrink-0">
+                          <p className="text-[13px] font-semibold text-red-400">Stok: {p.stock}</p>
+                          <p className="text-[10px] text-zinc-500 font-mono mt-0.5">2 menit lalu</p>
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                  <span className="text-[13px] font-semibold text-amber-400">Stok: {p.stock}</span>
                 </div>
-              ))}
+              )}
+
+              {/* Stok Menipis (amber) */}
+              {alertProducts.length > 0 && (
+                <div>
+                  <p className="text-[11px] font-semibold text-amber-400 uppercase tracking-wider mb-2 px-1">Stok Menipis</p>
+                  <div className="space-y-1.5">
+                    {alertProducts.map(p => (
+                      <div key={p.id} className="flex items-center justify-between px-4 py-3 rounded-lg border-l-2 border-l-amber-500 bg-white/[0.01] border border-white/[0.04] hover:bg-white/[0.03] transition">
+                        <div className="flex items-center gap-3">
+                          <svg className="w-4 h-4 text-amber-400 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" /></svg>
+                          <div>
+                            <p className="text-[13px] font-medium text-white">{p.name}</p>
+                            <p className="text-[11px] text-zinc-500 font-mono mt-0.5">{p.sku} — Min: {p.minStock}</p>
+                          </div>
+                        </div>
+                        <div className="text-right shrink-0">
+                          <p className="text-[13px] font-semibold text-amber-400">Stok: {p.stock}</p>
+                          <p className="text-[10px] text-zinc-500 font-mono mt-0.5">5 menit lalu</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>
