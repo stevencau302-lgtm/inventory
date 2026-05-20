@@ -170,7 +170,7 @@ function StatCard({ icon, label, value, desc, color }: { icon: string; label: st
         </div>
         <div className="min-w-0">
           <p className="text-[10px] text-white/50 font-medium uppercase tracking-wider">{label}</p>
-          <p className="text-sm lg:text-base font-bold text-white mt-0.5 break-all leading-tight">{value}</p>
+          <p className="text-[12px] sm:text-sm lg:text-base font-bold text-white mt-0.5 whitespace-nowrap leading-tight">{value}</p>
           <p className="text-[10px] text-white/40 mt-0.5">{desc}</p>
         </div>
       </div>
