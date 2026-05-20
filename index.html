@@ -7,167 +7,166 @@
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/recharts@2.12.7/umd/Recharts.js"></script>
 </head>
 <body>
-    <!-- Sidebar -->
-    <aside class="sidebar" id="sidebar">
-        <div class="sidebar-header">
-            <div class="logo">
+    <!-- Navbar -->
+    <nav class="top-navbar">
+        <div class="navbar-left">
+            <div class="navbar-logo">
                 <i class="fas fa-boxes-stacked"></i>
                 <span>Inventory<span class="logo-accent">Pro</span></span>
             </div>
-            <button class="sidebar-toggle" id="sidebarToggle">
+            <ul class="navbar-menu">
+                <li><a href="#" class="nav-link active" data-page="dashboard">Dashboard</a></li>
+                <li><a href="#" class="nav-link" data-page="products">Master Produk</a></li>
+                <li><a href="#" class="nav-link" data-page="transactions">Transaksi</a></li>
+                <li><a href="#" class="nav-link" data-page="returns">Retur</a></li>
+                <li><a href="#" class="nav-link" data-page="pending">Pending</a></li>
+                <li><a href="#" class="nav-link" data-page="stockopname">Stock Opname</a></li>
+                <li><a href="#" class="nav-link" data-page="reports">Laporan Stok</a></li>
+                <li><a href="#" class="nav-link" data-page="analytics">Analisa</a></li>
+                <li><a href="#" class="nav-link" data-page="tutorial">Tutorial</a></li>
+            </ul>
+        </div>
+        <div class="navbar-right">
+            <button class="navbar-icon-btn notification-btn">
+                <i class="fas fa-bell"></i>
+                <span class="notif-badge">3</span>
+            </button>
+            <div class="navbar-avatar">
+                <img src="https://ui-avatars.com/api/?name=Admin&background=6366f1&color=fff&size=36" alt="User Avatar">
+            </div>
+            <button class="mobile-menu-toggle" id="mobileMenuToggle">
                 <i class="fas fa-bars"></i>
             </button>
         </div>
-        <nav class="sidebar-nav">
-            <a href="#" class="nav-item active" data-page="dashboard">
-                <i class="fas fa-chart-pie"></i>
-                <span>Dashboard</span>
-            </a>
-            <a href="#" class="nav-item" data-page="products">
-                <i class="fas fa-box"></i>
-                <span>Produk</span>
-            </a>
-            <a href="#" class="nav-item" data-page="categories">
-                <i class="fas fa-tags"></i>
-                <span>Kategori</span>
-            </a>
-            <a href="#" class="nav-item" data-page="reports">
-                <i class="fas fa-chart-bar"></i>
-                <span>Laporan</span>
-            </a>
-            <a href="#" class="nav-item" data-page="settings">
-                <i class="fas fa-gear"></i>
-                <span>Pengaturan</span>
-            </a>
-        </nav>
-        <div class="sidebar-footer">
-            <div class="user-info">
-                <div class="user-avatar">
-                    <i class="fas fa-user"></i>
-                </div>
-                <div class="user-details">
-                    <span class="user-name">Admin</span>
-                    <span class="user-role">Manager</span>
-                </div>
-            </div>
-        </div>
-    </aside>
+    </nav>
 
-    <!-- Main Content -->
-    <main class="main-content">
-        <!-- Header -->
-        <header class="top-header">
-            <div class="header-left">
-                <button class="mobile-toggle" id="mobileToggle">
-                    <i class="fas fa-bars"></i>
-                </button>
-                <div class="search-box">
-                    <i class="fas fa-search"></i>
-                    <input type="text" placeholder="Cari produk..." id="searchInput">
-                </div>
-            </div>
-            <div class="header-right">
-                <button class="header-btn notification-btn">
-                    <i class="fas fa-bell"></i>
-                    <span class="badge">3</span>
-                </button>
-                <button class="header-btn theme-btn" id="themeToggle">
-                    <i class="fas fa-moon"></i>
-                </button>
-            </div>
-        </header>
-
-        <!-- Dashboard Page -->
+    <!-- Main Content Wrapper -->
+    <main class="main-wrapper">
+        <!-- ========== DASHBOARD PAGE ========== -->
         <section class="page active" id="page-dashboard">
-            <div class="page-header">
-                <h1>Dashboard</h1>
-                <p>Overview inventory kamu hari ini</p>
-            </div>
-
-            <!-- Stats Cards -->
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-icon blue">
-                        <i class="fas fa-box"></i>
-                    </div>
-                    <div class="stat-info">
-                        <h3 id="totalProducts">0</h3>
-                        <p>Total Produk</p>
-                    </div>
-                    <div class="stat-trend up">
-                        <i class="fas fa-arrow-up"></i> 12%
-                    </div>
+            <!-- Dashboard Header with Gradient -->
+            <div class="dashboard-header">
+                <div class="dashboard-header-content">
+                    <h1>Dashboard Overview</h1>
+                    <p>Pantau performa inventory Anda secara real-time</p>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-icon green">
-                        <i class="fas fa-check-circle"></i>
+                <!-- Stats Cards Row -->
+                <div class="stats-row">
+                    <div class="stat-card">
+                        <div class="stat-card-icon blue">
+                            <i class="fas fa-box"></i>
+                        </div>
+                        <div class="stat-card-body">
+                            <span class="stat-card-label">Total Produk</span>
+                            <h3 class="stat-card-value" id="totalProducts">0</h3>
+                            <span class="stat-card-desc">Produk terdaftar</span>
+                        </div>
                     </div>
-                    <div class="stat-info">
-                        <h3 id="inStock">0</h3>
-                        <p>Stok Tersedia</p>
+                    <div class="stat-card">
+                        <div class="stat-card-icon green">
+                            <i class="fas fa-coins"></i>
+                        </div>
+                        <div class="stat-card-body">
+                            <span class="stat-card-label">Nilai Inventory</span>
+                            <h3 class="stat-card-value" id="totalValue">Rp 0</h3>
+                            <span class="stat-card-desc">Total aset inventory</span>
+                        </div>
                     </div>
-                    <div class="stat-trend up">
-                        <i class="fas fa-arrow-up"></i> 8%
+                    <div class="stat-card">
+                        <div class="stat-card-icon orange">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="stat-card-body">
+                            <span class="stat-card-label">Stok Menipis</span>
+                            <h3 class="stat-card-value" id="lowStock">0</h3>
+                            <span class="stat-card-desc">Perlu restock segera</span>
+                        </div>
                     </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon orange">
-                        <i class="fas fa-exclamation-triangle"></i>
-                    </div>
-                    <div class="stat-info">
-                        <h3 id="lowStock">0</h3>
-                        <p>Stok Rendah</p>
-                    </div>
-                    <div class="stat-trend down">
-                        <i class="fas fa-arrow-down"></i> 3%
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon purple">
-                        <i class="fas fa-dollar-sign"></i>
-                    </div>
-                    <div class="stat-info">
-                        <h3 id="totalValue">Rp 0</h3>
-                        <p>Total Nilai</p>
-                    </div>
-                    <div class="stat-trend up">
-                        <i class="fas fa-arrow-up"></i> 15%
+                    <div class="stat-card">
+                        <div class="stat-card-icon red">
+                            <i class="fas fa-times-circle"></i>
+                        </div>
+                        <div class="stat-card-body">
+                            <span class="stat-card-label">Stok Habis</span>
+                            <h3 class="stat-card-value" id="outOfStock">0</h3>
+                            <span class="stat-card-desc">Produk tidak tersedia</span>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Recent Products -->
-            <div class="content-card">
-                <div class="card-header">
-                    <h2>Produk Terbaru</h2>
-                    <button class="btn btn-primary btn-sm" onclick="showPage('products')">
-                        Lihat Semua <i class="fas fa-arrow-right"></i>
-                    </button>
+            <!-- Charts Section -->
+            <div class="charts-section">
+                <div class="chart-card">
+                    <div class="chart-card-header">
+                        <h3>Analisa Penjualan</h3>
+                        <span class="chart-subtitle">Top 5 Produk Terlaris</span>
+                    </div>
+                    <div class="chart-body" id="barChartContainer"></div>
                 </div>
-                <div class="table-container">
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>Produk</th>
-                                <th>Kategori</th>
-                                <th>Stok</th>
-                                <th>Harga</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody id="recentProducts">
-                        </tbody>
-                    </table>
+                <div class="chart-card">
+                    <div class="chart-card-header">
+                        <h3>Tren Transaksi</h3>
+                        <span class="chart-subtitle">7 Hari Terakhir</span>
+                    </div>
+                    <div class="chart-body" id="lineChartContainer"></div>
+                </div>
+            </div>
+
+            <!-- Bottom Section: Transactions + Best Sellers -->
+            <div class="bottom-section">
+                <div class="bottom-card dark-blue">
+                    <div class="bottom-card-header">
+                        <h3><i class="fas fa-exchange-alt"></i> Transaksi Terbaru</h3>
+                    </div>
+                    <div class="bottom-card-body">
+                        <div class="transaction-list" id="recentTransactions">
+                            <!-- Rendered by JS -->
+                        </div>
+                        <div class="pagination-controls" id="transactionPagination">
+                            <button class="pagination-btn" id="prevTransBtn"><i class="fas fa-chevron-left"></i> Prev</button>
+                            <span class="pagination-info" id="transPageInfo">1 / 1</span>
+                            <button class="pagination-btn" id="nextTransBtn">Next <i class="fas fa-chevron-right"></i></button>
+                        </div>
+                    </div>
+                </div>
+                <div class="bottom-card dark-green">
+                    <div class="bottom-card-header">
+                        <h3><i class="fas fa-trophy"></i> Produk Terlaris</h3>
+                    </div>
+                    <div class="bottom-card-body">
+                        <div class="bestseller-list" id="bestSellerList">
+                            <!-- Rendered by JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stock Alert Section -->
+            <div class="alert-section">
+                <div class="alert-card">
+                    <div class="alert-card-header">
+                        <div class="alert-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <h3>Alert Stok Menipis</h3>
+                    </div>
+                    <div class="alert-card-body" id="stockAlertList">
+                        <!-- Rendered by JS -->
+                    </div>
                 </div>
             </div>
         </section>
 
-        <!-- Products Page -->
+        <!-- ========== PRODUCTS PAGE ========== -->
         <section class="page" id="page-products">
             <div class="page-header">
-                <h1>Manajemen Produk</h1>
+                <h1>Master Produk</h1>
                 <button class="btn btn-primary" id="addProductBtn">
                     <i class="fas fa-plus"></i> Tambah Produk
                 </button>
@@ -176,6 +175,10 @@
             <!-- Filters -->
             <div class="filters-bar">
                 <div class="filter-group">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Cari produk..." id="searchInput">
+                    </div>
                     <select id="filterCategory" class="filter-select">
                         <option value="">Semua Kategori</option>
                     </select>
@@ -185,14 +188,6 @@
                         <option value="low-stock">Stok Rendah</option>
                         <option value="out-of-stock">Habis</option>
                     </select>
-                </div>
-                <div class="filter-group">
-                    <button class="view-btn active" id="tableView">
-                        <i class="fas fa-list"></i>
-                    </button>
-                    <button class="view-btn" id="gridView">
-                        <i class="fas fa-grid-2"></i>
-                    </button>
                 </div>
             </div>
 
@@ -219,7 +214,7 @@
             </div>
         </section>
 
-        <!-- Categories Page -->
+        <!-- ========== CATEGORIES PAGE ========== -->
         <section class="page" id="page-categories">
             <div class="page-header">
                 <h1>Kategori Produk</h1>
@@ -227,23 +222,20 @@
                     <i class="fas fa-plus"></i> Tambah Kategori
                 </button>
             </div>
-            <div class="categories-grid" id="categoriesGrid">
-            </div>
+            <div class="categories-grid" id="categoriesGrid"></div>
         </section>
 
-        <!-- Reports Page -->
+        <!-- ========== REPORTS PAGE ========== -->
         <section class="page" id="page-reports">
             <div class="page-header">
-                <h1>Laporan</h1>
+                <h1>Laporan Stok</h1>
                 <button class="btn btn-outline">
                     <i class="fas fa-download"></i> Export
                 </button>
             </div>
             <div class="reports-grid">
                 <div class="report-card">
-                    <div class="report-icon blue">
-                        <i class="fas fa-chart-line"></i>
-                    </div>
+                    <div class="report-icon blue"><i class="fas fa-chart-line"></i></div>
                     <h3>Laporan Stok</h3>
                     <p>Overview stok produk per kategori</p>
                     <div class="report-stats">
@@ -258,9 +250,7 @@
                     </div>
                 </div>
                 <div class="report-card">
-                    <div class="report-icon green">
-                        <i class="fas fa-money-bill-trend-up"></i>
-                    </div>
+                    <div class="report-icon green"><i class="fas fa-money-bill-trend-up"></i></div>
                     <h3>Laporan Nilai</h3>
                     <p>Total nilai inventory saat ini</p>
                     <div class="report-stats">
@@ -275,9 +265,7 @@
                     </div>
                 </div>
                 <div class="report-card">
-                    <div class="report-icon orange">
-                        <i class="fas fa-triangle-exclamation"></i>
-                    </div>
+                    <div class="report-icon orange"><i class="fas fa-triangle-exclamation"></i></div>
                     <h3>Alert Stok</h3>
                     <p>Produk yang perlu restock</p>
                     <div class="report-stats">
@@ -294,25 +282,12 @@
             </div>
         </section>
 
-        <!-- Settings Page -->
+        <!-- ========== SETTINGS PAGE ========== -->
         <section class="page" id="page-settings">
             <div class="page-header">
                 <h1>Pengaturan</h1>
             </div>
             <div class="settings-container">
-                <div class="settings-card">
-                    <h3><i class="fas fa-palette"></i> Tampilan</h3>
-                    <div class="setting-item">
-                        <div class="setting-info">
-                            <span>Mode Gelap</span>
-                            <small>Aktifkan tema gelap</small>
-                        </div>
-                        <label class="toggle-switch">
-                            <input type="checkbox" id="darkModeToggle">
-                            <span class="toggle-slider"></span>
-                        </label>
-                    </div>
-                </div>
                 <div class="settings-card">
                     <h3><i class="fas fa-database"></i> Data</h3>
                     <div class="setting-item">
