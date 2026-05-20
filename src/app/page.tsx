@@ -136,9 +136,9 @@ export default function Dashboard() {
             {/* Kolom Kiri: Stok Habis (merah) */}
             <div>
               <p className="text-[11px] font-semibold text-red-400 uppercase tracking-wider mb-2 px-1">Stok Habis</p>
-              <div className="max-h-[280px] overflow-y-auto space-y-1.5" style={{ scrollbarWidth: 'thin', scrollbarColor: '#3f3f46 transparent' }}>
+              <div className="max-h-[280px] overflow-y-auto space-y-2" style={{ scrollbarWidth: 'thin', scrollbarColor: '#3f3f46 transparent' }}>
                 {products.filter(p => p.stock === 0).length > 0 ? products.filter(p => p.stock === 0).map(p => (
-                  <div key={p.id} className="flex items-center justify-between px-4 py-3 rounded-lg border-l-2 border-l-red-500 bg-white/[0.01] border border-white/[0.04] hover:bg-white/[0.03] transition">
+                  <div key={p.id} className="relative flex items-center justify-between px-4 py-3 rounded-lg border-l-2 border-l-red-500 bg-zinc-900/60 hover:bg-zinc-800/60 transition">
                     <div className="flex items-center gap-3">
                       <svg className="w-4 h-4 text-red-400 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" /></svg>
                       <div>
@@ -160,9 +160,9 @@ export default function Dashboard() {
             {/* Kolom Kanan: Stok Menipis (amber) */}
             <div>
               <p className="text-[11px] font-semibold text-amber-400 uppercase tracking-wider mb-2 px-1">Stok Menipis</p>
-              <div className="max-h-[280px] overflow-y-auto space-y-1.5" style={{ scrollbarWidth: 'thin', scrollbarColor: '#3f3f46 transparent' }}>
+              <div className="max-h-[280px] overflow-y-auto space-y-2" style={{ scrollbarWidth: 'thin', scrollbarColor: '#3f3f46 transparent' }}>
                 {alertProducts.length > 0 ? alertProducts.map(p => (
-                  <div key={p.id} className="flex items-center justify-between px-4 py-3 rounded-lg border-l-2 border-l-amber-500 bg-white/[0.01] border border-white/[0.04] hover:bg-white/[0.03] transition">
+                  <div key={p.id} className="relative flex items-center justify-between px-4 py-3 rounded-lg border-l-2 border-l-amber-400 bg-zinc-900/60 hover:bg-zinc-800/60 transition">
                     <div className="flex items-center gap-3">
                       <svg className="w-4 h-4 text-amber-400 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" /></svg>
                       <div>
