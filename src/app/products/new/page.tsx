@@ -95,7 +95,7 @@ export default function NewProductPage() {
   return (
     <div className="min-h-screen bg-[#09090B]">
       {/* Header area - sticky */}
-      <div className="sticky top-0 z-30 bg-[#09090B]/80 backdrop-blur-xl border-b border-white/[0.06]">
+      <div className="sticky top-0 z-30 bg-[#09090B] border-b border-white/[0.07]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4">
           <div className="flex items-center gap-3 mb-3">
             <Link href="/products" className="text-sm text-zinc-400 hover:text-white transition flex items-center gap-1">
@@ -262,7 +262,7 @@ export default function NewProductPage() {
 
           {/* Preview - Right Column */}
           <div className="hidden md:block md:col-span-5">
-            <div className="sticky top-6">
+            <div className="sticky top-[140px]">
               <div className="bg-zinc-900 border border-white/[0.07] rounded-2xl p-6">
                 {/* Preview Title */}
                 <div className="flex items-center gap-2 mb-4">
