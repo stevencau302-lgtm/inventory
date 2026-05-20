@@ -45,7 +45,7 @@ export default function Dashboard() {
   return (
     <div className="space-y-6">
       {/* Gradient Header */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#C2410C] to-[#1E1B4B] px-6 pt-8 pb-20">
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#EA580C] to-[#312E81] px-6 pt-8 pb-20">
         <div className="absolute top-[-40%] right-[-8%] w-[400px] h-[400px] rounded-full bg-violet-500/[0.12] pointer-events-none" />
         <div className="absolute bottom-[-30%] left-[10%] w-[250px] h-[250px] rounded-full bg-indigo-500/[0.08] pointer-events-none" />
         <div className="relative z-10 mb-6">
@@ -170,7 +170,7 @@ function StatCard({ icon, label, value, desc, color }: { icon: string; label: st
         </div>
         <div className="min-w-0">
           <p className="text-[10px] text-white/50 font-medium uppercase tracking-wider">{label}</p>
-          <p className="text-base lg:text-lg font-bold text-white mt-0.5 truncate">{value}</p>
+          <p className="text-sm lg:text-base font-bold text-white mt-0.5 break-all leading-tight">{value}</p>
           <p className="text-[10px] text-white/40 mt-0.5">{desc}</p>
         </div>
       </div>
