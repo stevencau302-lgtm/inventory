@@ -44,22 +44,18 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-6">
-      {/* Gradient Header */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#7C2D12] to-[#09090B] px-6 pt-8 pb-20">
-        <div className="absolute top-[-40%] right-[-8%] w-[400px] h-[400px] rounded-full bg-violet-500/[0.12] pointer-events-none" />
-        <div className="absolute bottom-[-30%] left-[10%] w-[250px] h-[250px] rounded-full bg-indigo-500/[0.08] pointer-events-none" />
-        <div className="relative z-10 mb-6">
-          <h1 className="text-2xl font-bold text-white">Dashboard Overview</h1>
-          <p className="text-white/60 text-sm mt-1">Pantau performa inventory Anda secara real-time</p>
-        </div>
+      {/* Page Title */}
+      <div>
+        <h1 className="text-xl font-semibold text-white">Dashboard</h1>
+        <p className="text-zinc-500 text-sm mt-1">Ringkasan performa inventory Anda</p>
+      </div>
 
-        {/* Stat Cards */}
-        <div className="relative z-10 grid grid-cols-2 lg:grid-cols-4 gap-3">
-          <StatCard icon="box" label="Total Produk" value={String(totalProducts)} desc="Produk terdaftar" color="orange" />
-          <StatCard icon="coins" label="Nilai Inventory" value={formatRp(totalValue)} desc="Total aset inventory" color="emerald" />
-          <StatCard icon="alert" label="Stok Menipis" value={String(lowStock)} desc="Perlu restock segera" color="amber" />
-          <StatCard icon="x-circle" label="Stok Habis" value={String(outOfStock)} desc="Produk tidak tersedia" color="red" />
-        </div>
+      {/* Stat Cards - clean 4-column grid */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <StatCard icon="box" label="Total Produk" value={String(totalProducts)} border="border-l-indigo-500" />
+        <StatCard icon="coins" label="Nilai Inventory" value={formatRp(totalValue)} border="border-l-emerald-500" />
+        <StatCard icon="alert" label="Stok Menipis" value={String(lowStock)} border="border-l-amber-500" />
+        <StatCard icon="x-circle" label="Stok Habis" value={String(outOfStock)} border="border-l-red-500" />
       </div>
 
       {/* Charts */}
@@ -68,14 +64,14 @@ export default function Dashboard() {
       {/* Bottom: Transactions + Best Sellers */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
         {/* Recent Transactions */}
-        <div className="rounded-2xl overflow-hidden border border-orange-500/20 bg-gradient-to-br from-[#1a1a1a] to-[#1f1510]">
+        <div className="rounded-xl overflow-hidden border border-white/[0.08] bg-[#161616]">
           <div className="px-5 py-4 border-b border-white/[0.06] flex items-center gap-2">
-            <svg className="w-4 h-4 text-orange-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" /></svg>
+            <svg className="w-4 h-4 text-indigo-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" /></svg>
             <h3 className="text-sm font-semibold text-white">Transaksi Terbaru</h3>
           </div>
           <div className="p-4 space-y-2">
             {paginatedTx.map(tx => (
-              <div key={tx.id} className="flex items-center justify-between px-3 py-2.5 rounded-xl bg-white/[0.03] border border-white/[0.05]">
+              <div key={tx.id} className="flex items-center justify-between px-3 py-2.5 rounded-lg bg-white/[0.02] border border-white/[0.05]">
                 <div>
                   <p className="text-[13px] font-semibold text-zinc-200">{tx.productName}</p>
                   <p className="text-[11px] text-zinc-500 mt-0.5">{new Date(tx.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
@@ -89,28 +85,28 @@ export default function Dashboard() {
               </div>
             ))}
             <div className="flex items-center justify-center gap-4 pt-3 border-t border-white/[0.06]">
-              <button onClick={() => setTxPage(p => Math.max(1, p - 1))} className="px-3 py-1.5 rounded-lg border border-white/[0.12] text-xs font-medium text-zinc-400 hover:bg-orange-600 hover:text-white hover:border-orange-600 transition">Prev</button>
+              <button onClick={() => setTxPage(p => Math.max(1, p - 1))} className="px-3 py-1.5 rounded-lg border border-white/[0.1] text-xs font-medium text-zinc-400 hover:bg-indigo-600 hover:text-white hover:border-indigo-600 transition">Prev</button>
               <span className="text-xs text-zinc-500">{txPage} / {totalTxPages}</span>
-              <button onClick={() => setTxPage(p => Math.min(totalTxPages, p + 1))} className="px-3 py-1.5 rounded-lg border border-white/[0.12] text-xs font-medium text-zinc-400 hover:bg-orange-600 hover:text-white hover:border-orange-600 transition">Next</button>
+              <button onClick={() => setTxPage(p => Math.min(totalTxPages, p + 1))} className="px-3 py-1.5 rounded-lg border border-white/[0.1] text-xs font-medium text-zinc-400 hover:bg-indigo-600 hover:text-white hover:border-indigo-600 transition">Next</button>
             </div>
           </div>
         </div>
 
         {/* Best Sellers */}
-        <div className="rounded-2xl overflow-hidden border border-emerald-500/20 bg-gradient-to-br from-[#1a1a1a] to-[#101f1a]">
+        <div className="rounded-xl overflow-hidden border border-white/[0.08] bg-[#161616]">
           <div className="px-5 py-4 border-b border-white/[0.06] flex items-center gap-2">
-            <svg className="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 013 3h-15a3 3 0 013-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497m5.007 0a7.454 7.454 0 01-.982-3.172M9.497 14.25a7.454 7.454 0 00.981-3.172M5.25 4.236c-.996.178-1.768.535-2.251 1.084m13.004 0a15.522 15.522 0 00-12.003 0m12.003 0c.996.178 1.768.535 2.251 1.084" /></svg>
+            <svg className="w-4 h-4 text-indigo-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 013 3h-15a3 3 0 013-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497m5.007 0a7.454 7.454 0 01-.982-3.172M9.497 14.25a7.454 7.454 0 00.981-3.172M5.25 4.236c-.996.178-1.768.535-2.251 1.084m13.004 0a15.522 15.522 0 00-12.003 0m12.003 0c.996.178 1.768.535 2.251 1.084" /></svg>
             <h3 className="text-sm font-semibold text-white">Produk Terlaris</h3>
           </div>
           <div className="p-4 space-y-2">
             {bestSellers.map((p, i) => (
-              <div key={p.id} className="flex items-center justify-between px-3 py-2.5 rounded-xl bg-white/[0.03] border border-white/[0.05]">
+              <div key={p.id} className="flex items-center justify-between px-3 py-2.5 rounded-lg bg-white/[0.02] border border-white/[0.05]">
                 <div className="flex items-center gap-3">
-                  <div className="w-7 h-7 rounded-full bg-orange-500/15 text-orange-400 flex items-center justify-center text-[11px] font-bold">{i + 1}</div>
+                  <div className="w-7 h-7 rounded-full bg-indigo-500/15 text-indigo-400 flex items-center justify-center text-[11px] font-bold">{i + 1}</div>
                   <span className="text-[13px] font-medium text-zinc-200">{p.name}</span>
                 </div>
                 <div className="flex items-center gap-2.5">
-                  {i < 3 && <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-orange-500/15 text-orange-300">Best Seller</span>}
+                  {i < 3 && <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-indigo-500/15 text-indigo-300">Best Seller</span>}
                   <span className="text-[12px] text-zinc-500">{p.sold} terjual</span>
                 </div>
               </div>
@@ -120,28 +116,28 @@ export default function Dashboard() {
       </div>
 
       {/* Stock Alert Section */}
-      <div className="glass-card overflow-hidden">
+      <div className="rounded-xl overflow-hidden border border-white/[0.08] bg-[#161616]">
         <div className="px-5 py-4 border-b border-white/[0.06] flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-amber-500/15 flex items-center justify-center">
-            <svg className="w-5 h-5 text-amber-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" /></svg>
+          <div className="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center">
+            <svg className="w-4 h-4 text-amber-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" /></svg>
           </div>
           <h3 className="text-sm font-semibold text-white">Alert Stok Menipis</h3>
         </div>
         <div className="p-5">
           {alertProducts.length === 0 ? (
-            <div className="text-center py-10">
-              <svg className="w-16 h-16 mx-auto text-emerald-400 mb-3" fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-              <p className="text-zinc-400 text-sm">Semua produk stok aman</p>
+            <div className="text-center py-8">
+              <svg className="w-12 h-12 mx-auto text-emerald-400/60 mb-3" fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+              <p className="text-zinc-500 text-sm">Semua produk stok aman</p>
             </div>
           ) : (
-            <div className="space-y-2.5">
+            <div className="space-y-2">
               {alertProducts.map(p => (
-                <div key={p.id} className="flex items-center justify-between px-4 py-3 rounded-xl bg-amber-500/[0.04] border border-amber-500/[0.12]">
+                <div key={p.id} className="flex items-center justify-between px-4 py-3 rounded-lg border-l-2 border-l-amber-500 bg-white/[0.02] border border-white/[0.05]">
                   <div>
                     <p className="text-[13px] font-medium text-zinc-200">{p.name}</p>
                     <p className="text-[11px] text-zinc-500 mt-0.5">{p.sku} — Min: {p.minStock}</p>
                   </div>
-                  <span className="text-[13px] font-bold text-amber-400">Stok: {p.stock}</span>
+                  <span className="text-[13px] font-semibold text-amber-400">Stok: {p.stock}</span>
                 </div>
               ))}
             </div>
@@ -152,28 +148,19 @@ export default function Dashboard() {
   )
 }
 
-function StatCard({ icon, label, value, desc, color }: { icon: string; label: string; value: string; desc: string; color: string }) {
-  const colors: Record<string, string> = {
-    orange: 'bg-orange-500/20 text-orange-300',
-    emerald: 'bg-emerald-500/20 text-emerald-300',
-    amber: 'bg-amber-500/20 text-amber-300',
-    red: 'bg-red-500/20 text-red-300',
-  }
+function StatCard({ icon, label, value, border }: { icon: string; label: string; value: string; border: string }) {
   return (
-    <div className="rounded-2xl p-4 bg-black/30 backdrop-blur-md border border-white/[0.08] hover:bg-black/40 transition-all duration-200">
-      <div className="flex items-start gap-3">
-        <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${colors[color]}`}>
-          {icon === 'box' && <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" /></svg>}
-          {icon === 'coins' && <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z" /></svg>}
-          {icon === 'alert' && <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" /></svg>}
-          {icon === 'x-circle' && <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" /></svg>}
+    <div className={`rounded-xl p-4 bg-[#161616] border border-white/[0.08] border-l-2 ${border}`}>
+      <div className="flex items-center gap-3 mb-2">
+        <div className="w-8 h-8 rounded-lg bg-white/[0.04] flex items-center justify-center text-zinc-400">
+          {icon === 'box' && <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" /></svg>}
+          {icon === 'coins' && <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z" /></svg>}
+          {icon === 'alert' && <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" /></svg>}
+          {icon === 'x-circle' && <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" /></svg>}
         </div>
-        <div className="min-w-0">
-          <p className="text-[10px] text-white/50 font-medium uppercase tracking-wider">{label}</p>
-          <p className="text-[12px] sm:text-sm lg:text-base font-bold text-white mt-0.5 whitespace-nowrap leading-tight">{value}</p>
-          <p className="text-[10px] text-white/40 mt-0.5">{desc}</p>
-        </div>
+        <p className="text-[11px] text-zinc-500 font-normal uppercase tracking-wider">{label}</p>
       </div>
+      <p className="text-lg font-semibold text-white whitespace-nowrap">{value}</p>
     </div>
   )
 }

@@ -16,32 +16,42 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean, onClose:
   return (
     <>
       {isOpen && <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 lg:hidden" onClick={onClose} />}
-      <aside className={`fixed lg:static inset-y-0 left-0 z-50 w-[260px] shrink-0 flex flex-col transition-transform duration-300 lg:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}
-        style={{ background: 'rgba(10, 10, 15, 0.95)', borderRight: '1px solid rgba(255,255,255,0.06)', backdropFilter: 'blur(20px)' }}>
-        <div className="p-5 border-b border-white/[0.06]">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl flex items-center justify-center"
-              style={{ background: 'linear-gradient(135deg, #ea580c, #f97316)', boxShadow: '0 2px 12px rgba(249,115,22,0.3)' }}>
-              <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" /></svg>
-            </div>
-            <div>
-              <h1 className="text-base font-bold text-white">InventoryPro</h1>
-              <p className="text-[11px] text-zinc-500">Kelola stok mudah</p>
-            </div>
+      <aside className={`group/sidebar fixed lg:static inset-y-0 left-0 z-50 w-16 hover:w-[220px] shrink-0 flex flex-col transition-all duration-300 ease-in-out lg:translate-x-0 ${isOpen ? 'translate-x-0 w-[220px]' : '-translate-x-full lg:translate-x-0'}`}
+        style={{ background: '#0C0C0F', borderRight: '1px solid rgba(255,255,255,0.06)' }}>
+        {/* Logo */}
+        <div className="h-14 flex items-center px-4 border-b border-white/[0.06] overflow-hidden">
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-indigo-600 flex items-center justify-center shrink-0">
+            <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" /></svg>
           </div>
+          <span className="ml-3 text-sm font-bold text-white whitespace-nowrap opacity-0 group-hover/sidebar:opacity-100 transition-opacity duration-200">InventoryPro</span>
         </div>
-        <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
-          {navItems.map(item => (
-            <Link key={item.href} href={item.href} onClick={onClose} className={`nav-link ${pathname === item.href ? 'active' : ''}`}>
-              <svg className="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d={item.icon} /></svg>
-              <span>{item.label}</span>
-            </Link>
-          ))}
+
+        {/* Nav */}
+        <nav className="flex-1 py-3 px-2 space-y-1 overflow-y-auto overflow-x-hidden">
+          {navItems.map(item => {
+            const isActive = pathname === item.href
+            return (
+              <Link key={item.href} href={item.href} onClick={onClose}
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-150 ${
+                  isActive
+                    ? 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20'
+                    : 'text-zinc-500 hover:text-zinc-200 hover:bg-white/[0.04] border border-transparent'
+                }`}>
+                <svg className="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d={item.icon} /></svg>
+                <span className="text-[13px] font-medium whitespace-nowrap opacity-0 group-hover/sidebar:opacity-100 transition-opacity duration-200">{item.label}</span>
+              </Link>
+            )
+          })}
         </nav>
-        <div className="p-4 border-t border-white/[0.06]">
-          <div className="flex items-center gap-3 px-2">
-            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-sm font-bold text-white">A</div>
-            <div><p className="text-sm font-semibold text-white">Admin</p><p className="text-[11px] text-zinc-500">admin@inventory.pro</p></div>
+
+        {/* User */}
+        <div className="p-3 border-t border-white/[0.06] overflow-hidden">
+          <div className="flex items-center gap-3 px-1">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-400 to-indigo-600 flex items-center justify-center text-[11px] font-bold text-white shrink-0">A</div>
+            <div className="opacity-0 group-hover/sidebar:opacity-100 transition-opacity duration-200 whitespace-nowrap">
+              <p className="text-xs font-semibold text-white">Admin</p>
+              <p className="text-[10px] text-zinc-500">admin@inventory.pro</p>
+            </div>
           </div>
         </div>
       </aside>

@@ -6,96 +6,77 @@
   body {
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
     @apply antialiased;
-    background: linear-gradient(180deg, #0A0A0F 0%, #12121A 100%);
+    background: #09090B;
     color: #fafafa;
     min-height: 100vh;
   }
 }
 
 @layer components {
-  /* Premium Glass Card */
   .glass-card {
-    @apply rounded-[20px] relative overflow-hidden transition-all duration-200;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    backdrop-filter: blur(12px);
+    @apply rounded-xl relative overflow-hidden transition-all duration-200;
+    background: #161616;
+    border: 1px solid rgba(255, 255, 255, 0.08);
   }
   .glass-card:hover {
-    background: rgba(255, 255, 255, 0.05);
-    border-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.12);
   }
 
-  /* Stat Card */
-  .stat-card {
-    @apply glass-card p-4;
-  }
-
-  /* Cozy Card alias */
-  .cozy-card {
-    @apply glass-card;
-  }
-
-  /* Form Input */
-  .form-input, .cozy-input {
+  .form-input {
     @apply w-full px-4 py-3 rounded-xl text-sm font-medium outline-none transition-all duration-150;
     background: rgba(255, 255, 255, 0.04);
     border: 1px solid rgba(255, 255, 255, 0.08);
     color: #fafafa;
   }
-  .form-input::placeholder, .cozy-input::placeholder {
+  .form-input::placeholder {
     color: #52525b;
   }
-  .form-input:focus, .cozy-input:focus {
-    border-color: #f97316;
-    box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+  .form-input:focus {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
     background: rgba(255, 255, 255, 0.06);
   }
 
-  /* Buttons */
-  .btn-primary, .cozy-btn-primary {
+  .btn-primary {
     @apply inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold
            transition-all duration-150 cursor-pointer active:scale-[0.97];
-    background: linear-gradient(135deg, #ea580c, #f97316);
+    background: #6366f1;
     color: #fff;
-    box-shadow: 0 2px 12px rgba(249, 115, 22, 0.25);
+    box-shadow: 0 2px 12px rgba(99, 102, 241, 0.25);
   }
-  .btn-primary:hover, .cozy-btn-primary:hover {
-    box-shadow: 0 4px 20px rgba(249, 115, 22, 0.35);
+  .btn-primary:hover {
+    background: #4f46e5;
+    box-shadow: 0 4px 20px rgba(99, 102, 241, 0.35);
   }
 
-  .btn-ghost, .cozy-btn-ghost {
+  .btn-ghost {
     @apply inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold
            transition-all duration-150 cursor-pointer active:scale-[0.97];
     background: rgba(255, 255, 255, 0.04);
     border: 1px solid rgba(255, 255, 255, 0.08);
     color: #d4d4d8;
   }
-  .btn-ghost:hover, .cozy-btn-ghost:hover {
+  .btn-ghost:hover {
     background: rgba(255, 255, 255, 0.08);
     color: #fafafa;
   }
 
-  /* Badges with glow */
-  .badge, .cozy-badge {
+  .badge {
     @apply inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider;
   }
-  .badge-success, .cozy-badge-success {
+  .badge-success {
     background: rgba(16, 185, 129, 0.12);
     color: #34d399;
-    box-shadow: 0 0 8px rgba(16, 185, 129, 0.15);
   }
-  .badge-warning, .cozy-badge-warning {
+  .badge-warning {
     background: rgba(245, 158, 11, 0.12);
     color: #fbbf24;
-    box-shadow: 0 0 8px rgba(245, 158, 11, 0.15);
   }
-  .badge-danger, .cozy-badge-danger {
+  .badge-danger {
     background: rgba(239, 68, 68, 0.12);
     color: #f87171;
-    box-shadow: 0 0 8px rgba(239, 68, 68, 0.15);
   }
 
-  /* Nav Link */
   .nav-link {
     @apply flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150;
     color: #a1a1aa;
@@ -105,9 +86,9 @@
     background: rgba(255, 255, 255, 0.05);
   }
   .nav-link.active {
-    color: #fb923c;
-    background: rgba(251, 146, 60, 0.08);
-    border: 1px solid rgba(251, 146, 60, 0.15);
+    color: #818cf8;
+    background: rgba(99, 102, 241, 0.08);
+    border: 1px solid rgba(99, 102, 241, 0.15);
     font-weight: 600;
   }
 }
@@ -122,10 +103,3 @@
 @keyframes slideOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
 .toast-enter { animation: slideIn 0.3s ease-out; }
 .toast-exit { animation: slideOut 0.3s ease-in forwards; }
-
-@keyframes wave {
-  0%, 100% { transform: rotate(0deg); }
-  25% { transform: rotate(20deg); }
-  75% { transform: rotate(-10deg); }
-}
-.animate-wave { animation: wave 1.5s ease-in-out infinite; }
