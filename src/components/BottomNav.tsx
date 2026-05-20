@@ -13,9 +13,9 @@ const navItems = [
 export default function BottomNav() {
   const pathname = usePathname()
   return (
-    <nav className="lg:hidden fixed bottom-4 left-4 right-4 z-50 safe-area-bottom">
-      <div className="flex items-center justify-around h-16 px-2 max-w-[390px] mx-auto rounded-2xl border border-white/[0.06]"
-        style={{ background: 'rgba(10, 10, 15, 0.85)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)' }}>
+    <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-[9999] pb-[env(safe-area-inset-bottom,0px)]" style={{ position: 'fixed' }}>
+      <div className="flex items-center justify-around h-16 px-2 max-w-[390px] mx-auto mx-4 mb-3 rounded-2xl border border-white/[0.06]"
+        style={{ background: 'rgba(10, 10, 15, 0.95)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)' }}>
         {navItems.map(item => {
           if (item.label === 'add') return (
             <Link key={item.href} href={item.href} className="relative -top-5">
