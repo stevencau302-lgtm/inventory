@@ -159,11 +159,8 @@ export default function ProductsPage() {
               {filtered.map((p, idx) => (
                 <tr key={p.id} className={`hover:bg-indigo-900/20 transition ${idx % 2 === 1 ? 'bg-zinc-900/40' : 'bg-zinc-950'}`}>
                   <td className="border border-white/10 px-2 py-2 text-center text-xs text-zinc-500">{idx + 1}</td>
-                  <td className="border border-white/10 px-2 py-2 text-center font-mono text-xs text-zinc-300">{p.sku}</td>
-                  <td className="border border-white/10 px-3 py-2 text-left">
-                    <p className="text-sm font-medium text-white">{p.name}</p>
-                    <p className="text-[11px] text-zinc-500 truncate max-w-[250px]">{p.description}</p>
-                  </td>
+                  <td className="border border-white/10 px-2 py-2 text-center text-sm text-zinc-300">{p.sku}</td>
+                  <td className="border border-white/10 px-3 py-2 text-left text-sm font-medium text-white align-middle">{p.name}</td>
                   <td className="border border-white/10 px-2 py-2 text-center text-xs text-zinc-400">{p.category}</td>
                   <td className="border border-white/10 px-2 py-2 text-center font-mono text-sm font-medium text-zinc-300">{p.stock}</td>
                   <td className="border border-white/10 px-3 py-2 text-right font-mono text-sm text-zinc-300">{formatRp(p.price)}</td>
@@ -266,5 +263,5 @@ function StatusBadge({ product }: { product: Product }) {
   const status = getStatus(product)
   const label = getStatusLabel(product)
   const classes = status === 'in-stock' ? 'badge-success' : status === 'low-stock' ? 'badge-warning' : 'badge-danger'
-  return <span className={`badge ${classes}`}>{label}</span>
+  return <span className={`badge ${classes} whitespace-nowrap`}>{label}</span>
 }
