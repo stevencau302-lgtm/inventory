@@ -278,46 +278,8 @@ export default function ReportsPage() {
         </div>
       </div>
 
-      {/* ===== DEAD STOCK SECTION ===== */}
-      <div className="glass-card overflow-hidden">
-        <div className="p-5 border-b border-white/[0.06] flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-red-500/15 flex items-center justify-center">
-            <svg className="w-4 h-4 text-red-400" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
-            </svg>
-          </div>
-          <div>
-            <h2 className="font-semibold text-white text-sm">Dead Stock</h2>
-            <p className="text-xs text-zinc-500">{deadStock.length} produk tanpa transaksi keluar</p>
-          </div>
-        </div>
-        <div className="p-5">
-          {deadStock.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-              {deadStock.map(p => (
-                <div key={p.id} className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 flex items-start gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-red-500/10 flex items-center justify-center text-red-400 text-xs font-bold shrink-0">
-                    {p.name.substring(0, 2).toUpperCase()}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm text-white font-medium truncate">{p.name}</p>
-                    <p className="text-[11px] text-zinc-500">{p.category}</p>
-                    <p className="text-[11px] text-zinc-500 mt-0.5">0 transaksi keluar</p>
-                    <div className="flex items-center justify-between mt-2">
-                      <span className="text-xs text-zinc-400">{formatRp(p.price)}</span>
-                      <span className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-red-500/12 text-red-400">
-                        DEAD STOCK
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p className="text-center text-zinc-500 py-6 text-sm">Tidak ada dead stock — semua produk memiliki transaksi keluar</p>
-          )}
-        </div>
-      </div>
+      {/* ===== DEAD STOCK SECTION (TABLE) ===== */}
+      <DeadStockTable deadStock={deadStock} transactions={transactions} formatRp={formatRp} />
 
       {/* ===== ALERT STOK ===== */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -432,5 +394,138 @@ function DownloadIcon() {
     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
       <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
     </svg>
+  )
+}
+
+
+function DeadStockTable({ deadStock, transactions, formatRp }: { deadStock: Product[]; transactions: Transaction[]; formatRp: (n: number) => string }) {
+  const [sortCol, setSortCol] = useState<'days' | 'value' | 'stock' | 'price'>('days')
+  const [sortAsc, setSortAsc] = useState(false)
+
+  // Calculate days not sold for each dead stock product
+  const now = Date.now()
+  const deadStockWithDays = deadStock.map(p => {
+    // Find last 'in' transaction for this product as proxy for when it was added
+    const lastIn = transactions
+      .filter(t => t.productId === p.id && t.type === 'in')
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0]
+    const addedDate = lastIn ? new Date(lastIn.createdAt).getTime() : new Date(p.updatedAt || Date.now()).getTime()
+    const days = Math.max(0, Math.floor((now - addedDate) / (1000 * 60 * 60 * 24)))
+    const value = p.price * p.stock
+    return { ...p, days, value }
+  })
+
+  const handleSort = (col: typeof sortCol) => {
+    if (sortCol === col) setSortAsc(!sortAsc)
+    else { setSortCol(col); setSortAsc(false) }
+  }
+
+  const sorted = [...deadStockWithDays].sort((a, b) => {
+    let diff = 0
+    if (sortCol === 'days') diff = a.days - b.days
+    else if (sortCol === 'value') diff = a.value - b.value
+    else if (sortCol === 'stock') diff = a.stock - b.stock
+    else if (sortCol === 'price') diff = a.price - b.price
+    return sortAsc ? diff : -diff
+  })
+
+  const totalValue = deadStockWithDays.reduce((s, p) => s + p.value, 0)
+  const avgDays = deadStockWithDays.length > 0 ? Math.round(deadStockWithDays.reduce((s, p) => s + p.days, 0) / deadStockWithDays.length) : 0
+
+  const getDayColor = (days: number) => {
+    if (days > 90) return 'text-red-400 font-semibold'
+    if (days > 30) return 'text-orange-400'
+    return 'text-amber-400'
+  }
+
+  const getStatusBadge = (days: number) => {
+    if (days > 90) return <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-red-500/15 text-red-400">Kritis</span>
+    if (days > 30) return <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-orange-500/15 text-orange-400">Stagnan</span>
+    return <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-amber-500/15 text-amber-400">Perlu Perhatian</span>
+  }
+
+  const SortIcon = ({ col }: { col: typeof sortCol }) => {
+    if (sortCol !== col) return <span className="text-zinc-600 ml-1">↕</span>
+    return <span className="text-indigo-400 ml-1">{sortAsc ? '↑' : '↓'}</span>
+  }
+
+  return (
+    <div className="glass-card overflow-hidden">
+      {/* Header */}
+      <div className="p-5 border-b border-white/[0.06] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-lg bg-red-500/15 flex items-center justify-center">
+            <svg className="w-4 h-4 text-red-400" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+            </svg>
+          </div>
+          <div>
+            <h2 className="font-semibold text-white text-sm">Dead Stock</h2>
+            <p className="text-xs text-zinc-500">{deadStock.length} produk tanpa transaksi keluar</p>
+          </div>
+        </div>
+        {totalValue > 0 && (
+          <p className="text-sm font-semibold text-red-400">Total nilai tertahan: {formatRp(totalValue)}</p>
+        )}
+      </div>
+
+      {/* Table */}
+      {deadStock.length > 0 ? (
+        <div className="overflow-x-auto">
+          <table className="w-full border-collapse min-w-[800px]">
+            <thead className="sticky top-0 z-10">
+              <tr className="bg-zinc-800/80">
+                <th className="border border-white/[0.06] w-[48px] px-2 py-2.5 text-center text-[11px] font-bold text-zinc-400 uppercase tracking-wide">No</th>
+                <th className="border border-white/[0.06] px-3 py-2.5 text-left text-[11px] font-bold text-zinc-400 uppercase tracking-wide">Produk</th>
+                <th className="border border-white/[0.06] w-[100px] px-3 py-2.5 text-left text-[11px] font-bold text-zinc-400 uppercase tracking-wide">SKU</th>
+                <th className="border border-white/[0.06] w-[70px] px-2 py-2.5 text-center text-[11px] font-bold text-zinc-400 uppercase tracking-wide cursor-pointer hover:text-zinc-200 transition" onClick={() => handleSort('stock')}>
+                  Stok<SortIcon col="stock" />
+                </th>
+                <th className="border border-white/[0.06] w-[120px] px-3 py-2.5 text-right text-[11px] font-bold text-zinc-400 uppercase tracking-wide cursor-pointer hover:text-zinc-200 transition" onClick={() => handleSort('price')}>
+                  Harga<SortIcon col="price" />
+                </th>
+                <th className="border border-white/[0.06] w-[130px] px-3 py-2.5 text-right text-[11px] font-bold text-zinc-400 uppercase tracking-wide cursor-pointer hover:text-zinc-200 transition" onClick={() => handleSort('value')}>
+                  Nilai Tertahan<SortIcon col="value" />
+                </th>
+                <th className="border border-white/[0.06] w-[110px] px-2 py-2.5 text-center text-[11px] font-bold text-zinc-400 uppercase tracking-wide cursor-pointer hover:text-zinc-200 transition" onClick={() => handleSort('days')}>
+                  Hari Tidak Terjual<SortIcon col="days" />
+                </th>
+                <th className="border border-white/[0.06] w-[120px] px-2 py-2.5 text-center text-[11px] font-bold text-zinc-400 uppercase tracking-wide">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {sorted.map((p, idx) => (
+                <tr key={p.id} className={`hover:bg-red-950/20 transition ${idx % 2 === 1 ? 'bg-zinc-900/30' : ''}`}>
+                  <td className="border border-white/[0.06] px-2 py-2.5 text-center text-xs text-zinc-500">{idx + 1}</td>
+                  <td className="border border-white/[0.06] px-3 py-2.5">
+                    <p className="text-sm font-medium text-white">{p.name}</p>
+                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/[0.06] text-zinc-400 mt-0.5 inline-block">{p.category}</span>
+                  </td>
+                  <td className="border border-white/[0.06] px-3 py-2.5 font-mono text-xs text-zinc-400">{p.sku}</td>
+                  <td className="border border-white/[0.06] px-2 py-2.5 text-center font-mono text-sm text-zinc-200">{p.stock}</td>
+                  <td className="border border-white/[0.06] px-3 py-2.5 text-right font-mono text-xs text-zinc-300">{formatRp(p.price)}</td>
+                  <td className="border border-white/[0.06] px-3 py-2.5 text-right font-mono text-sm text-red-400">{formatRp(p.value)}</td>
+                  <td className="border border-white/[0.06] px-2 py-2.5 text-center">
+                    <p className={`text-lg font-bold ${getDayColor(p.days)}`}>{p.days}</p>
+                    <p className="text-[9px] text-zinc-500">hari</p>
+                  </td>
+                  <td className="border border-white/[0.06] px-2 py-2.5 text-center">{getStatusBadge(p.days)}</td>
+                </tr>
+              ))}
+            </tbody>
+            <tfoot>
+              <tr className="bg-zinc-800 border-t-2 border-white/20">
+                <td colSpan={5} className="border border-white/[0.06] px-3 py-2.5 text-xs font-medium text-zinc-300">Total: {sorted.length} produk dead stock</td>
+                <td className="border border-white/[0.06] px-3 py-2.5 text-right font-mono text-sm font-semibold text-red-400">{formatRp(totalValue)}</td>
+                <td className="border border-white/[0.06] px-2 py-2.5 text-center text-xs text-zinc-400">Rata-rata: {avgDays} hari</td>
+                <td className="border border-white/[0.06]"></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      ) : (
+        <div className="p-8 text-center text-zinc-500 text-sm">Tidak ada dead stock — semua produk memiliki transaksi keluar</div>
+      )}
+    </div>
   )
 }
