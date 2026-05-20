@@ -1,7 +1,7 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { Category, getCategories, getProducts, saveCategories, uid, Product } from '@/lib/store'
+import { useEffect, useState, useRef } from 'react'
+import { Category, getCategories, getProducts, saveCategories, uid, Product, formatRp } from '@/lib/store'
 import { useToast } from '@/components/Toast'
 
 export default function CategoriesPage() {
@@ -65,13 +65,17 @@ export default function CategoriesPage() {
       {/* Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {categories.map(cat => {
-          const count = products.filter(p => p.category === cat.name).length
+          const catProducts = products.filter(p => p.category === cat.name)
+          const count = catProducts.length
+          const totalStock = catProducts.reduce((s, p) => s + p.stock, 0)
+          const totalValue = catProducts.reduce((s, p) => s + (p.stock * p.price), 0)
+          const percentage = products.length > 0 ? Math.round((count / products.length) * 100) : 0
           return (
-            <div key={cat.id} className="glass-card p-6 group">
+            <div key={cat.id} className="glass-card p-5 group hover:scale-[1.02] hover:shadow-lg hover:shadow-black/20 transition-all duration-200">
               <div className="flex items-start justify-between">
                 <div 
-                  className="w-14 h-14 rounded-2xl flex items-center justify-center text-xl"
-                  style={{ background: `${cat.color}20`, color: cat.color }}
+                  className="w-12 h-12 rounded-xl flex items-center justify-center text-xl shadow-lg"
+                  style={{ background: `${cat.color}30`, color: cat.color, boxShadow: `0 4px 12px ${cat.color}20` }}
                 >
                   {iconMap[cat.icon] || <TagIcon />}
                 </div>
@@ -84,18 +88,28 @@ export default function CategoriesPage() {
                   </svg>
                 </button>
               </div>
-              <h3 className="text-cozy-text dark:text-[#fafafa] font-semibold mt-4">{cat.name}</h3>
-              <p className="text-sm text-cozy-muted mt-1">{count} produk</p>
+              <h3 className="text-cozy-text dark:text-[#fafafa] font-semibold mt-3">{cat.name}</h3>
+              <div className="flex items-center gap-3 mt-1.5">
+                <p className="text-xs text-cozy-muted">{count} produk</p>
+                <span className="text-[10px] text-cozy-muted">·</span>
+                <p className="text-xs text-cozy-muted">{totalStock} stok</p>
+              </div>
+              {totalValue > 0 && (
+                <p className="text-[11px] font-medium mt-1.5" style={{ color: cat.color }}>{formatRp(totalValue)}</p>
+              )}
               
-              {/* Mini progress bar */}
-              <div className="mt-4 h-1.5 rounded-full bg-cozy-border dark:bg-[#2a2a2e] overflow-hidden">
-                <div 
-                  className="h-full rounded-full transition-all duration-500"
-                  style={{ 
-                    width: `${products.length > 0 ? (count / products.length) * 100 : 0}%`,
-                    background: cat.color 
-                  }}
-                />
+              {/* Progress with label */}
+              <div className="mt-3 flex items-center gap-2">
+                <div className="flex-1 h-1.5 rounded-full bg-cozy-border dark:bg-[#2a2a2e] overflow-hidden">
+                  <div 
+                    className="h-full rounded-full transition-all duration-500"
+                    style={{ 
+                      width: `${percentage}%`,
+                      background: cat.color 
+                    }}
+                  />
+                </div>
+                <span className="text-[10px] text-cozy-muted shrink-0">{percentage}%</span>
               </div>
             </div>
           )
@@ -122,16 +136,30 @@ function CategoryModal({ onClose, onSave }: { onClose: () => void, onSave: (name
   const [name, setName] = useState('')
   const [icon, setIcon] = useState('fas fa-tag')
   const [color, setColor] = useState('#6366f1')
+  const [dropdownOpen, setDropdownOpen] = useState(false)
+  const dropdownRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setDropdownOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
+  }, [])
 
   const iconOptions = [
-    { value: 'fas fa-laptop', label: 'Laptop' },
-    { value: 'fas fa-shirt', label: 'Pakaian' },
-    { value: 'fas fa-utensils', label: 'Makanan' },
-    { value: 'fas fa-couch', label: 'Furnitur' },
-    { value: 'fas fa-dumbbell', label: 'Olahraga' },
-    { value: 'fas fa-heart-pulse', label: 'Kesehatan' },
-    { value: 'fas fa-tag', label: 'Umum' },
+    { value: 'fas fa-laptop', label: 'Laptop', icon: <LaptopIcon /> },
+    { value: 'fas fa-shirt', label: 'Pakaian', icon: <ShirtIcon /> },
+    { value: 'fas fa-utensils', label: 'Makanan', icon: <FoodIcon /> },
+    { value: 'fas fa-couch', label: 'Furnitur', icon: <CouchIcon /> },
+    { value: 'fas fa-dumbbell', label: 'Olahraga', icon: <DumbbellIcon /> },
+    { value: 'fas fa-heart-pulse', label: 'Kesehatan', icon: <HeartIcon /> },
+    { value: 'fas fa-tag', label: 'Umum', icon: <TagIcon /> },
   ]
+
+  const selectedOption = iconOptions.find(o => o.value === icon) || iconOptions[iconOptions.length - 1]
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -157,9 +185,38 @@ function CategoryModal({ onClose, onSave }: { onClose: () => void, onSave: (name
           </div>
           <div className="space-y-1.5">
             <label className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Icon</label>
-            <select value={icon} onChange={e => setIcon(e.target.value)} className="form-input">
-              {iconOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
-            </select>
+            <div className="relative" ref={dropdownRef}>
+              <button
+                type="button"
+                onClick={() => setDropdownOpen(!dropdownOpen)}
+                className="form-input w-full flex items-center justify-between gap-2 text-left"
+                style={{ color: '#fafafa', background: '#18181b' }}
+              >
+                <div className="flex items-center gap-2.5">
+                  <span className="text-indigo-400">{selectedOption.icon}</span>
+                  <span className="text-sm text-white">{selectedOption.label}</span>
+                </div>
+                <svg className={`w-4 h-4 text-zinc-500 transition-transform ${dropdownOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" /></svg>
+              </button>
+              {dropdownOpen && (
+                <div className="absolute z-50 left-0 right-0 top-full mt-1 bg-[#1c1c1e] border border-white/10 rounded-xl shadow-lg overflow-hidden">
+                  {iconOptions.map(opt => (
+                    <button
+                      key={opt.value}
+                      type="button"
+                      onClick={() => { setIcon(opt.value); setDropdownOpen(false) }}
+                      className={`w-full flex items-center gap-2.5 px-3 py-2.5 text-left hover:bg-zinc-800 transition-colors ${icon === opt.value ? 'bg-zinc-800' : ''}`}
+                    >
+                      <span className="text-indigo-400">{opt.icon}</span>
+                      <span className="text-sm text-white">{opt.label}</span>
+                      {icon === opt.value && (
+                        <svg className="w-4 h-4 ml-auto text-emerald-400" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
           <div className="space-y-1.5">
             <label className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Warna</label>
