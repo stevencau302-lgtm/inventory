@@ -45,7 +45,7 @@ export default function DashboardCharts({ products, transactions }: Props) {
                 contentStyle={{ background: '#1a1a1a', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', color: '#fafafa' }}
                 labelStyle={{ color: '#a1a1aa' }}
               />
-              <Bar dataKey="penjualan" fill="#6366f1" radius={[6, 6, 0, 0]} />
+              <Bar dataKey="penjualan" fill="#6366f1" radius={[6, 6, 0, 0]} activeBar={{ fill: '#818cf8' }} />
             </BarChart>
           </ResponsiveContainer>
         </div>
