@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Product, Transaction, getProducts, getTransactions, formatRp, loadSampleData } from '@/lib/store'
+import { Product, Transaction, getProducts, getTransactions, formatRp, loadSampleData, fetchProducts, fetchTransactions } from '@/lib/store'
 import Link from 'next/link'
 
 type TabFilter = 'all' | 'in' | 'out'
@@ -14,11 +14,15 @@ export default function TransactionsPage() {
   const [search, setSearch] = useState('')
 
   useEffect(() => {
-    let p = getProducts()
-    if (p.length === 0) { const data = loadSampleData(); p = data.products }
-    setProducts(p)
-    setTransactions(getTransactions())
-    setMounted(true)
+    async function loadData() {
+      let p = await fetchProducts()
+      if (p.length === 0) { const data = loadSampleData(); p = data.products }
+      setProducts(p)
+      const tx = await fetchTransactions()
+      setTransactions(tx)
+      setMounted(true)
+    }
+    loadData()
   }, [])
 
   if (!mounted) return null

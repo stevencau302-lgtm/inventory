@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { Product, Category, getProducts, getCategories, saveProducts, formatRp, getStatus, getStatusLabel, loadSampleData } from '@/lib/store'
+import { Product, Category, getProducts, getCategories, saveProducts, formatRp, getStatus, getStatusLabel, loadSampleData, fetchProducts, fetchCategories, deleteProduct } from '@/lib/store'
 import { useToast } from '@/components/Toast'
 import ProductModal from '@/components/ProductModal'
 import DeleteModal from '@/components/DeleteModal'
@@ -21,16 +21,19 @@ export default function ProductsPage() {
   const { toast } = useToast()
 
   useEffect(() => {
-    let p = getProducts()
-    let c = getCategories()
-    if (p.length === 0) {
-      const data = loadSampleData()
-      p = data.products
-      c = data.categories
+    async function loadData() {
+      let p = await fetchProducts()
+      let c = await fetchCategories()
+      if (p.length === 0) {
+        const data = loadSampleData()
+        p = data.products
+        c = data.categories
+      }
+      setProducts(p)
+      setCategories(c)
+      setMounted(true)
     }
-    setProducts(p)
-    setCategories(c)
-    setMounted(true)
+    loadData()
   }, [])
 
   if (!mounted) return null
@@ -77,6 +80,7 @@ export default function ProductsPage() {
     const updated = products.filter(p => p.id !== deleteModal.id)
     setProducts(updated)
     saveProducts(updated)
+    deleteProduct(deleteModal.id)
     toast('Produk dihapus!', 'success')
     setDeleteModal({ open: false, id: '', name: '' })
   }

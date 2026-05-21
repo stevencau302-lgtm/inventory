@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState, useRef } from 'react'
-import { Category, getCategories, getProducts, saveCategories, uid, Product, formatRp } from '@/lib/store'
+import { Category, getCategories, getProducts, saveCategories, uid, Product, formatRp, fetchCategories, fetchProducts, deleteCategory } from '@/lib/store'
 import { useToast } from '@/components/Toast'
 
 export default function CategoriesPage() {
@@ -12,9 +12,14 @@ export default function CategoriesPage() {
   const { toast } = useToast()
 
   useEffect(() => {
-    setCategories(getCategories())
-    setProducts(getProducts())
-    setMounted(true)
+    async function loadData() {
+      const c = await fetchCategories()
+      const p = await fetchProducts()
+      setCategories(c)
+      setProducts(p)
+      setMounted(true)
+    }
+    loadData()
   }, [])
 
   if (!mounted) return null
@@ -33,6 +38,7 @@ export default function CategoriesPage() {
     const updated = categories.filter(c => c.id !== id)
     setCategories(updated)
     saveCategories(updated)
+    deleteCategory(id)
     toast('Kategori dihapus!', 'success')
   }
 

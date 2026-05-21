@@ -1,6 +1,6 @@
 'use client'
 import { useEffect, useState } from 'react'
-import { Product, Transaction, getProducts, getCategories, getTransactions, saveTransactions, formatRp, getStatus, getStatusLabel, loadSampleData, uid } from '@/lib/store'
+import { Product, Transaction, getProducts, getCategories, getTransactions, saveTransactions, formatRp, getStatus, getStatusLabel, loadSampleData, uid, fetchProducts, fetchTransactions } from '@/lib/store'
 import dynamic from 'next/dynamic'
 
 const DashboardCharts = dynamic(() => import('@/components/DashboardCharts'), { ssr: false })
@@ -13,17 +13,20 @@ export default function Dashboard() {
   const txPerPage = 5
 
   useEffect(() => {
-    let p = getProducts()
-    if (!p.length) { const d = loadSampleData(); p = d.products }
-    setProducts(p)
+    async function loadData() {
+      let p = await fetchProducts()
+      if (!p.length) { const d = loadSampleData(); p = d.products }
+      setProducts(p)
 
-    let tx = getTransactions()
-    if (!tx.length) {
-      tx = generateSampleTransactions(p)
-      saveTransactions(tx)
+      let tx = await fetchTransactions()
+      if (!tx.length) {
+        tx = generateSampleTransactions(p)
+        saveTransactions(tx)
+      }
+      setTransactions(tx)
+      setMounted(true)
     }
-    setTransactions(tx)
-    setMounted(true)
+    loadData()
   }, [])
 
   if (!mounted) return null
