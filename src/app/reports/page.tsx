@@ -3,23 +3,27 @@
 import { useEffect, useState, useMemo } from 'react'
 import dynamic from 'next/dynamic'
 import { Product, Category, Transaction, fetchProducts, fetchCategories, fetchTransactions, formatRp } from '@/lib/store'
+import {
+  BarChart3, Package, DollarSign, Tag, TrendingUp, TrendingDown,
+  AlertTriangle, XCircle, ArrowDownCircle, ArrowUpCircle,
+  Activity, PieChart, Loader2, Download, RotateCcw, Skull
+} from 'lucide-react'
 
 const RechartsBarChart = dynamic(
   () => import('recharts').then((mod) => {
-    const { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } = mod
+    const { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } = mod
     const Chart = ({ data }: { data: { week: string; masuk: number; keluar: number }[] }) => (
       <ResponsiveContainer width="100%" height={260}>
         <BarChart data={data} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
-          <XAxis dataKey="week" tick={{ fill: '#a1a1aa', fontSize: 12 }} axisLine={false} tickLine={false} />
-          <YAxis tick={{ fill: '#a1a1aa', fontSize: 12 }} axisLine={false} tickLine={false} />
+          <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
+          <XAxis dataKey="week" tick={{ fill: '#71717a', fontSize: 12 }} axisLine={false} tickLine={false} />
+          <YAxis tick={{ fill: '#71717a', fontSize: 12 }} axisLine={false} tickLine={false} />
           <Tooltip
-            contentStyle={{ background: '#1e1e1e', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: '#fafafa' }}
+            contentStyle={{ background: '#1a1a1a', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '12px', color: '#fafafa' }}
             labelStyle={{ color: '#a1a1aa' }}
           />
-          <Legend wrapperStyle={{ color: '#a1a1aa', fontSize: 12 }} />
-          <Bar dataKey="masuk" name="Masuk" fill="#10b981" radius={[4, 4, 0, 0]} />
-          <Bar dataKey="keluar" name="Keluar" fill="#ef4444" radius={[4, 4, 0, 0]} />
+          <Bar dataKey="masuk" name="Masuk" fill="#16A34A" radius={[6, 6, 0, 0]} />
+          <Bar dataKey="keluar" name="Keluar" fill="#DC2626" radius={[6, 6, 0, 0]} />
         </BarChart>
       </ResponsiveContainer>
     )
@@ -33,6 +37,7 @@ export default function ReportsPage() {
   const [categories, setCategories] = useState<Category[]>([])
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [mounted, setMounted] = useState(false)
+
 
   useEffect(() => {
     async function loadData() {
@@ -52,26 +57,23 @@ export default function ReportsPage() {
   const totalValue = useMemo(() => products.reduce((s, p) => s + p.price * p.stock, 0), [products])
   const avgPrice = useMemo(() => products.length ? products.reduce((s, p) => s + p.price, 0) / products.length : 0, [products])
 
-  // Dead stock: products with 0 'out' transactions
   const deadStock = useMemo(() => {
     const outProductIds = new Set(transactions.filter(t => t.type === 'out').map(t => t.productId))
     return products.filter(p => !outProductIds.has(p.id))
   }, [products, transactions])
 
-  // Perputaran Stok: total out qty / total stock
   const stockTurnover = useMemo(() => {
     const totalOutQty = transactions.filter(t => t.type === 'out').reduce((s, t) => s + t.quantity, 0)
     return totalItems > 0 ? (totalOutQty / totalItems).toFixed(2) : '0'
   }, [transactions, totalItems])
 
-  // Category breakdown
   const topCategory = useMemo(() => categories.map(c => ({
     ...c,
     count: products.filter(p => p.category === c.name).length,
     value: products.filter(p => p.category === c.name).reduce((s, p) => s + p.price * p.stock, 0)
   })).sort((a, b) => b.value - a.value), [categories, products])
 
-  // Transactions last 30 days
+
   const last30Days = useMemo(() => {
     const now = Date.now()
     const thirtyDaysAgo = now - 30 * 24 * 60 * 60 * 1000
@@ -82,7 +84,6 @@ export default function ReportsPage() {
   const totalKeluar30 = useMemo(() => last30Days.filter(t => t.type === 'out').reduce((s, t) => s + t.quantity, 0), [last30Days])
   const netSelisih = totalMasuk30 - totalKeluar30
 
-  // Weekly chart data (last 4 weeks)
   const weeklyData = useMemo(() => {
     const now = Date.now()
     const weeks: { week: string; masuk: number; keluar: number }[] = []
@@ -102,7 +103,7 @@ export default function ReportsPage() {
     return weeks
   }, [transactions])
 
-  // Top 5 active products (most out transactions)
+
   const topActive = useMemo(() => {
     const outCounts: Record<string, { name: string; category: string; count: number }> = {}
     transactions.filter(t => t.type === 'out').forEach(t => {
@@ -114,7 +115,6 @@ export default function ReportsPage() {
     return Object.values(outCounts).sort((a, b) => b.count - a.count).slice(0, 5)
   }, [transactions, products])
 
-  // Top 5 stagnant (fewest out transactions)
   const topStagnant = useMemo(() => {
     const outCounts: Record<string, number> = {}
     transactions.filter(t => t.type === 'out').forEach(t => {
@@ -126,150 +126,187 @@ export default function ReportsPage() {
       .slice(0, 5)
   }, [products, transactions])
 
-  // Alert stock
   const lowStock = useMemo(() => products.filter(p => p.stock > 0 && p.stock <= p.minStock), [products])
   const outStock = useMemo(() => products.filter(p => p.stock === 0), [products])
 
-  if (!mounted) return null
+  if (!mounted) return (
+    <div className="flex items-center justify-center min-h-[60vh]">
+      <div className="flex flex-col items-center gap-3">
+        <Loader2 className="w-8 h-8 text-[#FDC800] animate-spin" />
+        <p className="text-zinc-400 text-sm font-medium">Memuat laporan...</p>
+      </div>
+    </div>
+  )
+
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* ===== HEADER ===== */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-2xl md:text-3xl font-bold text-white">Laporan Inventory</h1>
-          <p className="text-zinc-400 text-sm mt-1">Analisis lengkap performa inventory kamu</p>
-        </div>
         <div className="flex items-center gap-3">
-          <button className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all border border-white/[0.08] text-zinc-300 hover:bg-white/[0.04]">
-            <DownloadIcon />
-            Export PDF
-          </button>
-          <button className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all border border-white/[0.08] text-zinc-300 hover:bg-white/[0.04]">
-            <DownloadIcon />
-            Export Excel
+          <div className="w-11 h-11 rounded-xl bg-[#FDC800]/10 flex items-center justify-center">
+            <BarChart3 className="w-5 h-5 text-[#FDC800]" />
+          </div>
+          <div>
+            <h1 className="text-2xl md:text-3xl font-bold text-[#fafafa]">Laporan Inventory</h1>
+            <p className="text-zinc-500 text-sm mt-0.5">Analisis lengkap performa inventory kamu</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          <button className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold bg-[#1a1a1a] border border-white/[0.06] text-zinc-300 hover:bg-white/[0.04] hover:border-white/[0.12] transition-all">
+            <Download className="w-4 h-4" />
+            Export
           </button>
         </div>
       </div>
 
       {/* ===== 6 STAT CARDS ===== */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        <StatCard label="Total Unit" value={totalItems.toLocaleString()} borderColor="border-l-emerald-400" />
-        <StatCard label="Total Nilai" value={formatRp(totalValue)} borderColor="border-l-blue-400" />
-        <StatCard label="Rata-rata Harga" value={formatRp(avgPrice)} borderColor="border-l-purple-400" />
-        <StatCard label="Dead Stock" value={`${deadStock.length} produk`} borderColor="border-l-red-500" />
-        <StatCard label="Perputaran Stok" value={`${stockTurnover}x`} borderColor="border-l-indigo-400" />
-        <StatCard label="Total Kategori" value={categories.length.toString()} borderColor="border-l-zinc-400" />
+        <StatCard label="Total Unit" value={totalItems.toLocaleString()} icon={<Package className="w-5 h-5" />} iconBg="bg-[#FDC800]/10" iconColor="text-[#FDC800]" />
+        <StatCard label="Total Nilai Stok" value={formatRp(totalValue)} icon={<DollarSign className="w-5 h-5" />} iconBg="bg-[#16A34A]/10" iconColor="text-[#16A34A]" />
+        <StatCard label="Rata-rata Harga" value={formatRp(avgPrice)} icon={<PieChart className="w-5 h-5" />} iconBg="bg-[#432DD7]/10" iconColor="text-[#432DD7]" />
+        <StatCard label="Dead Stock" value={`${deadStock.length} produk`} icon={<Skull className="w-5 h-5" />} iconBg="bg-[#DC2626]/10" iconColor="text-[#DC2626]" valueColor="text-[#DC2626]" />
+        <StatCard label="Perputaran Stok" value={`${stockTurnover}x`} icon={<RotateCcw className="w-5 h-5" />} iconBg="bg-[#432DD7]/10" iconColor="text-[#432DD7]" />
+        <StatCard label="Total Kategori" value={categories.length.toString()} icon={<Tag className="w-5 h-5" />} iconBg="bg-[#FDC800]/10" iconColor="text-[#FDC800]" />
       </div>
 
+
       {/* ===== NILAI PER KATEGORI ===== */}
-      <div className="glass-card overflow-hidden">
-        <div className="p-5 border-b border-white/[0.06]">
-          <h2 className="font-semibold text-white">Nilai Per Kategori</h2>
-          <p className="text-xs text-zinc-500 mt-1">Distribusi nilai inventory berdasarkan kategori</p>
+      <div className="rounded-2xl bg-[#1a1a1a] border border-white/[0.06] overflow-hidden">
+        <div className="p-6 border-b border-white/[0.06]">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-[#432DD7]/10 flex items-center justify-center">
+              <PieChart className="w-4 h-4 text-[#432DD7]" />
+            </div>
+            <div>
+              <h2 className="font-semibold text-[#fafafa]">Nilai Per Kategori</h2>
+              <p className="text-xs text-zinc-500 mt-0.5">Distribusi nilai inventory berdasarkan kategori</p>
+            </div>
+          </div>
         </div>
-        <div className="p-5 space-y-4">
+        <div className="p-6 space-y-5">
           {topCategory.map(cat => {
             const pct = totalValue > 0 ? (cat.value / totalValue) * 100 : 0
             return (
               <div key={cat.id}>
-                <div className="flex items-center justify-between mb-1.5">
+                <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-3">
                     <div className="w-3 h-3 rounded-full" style={{ background: cat.color }} />
-                    <span className="text-sm font-medium text-white">{cat.name}</span>
-                    <span className="text-xs text-zinc-500">{cat.count} produk</span>
+                    <span className="text-sm font-medium text-[#fafafa]">{cat.name}</span>
+                    <span className="text-xs text-zinc-500 bg-white/[0.04] px-2 py-0.5 rounded-full">{cat.count} produk</span>
                   </div>
-                  <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-white/[0.06] text-zinc-300">
-                    {pct.toFixed(1)}%
-                  </span>
+                  <div className="text-right flex items-center gap-2">
+                    <span className="text-sm font-semibold text-[#fafafa]">{formatRp(cat.value)}</span>
+                    <span className="text-xs font-medium text-[#FDC800] bg-[#FDC800]/10 px-2 py-0.5 rounded-full">{pct.toFixed(1)}%</span>
+                  </div>
                 </div>
                 <div className="h-2 rounded-full bg-white/[0.04] overflow-hidden">
-                  <div
-                    className="h-full rounded-full transition-all duration-700 ease-out"
-                    style={{ width: `${pct}%`, background: cat.color }}
-                  />
+                  <div className="h-full rounded-full transition-all duration-700 ease-out" style={{ width: `${pct}%`, background: cat.color }} />
                 </div>
               </div>
             )
           })}
-          {topCategory.length === 0 && (
-            <p className="text-center text-zinc-500 py-8">Belum ada data</p>
-          )}
+          {topCategory.length === 0 && <p className="text-center text-zinc-500 py-8">Belum ada data</p>}
         </div>
       </div>
 
-      {/* ===== RINGKASAN TRANSAKSI (30 HARI TERAKHIR) ===== */}
-      <div className="glass-card overflow-hidden">
-        <div className="p-5 border-b border-white/[0.06]">
-          <h2 className="font-semibold text-white">Ringkasan Transaksi</h2>
-          <p className="text-xs text-zinc-500 mt-1">30 hari terakhir</p>
+
+      {/* ===== RINGKASAN TRANSAKSI 30 HARI ===== */}
+      <div className="rounded-2xl bg-[#1a1a1a] border border-white/[0.06] overflow-hidden">
+        <div className="p-6 border-b border-white/[0.06]">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-[#FDC800]/10 flex items-center justify-center">
+              <Activity className="w-4 h-4 text-[#FDC800]" />
+            </div>
+            <div>
+              <h2 className="font-semibold text-[#fafafa]">Ringkasan Transaksi</h2>
+              <p className="text-xs text-zinc-500 mt-0.5">30 hari terakhir</p>
+            </div>
+          </div>
         </div>
-        <div className="p-5 space-y-5">
-          {/* 3 metric cards */}
+        <div className="p-6 space-y-6">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/[0.04] p-4">
-              <p className="text-xs text-zinc-400 mb-1">Total Masuk</p>
-              <p className="text-xl font-bold text-emerald-400">+{totalMasuk30.toLocaleString()}</p>
+            <div className="rounded-xl bg-[#16A34A]/[0.06] border border-[#16A34A]/20 p-4">
+              <div className="flex items-center gap-2 mb-1">
+                <ArrowDownCircle className="w-4 h-4 text-[#16A34A]" />
+                <p className="text-xs text-zinc-400">Total Masuk</p>
+              </div>
+              <p className="text-xl font-bold text-[#16A34A]">+{totalMasuk30.toLocaleString()}</p>
             </div>
-            <div className="rounded-xl border border-red-500/20 bg-red-500/[0.04] p-4">
-              <p className="text-xs text-zinc-400 mb-1">Total Keluar</p>
-              <p className="text-xl font-bold text-red-400">-{totalKeluar30.toLocaleString()}</p>
+            <div className="rounded-xl bg-[#DC2626]/[0.06] border border-[#DC2626]/20 p-4">
+              <div className="flex items-center gap-2 mb-1">
+                <ArrowUpCircle className="w-4 h-4 text-[#DC2626]" />
+                <p className="text-xs text-zinc-400">Total Keluar</p>
+              </div>
+              <p className="text-xl font-bold text-[#DC2626]">-{totalKeluar30.toLocaleString()}</p>
             </div>
-            <div className="rounded-xl border border-indigo-500/20 bg-indigo-500/[0.04] p-4">
-              <p className="text-xs text-zinc-400 mb-1">Selisih Net</p>
-              <p className={`text-xl font-bold ${netSelisih >= 0 ? 'text-indigo-400' : 'text-red-400'}`}>
+            <div className="rounded-xl bg-[#432DD7]/[0.06] border border-[#432DD7]/20 p-4">
+              <div className="flex items-center gap-2 mb-1">
+                <TrendingUp className="w-4 h-4 text-[#432DD7]" />
+                <p className="text-xs text-zinc-400">Selisih Net</p>
+              </div>
+              <p className={`text-xl font-bold ${netSelisih >= 0 ? 'text-[#16A34A]' : 'text-[#DC2626]'}`}>
                 {netSelisih >= 0 ? '+' : ''}{netSelisih.toLocaleString()}
               </p>
             </div>
           </div>
-          {/* Bar Chart */}
-          <div>
-            <RechartsBarChart data={weeklyData} />
-          </div>
+          <RechartsBarChart data={weeklyData} />
         </div>
       </div>
 
-      {/* ===== PRODUK PALING AKTIF vs PALING STAGNAN ===== */}
-      <div className="glass-card overflow-hidden">
-        <div className="p-5 border-b border-white/[0.06]">
-          <h2 className="font-semibold text-white">Produk Paling Aktif vs Paling Stagnan</h2>
-          <p className="text-xs text-zinc-500 mt-1">Berdasarkan jumlah transaksi keluar</p>
+
+      {/* ===== PRODUK AKTIF vs STAGNAN ===== */}
+      <div className="rounded-2xl bg-[#1a1a1a] border border-white/[0.06] overflow-hidden">
+        <div className="p-6 border-b border-white/[0.06]">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-[#FDC800]/10 flex items-center justify-center">
+              <TrendingUp className="w-4 h-4 text-[#FDC800]" />
+            </div>
+            <div>
+              <h2 className="font-semibold text-[#fafafa]">Produk Paling Aktif vs Stagnan</h2>
+              <p className="text-xs text-zinc-500 mt-0.5">Berdasarkan jumlah transaksi keluar</p>
+            </div>
+          </div>
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-white/[0.06]">
           {/* Top 5 Terlaris */}
-          <div className="p-5">
-            <h3 className="text-sm font-semibold text-emerald-400 mb-4">Top 5 Terlaris</h3>
+          <div className="p-6">
+            <div className="flex items-center gap-2 mb-4">
+              <TrendingUp className="w-4 h-4 text-[#16A34A]" />
+              <h3 className="text-sm font-semibold text-[#16A34A]">Top 5 Terlaris</h3>
+            </div>
             <div className="space-y-3">
               {topActive.length > 0 ? topActive.map((item, i) => (
                 <div key={i} className="flex items-center gap-3">
-                  <span className="w-6 h-6 rounded-full bg-emerald-500/10 text-emerald-400 text-xs font-bold flex items-center justify-center shrink-0">
+                  <span className="w-7 h-7 rounded-lg bg-[#16A34A]/10 text-[#16A34A] text-xs font-bold flex items-center justify-center shrink-0">
                     {i + 1}
                   </span>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm text-white font-medium truncate">{item.name}</p>
-                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/[0.06] text-zinc-400">{item.category || '-'}</span>
+                    <p className="text-sm text-[#fafafa] font-medium truncate">{item.name}</p>
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/[0.04] text-zinc-500">{item.category || '-'}</span>
                   </div>
-                  <span className="text-sm font-semibold text-emerald-400">{item.count}</span>
+                  <span className="text-sm font-bold text-[#16A34A]">{item.count}</span>
                 </div>
-              )) : (
-                <p className="text-sm text-zinc-500">Belum ada transaksi keluar</p>
-              )}
+              )) : <p className="text-sm text-zinc-500">Belum ada transaksi keluar</p>}
             </div>
           </div>
           {/* Top 5 Stagnan */}
-          <div className="p-5">
-            <h3 className="text-sm font-semibold text-amber-400 mb-4">Top 5 Stagnan</h3>
+          <div className="p-6">
+            <div className="flex items-center gap-2 mb-4">
+              <TrendingDown className="w-4 h-4 text-[#FDC800]" />
+              <h3 className="text-sm font-semibold text-[#FDC800]">Top 5 Stagnan</h3>
+            </div>
             <div className="space-y-3">
               {topStagnant.map((item, i) => (
                 <div key={i} className="flex items-center gap-3">
-                  <span className="w-6 h-6 rounded-full bg-amber-500/10 text-amber-400 text-xs font-bold flex items-center justify-center shrink-0">
+                  <span className="w-7 h-7 rounded-lg bg-[#FDC800]/10 text-[#FDC800] text-xs font-bold flex items-center justify-center shrink-0">
                     {i + 1}
                   </span>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm text-white font-medium truncate">{item.name}</p>
-                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/[0.06] text-zinc-400">{item.category}</span>
+                    <p className="text-sm text-[#fafafa] font-medium truncate">{item.name}</p>
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/[0.04] text-zinc-500">{item.category}</span>
                   </div>
-                  <span className="text-sm font-semibold text-amber-400">{item.count}</span>
+                  <span className="text-sm font-bold text-[#FDC800]">{item.count}</span>
                 </div>
               ))}
             </div>
@@ -277,99 +314,82 @@ export default function ReportsPage() {
         </div>
       </div>
 
-      {/* ===== DEAD STOCK SECTION (TABLE) ===== */}
+
+      {/* ===== DEAD STOCK ===== */}
       <DeadStockTable deadStock={deadStock} transactions={transactions} formatRp={formatRp} />
 
       {/* ===== ALERT STOK ===== */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Low Stock */}
-        <div className="glass-card overflow-hidden">
+        <div className="rounded-2xl bg-[#1a1a1a] border border-white/[0.06] overflow-hidden">
           <div className="p-5 border-b border-white/[0.06] flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-amber-500/15 flex items-center justify-center">
-              <svg className="w-4 h-4 text-amber-400" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
-              </svg>
+            <div className="w-9 h-9 rounded-xl bg-amber-500/10 flex items-center justify-center">
+              <AlertTriangle className="w-4 h-4 text-amber-400" />
             </div>
             <div>
-              <h3 className="font-semibold text-white text-sm">Stok Rendah</h3>
+              <h3 className="font-semibold text-[#fafafa] text-sm">Stok Rendah</h3>
               <p className="text-xs text-zinc-500">{lowStock.length} produk perlu restock</p>
             </div>
           </div>
-          <div className="divide-y divide-white/[0.04]">
+          <div className="divide-y divide-white/[0.06]">
             {lowStock.slice(0, 5).map(p => {
               const ratio = p.minStock > 0 ? p.stock / p.minStock : 1
-              const barColor = ratio < 0.5 ? 'bg-red-500' : ratio < 0.8 ? 'bg-amber-500' : 'bg-emerald-500'
+              const barColor = ratio < 0.5 ? 'bg-[#DC2626]' : ratio < 0.8 ? 'bg-amber-500' : 'bg-[#16A34A]'
               return (
-                <div key={p.id} className="px-5 py-3">
+                <div key={p.id} className="px-5 py-3.5 hover:bg-white/[0.02] transition-colors">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-500/20 to-amber-600/5 flex items-center justify-center text-amber-400 text-[10px] font-bold">
+                      <div className="w-9 h-9 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-400 text-[10px] font-bold">
                         {p.name.substring(0, 2).toUpperCase()}
                       </div>
                       <div>
-                        <p className="text-sm text-white font-medium">{p.name}</p>
+                        <p className="text-sm text-[#fafafa] font-medium">{p.name}</p>
                         <p className="text-[11px] text-zinc-500">{p.category}</p>
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="text-sm font-semibold text-amber-400">{p.stock}</p>
+                      <p className="text-sm font-bold text-amber-400">{p.stock}</p>
                       <p className="text-[10px] text-zinc-500">min: {p.minStock}</p>
                     </div>
                   </div>
                   <div className="mt-2 h-1.5 rounded-full bg-white/[0.04] overflow-hidden">
-                    <div
-                      className={`h-full rounded-full transition-all duration-500 ${barColor}`}
-                      style={{ width: `${Math.min(ratio * 100, 100)}%` }}
-                    />
+                    <div className={`h-full rounded-full transition-all duration-500 ${barColor}`} style={{ width: `${Math.min(ratio * 100, 100)}%` }} />
                   </div>
                 </div>
               )
             })}
-            {lowStock.length === 0 && <p className="px-5 py-6 text-center text-zinc-500 text-sm">Semua stok aman</p>}
+            {lowStock.length === 0 && <p className="px-5 py-8 text-center text-zinc-500 text-sm">Semua stok aman ✓</p>}
           </div>
         </div>
 
+
         {/* Out of Stock */}
-        <div className="glass-card overflow-hidden">
+        <div className="rounded-2xl bg-[#1a1a1a] border border-white/[0.06] overflow-hidden">
           <div className="p-5 border-b border-white/[0.06] flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-red-500/15 flex items-center justify-center">
-              <svg className="w-4 h-4 text-red-400" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
-              </svg>
+            <div className="w-9 h-9 rounded-xl bg-[#DC2626]/10 flex items-center justify-center">
+              <XCircle className="w-4 h-4 text-[#DC2626]" />
             </div>
             <div>
-              <h3 className="font-semibold text-white text-sm">Stok Habis</h3>
+              <h3 className="font-semibold text-[#fafafa] text-sm">Stok Habis</h3>
               <p className="text-xs text-zinc-500">{outStock.length} produk habis</p>
             </div>
           </div>
-          <div className="divide-y divide-white/[0.04]">
-            {outStock.slice(0, 5).map(p => {
-              const ratio = 0
-              const barColor = 'bg-red-500'
-              return (
-                <div key={p.id} className="px-5 py-3">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-red-500/20 to-red-600/5 flex items-center justify-center text-red-400 text-[10px] font-bold">
-                        {p.name.substring(0, 2).toUpperCase()}
-                      </div>
-                      <div>
-                        <p className="text-sm text-white font-medium">{p.name}</p>
-                        <p className="text-[11px] text-zinc-500">{p.category}</p>
-                      </div>
-                    </div>
-                    <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-red-500/12 text-red-400">Habis</span>
+          <div className="divide-y divide-white/[0.06]">
+            {outStock.slice(0, 5).map(p => (
+              <div key={p.id} className="px-5 py-3.5 flex items-center justify-between hover:bg-white/[0.02] transition-colors">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-[#DC2626]/10 flex items-center justify-center text-[#DC2626] text-[10px] font-bold">
+                    {p.name.substring(0, 2).toUpperCase()}
                   </div>
-                  <div className="mt-2 h-1.5 rounded-full bg-white/[0.04] overflow-hidden">
-                    <div
-                      className={`h-full rounded-full transition-all duration-500 ${barColor}`}
-                      style={{ width: `${ratio}%` }}
-                    />
+                  <div>
+                    <p className="text-sm text-[#fafafa] font-medium">{p.name}</p>
+                    <p className="text-[11px] text-zinc-500">{p.category}</p>
                   </div>
                 </div>
-              )
-            })}
-            {outStock.length === 0 && <p className="px-5 py-6 text-center text-zinc-500 text-sm">Tidak ada produk habis</p>}
+                <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-lg bg-[#DC2626]/10 text-[#DC2626]">Habis</span>
+              </div>
+            ))}
+            {outStock.length === 0 && <p className="px-5 py-8 text-center text-zinc-500 text-sm">Tidak ada produk habis ✓</p>}
           </div>
         </div>
       </div>
@@ -377,34 +397,34 @@ export default function ReportsPage() {
   )
 }
 
-// ===== COMPONENTS =====
 
-function StatCard({ label, value, borderColor }: { label: string; value: string; borderColor: string }) {
+// ===== STAT CARD COMPONENT =====
+function StatCard({ label, value, icon, iconBg, iconColor, valueColor }: {
+  label: string; value: string; icon: React.ReactNode; iconBg: string; iconColor: string; valueColor?: string
+}) {
   return (
-    <div className={`glass-card border-l-4 ${borderColor} p-4`}>
-      <p className="text-xs text-zinc-500 mb-1">{label}</p>
-      <p className="text-lg font-bold text-white truncate">{value}</p>
+    <div className="rounded-2xl bg-[#1a1a1a] border border-white/[0.06] p-5 hover:border-white/[0.12] transition-all">
+      <div className="flex items-center gap-3">
+        <div className={`w-11 h-11 rounded-xl ${iconBg} flex items-center justify-center shrink-0 ${iconColor}`}>
+          {icon}
+        </div>
+        <div className="min-w-0">
+          <p className={`text-lg font-bold truncate ${valueColor || 'text-[#fafafa]'}`}>{value}</p>
+          <p className="text-[11px] text-zinc-500 font-medium">{label}</p>
+        </div>
+      </div>
     </div>
   )
 }
 
-function DownloadIcon() {
-  return (
-    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
-    </svg>
-  )
-}
 
-
+// ===== DEAD STOCK TABLE COMPONENT =====
 function DeadStockTable({ deadStock, transactions, formatRp }: { deadStock: Product[]; transactions: Transaction[]; formatRp: (n: number) => string }) {
   const [sortCol, setSortCol] = useState<'days' | 'value' | 'stock' | 'price'>('days')
   const [sortAsc, setSortAsc] = useState(false)
 
-  // Calculate days not sold for each dead stock product
   const now = Date.now()
   const deadStockWithDays = deadStock.map(p => {
-    // Find last 'in' transaction for this product as proxy for when it was added
     const lastIn = transactions
       .filter(t => t.productId === p.id && t.type === 'in')
       .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0]
@@ -431,99 +451,97 @@ function DeadStockTable({ deadStock, transactions, formatRp }: { deadStock: Prod
   const totalValue = deadStockWithDays.reduce((s, p) => s + p.value, 0)
   const avgDays = deadStockWithDays.length > 0 ? Math.round(deadStockWithDays.reduce((s, p) => s + p.days, 0) / deadStockWithDays.length) : 0
 
+
   const getDayColor = (days: number) => {
-    if (days > 90) return 'text-red-400 font-semibold'
-    if (days > 30) return 'text-orange-400'
-    return 'text-amber-400'
+    if (days > 90) return 'text-[#DC2626] font-bold'
+    if (days > 30) return 'text-amber-400 font-semibold'
+    return 'text-[#FDC800]'
   }
 
   const getStatusBadge = (days: number) => {
-    if (days > 90) return <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-red-500/15 text-red-400">Kritis</span>
-    if (days > 30) return <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-orange-500/15 text-orange-400">Stagnan</span>
-    return <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-amber-500/15 text-amber-400">Perlu Perhatian</span>
+    if (days > 90) return <span className="px-2 py-0.5 rounded-lg text-[9px] font-bold bg-[#DC2626]/10 text-[#DC2626]">Kritis</span>
+    if (days > 30) return <span className="px-2 py-0.5 rounded-lg text-[9px] font-bold bg-amber-500/10 text-amber-400">Stagnan</span>
+    return <span className="px-2 py-0.5 rounded-lg text-[9px] font-bold bg-[#FDC800]/10 text-[#FDC800]">Perlu Perhatian</span>
   }
 
   const SortIcon = ({ col }: { col: typeof sortCol }) => {
     if (sortCol !== col) return <span className="text-zinc-600 ml-1">↕</span>
-    return <span className="text-indigo-400 ml-1">{sortAsc ? '↑' : '↓'}</span>
+    return <span className="text-[#432DD7] ml-1">{sortAsc ? '↑' : '↓'}</span>
   }
 
   return (
-    <div className="glass-card overflow-hidden">
-      {/* Header */}
-      <div className="p-5 border-b border-white/[0.06] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+    <div className="rounded-2xl bg-[#1a1a1a] border border-white/[0.06] overflow-hidden">
+      <div className="p-6 border-b border-white/[0.06] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-red-500/15 flex items-center justify-center">
-            <svg className="w-4 h-4 text-red-400" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
-            </svg>
+          <div className="w-9 h-9 rounded-xl bg-[#DC2626]/10 flex items-center justify-center">
+            <Skull className="w-4 h-4 text-[#DC2626]" />
           </div>
           <div>
-            <h2 className="font-semibold text-white text-sm">Dead Stock</h2>
+            <h2 className="font-semibold text-[#fafafa]">Dead Stock</h2>
             <p className="text-xs text-zinc-500">{deadStock.length} produk tanpa transaksi keluar</p>
           </div>
         </div>
         {totalValue > 0 && (
-          <p className="text-sm font-semibold text-red-400">Total nilai tertahan: {formatRp(totalValue)}</p>
+          <p className="text-sm font-bold text-[#DC2626]">Nilai tertahan: {formatRp(totalValue)}</p>
         )}
       </div>
 
-      {/* Table */}
+
       {deadStock.length > 0 ? (
         <div className="overflow-x-auto">
           <table className="w-full border-collapse min-w-[800px]">
-            <thead className="sticky top-0 z-10">
-              <tr className="bg-zinc-800/80">
-                <th className="border border-white/[0.06] w-[48px] px-2 py-2.5 text-center text-[11px] font-bold text-zinc-400 uppercase tracking-wide">No</th>
-                <th className="border border-white/[0.06] px-3 py-2.5 text-left text-[11px] font-bold text-zinc-400 uppercase tracking-wide">Produk</th>
-                <th className="border border-white/[0.06] w-[100px] px-3 py-2.5 text-left text-[11px] font-bold text-zinc-400 uppercase tracking-wide">SKU</th>
-                <th className="border border-white/[0.06] w-[70px] px-2 py-2.5 text-center text-[11px] font-bold text-zinc-400 uppercase tracking-wide cursor-pointer hover:text-zinc-200 transition" onClick={() => handleSort('stock')}>
+            <thead>
+              <tr className="bg-[#0f0f0f]">
+                <th className="border-b border-white/[0.06] w-[48px] px-3 py-3 text-center text-[11px] font-bold text-zinc-500 uppercase tracking-wide">No</th>
+                <th className="border-b border-white/[0.06] px-3 py-3 text-left text-[11px] font-bold text-zinc-500 uppercase tracking-wide">Produk</th>
+                <th className="border-b border-white/[0.06] w-[100px] px-3 py-3 text-left text-[11px] font-bold text-zinc-500 uppercase tracking-wide">SKU</th>
+                <th className="border-b border-white/[0.06] w-[70px] px-3 py-3 text-center text-[11px] font-bold text-zinc-500 uppercase tracking-wide cursor-pointer hover:text-zinc-300 transition" onClick={() => handleSort('stock')}>
                   Stok<SortIcon col="stock" />
                 </th>
-                <th className="border border-white/[0.06] w-[120px] px-3 py-2.5 text-right text-[11px] font-bold text-zinc-400 uppercase tracking-wide cursor-pointer hover:text-zinc-200 transition" onClick={() => handleSort('price')}>
+                <th className="border-b border-white/[0.06] w-[120px] px-3 py-3 text-right text-[11px] font-bold text-zinc-500 uppercase tracking-wide cursor-pointer hover:text-zinc-300 transition" onClick={() => handleSort('price')}>
                   Harga<SortIcon col="price" />
                 </th>
-                <th className="border border-white/[0.06] w-[130px] px-3 py-2.5 text-right text-[11px] font-bold text-zinc-400 uppercase tracking-wide cursor-pointer hover:text-zinc-200 transition" onClick={() => handleSort('value')}>
+                <th className="border-b border-white/[0.06] w-[130px] px-3 py-3 text-right text-[11px] font-bold text-zinc-500 uppercase tracking-wide cursor-pointer hover:text-zinc-300 transition" onClick={() => handleSort('value')}>
                   Nilai Tertahan<SortIcon col="value" />
                 </th>
-                <th className="border border-white/[0.06] w-[110px] px-2 py-2.5 text-center text-[11px] font-bold text-zinc-400 uppercase tracking-wide cursor-pointer hover:text-zinc-200 transition" onClick={() => handleSort('days')}>
-                  Hari Tidak Terjual<SortIcon col="days" />
+                <th className="border-b border-white/[0.06] w-[110px] px-3 py-3 text-center text-[11px] font-bold text-zinc-500 uppercase tracking-wide cursor-pointer hover:text-zinc-300 transition" onClick={() => handleSort('days')}>
+                  Hari<SortIcon col="days" />
                 </th>
-                <th className="border border-white/[0.06] w-[120px] px-2 py-2.5 text-center text-[11px] font-bold text-zinc-400 uppercase tracking-wide">Status</th>
+                <th className="border-b border-white/[0.06] w-[100px] px-3 py-3 text-center text-[11px] font-bold text-zinc-500 uppercase tracking-wide">Status</th>
               </tr>
             </thead>
             <tbody>
               {sorted.map((p, idx) => (
-                <tr key={p.id} className={`hover:bg-red-950/20 transition ${idx % 2 === 1 ? 'bg-zinc-900/30' : ''}`}>
-                  <td className="border border-white/[0.06] px-2 py-2.5 text-center text-xs text-zinc-500">{idx + 1}</td>
-                  <td className="border border-white/[0.06] px-3 py-2.5">
-                    <p className="text-sm font-medium text-white">{p.name}</p>
-                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/[0.06] text-zinc-400 mt-0.5 inline-block">{p.category}</span>
+                <tr key={p.id} className={`hover:bg-[#DC2626]/[0.03] transition ${idx % 2 === 1 ? 'bg-white/[0.01]' : ''}`}>
+                  <td className="border-b border-white/[0.04] px-3 py-3 text-center text-xs text-zinc-500">{idx + 1}</td>
+                  <td className="border-b border-white/[0.04] px-3 py-3">
+                    <p className="text-sm font-medium text-[#fafafa]">{p.name}</p>
+                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/[0.04] text-zinc-500 mt-0.5 inline-block">{p.category}</span>
                   </td>
-                  <td className="border border-white/[0.06] px-3 py-2.5 font-mono text-xs text-zinc-400">{p.sku}</td>
-                  <td className="border border-white/[0.06] px-2 py-2.5 text-center font-mono text-sm text-zinc-200">{p.stock}</td>
-                  <td className="border border-white/[0.06] px-3 py-2.5 text-right font-mono text-xs text-zinc-300">{formatRp(p.price)}</td>
-                  <td className="border border-white/[0.06] px-3 py-2.5 text-right font-mono text-sm text-red-400">{formatRp(p.value)}</td>
-                  <td className="border border-white/[0.06] px-2 py-2.5 text-center">
-                    <p className={`text-lg font-bold ${getDayColor(p.days)}`}>{p.days}</p>
-                    <p className="text-[9px] text-zinc-500">hari</p>
+                  <td className="border-b border-white/[0.04] px-3 py-3 font-mono text-xs text-zinc-400">{p.sku}</td>
+                  <td className="border-b border-white/[0.04] px-3 py-3 text-center font-mono text-sm text-zinc-200">{p.stock}</td>
+                  <td className="border-b border-white/[0.04] px-3 py-3 text-right font-mono text-xs text-zinc-300">{formatRp(p.price)}</td>
+                  <td className="border-b border-white/[0.04] px-3 py-3 text-right font-mono text-sm text-[#DC2626]">{formatRp(p.value)}</td>
+                  <td className="border-b border-white/[0.04] px-3 py-3 text-center">
+                    <p className={`text-lg ${getDayColor(p.days)}`}>{p.days}</p>
+                    <p className="text-[9px] text-zinc-600">hari</p>
                   </td>
-                  <td className="border border-white/[0.06] px-2 py-2.5 text-center">{getStatusBadge(p.days)}</td>
+                  <td className="border-b border-white/[0.04] px-3 py-3 text-center">{getStatusBadge(p.days)}</td>
                 </tr>
               ))}
             </tbody>
             <tfoot>
-              <tr className="bg-zinc-800 border-t-2 border-white/20">
-                <td colSpan={5} className="border border-white/[0.06] px-3 py-2.5 text-xs font-medium text-zinc-300">Total: {sorted.length} produk dead stock</td>
-                <td className="border border-white/[0.06] px-3 py-2.5 text-right font-mono text-sm font-semibold text-red-400">{formatRp(totalValue)}</td>
-                <td className="border border-white/[0.06] px-2 py-2.5 text-center text-xs text-zinc-400">Rata-rata: {avgDays} hari</td>
-                <td className="border border-white/[0.06]"></td>
+              <tr className="bg-[#0f0f0f]">
+                <td colSpan={5} className="px-3 py-3 text-xs font-medium text-zinc-400">{sorted.length} produk dead stock</td>
+                <td className="px-3 py-3 text-right font-mono text-sm font-bold text-[#DC2626]">{formatRp(totalValue)}</td>
+                <td className="px-3 py-3 text-center text-xs text-zinc-500">~{avgDays} hari</td>
+                <td></td>
               </tr>
             </tfoot>
           </table>
         </div>
       ) : (
-        <div className="p-8 text-center text-zinc-500 text-sm">Tidak ada dead stock — semua produk memiliki transaksi keluar</div>
+        <div className="p-10 text-center text-zinc-500 text-sm">Tidak ada dead stock — semua produk memiliki transaksi keluar ✓</div>
       )}
     </div>
   )
