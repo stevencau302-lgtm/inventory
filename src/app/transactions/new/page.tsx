@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
-import { Product, Transaction, getProducts, getTransactions, saveProducts, saveTransactions, formatRp, uid, loadSampleData } from '@/lib/store'
+import { Product, Transaction, getProducts, getTransactions, saveProducts, saveTransactions, formatRp, uid, loadSampleData, fetchProducts, saveProduct, saveTransaction } from '@/lib/store'
 import { useToast } from '@/components/Toast'
 
 type TransactionType = 'in' | 'out'
@@ -24,11 +24,12 @@ export default function NewTransactionPage() {
   const productDropdownRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    let p = getProducts()
-    if (p.length === 0) { const data = loadSampleData(); p = data.products }
-    setProducts(p)
-    setTransactions(getTransactions())
-    setMounted(true)
+    async function loadData() {
+      const p = await fetchProducts()
+      setProducts(p)
+      setMounted(true)
+    }
+    loadData()
   }, [])
 
   useEffect(() => {
@@ -63,17 +64,14 @@ export default function NewTransactionPage() {
     if (type === 'out' && product.stock < quantity) { toast(`Stok tidak cukup! Sisa: ${product.stock}`, 'error'); return }
     setLoading(true)
     setTimeout(() => {
-      const updated = products.map(p => {
-        if (p.id === selectedProduct) {
-          const newStock = type === 'in' ? p.stock + quantity : p.stock - quantity
-          return { ...p, stock: newStock, updatedAt: new Date().toISOString() }
-        }
-        return p
-      })
+      const updatedProduct = {
+        ...product,
+        stock: type === 'in' ? product.stock + quantity : product.stock - quantity,
+        updatedAt: new Date().toISOString()
+      }
       const newTx: Transaction = { id: uid(), productId: product.id, productName: product.name, type, quantity, note, createdAt: new Date().toISOString() }
-      const updatedTx = [newTx, ...transactions]
-      saveProducts(updated)
-      saveTransactions(updatedTx)
+      saveProduct(updatedProduct)
+      saveTransaction(newTx)
       toast(type === 'in' ? `+${quantity} ${product.name} berhasil dicatat masuk` : `-${quantity} ${product.name} berhasil dicatat keluar`, 'success')
       router.push('/transactions')
     }, 500)
