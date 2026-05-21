@@ -118,7 +118,7 @@ export default function NewTransactionPage() {
                     <div className="grid grid-cols-2 gap-3">
                       <button type="button" onClick={() => setType('in')} className="p-4 rounded-xl text-left transition-all flex items-center gap-3" style={{ background: type === 'in' ? '#16A34A' : '#0f0f0f', color: type === 'in' ? '#fff' : '#e4e4e7' }}>
                         <div className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0" style={{ background: type === 'in' ? 'rgba(255,255,255,0.2)' : 'rgba(22,163,74,0.15)' }}>
-                          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" style={{ color: type === 'in' ? '#fff' : '#16A34A' }}><path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" /></svg>
+                          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" style={{ color: type === 'in' ? '#fff' : '#16A34A' }}><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 13.5L12 21m0 0l-7.5-7.5M12 21V3" /></svg>
                         </div>
                         <div>
                           <p className="text-sm font-bold">Masuk</p>
@@ -127,7 +127,7 @@ export default function NewTransactionPage() {
                       </button>
                       <button type="button" onClick={() => setType('out')} className="p-4 rounded-xl text-left transition-all flex items-center gap-3" style={{ background: type === 'out' ? '#DC2626' : '#0f0f0f', color: type === 'out' ? '#fff' : '#e4e4e7' }}>
                         <div className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0" style={{ background: type === 'out' ? 'rgba(255,255,255,0.2)' : 'rgba(220,38,38,0.15)' }}>
-                          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" style={{ color: type === 'out' ? '#fff' : '#DC2626' }}><path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" /></svg>
+                          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" style={{ color: type === 'out' ? '#fff' : '#DC2626' }}><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 10.5L12 3m0 0l7.5 7.5M12 3v18" /></svg>
                         </div>
                         <div>
                           <p className="text-sm font-bold">Keluar</p>
@@ -222,7 +222,7 @@ export default function NewTransactionPage() {
                   <div className="flex gap-3 pt-2">
                     <button type="button" onClick={() => router.push('/transactions')} className="px-5 py-3 rounded-lg text-sm font-bold transition-all" style={{ background: '#0f0f0f', color: '#e4e4e7' }}>Batal</button>
                     <button type="submit" disabled={loading} className="flex-1 py-3.5 rounded-lg text-sm font-bold transition-all disabled:opacity-50 flex items-center justify-center gap-2" style={{ background: '#FDC800', color: '#1C293C' }}>
-                      {loading ? 'Menyimpan...' : (<><svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" /></svg>Simpan Transaksi</>)}
+                      {loading ? 'Menyimpan...' : (<><svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>Simpan Transaksi</>)}
                     </button>
                   </div>
                 </form>
