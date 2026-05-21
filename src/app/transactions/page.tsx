@@ -97,7 +97,7 @@ export default function TransactionsPage() {
 
       {/* Stat Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        <div className="rounded-xl p-5 bg-[#1a1a1a] border border-white/[0.06]">
+        <div className="rounded-xl p-4 bg-[#1a1a1a] border border-white/[0.06]">
           <div className="flex items-center gap-2 mb-2">
             <div className="w-7 h-7 rounded-lg bg-[#16A34A]/15 flex items-center justify-center">
               <svg className="w-3.5 h-3.5 text-[#16A34A]" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941" /></svg>
@@ -106,7 +106,7 @@ export default function TransactionsPage() {
           </div>
           <p className="text-2xl font-bold text-[#fafafa]">{totalIn} <span className="text-xs font-medium text-zinc-500">unit</span></p>
         </div>
-        <div className="rounded-xl p-5 bg-[#1a1a1a] border border-white/[0.06]">
+        <div className="rounded-xl p-4 bg-[#1a1a1a] border border-white/[0.06]">
           <div className="flex items-center gap-2 mb-2">
             <div className="w-7 h-7 rounded-lg bg-[#DC2626]/15 flex items-center justify-center">
               <svg className="w-3.5 h-3.5 text-[#DC2626]" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6L9 12.75l4.286-4.286a11.948 11.948 0 014.306 6.43l.776 2.898m0 0l3.182-5.511m-3.182 5.51l-5.511-3.181" /></svg>
@@ -115,7 +115,7 @@ export default function TransactionsPage() {
           </div>
           <p className="text-2xl font-bold text-[#fafafa]">{totalOut} <span className="text-xs font-medium text-zinc-500">unit</span></p>
         </div>
-        <div className="rounded-xl p-5 bg-[#1a1a1a] border border-white/[0.06]">
+        <div className="rounded-xl p-4 bg-[#1a1a1a] border border-white/[0.06]">
           <div className="flex items-center gap-2 mb-2">
             <div className="w-7 h-7 rounded-lg bg-[#FDC800]/15 flex items-center justify-center">
               <svg className="w-3.5 h-3.5 text-[#FDC800]" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" /></svg>
@@ -124,7 +124,7 @@ export default function TransactionsPage() {
           </div>
           <p className="text-2xl font-bold text-[#fafafa]">{products.length}</p>
         </div>
-        <div className="rounded-xl p-5 bg-[#1a1a1a] border border-white/[0.06]">
+        <div className="rounded-xl p-4 bg-[#1a1a1a] border border-white/[0.06]">
           <div className="flex items-center gap-2 mb-2">
             <div className="w-7 h-7 rounded-lg bg-[#432DD7]/15 flex items-center justify-center">
               <svg className="w-3.5 h-3.5 text-[#432DD7]" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" /></svg>
@@ -201,8 +201,8 @@ export default function TransactionsPage() {
             )}
             {editingId !== tx.id && (
               <div className="mt-3 pt-3 border-t border-white/[0.06] flex gap-2">
-                <button onClick={() => handleEditStart(tx)} className="flex-1 py-2 rounded-lg bg-[#432DD7]/10 text-[#432DD7] text-xs font-bold active:scale-95 transition-all">Edit</button>
-                <button onClick={() => handleDelete(tx.id, tx.productName)} className="flex-1 py-2 rounded-lg bg-[#DC2626]/10 text-[#DC2626] text-xs font-bold active:scale-95 transition-all">Hapus</button>
+                <button onClick={() => handleEditStart(tx)} className="flex-1 py-2.5 rounded-lg bg-white/[0.04] border border-white/[0.06] text-zinc-300 text-xs font-semibold active:scale-95 transition-all hover:bg-white/[0.08]">Edit</button>
+                <button onClick={() => handleDelete(tx.id, tx.productName)} className="flex-1 py-2.5 rounded-lg bg-[#DC2626]/10 border border-[#DC2626]/20 text-[#DC2626] text-xs font-semibold active:scale-95 transition-all hover:bg-[#DC2626]/20">Hapus</button>
               </div>
             )}
           </div>
