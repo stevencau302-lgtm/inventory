@@ -8,12 +8,13 @@ interface Props {
 }
 
 export default function DashboardCharts({ products, transactions }: Props) {
-  // Bar chart: Top 5 products by stock value
+  // Bar chart: Top 5 products by actual sales (out transactions)
   const barData = [...products]
     .map(p => ({
       name: p.name.length > 12 ? p.name.substring(0, 12) + '...' : p.name,
-      penjualan: p.stock,
+      penjualan: transactions.filter(t => t.productId === p.id && t.type === 'out').reduce((s, t) => s + t.quantity, 0),
     }))
+    .filter(p => p.penjualan > 0)
     .sort((a, b) => b.penjualan - a.penjualan)
     .slice(0, 5)
 

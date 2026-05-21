@@ -58,8 +58,16 @@ export default function ReportsPage() {
   const avgPrice = useMemo(() => products.length ? products.reduce((s, p) => s + p.price, 0) / products.length : 0, [products])
 
   const deadStock = useMemo(() => {
+    const now = Date.now()
+    const thirtyDaysMs = 30 * 24 * 60 * 60 * 1000
     const outProductIds = new Set(transactions.filter(t => t.type === 'out').map(t => t.productId))
-    return products.filter(p => !outProductIds.has(p.id))
+    return products.filter(p => {
+      // Product must NOT have any outbound transactions
+      if (outProductIds.has(p.id)) return false
+      // Product must be at least 30 days old (grace period for new products)
+      const createdTime = new Date(p.createdAt).getTime()
+      return (now - createdTime) >= thirtyDaysMs
+    })
   }, [products, transactions])
 
   const stockTurnover = useMemo(() => {
@@ -116,11 +124,17 @@ export default function ReportsPage() {
   }, [transactions, products])
 
   const topStagnant = useMemo(() => {
+    const now = Date.now()
+    const thirtyDaysMs = 30 * 24 * 60 * 60 * 1000
+    // Only consider products older than 7 days (exclude brand new products)
+    const eligibleProducts = products.filter(p => (now - new Date(p.createdAt).getTime()) >= 7 * 24 * 60 * 60 * 1000)
+    // Count outbound transactions in last 30 days only
+    const recentOutTx = transactions.filter(t => t.type === 'out' && (now - new Date(t.createdAt).getTime()) < thirtyDaysMs)
     const outCounts: Record<string, number> = {}
-    transactions.filter(t => t.type === 'out').forEach(t => {
+    recentOutTx.forEach(t => {
       outCounts[t.productId] = (outCounts[t.productId] || 0) + t.quantity
     })
-    return products
+    return eligibleProducts
       .map(p => ({ name: p.name, category: p.category, count: outCounts[p.id] || 0 }))
       .sort((a, b) => a.count - b.count)
       .slice(0, 5)
