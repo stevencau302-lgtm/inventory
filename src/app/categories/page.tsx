@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState, useRef } from 'react'
-import { Category, getCategories, getProducts, saveCategories, uid, Product, formatRp, fetchCategories, fetchProducts, deleteCategory } from '@/lib/store'
+import { Category, getCategories, getProducts, saveCategories, uid, Product, formatRp, fetchCategories, fetchProducts, deleteCategory, saveCategory } from '@/lib/store'
 import { useToast } from '@/components/Toast'
 
 export default function CategoriesPage() {
@@ -28,7 +28,8 @@ export default function CategoriesPage() {
     const newCat: Category = { id: uid(), name, icon, color, createdAt: new Date().toISOString() }
     const updated = [...categories, newCat]
     setCategories(updated)
-    saveCategories(updated)
+    saveCategory(newCat)
+    localStorage.setItem('inv_categories', JSON.stringify(updated))
     setModalOpen(false)
     toast('Kategori berhasil ditambahkan!', 'success')
   }
