@@ -498,42 +498,7 @@ export default function NewTransactionPage() {
         </div>
 
 
-        {/* === SELECTED PRODUCT CARD === */}
-        {selected && (
-          <div className="rounded-2xl bg-[#432DD7] p-4 sm:p-5 text-white animate-[fadeInUp_0.3s_ease-out]">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-10 h-10 rounded-lg bg-white/15 flex items-center justify-center text-xs font-black">
-                {selected.name.substring(0, 2).toUpperCase()}
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-bold truncate">{selected.name}</p>
-                <p className="text-xs text-white/60">{selected.sku} · {selected.category}</p>
-              </div>
-            </div>
-            <div className="grid grid-cols-3 gap-2">
-              <div className="rounded-xl bg-white/10 px-3 py-2 text-center">
-                <p className="text-[10px] text-white/60">Stok</p>
-                <p className="text-base font-bold">{selected.stock}</p>
-              </div>
-              <div className="rounded-xl bg-white/10 px-3 py-2 text-center">
-                <p className="text-[10px] text-white/60">Harga</p>
-                <p className="text-xs font-bold">{formatRp(selected.price)}</p>
-              </div>
-              <div className="rounded-xl bg-white/10 px-3 py-2 text-center">
-                <p className="text-[10px] text-white/60">Setelah</p>
-                <p className={`text-base font-bold ${stockAfter < selected.minStock ? 'text-amber-300' : 'text-white'}`}>
-                  {stockAfter}
-                </p>
-              </div>
-            </div>
-            {stockAfter < selected.minStock && (
-              <div className="flex items-center gap-2 mt-3 px-3 py-2 rounded-xl bg-amber-500/20 animate-[fadeIn_0.3s_ease-out]">
-                <AlertTriangle className="w-3.5 h-3.5 text-amber-300 shrink-0" />
-                <span className="text-[11px] font-semibold text-amber-300">Di bawah minimum ({selected.minStock})</span>
-              </div>
-            )}
-          </div>
-        )}
+
 
 
         {/* === JUMLAH === */}
