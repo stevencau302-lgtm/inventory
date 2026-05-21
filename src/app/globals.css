@@ -6,122 +6,141 @@
   body {
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
     @apply antialiased;
-    background: linear-gradient(180deg, #0A0A0F 0%, #12121A 100%);
-    color: #fafafa;
+    background: #fffdf7;
+    color: #1a1a1a;
     min-height: 100vh;
   }
 }
 
 @layer components {
-  /* Premium Glass Card */
-  .glass-card {
-    @apply rounded-[20px] relative overflow-hidden transition-all duration-200;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    backdrop-filter: blur(12px);
+  /* Neobrutalism Card */
+  .neo-card {
+    @apply rounded-lg relative overflow-hidden transition-all duration-100;
+    background: #ffffff;
+    border: 3px solid #1a1a1a;
+    box-shadow: 5px 5px 0px #1a1a1a;
   }
-  .glass-card:hover {
-    background: rgba(255, 255, 255, 0.05);
-    border-color: rgba(255, 255, 255, 0.1);
+  .neo-card:hover {
+    box-shadow: 3px 3px 0px #1a1a1a;
+    transform: translate(2px, 2px);
+  }
+
+  /* Glass card alias -> neo-card */
+  .glass-card {
+    @apply neo-card;
   }
 
   /* Stat Card */
   .stat-card {
-    @apply glass-card p-4;
+    @apply neo-card p-4;
   }
 
   /* Cozy Card alias */
   .cozy-card {
-    @apply glass-card;
+    @apply neo-card;
   }
 
-  /* Form Input */
+  /* Form Input - Neobrutalism */
   .form-input, .cozy-input {
-    @apply w-full px-4 py-3 rounded-xl text-sm font-medium outline-none transition-all duration-150;
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    color: #fafafa;
+    @apply w-full px-4 py-3 rounded-lg text-sm font-medium outline-none transition-all duration-100;
+    background: #ffffff;
+    border: 2px solid #1a1a1a;
+    color: #1a1a1a;
   }
   .form-input::placeholder, .cozy-input::placeholder {
-    color: #52525b;
+    color: #9ca3af;
   }
   .form-input:focus, .cozy-input:focus {
     border-color: #f97316;
-    box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
-    background: rgba(255, 255, 255, 0.06);
+    box-shadow: 3px 3px 0px #f97316;
+    background: #ffffff;
   }
 
-  /* Buttons */
+  /* Select style */
+  select.form-input {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%231a1a1a' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 40px;
+  }
+
+  /* Buttons - Neobrutalism */
   .btn-primary, .cozy-btn-primary {
-    @apply inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold
-           transition-all duration-150 cursor-pointer active:scale-[0.97];
-    background: linear-gradient(135deg, #ea580c, #f97316);
-    color: #fff;
-    box-shadow: 0 2px 12px rgba(249, 115, 22, 0.25);
+    @apply inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-bold
+           transition-all duration-100 cursor-pointer;
+    background: #f97316;
+    color: #ffffff;
+    border: 3px solid #1a1a1a;
+    box-shadow: 4px 4px 0px #1a1a1a;
   }
   .btn-primary:hover, .cozy-btn-primary:hover {
-    box-shadow: 0 4px 20px rgba(249, 115, 22, 0.35);
+    box-shadow: 2px 2px 0px #1a1a1a;
+    transform: translate(2px, 2px);
+  }
+  .btn-primary:active, .cozy-btn-primary:active {
+    box-shadow: 0px 0px 0px #1a1a1a;
+    transform: translate(4px, 4px);
   }
 
   .btn-ghost, .cozy-btn-ghost {
-    @apply inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold
-           transition-all duration-150 cursor-pointer active:scale-[0.97];
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    color: #d4d4d8;
+    @apply inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold
+           transition-all duration-100 cursor-pointer;
+    background: #ffffff;
+    border: 2px solid #1a1a1a;
+    color: #1a1a1a;
+    box-shadow: 3px 3px 0px #1a1a1a;
   }
   .btn-ghost:hover, .cozy-btn-ghost:hover {
-    background: rgba(255, 255, 255, 0.08);
-    color: #fafafa;
+    box-shadow: 1px 1px 0px #1a1a1a;
+    transform: translate(2px, 2px);
   }
 
-  /* Badges with glow */
+  /* Badges - Neobrutalism */
   .badge, .cozy-badge {
-    @apply inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider;
+    @apply inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-black uppercase tracking-wider;
+    border: 2px solid #1a1a1a;
   }
   .badge-success, .cozy-badge-success {
-    background: rgba(16, 185, 129, 0.12);
-    color: #34d399;
-    box-shadow: 0 0 8px rgba(16, 185, 129, 0.15);
+    background: #6ee7b7;
+    color: #064e3b;
   }
   .badge-warning, .cozy-badge-warning {
-    background: rgba(245, 158, 11, 0.12);
-    color: #fbbf24;
-    box-shadow: 0 0 8px rgba(245, 158, 11, 0.15);
+    background: #fde68a;
+    color: #78350f;
   }
   .badge-danger, .cozy-badge-danger {
-    background: rgba(239, 68, 68, 0.12);
-    color: #f87171;
-    box-shadow: 0 0 8px rgba(239, 68, 68, 0.15);
+    background: #fca5a5;
+    color: #7f1d1d;
   }
 
-  /* Nav Link */
+  /* Nav Link - Neobrutalism */
   .nav-link {
-    @apply flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150;
-    color: #a1a1aa;
+    @apply flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-bold transition-all duration-100;
+    color: #6b7280;
   }
   .nav-link:hover {
-    color: #fafafa;
-    background: rgba(255, 255, 255, 0.05);
+    color: #1a1a1a;
+    background: #fef3c7;
   }
   .nav-link.active {
-    color: #fb923c;
-    background: rgba(251, 146, 60, 0.08);
-    border: 1px solid rgba(251, 146, 60, 0.15);
-    font-weight: 600;
+    color: #1a1a1a;
+    background: #fed7aa;
+    border: 2px solid #1a1a1a;
+    box-shadow: 3px 3px 0px #1a1a1a;
   }
 }
 
 .safe-area-bottom { padding-bottom: env(safe-area-inset-bottom, 0px); }
 
-::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #27272a; border-radius: 4px; }
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #fffdf7; }
+::-webkit-scrollbar-thumb { background: #d4d4d8; border-radius: 3px; border: 1px solid #1a1a1a; }
 
 @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 @keyframes slideOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
-.toast-enter { animation: slideIn 0.3s ease-out; }
-.toast-exit { animation: slideOut 0.3s ease-in forwards; }
+.toast-enter { animation: slideIn 0.2s ease-out; }
+.toast-exit { animation: slideOut 0.2s ease-in forwards; }
 
 @keyframes wave {
   0%, 100% { transform: rotate(0deg); }

@@ -47,7 +47,6 @@ export default function TransactionsPage() {
     p.category.toLowerCase().includes(productSearch.toLowerCase())
   )
 
-
   const handleSelectProduct = (id: string) => {
     setSelectedProduct(id)
     const p = products.find(pr => pr.id === id)
@@ -100,158 +99,129 @@ export default function TransactionsPage() {
 
   const selectedProductData = products.find(p => p.id === selectedProduct)
 
-
   return (
-    <div className="relative overflow-hidden -m-4 md:-m-6 min-h-[calc(100vh-3.5rem)]"
-      style={{ background: 'linear-gradient(135deg, #0a0a1a 0%, #0d1117 30%, #0a0f0d 60%, #0a0a1a 100%)' }}
-    >
-      {/* Grid pattern overlay */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          backgroundImage: 'linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px)',
-          backgroundSize: '40px 40px',
-        }}
-      />
-      {/* Dot accent overlay */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          backgroundImage: 'radial-gradient(circle, rgba(99,102,241,0.15) 1px, transparent 1px)',
-          backgroundSize: '40px 40px',
-          backgroundPosition: '20px 20px',
-        }}
-      />
-      {/* Glow blob 1 - indigo/blue top-left */}
-      <div
-        className="absolute pointer-events-none"
-        style={{
-          width: '600px',
-          height: '600px',
-          borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(99,102,241,0.20) 0%, rgba(99,102,241,0.08) 35%, transparent 65%)',
-          top: '-200px',
-          left: '-200px',
-        }}
-      />
-      {/* Glow blob 2 - emerald/teal bottom-right */}
-      <div
-        className="absolute pointer-events-none"
-        style={{
-          width: '550px',
-          height: '550px',
-          borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(16,185,129,0.18) 0%, rgba(16,185,129,0.06) 35%, transparent 65%)',
-          bottom: '-180px',
-          right: '-180px',
-        }}
-      />
-      {/* Glow blob 3 - violet/purple center-right */}
-      <div
-        className="absolute pointer-events-none"
-        style={{
-          width: '400px',
-          height: '400px',
-          borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(139,92,246,0.12) 0%, rgba(139,92,246,0.04) 40%, transparent 65%)',
-          top: '30%',
-          right: '-50px',
-        }}
-      />
-      {/* Subtle gradient line top */}
-      <div
-        className="absolute top-0 left-0 right-0 h-[1px] pointer-events-none"
-        style={{ background: 'linear-gradient(90deg, transparent, rgba(99,102,241,0.3) 30%, rgba(16,185,129,0.3) 70%, transparent)' }}
-      />
-    <div className="relative space-y-3 sm:space-y-4 max-w-2xl mx-auto px-4 md:px-6 py-6">
+    <div className="max-w-2xl mx-auto space-y-5 py-4">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-base sm:text-lg font-bold text-cozy-text dark:text-[#fafafa]">Transaksi</h1>
-        <span className="text-[10px] sm:text-[11px] text-cozy-muted dark:text-[#71717a]">{transactions.length} riwayat</span>
+        <div>
+          <h1 className="text-2xl font-black text-neo-black">Transaksi</h1>
+          <p className="text-sm font-medium text-cozy-muted mt-0.5">{transactions.length} riwayat tercatat</p>
+        </div>
+        <div className="px-3 py-1.5 bg-neo-yellow border-2 border-neo-black rounded-md shadow-neo-sm font-bold text-xs">
+          {transactions.length} LOG
+        </div>
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 p-1 bg-cozy-gray dark:bg-[#18181b] rounded-lg border border-cozy-border dark:border-[#27272a]">
-        <button onClick={() => setTab('form')} className={`flex-1 py-2 sm:py-2.5 text-[11px] sm:text-xs font-semibold rounded-md transition ${tab === 'form' ? 'bg-white dark:bg-[#27272a] text-cozy-text dark:text-[#fafafa] shadow-sm' : 'text-cozy-muted dark:text-[#71717a]'}`}>
+      <div className="flex gap-2">
+        <button
+          onClick={() => setTab('form')}
+          className={`flex-1 py-3 text-sm font-bold rounded-lg border-2 border-neo-black transition-all duration-100 ${
+            tab === 'form'
+              ? 'bg-neo-orange text-white shadow-neo-sm'
+              : 'bg-white text-neo-black hover:bg-gray-50'
+          }`}
+        >
           Buat Baru
         </button>
-        <button onClick={() => setTab('history')} className={`flex-1 py-2 sm:py-2.5 text-[11px] sm:text-xs font-semibold rounded-md transition ${tab === 'history' ? 'bg-white dark:bg-[#27272a] text-cozy-text dark:text-[#fafafa] shadow-sm' : 'text-cozy-muted dark:text-[#71717a]'}`}>
+        <button
+          onClick={() => setTab('history')}
+          className={`flex-1 py-3 text-sm font-bold rounded-lg border-2 border-neo-black transition-all duration-100 ${
+            tab === 'history'
+              ? 'bg-neo-indigo text-white shadow-neo-sm'
+              : 'bg-white text-neo-black hover:bg-gray-50'
+          }`}
+        >
           Riwayat
         </button>
       </div>
 
-
       {/* Form Tab */}
       {tab === 'form' && (
-        <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4">
           {/* Type selector */}
-          <div className="grid grid-cols-2 gap-2 sm:gap-3">
-            <button type="button" onClick={() => setType('in')}
-              className={`p-2.5 sm:p-3 rounded-xl border text-left transition-all active:scale-[0.97] ${type === 'in' ? 'border-emerald-500 dark:border-emerald-400 bg-emerald-50 dark:bg-emerald-950/30' : 'border-cozy-border dark:border-[#27272a]'}`}>
-              <div className="flex items-center gap-1.5 sm:gap-2">
-                <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center shrink-0 ${type === 'in' ? 'bg-emerald-500' : 'bg-cozy-gray dark:bg-[#27272a]'}`}>
-                  <svg className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${type === 'in' ? 'text-white' : 'text-cozy-muted'}`} fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m0 0l6.75-6.75M12 19.5l-6.75-6.75" /></svg>
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              type="button"
+              onClick={() => setType('in')}
+              className={`p-4 rounded-lg border-3 text-left transition-all duration-100 ${
+                type === 'in'
+                  ? 'bg-emerald-100 border-neo-black shadow-neo-sm'
+                  : 'bg-white border-2 border-gray-200 hover:border-neo-black'
+              }`}
+              style={{ borderWidth: type === 'in' ? '3px' : undefined }}
+            >
+              <div className="flex items-center gap-3">
+                <div className={`w-10 h-10 rounded-lg flex items-center justify-center border-2 border-neo-black ${type === 'in' ? 'bg-neo-emerald text-white' : 'bg-gray-100 text-gray-500'}`}>
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m0 0l6.75-6.75M12 19.5l-6.75-6.75" /></svg>
                 </div>
-                <div className="min-w-0">
-                  <p className={`text-[11px] sm:text-xs font-semibold ${type === 'in' ? 'text-emerald-700 dark:text-emerald-400' : 'text-cozy-subtle dark:text-[#a1a1aa]'}`}>Masuk</p>
-                  <p className="text-[9px] sm:text-[10px] text-cozy-muted dark:text-[#71717a]">Stok +</p>
+                <div>
+                  <p className={`text-sm font-black ${type === 'in' ? 'text-emerald-800' : 'text-gray-500'}`}>MASUK</p>
+                  <p className="text-xs font-medium text-gray-500">Stok bertambah +</p>
                 </div>
               </div>
             </button>
-            <button type="button" onClick={() => setType('out')}
-              className={`p-2.5 sm:p-3 rounded-xl border text-left transition-all active:scale-[0.97] ${type === 'out' ? 'border-red-500 dark:border-red-400 bg-red-50 dark:bg-red-950/30' : 'border-cozy-border dark:border-[#27272a]'}`}>
-              <div className="flex items-center gap-1.5 sm:gap-2">
-                <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center shrink-0 ${type === 'out' ? 'bg-red-500' : 'bg-cozy-gray dark:bg-[#27272a]'}`}>
-                  <svg className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${type === 'out' ? 'text-white' : 'text-cozy-muted'}`} fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 19.5v-15m0 0l-6.75 6.75M12 4.5l6.75 6.75" /></svg>
+            <button
+              type="button"
+              onClick={() => setType('out')}
+              className={`p-4 rounded-lg border-3 text-left transition-all duration-100 ${
+                type === 'out'
+                  ? 'bg-red-100 border-neo-black shadow-neo-sm'
+                  : 'bg-white border-2 border-gray-200 hover:border-neo-black'
+              }`}
+              style={{ borderWidth: type === 'out' ? '3px' : undefined }}
+            >
+              <div className="flex items-center gap-3">
+                <div className={`w-10 h-10 rounded-lg flex items-center justify-center border-2 border-neo-black ${type === 'out' ? 'bg-neo-red text-white' : 'bg-gray-100 text-gray-500'}`}>
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 19.5v-15m0 0l-6.75 6.75M12 4.5l6.75 6.75" /></svg>
                 </div>
-                <div className="min-w-0">
-                  <p className={`text-[11px] sm:text-xs font-semibold ${type === 'out' ? 'text-red-700 dark:text-red-400' : 'text-cozy-subtle dark:text-[#a1a1aa]'}`}>Keluar</p>
-                  <p className="text-[9px] sm:text-[10px] text-cozy-muted dark:text-[#71717a]">Stok -</p>
+                <div>
+                  <p className={`text-sm font-black ${type === 'out' ? 'text-red-800' : 'text-gray-500'}`}>KELUAR</p>
+                  <p className="text-xs font-medium text-gray-500">Stok berkurang -</p>
                 </div>
               </div>
             </button>
           </div>
 
-
           {/* Product search & select */}
-          <div className="space-y-1 relative" ref={dropdownRef}>
-            <label className="text-[10px] font-semibold text-cozy-muted dark:text-[#71717a] uppercase tracking-wider">Produk</label>
+          <div className="space-y-2 relative" ref={dropdownRef}>
+            <label className="text-xs font-black text-neo-black uppercase tracking-wider">Produk</label>
             <div className="relative">
-              <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-cozy-muted dark:text-[#71717a] pointer-events-none" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" /></svg>
+              <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" /></svg>
               <input
                 type="text"
                 value={productSearch}
                 onChange={e => { setProductSearch(e.target.value); setShowDropdown(true); setSelectedProduct('') }}
                 onFocus={() => setShowDropdown(true)}
-                className="form-input text-sm pl-9 w-full"
+                className="form-input pl-10"
                 placeholder="Cari nama produk..."
                 autoComplete="off"
               />
               {productSearch && (
-                <button type="button" onClick={() => { setProductSearch(''); setSelectedProduct(''); setShowDropdown(true) }} className="absolute right-3 top-1/2 -translate-y-1/2 text-cozy-muted hover:text-cozy-text dark:text-[#71717a] dark:hover:text-[#fafafa]">
-                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                <button type="button" onClick={() => { setProductSearch(''); setSelectedProduct(''); setShowDropdown(true) }} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-neo-black">
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
                 </button>
               )}
             </div>
             {/* Dropdown */}
             {showDropdown && (
-              <div className="absolute z-50 left-0 right-0 top-full mt-1 bg-white dark:bg-[#1c1c1e] border border-cozy-border dark:border-[#27272a] rounded-xl shadow-lg max-h-48 sm:max-h-56 overflow-y-auto">
+              <div className="absolute z-50 left-0 right-0 top-full mt-1 bg-white border-3 border-neo-black rounded-lg shadow-neo-sm max-h-52 overflow-y-auto">
                 {filteredProducts.length === 0 ? (
-                  <div className="px-3 py-4 text-center text-xs text-cozy-muted dark:text-[#71717a]">Produk tidak ditemukan</div>
+                  <div className="px-4 py-6 text-center text-sm font-bold text-gray-400">Produk tidak ditemukan</div>
                 ) : (
                   filteredProducts.map(p => (
                     <button
                       key={p.id}
                       type="button"
                       onClick={() => handleSelectProduct(p.id)}
-                      className={`w-full flex items-center gap-2.5 px-3 py-2.5 text-left hover:bg-cozy-gray dark:hover:bg-[#27272a] transition-colors first:rounded-t-xl last:rounded-b-xl ${selectedProduct === p.id ? 'bg-cozy-gray dark:bg-[#27272a]' : ''}`}
+                      className={`w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-neo-yellow/30 transition-colors border-b-2 border-gray-100 last:border-b-0 ${selectedProduct === p.id ? 'bg-neo-yellow/30' : ''}`}
                     >
-                      <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-cozy-navy flex items-center justify-center text-[9px] sm:text-[10px] font-bold text-cozy-gold shrink-0">{p.name.substring(0,2).toUpperCase()}</div>
+                      <div className="w-9 h-9 rounded-md bg-neo-indigo border-2 border-neo-black flex items-center justify-center text-[10px] font-black text-white shrink-0">{p.name.substring(0,2).toUpperCase()}</div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-[12px] sm:text-[13px] font-medium text-cozy-text dark:text-[#fafafa] truncate">{p.name}</p>
-                        <p className="text-[9px] sm:text-[10px] text-cozy-muted dark:text-[#71717a]">{p.category} · Stok: {p.stock}</p>
+                        <p className="text-sm font-bold text-neo-black truncate">{p.name}</p>
+                        <p className="text-xs text-gray-500 font-medium">{p.category} · Stok: {p.stock}</p>
                       </div>
-                      <span className="text-[10px] sm:text-[11px] text-cozy-muted dark:text-[#71717a] shrink-0">{formatRp(p.price)}</span>
+                      <span className="text-xs font-bold text-gray-600 shrink-0">{formatRp(p.price)}</span>
                     </button>
                   ))
                 )}
@@ -259,80 +229,98 @@ export default function TransactionsPage() {
             )}
           </div>
 
-
           {/* Selected info */}
           {selectedProductData && (
-            <div className="flex items-center gap-2.5 sm:gap-3 p-2.5 sm:p-3 rounded-lg bg-cozy-gray dark:bg-[#18181b] border border-cozy-border dark:border-[#27272a]">
-              <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-cozy-navy flex items-center justify-center text-[9px] sm:text-[10px] font-bold text-cozy-gold shrink-0">{selectedProductData.name.substring(0,2).toUpperCase()}</div>
+            <div className="flex items-center gap-3 p-4 rounded-lg bg-amber-50 border-3 border-neo-black shadow-neo-sm">
+              <div className="w-11 h-11 rounded-md bg-neo-indigo border-2 border-neo-black flex items-center justify-center text-xs font-black text-white shrink-0">{selectedProductData.name.substring(0,2).toUpperCase()}</div>
               <div className="flex-1 min-w-0">
-                <p className="text-[12px] sm:text-[13px] font-medium text-cozy-text dark:text-[#fafafa] truncate">{selectedProductData.name}</p>
-                <p className="text-[9px] sm:text-[10px] text-cozy-muted dark:text-[#71717a]">{selectedProductData.category} · {formatRp(selectedProductData.price)}</p>
+                <p className="text-sm font-bold text-neo-black truncate">{selectedProductData.name}</p>
+                <p className="text-xs text-gray-600 font-medium">{selectedProductData.category} · {formatRp(selectedProductData.price)}</p>
               </div>
               <div className="text-right shrink-0">
-                <p className="text-xs sm:text-sm font-bold text-cozy-text dark:text-[#fafafa]">{selectedProductData.stock}</p>
-                <p className="text-[8px] sm:text-[9px] text-cozy-muted dark:text-[#71717a]">stok</p>
+                <p className="text-lg font-black text-neo-black">{selectedProductData.stock}</p>
+                <p className="text-[10px] font-bold text-gray-500 uppercase">stok</p>
               </div>
             </div>
           )}
 
           {/* Quantity */}
-          <div className="space-y-1">
-            <label className="text-[10px] font-semibold text-cozy-muted dark:text-[#71717a] uppercase tracking-wider">Jumlah</label>
-            <div className="flex items-center gap-2">
-              <button type="button" onClick={() => setQuantity(Math.max(1, quantity - 1))} className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-cozy-gray dark:bg-[#18181b] border border-cozy-border dark:border-[#27272a] flex items-center justify-center text-cozy-text dark:text-[#fafafa] active:scale-90 transition shrink-0">
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 12h-15" /></svg>
+          <div className="space-y-2">
+            <label className="text-xs font-black text-neo-black uppercase tracking-wider">Jumlah</label>
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                className="w-12 h-12 rounded-lg bg-white border-3 border-neo-black flex items-center justify-center font-black text-neo-black shadow-neo-sm hover:shadow-neo-hover hover:translate-x-[2px] hover:translate-y-[2px] transition-all duration-100 shrink-0"
+              >
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 12h-15" /></svg>
               </button>
-              <input type="number" min={1} value={quantity} onChange={e => setQuantity(Math.max(1, +e.target.value))} className="form-input text-center text-base sm:text-lg font-bold flex-1 min-w-0" />
-              <button type="button" onClick={() => setQuantity(quantity + 1)} className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-cozy-gray dark:bg-[#18181b] border border-cozy-border dark:border-[#27272a] flex items-center justify-center text-cozy-text dark:text-[#fafafa] active:scale-90 transition shrink-0">
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+              <input
+                type="number"
+                min={1}
+                value={quantity}
+                onChange={e => setQuantity(Math.max(1, +e.target.value))}
+                className="form-input text-center text-xl font-black flex-1 min-w-0"
+              />
+              <button
+                type="button"
+                onClick={() => setQuantity(quantity + 1)}
+                className="w-12 h-12 rounded-lg bg-white border-3 border-neo-black flex items-center justify-center font-black text-neo-black shadow-neo-sm hover:shadow-neo-hover hover:translate-x-[2px] hover:translate-y-[2px] transition-all duration-100 shrink-0"
+              >
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
               </button>
             </div>
           </div>
 
           {/* Note */}
-          <div className="space-y-1">
-            <label className="text-[10px] font-semibold text-cozy-muted dark:text-[#71717a] uppercase tracking-wider">Catatan (opsional)</label>
-            <input type="text" value={note} onChange={e => setNote(e.target.value)} className="form-input text-sm w-full" placeholder="Catatan singkat..." />
+          <div className="space-y-2">
+            <label className="text-xs font-black text-neo-black uppercase tracking-wider">Catatan (opsional)</label>
+            <input type="text" value={note} onChange={e => setNote(e.target.value)} className="form-input" placeholder="Catatan singkat..." />
           </div>
 
-
           {/* Submit */}
-          <button type="submit" className={`w-full py-3 sm:py-3.5 rounded-xl text-white font-semibold text-xs sm:text-sm transition-all active:scale-[0.97] flex items-center justify-center gap-2 shadow-md ${type === 'in' ? 'bg-emerald-500 hover:bg-emerald-600 shadow-emerald-500/20' : 'bg-red-500 hover:bg-red-600 shadow-red-500/20'}`}>
-            <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+          <button
+            type="submit"
+            className={`w-full py-4 rounded-lg text-white font-black text-sm transition-all duration-100 flex items-center justify-center gap-2 border-3 border-neo-black ${
+              type === 'in'
+                ? 'bg-neo-emerald shadow-neo-sm hover:shadow-neo-hover hover:translate-x-[2px] hover:translate-y-[2px]'
+                : 'bg-neo-red shadow-neo-sm hover:shadow-neo-hover hover:translate-x-[2px] hover:translate-y-[2px]'
+            }`}
+          >
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
             </svg>
-            <span>Catat Transaksi</span>
+            <span>CATAT TRANSAKSI</span>
           </button>
         </form>
       )}
 
-
       {/* History Tab */}
       {tab === 'history' && (
-        <div className="space-y-2">
+        <div className="space-y-3">
           {transactions.length === 0 ? (
-            <div className="text-center py-10 sm:py-12">
-              <svg className="w-9 h-9 sm:w-10 sm:h-10 mx-auto text-cozy-muted dark:text-[#3f3f46] mb-3" fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg>
-              <p className="text-[11px] sm:text-xs text-cozy-muted dark:text-[#71717a]">Belum ada riwayat transaksi</p>
+            <div className="text-center py-14 neo-card p-8">
+              <svg className="w-12 h-12 mx-auto text-gray-300 mb-3" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg>
+              <p className="text-sm font-bold text-gray-400">Belum ada riwayat transaksi</p>
             </div>
           ) : (
             transactions.map(tx => (
-              <div key={tx.id} className="cozy-card p-2.5 sm:p-3 flex items-center gap-2.5 sm:gap-3">
-                <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center shrink-0 ${tx.type === 'in' ? 'bg-emerald-100 dark:bg-emerald-950/40' : 'bg-red-100 dark:bg-red-950/40'}`}>
+              <div key={tx.id} className="neo-card p-4 flex items-center gap-3">
+                <div className={`w-10 h-10 rounded-md flex items-center justify-center shrink-0 border-2 border-neo-black ${tx.type === 'in' ? 'bg-emerald-200' : 'bg-red-200'}`}>
                   {tx.type === 'in' ? (
-                    <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-600 dark:text-emerald-400" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m0 0l6.75-6.75M12 19.5l-6.75-6.75" /></svg>
+                    <svg className="w-5 h-5 text-emerald-700" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m0 0l6.75-6.75M12 19.5l-6.75-6.75" /></svg>
                   ) : (
-                    <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-red-600 dark:text-red-400" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 19.5v-15m0 0l-6.75 6.75M12 4.5l6.75 6.75" /></svg>
+                    <svg className="w-5 h-5 text-red-700" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 19.5v-15m0 0l-6.75 6.75M12 4.5l6.75 6.75" /></svg>
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-[12px] sm:text-[13px] font-medium text-cozy-text dark:text-[#fafafa] truncate">{tx.productName}</p>
-                  <p className="text-[9px] sm:text-[10px] text-cozy-muted dark:text-[#71717a]">
+                  <p className="text-sm font-bold text-neo-black truncate">{tx.productName}</p>
+                  <p className="text-xs text-gray-500 font-medium">
                     {new Date(tx.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
                     {tx.note && ` · ${tx.note}`}
                   </p>
                 </div>
-                <span className={`text-[11px] sm:text-xs font-bold shrink-0 ${tx.type === 'in' ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>
+                <span className={`text-sm font-black px-2.5 py-1 rounded-md border-2 border-neo-black shrink-0 ${tx.type === 'in' ? 'bg-emerald-200 text-emerald-800' : 'bg-red-200 text-red-800'}`}>
                   {tx.type === 'in' ? '+' : '-'}{tx.quantity}
                 </span>
               </div>
@@ -340,7 +328,6 @@ export default function TransactionsPage() {
           )}
         </div>
       )}
-    </div>
     </div>
   )
 }
