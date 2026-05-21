@@ -37,10 +37,12 @@ export default function NewProductPage() {
   const [minStockDisplay, setMinStockDisplay] = useState('10')
 
   useEffect(() => {
-    let c = getCategories()
-    if (c.length === 0) { const data = loadSampleData(); c = data.categories }
-    setCategories(c)
-    setMounted(true)
+    async function loadData() {
+      const c = await fetchCategories()
+      setCategories(c)
+      setMounted(true)
+    }
+    loadData()
   }, [])
 
   if (!mounted) return null
