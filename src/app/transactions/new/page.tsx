@@ -118,8 +118,42 @@ export default function NewTransactionPage() {
   }
 
   return (
-    <div className="min-h-screen bg-zinc-950 flex items-start justify-center py-6 px-4 sm:px-6">
-      <div className="w-full max-w-2xl">
+    <div className="relative overflow-hidden min-h-screen flex items-start justify-center py-6 px-4 sm:px-6"
+      style={{ background: 'linear-gradient(160deg, #0a0a1a 0%, #0d1117 25%, #091210 50%, #0d0d1a 75%, #0a0a1a 100%)' }}
+    >
+      {/* Grid pattern */}
+      <div className="absolute inset-0 pointer-events-none" style={{
+        backgroundImage: 'linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px)',
+        backgroundSize: '48px 48px',
+      }} />
+      {/* Dot accent on grid intersections */}
+      <div className="absolute inset-0 pointer-events-none" style={{
+        backgroundImage: 'radial-gradient(circle, rgba(99,102,241,0.12) 1.5px, transparent 1.5px)',
+        backgroundSize: '48px 48px',
+      }} />
+      {/* Glow blob 1 — indigo top-left */}
+      <div className="absolute pointer-events-none" style={{
+        width: '700px', height: '700px', borderRadius: '50%',
+        background: 'radial-gradient(circle, rgba(99,102,241,0.18) 0%, rgba(99,102,241,0.06) 35%, transparent 60%)',
+        top: '-250px', left: '-250px',
+      }} />
+      {/* Glow blob 2 — emerald bottom-right */}
+      <div className="absolute pointer-events-none" style={{
+        width: '600px', height: '600px', borderRadius: '50%',
+        background: 'radial-gradient(circle, rgba(16,185,129,0.15) 0%, rgba(16,185,129,0.05) 35%, transparent 60%)',
+        bottom: '-200px', right: '-200px',
+      }} />
+      {/* Glow blob 3 — violet center */}
+      <div className="absolute pointer-events-none" style={{
+        width: '400px', height: '400px', borderRadius: '50%',
+        background: 'radial-gradient(circle, rgba(139,92,246,0.10) 0%, rgba(139,92,246,0.03) 40%, transparent 60%)',
+        top: '35%', left: '50%', transform: 'translate(-50%, -50%)',
+      }} />
+      {/* Top accent line */}
+      <div className="absolute top-0 left-0 right-0 h-px pointer-events-none" style={{
+        background: 'linear-gradient(90deg, transparent 10%, rgba(99,102,241,0.4) 35%, rgba(16,185,129,0.4) 65%, transparent 90%)',
+      }} />
+      <div className="relative w-full max-w-2xl">
         {/* Form Container */}
         <div className="bg-zinc-900 border border-white/[0.07] rounded-2xl overflow-hidden shadow-2xl">
 
