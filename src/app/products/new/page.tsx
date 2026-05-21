@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Product, Category, getProducts, getCategories, saveProducts, uid, loadSampleData } from '@/lib/store'
+import { Product, Category, getProducts, getCategories, saveProducts, uid, loadSampleData, saveProduct, fetchCategories } from '@/lib/store'
 import { useToast } from '@/components/Toast'
 import { Package, DollarSign, ArrowLeft, Save } from 'lucide-react'
 
@@ -52,9 +52,7 @@ export default function NewProductPage() {
     setTimeout(() => {
       const now = new Date().toISOString()
       const newProduct: Product = { id: uid(), name, sku, category, stock, price, minStock, description, createdAt: now, updatedAt: now }
-      const products = getProducts()
-      const updated = [newProduct, ...products]
-      saveProducts(updated)
+      saveProduct(newProduct)
       toast(`${name} berhasil ditambahkan!`, 'success')
       router.push('/products')
     }, 400)
