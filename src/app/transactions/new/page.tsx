@@ -114,16 +114,12 @@ export default function NewTransactionPage() {
   }
 
   return (
-    <div className="relative min-h-screen overflow-hidden" style={{ background: '#050508' }}>
-      {/* Animated mesh gradient background */}
+    <div className="relative min-h-screen overflow-hidden" style={{ background: '#09090B' }}>
+      {/* Ambient background glow */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-0 left-1/4 w-[800px] h-[800px] rounded-full opacity-30" style={{ background: 'radial-gradient(circle, rgba(99,102,241,0.4) 0%, transparent 50%)', filter: 'blur(80px)' }} />
-        <div className="absolute bottom-0 right-1/4 w-[600px] h-[600px] rounded-full opacity-25" style={{ background: 'radial-gradient(circle, rgba(16,185,129,0.4) 0%, transparent 50%)', filter: 'blur(80px)' }} />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full opacity-15" style={{ background: 'radial-gradient(circle, rgba(168,85,247,0.4) 0%, transparent 50%)', filter: 'blur(60px)' }} />
+        <div className="absolute top-0 left-1/3 w-[700px] h-[700px] rounded-full opacity-20" style={{ background: 'radial-gradient(circle, rgba(99,102,241,0.5) 0%, transparent 50%)', filter: 'blur(100px)' }} />
+        <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] rounded-full opacity-15" style={{ background: 'radial-gradient(circle, rgba(99,102,241,0.3) 0%, transparent 50%)', filter: 'blur(80px)' }} />
       </div>
-
-      {/* Noise texture overlay */}
-      <div className="absolute inset-0 pointer-events-none opacity-[0.015]" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 256 256\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'n\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.7\' numOctaves=\'4\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23n)\' opacity=\'1\'/%3E%3C/svg%3E")' }} />
 
       {/* Content */}
       <div className="relative flex items-start justify-center min-h-screen py-8 px-4 sm:px-6">
@@ -140,13 +136,13 @@ export default function NewTransactionPage() {
           {/* LEFT - Form */}
           <div className="flex-1 min-w-0">
           <div className="relative rounded-3xl overflow-hidden">
-            <div className="absolute inset-0 rounded-3xl p-[1px]" style={{ background: 'linear-gradient(135deg, rgba(99,102,241,0.5) 0%, rgba(16,185,129,0.3) 50%, rgba(168,85,247,0.5) 100%)' }}>
-              <div className="w-full h-full rounded-3xl bg-[#0c0c14]" />
+            <div className="absolute inset-0 rounded-3xl p-[1px]" style={{ background: 'linear-gradient(135deg, rgba(99,102,241,0.4) 0%, rgba(99,102,241,0.15) 50%, rgba(99,102,241,0.4) 100%)' }}>
+              <div className="w-full h-full rounded-3xl bg-[#161616]" />
             </div>
-            <div className="relative" style={{ background: 'rgba(12,12,20,0.8)', backdropFilter: 'blur(40px)' }}>
+            <div className="relative" style={{ background: 'rgba(22,22,22,0.95)', backdropFilter: 'blur(40px)' }}>
               <div className="px-6 pt-6 pb-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', boxShadow: '0 8px 32px rgba(16,185,129,0.3)' }}>
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)', boxShadow: '0 8px 32px rgba(99,102,241,0.3)' }}>
                     <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
                   </div>
                   <div>
@@ -225,7 +221,7 @@ export default function NewTransactionPage() {
                       />
                     </div>
                     {showProductDropdown && (
-                      <div className="absolute z-50 left-0 right-0 top-full mt-2 rounded-xl overflow-hidden shadow-2xl" style={{ background: 'rgba(20,20,30,0.95)', border: '1px solid rgba(255,255,255,0.08)', backdropFilter: 'blur(20px)' }}>
+                      <div className="absolute z-50 left-0 right-0 top-full mt-2 rounded-xl overflow-hidden shadow-2xl" style={{ background: '#1c1c1c', border: '1px solid rgba(255,255,255,0.08)' }}>
                         <div className="max-h-56 overflow-y-auto">
                           {filteredProducts.length === 0 ? (
                             <div className="px-4 py-6 text-center text-xs text-zinc-600">Produk tidak ditemukan</div>
@@ -233,7 +229,7 @@ export default function NewTransactionPage() {
                             filteredProducts.map(p => (
                               <button key={p.id} type="button" onClick={() => handleSelectProduct(p.id)}
                                 className={`w-full flex items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-white/[0.04] ${selectedProduct === p.id ? 'bg-white/[0.06]' : ''}`}>
-                                <div className="w-9 h-9 rounded-lg flex items-center justify-center text-[10px] font-bold shrink-0" style={{ background: 'linear-gradient(135deg, rgba(99,102,241,0.2), rgba(168,85,247,0.2))', color: '#a78bfa' }}>{p.name.substring(0, 2).toUpperCase()}</div>
+                                <div className="w-9 h-9 rounded-lg flex items-center justify-center text-[10px] font-bold shrink-0" style={{ background: 'linear-gradient(135deg, rgba(99,102,241,0.2), rgba(99,102,241,0.1))', color: '#818cf8' }}>{p.name.substring(0, 2).toUpperCase()}</div>
                                 <div className="flex-1 min-w-0">
                                   <p className="text-sm font-medium text-white truncate">{p.name}</p>
                                   <p className="text-[11px] text-zinc-600">{p.sku} · Stok: {p.stock}</p>
@@ -250,10 +246,10 @@ export default function NewTransactionPage() {
 
                 {/* Selected Product Card */}
                 {selected && (
-                  <div className="rounded-xl p-4 transition-all duration-300" style={{ background: 'linear-gradient(135deg, rgba(99,102,241,0.08) 0%, rgba(168,85,247,0.05) 100%)', border: '1px solid rgba(99,102,241,0.15)' }}>
+                  <div className="rounded-xl p-4 transition-all duration-300" style={{ background: 'rgba(99,102,241,0.06)', border: '1px solid rgba(99,102,241,0.15)' }}>
                     <div className="flex items-center gap-3 mb-3">
-                      <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, rgba(99,102,241,0.3), rgba(168,85,247,0.3))' }}>
-                        <span className="text-xs font-bold text-indigo-300">{selected.name.substring(0, 2).toUpperCase()}</span>
+                      <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'rgba(99,102,241,0.15)' }}>
+                        <span className="text-xs font-bold text-indigo-400">{selected.name.substring(0, 2).toUpperCase()}</span>
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-semibold text-white truncate">{selected.name}</p>
@@ -343,7 +339,7 @@ export default function NewTransactionPage() {
           {/* RIGHT - Summary Sticky */}
           <div className="lg:w-[300px] shrink-0">
             <div className="lg:sticky lg:top-8 space-y-4">
-              <div className="rounded-2xl overflow-hidden" style={{ background: 'rgba(12,12,20,0.9)', border: '1px solid rgba(255,255,255,0.06)', backdropFilter: 'blur(20px)' }}>
+              <div className="rounded-2xl overflow-hidden" style={{ background: '#161616', border: '1px solid rgba(255,255,255,0.08)' }}>
                 <div className="px-5 py-3.5 flex items-center gap-2" style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
                   <svg className="w-4 h-4 text-indigo-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z" /></svg>
                   <span className="text-sm font-semibold text-white">Ringkasan</span>
@@ -351,8 +347,8 @@ export default function NewTransactionPage() {
                 {selected ? (
                   <div className="px-5 py-4 space-y-3">
                     <div className="flex items-center gap-3 pb-3" style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-                      <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg, rgba(99,102,241,0.3), rgba(168,85,247,0.3))' }}>
-                        <span className="text-[10px] font-bold text-indigo-300">{selected.name.substring(0, 2).toUpperCase()}</span>
+                      <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ background: 'rgba(99,102,241,0.15)' }}>
+                        <span className="text-[10px] font-bold text-indigo-400">{selected.name.substring(0, 2).toUpperCase()}</span>
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium text-white truncate">{selected.name}</p>
