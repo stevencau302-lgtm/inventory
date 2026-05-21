@@ -1,17 +1,25 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { Product, Transaction, getProducts, getTransactions, formatRp, loadSampleData } from '@/lib/store'
-import Link from 'next/link'
+import { useEffect, useState, useRef } from 'react'
+import { Product, Transaction, getProducts, getTransactions, saveProducts, saveTransactions, formatRp, uid, loadSampleData } from '@/lib/store'
+import { useToast } from '@/components/Toast'
 
-type TabFilter = 'all' | 'in' | 'out'
+type Tab = 'form' | 'history'
+type TransactionType = 'in' | 'out'
 
 export default function TransactionsPage() {
   const [products, setProducts] = useState<Product[]>([])
   const [transactions, setTransactions] = useState<Transaction[]>([])
+  const [tab, setTab] = useState<Tab>('form')
+  const [type, setType] = useState<TransactionType>('in')
+  const [selectedProduct, setSelectedProduct] = useState('')
+  const [quantity, setQuantity] = useState(1)
+  const [note, setNote] = useState('')
   const [mounted, setMounted] = useState(false)
-  const [tabFilter, setTabFilter] = useState<TabFilter>('all')
-  const [search, setSearch] = useState('')
+  const [productSearch, setProductSearch] = useState('')
+  const [showDropdown, setShowDropdown] = useState(false)
+  const dropdownRef = useRef<HTMLDivElement>(null)
+  const { toast } = useToast()
 
   useEffect(() => {
     let p = getProducts()
@@ -21,145 +29,287 @@ export default function TransactionsPage() {
     setMounted(true)
   }, [])
 
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setShowDropdown(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
+  }, [])
+
   if (!mounted) return null
 
-  const totalIn = transactions.filter(t => t.type === 'in').reduce((s, t) => s + t.quantity, 0)
-  const totalOut = transactions.filter(t => t.type === 'out').reduce((s, t) => s + t.quantity, 0)
-  const inCount = transactions.filter(t => t.type === 'in').length
-  const outCount = transactions.filter(t => t.type === 'out').length
+  const filteredProducts = products.filter(p =>
+    p.name.toLowerCase().includes(productSearch.toLowerCase()) ||
+    p.category.toLowerCase().includes(productSearch.toLowerCase())
+  )
 
-  const filteredTx = transactions.filter(tx => {
-    const matchTab = tabFilter === 'all' || tx.type === tabFilter
-    const matchSearch = !search || tx.productName.toLowerCase().includes(search.toLowerCase())
-    return matchTab && matchSearch
-  })
+  const handleSelectProduct = (id: string) => {
+    setSelectedProduct(id)
+    const p = products.find(pr => pr.id === id)
+    if (p) setProductSearch(p.name)
+    setShowDropdown(false)
+  }
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!selectedProduct) { toast('Pilih produk!', 'error'); return }
+
+    const product = products.find(p => p.id === selectedProduct)
+    if (!product) return
+
+    if (type === 'out' && product.stock < quantity) {
+      toast(`Stok tidak cukup! Sisa: ${product.stock}`, 'error')
+      return
+    }
+
+    const updated = products.map(p => {
+      if (p.id === selectedProduct) {
+        const newStock = type === 'in' ? p.stock + quantity : p.stock - quantity
+        return { ...p, stock: newStock, updatedAt: new Date().toISOString() }
+      }
+      return p
+    })
+
+    const newTx: Transaction = {
+      id: uid(),
+      productId: product.id,
+      productName: product.name,
+      type,
+      quantity,
+      note,
+      createdAt: new Date().toISOString()
+    }
+
+    const updatedTx = [newTx, ...transactions]
+    setProducts(updated)
+    setTransactions(updatedTx)
+    saveProducts(updated)
+    saveTransactions(updatedTx)
+
+    toast(type === 'in' ? `+${quantity} ${product.name} masuk` : `-${quantity} ${product.name} keluar`, 'success')
+    setSelectedProduct('')
+    setProductSearch('')
+    setQuantity(1)
+    setNote('')
+  }
+
+  const selectedProductData = products.find(p => p.id === selectedProduct)
 
   return (
-    <div className="space-y-6">
-      {/* Hero Banner */}
-      <div className="rounded-2xl border border-white/10 bg-gradient-to-r from-indigo-950/60 to-zinc-900 p-6 lg:p-8">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-indigo-500/20 flex items-center justify-center shrink-0">
-              <svg className="w-6 h-6 text-indigo-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" /></svg>
-            </div>
-            <div>
-              <h1 className="text-2xl lg:text-3xl font-bold text-white">Transaksi Barang</h1>
-              <p className="text-zinc-400 text-sm mt-0.5">Catat setiap barang masuk dan keluar dengan cepat</p>
-            </div>
-          </div>
-          <div className="flex flex-wrap items-center gap-2">
-            <Link href="/transactions/new" className="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-medium transition flex items-center gap-2">
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
-              Single Entry
-            </Link>
-            <button className="px-4 py-2 rounded-lg border border-white/20 text-zinc-300 text-sm font-medium hover:bg-white/5 transition">Bulk Entry</button>
-            <button className="px-4 py-2 rounded-lg border border-white/20 text-zinc-300 text-sm font-medium hover:bg-white/5 transition">Email Laporan</button>
-          </div>
+    <div className="max-w-2xl mx-auto space-y-5 py-4">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-black text-neo-black">Transaksi</h1>
+          <p className="text-sm font-medium text-cozy-muted mt-0.5">{transactions.length} riwayat tercatat</p>
+        </div>
+        <div className="px-3 py-1.5 bg-neo-yellow border-2 border-neo-black rounded-md shadow-neo-sm font-bold text-xs">
+          {transactions.length} LOG
         </div>
       </div>
 
-      {/* Stat Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        <div className="rounded-xl p-5 bg-zinc-900/60 border border-white/[0.07] border-l-2 border-l-emerald-400">
-          <div className="flex items-center gap-2 mb-1.5">
-            <svg className="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941" /></svg>
-            <p className="text-xs text-zinc-400">Barang Masuk</p>
-          </div>
-          <p className="text-lg font-semibold text-white">{totalIn} unit</p>
-        </div>
-        <div className="rounded-xl p-5 bg-zinc-900/60 border border-white/[0.07] border-l-2 border-l-red-400">
-          <div className="flex items-center gap-2 mb-1.5">
-            <svg className="w-4 h-4 text-red-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6L9 12.75l4.286-4.286a11.948 11.948 0 014.306 6.43l.776 2.898m0 0l3.182-5.511m-3.182 5.51l-5.511-3.181" /></svg>
-            <p className="text-xs text-zinc-400">Barang Keluar</p>
-          </div>
-          <p className="text-lg font-semibold text-white">{totalOut} unit</p>
-        </div>
-        <div className="rounded-xl p-5 bg-zinc-900/60 border border-white/[0.07] border-l-2 border-l-indigo-400">
-          <div className="flex items-center gap-2 mb-1.5">
-            <svg className="w-4 h-4 text-indigo-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" /></svg>
-            <p className="text-xs text-zinc-400">Total Produk</p>
-          </div>
-          <p className="text-lg font-semibold text-white">{products.length}</p>
-        </div>
-        <div className="rounded-xl p-5 bg-zinc-900/60 border border-white/[0.07] border-l-2 border-l-zinc-400">
-          <div className="flex items-center gap-2 mb-1.5">
-            <svg className="w-4 h-4 text-zinc-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" /></svg>
-            <p className="text-xs text-zinc-400">Total Transaksi</p>
-          </div>
-          <p className="text-lg font-semibold text-white">{transactions.length}</p>
-        </div>
-      </div>
-
-      {/* Filter Bar */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        <div className="relative">
-          <svg className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" /></svg>
-          <input type="text" placeholder="Cari produk / SKU..." value={search} onChange={e => setSearch(e.target.value)} className="form-input pl-10" />
-        </div>
-        <select className="form-input" style={{ background: '#18181b', border: '1px solid rgba(255,255,255,0.1)' }}>
-          <option value="">Semua Tipe</option>
-          <option value="in">Barang Masuk</option>
-          <option value="out">Barang Keluar</option>
-        </select>
-      </div>
-
-      {/* Tab Pills */}
+      {/* Tabs */}
       <div className="flex gap-2">
-        <button onClick={() => setTabFilter('all')} className={`px-4 py-2 rounded-lg text-sm font-medium transition ${tabFilter === 'all' ? 'bg-indigo-600 text-white' : 'bg-zinc-800 text-zinc-400 hover:text-white'}`}>
-          Semua <span className="ml-1.5 text-[10px] opacity-70">({transactions.length})</span>
+        <button
+          onClick={() => setTab('form')}
+          className={`flex-1 py-3 text-sm font-bold rounded-lg border-2 border-neo-black transition-all duration-100 ${
+            tab === 'form'
+              ? 'bg-neo-orange text-white shadow-neo-sm'
+              : 'bg-white text-neo-black hover:bg-gray-50'
+          }`}
+        >
+          Buat Baru
         </button>
-        <button onClick={() => setTabFilter('in')} className={`px-4 py-2 rounded-lg text-sm font-medium transition ${tabFilter === 'in' ? 'bg-emerald-600 text-white' : 'bg-zinc-800 text-zinc-400 hover:text-white'}`}>
-          Barang Masuk <span className="ml-1.5 text-[10px] opacity-70">({inCount})</span>
-        </button>
-        <button onClick={() => setTabFilter('out')} className={`px-4 py-2 rounded-lg text-sm font-medium transition ${tabFilter === 'out' ? 'bg-red-600 text-white' : 'bg-zinc-800 text-zinc-400 hover:text-white'}`}>
-          Barang Keluar <span className="ml-1.5 text-[10px] opacity-70">({outCount})</span>
+        <button
+          onClick={() => setTab('history')}
+          className={`flex-1 py-3 text-sm font-bold rounded-lg border-2 border-neo-black transition-all duration-100 ${
+            tab === 'history'
+              ? 'bg-neo-indigo text-white shadow-neo-sm'
+              : 'bg-white text-neo-black hover:bg-gray-50'
+          }`}
+        >
+          Riwayat
         </button>
       </div>
 
-      {/* Transaction History Table */}
-      <div className="overflow-hidden border border-white/10">
-        <div className="overflow-x-auto max-h-[500px]">
-          <table className="w-full border-collapse">
-            <thead className="sticky top-0 z-10">
-              <tr className="bg-zinc-800">
-                <th className="border border-white/10 w-[48px] px-2 py-2.5 text-center text-[11px] font-bold text-zinc-400 uppercase tracking-wide">No</th>
-                <th className="border border-white/10 px-3 py-2.5 text-left text-[11px] font-bold text-zinc-400 uppercase tracking-wide">Produk</th>
-                <th className="border border-white/10 w-[100px] px-2 py-2.5 text-center text-[11px] font-bold text-zinc-400 uppercase tracking-wide">Tipe</th>
-                <th className="border border-white/10 w-[80px] px-2 py-2.5 text-center text-[11px] font-bold text-zinc-400 uppercase tracking-wide">Jumlah</th>
-                <th className="border border-white/10 w-[180px] px-3 py-2.5 text-left text-[11px] font-bold text-zinc-400 uppercase tracking-wide">Tanggal</th>
-                <th className="border border-white/10 px-3 py-2.5 text-left text-[11px] font-bold text-zinc-400 uppercase tracking-wide">Catatan</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredTx.slice(0, 20).map((tx, idx) => (
-                <tr key={tx.id} className={`hover:bg-indigo-900/20 transition ${idx % 2 === 1 ? 'bg-zinc-900/40' : 'bg-zinc-950'}`}>
-                  <td className="border border-white/10 px-2 py-2 text-center text-xs text-zinc-500">{idx + 1}</td>
-                  <td className="border border-white/10 px-3 py-2 text-sm font-medium text-white">{tx.productName}</td>
-                  <td className="border border-white/10 px-2 py-2 text-center">
-                    <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold whitespace-nowrap ${tx.type === 'in' ? 'bg-emerald-500/15 text-emerald-400' : 'bg-red-500/15 text-red-400'}`}>
-                      {tx.type === 'in' ? 'Masuk' : 'Keluar'}
-                    </span>
-                  </td>
-                  <td className="border border-white/10 px-2 py-2 text-center font-mono text-sm font-semibold text-zinc-200">{tx.type === 'in' ? '+' : '-'}{tx.quantity}</td>
-                  <td className="border border-white/10 px-3 py-2 text-xs text-zinc-500">{new Date(tx.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</td>
-                  <td className="border border-white/10 px-3 py-2 text-xs text-zinc-500">{tx.note || '-'}</td>
-                </tr>
-              ))}
-              {filteredTx.length === 0 && (
-                <tr><td colSpan={6} className="border border-white/10 text-center py-12 text-zinc-500">Belum ada transaksi</td></tr>
+      {/* Form Tab */}
+      {tab === 'form' && (
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Type selector */}
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              type="button"
+              onClick={() => setType('in')}
+              className={`p-4 rounded-lg text-left transition-all duration-100 ${
+                type === 'in'
+                  ? 'bg-emerald-100 border-[3px] border-neo-black shadow-neo-sm'
+                  : 'bg-white border-2 border-gray-200 hover:border-neo-black'
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <div className={`w-10 h-10 rounded-lg flex items-center justify-center border-2 border-neo-black ${type === 'in' ? 'bg-neo-emerald text-white' : 'bg-gray-100 text-gray-500'}`}>
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m0 0l6.75-6.75M12 19.5l-6.75-6.75" /></svg>
+                </div>
+                <div>
+                  <p className={`text-sm font-black ${type === 'in' ? 'text-emerald-800' : 'text-gray-500'}`}>MASUK</p>
+                  <p className="text-xs font-medium text-gray-500">Stok bertambah +</p>
+                </div>
+              </div>
+            </button>
+            <button
+              type="button"
+              onClick={() => setType('out')}
+              className={`p-4 rounded-lg text-left transition-all duration-100 ${
+                type === 'out'
+                  ? 'bg-red-100 border-[3px] border-neo-black shadow-neo-sm'
+                  : 'bg-white border-2 border-gray-200 hover:border-neo-black'
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <div className={`w-10 h-10 rounded-lg flex items-center justify-center border-2 border-neo-black ${type === 'out' ? 'bg-neo-red text-white' : 'bg-gray-100 text-gray-500'}`}>
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 19.5v-15m0 0l-6.75 6.75M12 4.5l6.75 6.75" /></svg>
+                </div>
+                <div>
+                  <p className={`text-sm font-black ${type === 'out' ? 'text-red-800' : 'text-gray-500'}`}>KELUAR</p>
+                  <p className="text-xs font-medium text-gray-500">Stok berkurang -</p>
+                </div>
+              </div>
+            </button>
+          </div>
+
+          {/* Product search */}
+          <div className="space-y-2 relative" ref={dropdownRef}>
+            <label className="text-xs font-black text-neo-black uppercase tracking-wider">Produk</label>
+            <div className="relative">
+              <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" /></svg>
+              <input
+                type="text"
+                value={productSearch}
+                onChange={e => { setProductSearch(e.target.value); setShowDropdown(true); setSelectedProduct('') }}
+                onFocus={() => setShowDropdown(true)}
+                className="form-input pl-10"
+                placeholder="Cari nama produk..."
+                autoComplete="off"
+              />
+              {productSearch && (
+                <button type="button" onClick={() => { setProductSearch(''); setSelectedProduct(''); setShowDropdown(true) }} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-neo-black">
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
               )}
-            </tbody>
-            <tfoot>
-              <tr className="bg-zinc-800 border-t-2 border-white/20">
-                <td colSpan={3} className="border border-white/10 px-3 py-2.5 text-xs font-medium text-zinc-300">Total: {filteredTx.length} transaksi</td>
-                <td className="border border-white/10 px-2 py-2.5 text-center font-mono text-xs font-medium text-zinc-300">{filteredTx.reduce((s, t) => s + (t.type === 'in' ? t.quantity : -t.quantity), 0)}</td>
-                <td colSpan={2} className="border border-white/10 px-3 py-2.5 text-xs text-zinc-500">Net movement</td>
-              </tr>
-            </tfoot>
-          </table>
+            </div>
+            {showDropdown && (
+              <div className="absolute z-50 left-0 right-0 top-full mt-1 bg-white border-[3px] border-neo-black rounded-lg shadow-neo-sm max-h-52 overflow-y-auto">
+                {filteredProducts.length === 0 ? (
+                  <div className="px-4 py-6 text-center text-sm font-bold text-gray-400">Produk tidak ditemukan</div>
+                ) : (
+                  filteredProducts.map(p => (
+                    <button
+                      key={p.id}
+                      type="button"
+                      onClick={() => handleSelectProduct(p.id)}
+                      className={`w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-neo-yellow/30 transition-colors border-b-2 border-gray-100 last:border-b-0 ${selectedProduct === p.id ? 'bg-neo-yellow/30' : ''}`}
+                    >
+                      <div className="w-9 h-9 rounded-md bg-neo-indigo border-2 border-neo-black flex items-center justify-center text-[10px] font-black text-white shrink-0">{p.name.substring(0,2).toUpperCase()}</div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-bold text-neo-black truncate">{p.name}</p>
+                        <p className="text-xs text-gray-500 font-medium">{p.category} · Stok: {p.stock}</p>
+                      </div>
+                      <span className="text-xs font-bold text-gray-600 shrink-0">{formatRp(p.price)}</span>
+                    </button>
+                  ))
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Selected info */}
+          {selectedProductData && (
+            <div className="flex items-center gap-3 p-4 rounded-lg bg-amber-50 border-[3px] border-neo-black shadow-neo-sm">
+              <div className="w-11 h-11 rounded-md bg-neo-indigo border-2 border-neo-black flex items-center justify-center text-xs font-black text-white shrink-0">{selectedProductData.name.substring(0,2).toUpperCase()}</div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-bold text-neo-black truncate">{selectedProductData.name}</p>
+                <p className="text-xs text-gray-600 font-medium">{selectedProductData.category} · {formatRp(selectedProductData.price)}</p>
+              </div>
+              <div className="text-right shrink-0">
+                <p className="text-lg font-black text-neo-black">{selectedProductData.stock}</p>
+                <p className="text-[10px] font-bold text-gray-500 uppercase">stok</p>
+              </div>
+            </div>
+          )}
+
+          {/* Quantity */}
+          <div className="space-y-2">
+            <label className="text-xs font-black text-neo-black uppercase tracking-wider">Jumlah</label>
+            <div className="flex items-center gap-3">
+              <button type="button" onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                className="w-12 h-12 rounded-lg bg-white border-[3px] border-neo-black flex items-center justify-center font-black text-neo-black shadow-neo-sm hover:shadow-neo-hover hover:translate-x-[2px] hover:translate-y-[2px] transition-all duration-100 shrink-0">
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 12h-15" /></svg>
+              </button>
+              <input type="number" min={1} value={quantity} onChange={e => setQuantity(Math.max(1, +e.target.value))} className="form-input text-center text-xl font-black flex-1 min-w-0" />
+              <button type="button" onClick={() => setQuantity(quantity + 1)}
+                className="w-12 h-12 rounded-lg bg-white border-[3px] border-neo-black flex items-center justify-center font-black text-neo-black shadow-neo-sm hover:shadow-neo-hover hover:translate-x-[2px] hover:translate-y-[2px] transition-all duration-100 shrink-0">
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+              </button>
+            </div>
+          </div>
+
+          {/* Note */}
+          <div className="space-y-2">
+            <label className="text-xs font-black text-neo-black uppercase tracking-wider">Catatan (opsional)</label>
+            <input type="text" value={note} onChange={e => setNote(e.target.value)} className="form-input" placeholder="Catatan singkat..." />
+          </div>
+
+          {/* Submit */}
+          <button type="submit"
+            className={`w-full py-4 rounded-lg text-white font-black text-sm transition-all duration-100 flex items-center justify-center gap-2 border-[3px] border-neo-black ${
+              type === 'in'
+                ? 'bg-neo-emerald shadow-neo-sm hover:shadow-neo-hover hover:translate-x-[2px] hover:translate-y-[2px]'
+                : 'bg-neo-red shadow-neo-sm hover:shadow-neo-hover hover:translate-x-[2px] hover:translate-y-[2px]'
+            }`}>
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+            </svg>
+            <span>CATAT TRANSAKSI</span>
+          </button>
+        </form>
+      )}
+
+      {/* History Tab */}
+      {tab === 'history' && (
+        <div className="space-y-3">
+          {transactions.length === 0 ? (
+            <div className="text-center py-14 neo-card p-8">
+              <svg className="w-12 h-12 mx-auto text-gray-300 mb-3" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg>
+              <p className="text-sm font-bold text-gray-400">Belum ada riwayat transaksi</p>
+            </div>
+          ) : (
+            transactions.map(tx => (
+              <div key={tx.id} className="neo-card p-4 flex items-center gap-3">
+                <div className={`w-10 h-10 rounded-md flex items-center justify-center shrink-0 border-2 border-neo-black ${tx.type === 'in' ? 'bg-emerald-200' : 'bg-red-200'}`}>
+                  {tx.type === 'in' ? (
+                    <svg className="w-5 h-5 text-emerald-700" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m0 0l6.75-6.75M12 19.5l-6.75-6.75" /></svg>
+                  ) : (
+                    <svg className="w-5 h-5 text-red-700" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 19.5v-15m0 0l-6.75 6.75M12 4.5l6.75 6.75" /></svg>
+                  )}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-bold text-neo-black truncate">{tx.productName}</p>
+                  <p className="text-xs text-gray-500 font-medium">
+                    {new Date(tx.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
+                    {tx.note && ` · ${tx.note}`}
+                  </p>
+                </div>
+                <span className={`text-sm font-black px-2.5 py-1 rounded-md border-2 border-neo-black shrink-0 ${tx.type === 'in' ? 'bg-emerald-200 text-emerald-800' : 'bg-red-200 text-red-800'}`}>
+                  {tx.type === 'in' ? '+' : '-'}{tx.quantity}
+                </span>
+              </div>
+            ))
+          )}
         </div>
-      </div>
+      )}
     </div>
   )
 }
