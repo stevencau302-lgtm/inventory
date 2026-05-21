@@ -224,6 +224,11 @@ export async function saveTransaction(transaction: Transaction): Promise<void> {
   if (error) console.error('saveTransaction error:', error)
 }
 
+export async function deleteTransaction(id: string): Promise<void> {
+  const { error } = await supabase.from('transactions').delete().eq('id', id)
+  if (error) console.error('deleteTransaction error:', error)
+}
+
 export async function saveTransactionsBatch(transactions: Transaction[]): Promise<void> {
   const rows = transactions.map(transactionToRow)
   const { error } = await supabase.from('transactions').upsert(rows, { onConflict: 'id' })

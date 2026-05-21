@@ -1,7 +1,8 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Product, Transaction, getProducts, getTransactions, formatRp, loadSampleData, fetchProducts, fetchTransactions } from '@/lib/store'
+import { Product, Transaction, getProducts, getTransactions, formatRp, loadSampleData, fetchProducts, fetchTransactions, deleteTransaction, saveTransaction } from '@/lib/store'
+import { useToast } from '@/components/Toast'
 import Link from 'next/link'
 
 type TabFilter = 'all' | 'in' | 'out'
@@ -12,6 +13,10 @@ export default function TransactionsPage() {
   const [mounted, setMounted] = useState(false)
   const [tabFilter, setTabFilter] = useState<TabFilter>('all')
   const [search, setSearch] = useState('')
+  const [editingId, setEditingId] = useState<string | null>(null)
+  const [editQuantity, setEditQuantity] = useState<number>(0)
+  const [editNote, setEditNote] = useState<string>('')
+  const { toast } = useToast()
 
   useEffect(() => {
     async function loadData() {
@@ -41,6 +46,31 @@ export default function TransactionsPage() {
     const matchSearch = !search || tx.productName.toLowerCase().includes(search.toLowerCase())
     return matchTab && matchSearch
   })
+
+  const handleDelete = async (id: string, productName: string) => {
+    if (!confirm(`Hapus transaksi untuk "${productName}"?`)) return
+    await deleteTransaction(id)
+    setTransactions(prev => prev.filter(t => t.id !== id))
+    toast('Transaksi berhasil dihapus!', 'success')
+  }
+
+  const handleEditStart = (tx: Transaction) => {
+    setEditingId(tx.id)
+    setEditQuantity(tx.quantity)
+    setEditNote(tx.note)
+  }
+
+  const handleEditSave = async (tx: Transaction) => {
+    const updatedTx: Transaction = { ...tx, quantity: editQuantity, note: editNote }
+    await saveTransaction(updatedTx)
+    setTransactions(prev => prev.map(t => t.id === tx.id ? updatedTx : t))
+    setEditingId(null)
+    toast('Transaksi berhasil diperbarui!', 'success')
+  }
+
+  const handleEditCancel = () => {
+    setEditingId(null)
+  }
 
   return (
     <div className="space-y-6">
@@ -146,6 +176,7 @@ export default function TransactionsPage() {
                 <th className="border-b border-white/10 w-[80px] px-2 py-3 text-center text-[11px] font-bold text-orange-400/80 uppercase tracking-wide">Jumlah</th>
                 <th className="border-b border-white/10 w-[180px] px-3 py-3 text-left text-[11px] font-bold text-orange-400/80 uppercase tracking-wide">Tanggal</th>
                 <th className="border-b border-white/10 px-3 py-3 text-left text-[11px] font-bold text-orange-400/80 uppercase tracking-wide">Catatan</th>
+                <th className="border-b border-white/10 w-[90px] px-2 py-3 text-center text-[11px] font-bold text-orange-400/80 uppercase tracking-wide">Aksi</th>
               </tr>
             </thead>
             <tbody>
@@ -158,20 +189,67 @@ export default function TransactionsPage() {
                       {tx.type === 'in' ? 'MASUK' : 'KELUAR'}
                     </span>
                   </td>
-                  <td className={`border-b border-white/[0.04] px-2 py-2.5 text-center font-mono text-sm font-bold ${tx.type === 'in' ? 'text-emerald-400' : 'text-red-400'}`}>{tx.type === 'in' ? '+' : '-'}{tx.quantity}</td>
+                  <td className={`border-b border-white/[0.04] px-2 py-2.5 text-center font-mono text-sm font-bold ${tx.type === 'in' ? 'text-emerald-400' : 'text-red-400'}`}>
+                    {editingId === tx.id ? (
+                      <input
+                        type="number"
+                        value={editQuantity}
+                        onChange={e => setEditQuantity(Number(e.target.value))}
+                        className="w-16 px-1 py-0.5 rounded bg-zinc-800 border border-white/20 text-center text-sm text-white"
+                        min={1}
+                      />
+                    ) : (
+                      <>{tx.type === 'in' ? '+' : '-'}{tx.quantity}</>
+                    )}
+                  </td>
                   <td className="border-b border-white/[0.04] px-3 py-2.5 text-xs text-zinc-500">{new Date(tx.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</td>
-                  <td className="border-b border-white/[0.04] px-3 py-2.5 text-xs text-zinc-500">{tx.note || '-'}</td>
+                  <td className="border-b border-white/[0.04] px-3 py-2.5 text-xs text-zinc-500">
+                    {editingId === tx.id ? (
+                      <input
+                        type="text"
+                        value={editNote}
+                        onChange={e => setEditNote(e.target.value)}
+                        className="w-full px-2 py-0.5 rounded bg-zinc-800 border border-white/20 text-sm text-white"
+                        placeholder="Catatan..."
+                      />
+                    ) : (
+                      tx.note || '-'
+                    )}
+                  </td>
+                  <td className="border-b border-white/[0.04] px-2 py-2.5 text-center">
+                    <div className="flex justify-center gap-1">
+                      {editingId === tx.id ? (
+                        <>
+                          <button onClick={() => handleEditSave(tx)} className="w-7 h-7 rounded bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500 hover:text-white flex items-center justify-center transition">
+                            <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>
+                          </button>
+                          <button onClick={handleEditCancel} className="w-7 h-7 rounded bg-zinc-500/10 text-zinc-400 hover:bg-zinc-500 hover:text-white flex items-center justify-center transition">
+                            <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          <button onClick={() => handleEditStart(tx)} className="w-7 h-7 rounded bg-indigo-500/10 text-indigo-400 hover:bg-indigo-500 hover:text-white flex items-center justify-center transition">
+                            <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" /></svg>
+                          </button>
+                          <button onClick={() => handleDelete(tx.id, tx.productName)} className="w-7 h-7 rounded bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white flex items-center justify-center transition">
+                            <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" /></svg>
+                          </button>
+                        </>
+                      )}
+                    </div>
+                  </td>
                 </tr>
               ))}
               {filteredTx.length === 0 && (
-                <tr><td colSpan={6} className="text-center py-12 text-zinc-500">Belum ada transaksi</td></tr>
+                <tr><td colSpan={7} className="text-center py-12 text-zinc-500">Belum ada transaksi</td></tr>
               )}
             </tbody>
             <tfoot>
               <tr style={{ background: '#1a1a1f' }}>
                 <td colSpan={3} className="border-t border-white/10 px-3 py-3 text-xs font-semibold text-zinc-300">Total: {filteredTx.length} transaksi</td>
                 <td className={`border-t border-white/10 px-2 py-3 text-center font-mono text-sm font-bold ${filteredTx.reduce((s, t) => s + (t.type === 'in' ? t.quantity : -t.quantity), 0) >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>{filteredTx.reduce((s, t) => s + (t.type === 'in' ? t.quantity : -t.quantity), 0)}</td>
-                <td colSpan={2} className="border-t border-white/10 px-3 py-3 text-xs text-zinc-500">Net movement</td>
+                <td colSpan={3} className="border-t border-white/10 px-3 py-3 text-xs text-zinc-500">Net movement</td>
               </tr>
             </tfoot>
           </table>
