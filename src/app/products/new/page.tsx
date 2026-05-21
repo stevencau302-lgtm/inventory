@@ -4,6 +4,17 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Product, Category, getProducts, getCategories, saveProducts, uid, loadSampleData } from '@/lib/store'
 import { useToast } from '@/components/Toast'
+import { Package, DollarSign, ArrowLeft, Save } from 'lucide-react'
+
+function formatRupiah(value: number): string {
+  if (value === 0) return 'Rp 0'
+  return 'Rp ' + value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+}
+
+function parseRupiah(str: string): number {
+  const cleaned = str.replace(/[^0-9]/g, '')
+  return cleaned === '' ? 0 : parseInt(cleaned, 10)
+}
 
 export default function NewProductPage() {
   const router = useRouter()
@@ -19,6 +30,11 @@ export default function NewProductPage() {
   const [price, setPrice] = useState(0)
   const [minStock, setMinStock] = useState(10)
   const [description, setDescription] = useState('')
+
+  // Display state for formatted fields
+  const [priceDisplay, setPriceDisplay] = useState('Rp 0')
+  const [stockDisplay, setStockDisplay] = useState('0')
+  const [minStockDisplay, setMinStockDisplay] = useState('10')
 
   useEffect(() => {
     let c = getCategories()
@@ -44,6 +60,60 @@ export default function NewProductPage() {
     }, 400)
   }
 
+  // Clear-on-focus handlers
+  const handlePriceFocus = () => {
+    if (price === 0) setPriceDisplay('')
+  }
+  const handlePriceBlur = () => {
+    if (priceDisplay === '' || parseRupiah(priceDisplay) === 0) {
+      setPrice(0)
+      setPriceDisplay(formatRupiah(0))
+    }
+  }
+  const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const raw = e.target.value
+    const num = parseRupiah(raw)
+    setPrice(num)
+    setPriceDisplay(num === 0 && raw === '' ? '' : formatRupiah(num))
+  }
+
+  const handleStockFocus = () => {
+    if (stock === 0) setStockDisplay('')
+  }
+  const handleStockBlur = () => {
+    if (stockDisplay === '') {
+      setStock(0)
+      setStockDisplay('0')
+    }
+  }
+  const handleStockChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const raw = e.target.value.replace(/[^0-9]/g, '')
+    const num = raw === '' ? 0 : parseInt(raw, 10)
+    setStock(num)
+    setStockDisplay(raw)
+  }
+
+  const handleMinStockFocus = () => {
+    if (minStock === 0) setMinStockDisplay('')
+  }
+  const handleMinStockBlur = () => {
+    if (minStockDisplay === '') {
+      setMinStock(0)
+      setMinStockDisplay('0')
+    }
+  }
+  const handleMinStockChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const raw = e.target.value.replace(/[^0-9]/g, '')
+    const num = raw === '' ? 0 : parseInt(raw, 10)
+    setMinStock(num)
+    setMinStockDisplay(raw)
+  }
+
+  const inputClass = 'w-full rounded-xl text-sm px-4 py-3 font-medium focus:outline-none focus:ring-2 focus:ring-[#FDC800]/40 transition-all'
+  const inputStyle = { background: '#0f0f0f', color: '#fafafa' }
+  const labelClass = 'text-xs font-bold uppercase tracking-wider mb-2 block'
+  const labelStyle = { color: '#a1a1aa' }
+
   return (
     <div className="min-h-screen" style={{ background: '#0f0f0f', fontFamily: 'Inter, system-ui, sans-serif' }}>
       <div className="flex items-start justify-center min-h-screen py-10 px-4 sm:px-6">
@@ -51,7 +121,7 @@ export default function NewProductPage() {
 
           {/* Back */}
           <button onClick={() => router.push('/products')} className="group flex items-center gap-2 text-sm font-semibold mb-6 transition-colors" style={{ color: '#e4e4e7' }}>
-            <svg className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" /></svg>
+            <ArrowLeft size={16} className="group-hover:-translate-x-0.5 transition-transform" />
             Kembali
           </button>
 
@@ -62,9 +132,9 @@ export default function NewProductPage() {
             <div className="flex-1 min-w-0">
               <div className="rounded-xl p-6 sm:p-8" style={{ background: '#1a1a1a' }}>
                 {/* Header */}
-                <div className="flex items-center gap-4 mb-6">
+                <div className="flex items-center gap-4 mb-8">
                   <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ background: '#FDC800' }}>
-                    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="#1C293C"><path strokeLinecap="round" strokeLinejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" /></svg>
+                    <Package size={24} color="#1C293C" />
                   </div>
                   <div>
                     <h1 className="text-2xl font-black" style={{ color: '#fafafa' }}>Produk Baru</h1>
@@ -72,78 +142,108 @@ export default function NewProductPage() {
                   </div>
                 </div>
 
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  {/* Name & SKU */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                      <label className="text-xs font-bold uppercase tracking-wider mb-2 flex items-center gap-2" style={{ color: '#a1a1aa' }}>
-                        <svg className="w-4 h-4 text-orange-400" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z" /></svg>
-                        Nama Produk
-                      </label>
-                      <input type="text" required value={name} onChange={e => setName(e.target.value)} className="w-full rounded-xl text-sm px-4 py-3 font-medium focus:outline-none" style={{ background: '#0f0f0f', color: '#fafafa' }} placeholder="Masukkan nama produk" />
+                <form onSubmit={handleSubmit} className="space-y-8">
+
+                  {/* Section: Informasi Dasar */}
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-2 pb-2" style={{ borderBottom: '1px solid rgba(253, 200, 0, 0.2)' }}>
+                      <Package size={16} className="text-[#FDC800]" />
+                      <h3 className="text-xs font-bold uppercase tracking-wider" style={{ color: '#FDC800' }}>Informasi Dasar</h3>
                     </div>
-                    <div>
-                      <label className="text-xs font-bold uppercase tracking-wider mb-2 flex items-center gap-2" style={{ color: '#a1a1aa' }}>
-                        <svg className="w-4 h-4 text-cyan-400" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M3.75 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 013.75 9.375v-4.5zM3.75 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 01-1.125-1.125v-4.5zM13.5 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0113.5 9.375v-4.5z" /></svg>
-                        SKU
-                      </label>
-                      <input type="text" required value={sku} onChange={e => setSku(e.target.value)} className="w-full rounded-xl text-sm px-4 py-3 font-medium focus:outline-none" style={{ background: '#0f0f0f', color: '#fafafa' }} placeholder="SKU-001" />
+
+                    <div className="space-y-4">
+                      {/* Nama Produk */}
+                      <div>
+                        <label className={labelClass} style={labelStyle}>Nama Produk</label>
+                        <input type="text" required value={name} onChange={e => setName(e.target.value)} className={inputClass} style={inputStyle} placeholder="Masukkan nama produk" />
+                      </div>
+
+                      {/* SKU & Kategori */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                          <label className={labelClass} style={labelStyle}>Kode Produk / SKU</label>
+                          <input type="text" required value={sku} onChange={e => setSku(e.target.value)} className={inputClass} style={inputStyle} placeholder="SKU-001" />
+                        </div>
+                        <div>
+                          <label className={labelClass} style={labelStyle}>Kategori</label>
+                          <select required value={category} onChange={e => setCategory(e.target.value)} className={`${inputClass} appearance-none`} style={{ ...inputStyle, backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 12px center', paddingRight: '40px' }}>
+                            <option value="">Pilih Kategori</option>
+                            {categories.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
+                          </select>
+                        </div>
+                      </div>
+
+                      {/* Deskripsi */}
+                      <div>
+                        <label className={labelClass} style={labelStyle}>Deskripsi <span className="normal-case font-normal" style={{ color: '#71717a' }}>(opsional)</span></label>
+                        <textarea value={description} onChange={e => setDescription(e.target.value)} rows={3} className={`${inputClass} resize-none`} style={inputStyle} placeholder="Deskripsi produk..." />
+                      </div>
                     </div>
                   </div>
 
-                  {/* Category & Stock */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                      <label className="text-xs font-bold uppercase tracking-wider mb-2 flex items-center gap-2" style={{ color: '#a1a1aa' }}>
-                        <svg className="w-4 h-4 text-violet-400" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z M6 6h.008v.008H6V6z" /></svg>
-                        Kategori
-                      </label>
-                      <select required value={category} onChange={e => setCategory(e.target.value)} className="w-full rounded-xl text-sm px-4 py-3 font-medium focus:outline-none" style={{ background: '#0f0f0f', color: '#fafafa' }}>
-                        <option value="">Pilih Kategori</option>
-                        {categories.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
-                      </select>
+                  {/* Section: Harga & Stok */}
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-2 pb-2" style={{ borderBottom: '1px solid rgba(67, 45, 215, 0.3)' }}>
+                      <DollarSign size={16} className="text-[#432DD7]" />
+                      <h3 className="text-xs font-bold uppercase tracking-wider" style={{ color: '#432DD7' }}>Harga & Stok</h3>
                     </div>
-                    <div>
-                      <label className="text-xs font-bold uppercase tracking-wider mb-2 flex items-center gap-2" style={{ color: '#a1a1aa' }}>
-                        <svg className="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" /></svg>
-                        Stok Awal
-                      </label>
-                      <input type="number" min={0} value={stock} onChange={e => setStock(+e.target.value)} className="w-full rounded-xl text-sm px-4 py-3 font-medium focus:outline-none" style={{ background: '#0f0f0f', color: '#fafafa' }} />
-                    </div>
-                  </div>
 
-                  {/* Price & Min Stock */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                      <label className="text-xs font-bold uppercase tracking-wider mb-2 flex items-center gap-2" style={{ color: '#a1a1aa' }}>
-                        <svg className="w-4 h-4 text-amber-400" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z" /></svg>
-                        Harga (Rp)
-                      </label>
-                      <input type="number" min={0} value={price} onChange={e => setPrice(+e.target.value)} className="w-full rounded-xl text-sm px-4 py-3 font-medium focus:outline-none" style={{ background: '#0f0f0f', color: '#fafafa' }} placeholder="0" />
-                    </div>
-                    <div>
-                      <label className="text-xs font-bold uppercase tracking-wider mb-2 flex items-center gap-2" style={{ color: '#a1a1aa' }}>
-                        <svg className="w-4 h-4 text-red-400" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" /></svg>
-                        Min. Stok
-                      </label>
-                      <input type="number" min={0} value={minStock} onChange={e => setMinStock(+e.target.value)} className="w-full rounded-xl text-sm px-4 py-3 font-medium focus:outline-none" style={{ background: '#0f0f0f', color: '#fafafa' }} />
-                    </div>
-                  </div>
+                    <div className="space-y-4">
+                      {/* Harga per Unit */}
+                      <div>
+                        <label className={labelClass} style={labelStyle}>Harga per Unit</label>
+                        <input
+                          type="text"
+                          required
+                          value={priceDisplay}
+                          onChange={handlePriceChange}
+                          onFocus={handlePriceFocus}
+                          onBlur={handlePriceBlur}
+                          className={inputClass}
+                          style={inputStyle}
+                          placeholder="Rp 0"
+                        />
+                      </div>
 
-                  {/* Description */}
-                  <div>
-                    <label className="text-xs font-bold uppercase tracking-wider mb-2 flex items-center gap-2" style={{ color: '#a1a1aa' }}>
-                      <svg className="w-4 h-4 text-pink-400" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" /></svg>
-                      Deskripsi <span className="normal-case font-normal" style={{ color: '#71717a' }}>(opsional)</span>
-                    </label>
-                    <textarea value={description} onChange={e => setDescription(e.target.value)} rows={3} className="w-full rounded-xl text-sm px-4 py-3 resize-none font-medium focus:outline-none" style={{ background: '#0f0f0f', color: '#fafafa' }} placeholder="Deskripsi produk..." />
+                      {/* Stok Awal & Minimum Stok */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                          <label className={labelClass} style={labelStyle}>Stok Awal</label>
+                          <input
+                            type="text"
+                            required
+                            value={stockDisplay}
+                            onChange={handleStockChange}
+                            onFocus={handleStockFocus}
+                            onBlur={handleStockBlur}
+                            className={inputClass}
+                            style={inputStyle}
+                            placeholder="0"
+                          />
+                        </div>
+                        <div>
+                          <label className={labelClass} style={labelStyle}>Minimum Stok</label>
+                          <input
+                            type="text"
+                            required
+                            value={minStockDisplay}
+                            onChange={handleMinStockChange}
+                            onFocus={handleMinStockFocus}
+                            onBlur={handleMinStockBlur}
+                            className={inputClass}
+                            style={inputStyle}
+                            placeholder="0"
+                          />
+                        </div>
+                      </div>
+                    </div>
                   </div>
 
                   {/* Submit */}
                   <div className="flex gap-3 pt-2">
                     <button type="button" onClick={() => router.push('/products')} className="px-5 py-3 rounded-lg text-sm font-bold transition-all" style={{ background: '#0f0f0f', color: '#e4e4e7' }}>Batal</button>
                     <button type="submit" disabled={loading} className="flex-1 py-3.5 rounded-lg text-sm font-bold transition-all disabled:opacity-50 flex items-center justify-center gap-2" style={{ background: '#FDC800', color: '#1C293C' }}>
-                      {loading ? 'Menyimpan...' : (<><svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"><path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7"/><path d="M7 3v4a1 1 0 0 0 1 1h7"/></svg>Simpan Produk</>)}
+                      {loading ? 'Menyimpan...' : (<><Save size={16} />Simpan Produk</>)}
                     </button>
                   </div>
                 </form>
@@ -169,7 +269,7 @@ export default function NewProductPage() {
                       </div>
                       <div className="space-y-2">
                         <div className="flex justify-between"><span className="text-xs" style={{ color: '#71717a' }}>Stok</span><span className="text-sm font-bold" style={{ color: '#fafafa' }}>{stock}</span></div>
-                        <div className="flex justify-between"><span className="text-xs" style={{ color: '#71717a' }}>Harga</span><span className="text-sm font-bold" style={{ color: '#fafafa' }}>{new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(price)}</span></div>
+                        <div className="flex justify-between"><span className="text-xs" style={{ color: '#71717a' }}>Harga</span><span className="text-sm font-bold" style={{ color: '#fafafa' }}>{formatRupiah(price)}</span></div>
                         <div className="flex justify-between"><span className="text-xs" style={{ color: '#71717a' }}>Min. Stok</span><span className="text-sm font-bold" style={{ color: stock <= minStock ? '#D97706' : '#fafafa' }}>{minStock}</span></div>
                       </div>
                       {description && (
@@ -187,7 +287,7 @@ export default function NewProductPage() {
                   ) : (
                     <div className="px-5 py-8 text-center">
                       <div className="w-12 h-12 rounded-xl mx-auto mb-3 flex items-center justify-center" style={{ background: '#0f0f0f' }}>
-                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="#71717a"><path strokeLinecap="round" strokeLinejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" /></svg>
+                        <Package size={20} color="#71717a" />
                       </div>
                       <p className="text-xs font-medium" style={{ color: '#71717a' }}>Isi form untuk melihat preview produk</p>
                     </div>
