@@ -111,22 +111,38 @@ export default function NewTransactionPage() {
                 <form onSubmit={handleSubmit} className="space-y-6">
                   {/* Type */}
                   <div>
-                    <label className="text-xs font-bold uppercase tracking-wider mb-3 block" style={{ color: '#a1a1aa' }}>Tipe Transaksi</label>
+                    <label className="text-xs font-bold uppercase tracking-wider mb-3 flex items-center gap-2" style={{ color: '#a1a1aa' }}>
+                      <svg className="w-4 h-4 text-orange-400" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" /></svg>
+                      Tipe Transaksi
+                    </label>
                     <div className="grid grid-cols-2 gap-3">
-                      <button type="button" onClick={() => setType('in')} className="p-4 rounded-xl text-left transition-all" style={{ background: type === 'in' ? '#16A34A' : '#0f0f0f', color: type === 'in' ? '#fff' : '#e4e4e7' }}>
-                        <p className="text-sm font-bold">Masuk</p>
-                        <p className="text-xs mt-0.5" style={{ opacity: 0.7 }}>Stok bertambah</p>
+                      <button type="button" onClick={() => setType('in')} className="p-4 rounded-xl text-left transition-all flex items-center gap-3" style={{ background: type === 'in' ? '#16A34A' : '#0f0f0f', color: type === 'in' ? '#fff' : '#e4e4e7' }}>
+                        <div className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0" style={{ background: type === 'in' ? 'rgba(255,255,255,0.2)' : 'rgba(22,163,74,0.15)' }}>
+                          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" style={{ color: type === 'in' ? '#fff' : '#16A34A' }}><path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" /></svg>
+                        </div>
+                        <div>
+                          <p className="text-sm font-bold">Masuk</p>
+                          <p className="text-xs mt-0.5" style={{ opacity: 0.7 }}>Stok bertambah</p>
+                        </div>
                       </button>
-                      <button type="button" onClick={() => setType('out')} className="p-4 rounded-xl text-left transition-all" style={{ background: type === 'out' ? '#DC2626' : '#0f0f0f', color: type === 'out' ? '#fff' : '#e4e4e7' }}>
-                        <p className="text-sm font-bold">Keluar</p>
-                        <p className="text-xs mt-0.5" style={{ opacity: 0.7 }}>Stok berkurang</p>
+                      <button type="button" onClick={() => setType('out')} className="p-4 rounded-xl text-left transition-all flex items-center gap-3" style={{ background: type === 'out' ? '#DC2626' : '#0f0f0f', color: type === 'out' ? '#fff' : '#e4e4e7' }}>
+                        <div className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0" style={{ background: type === 'out' ? 'rgba(255,255,255,0.2)' : 'rgba(220,38,38,0.15)' }}>
+                          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" style={{ color: type === 'out' ? '#fff' : '#DC2626' }}><path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" /></svg>
+                        </div>
+                        <div>
+                          <p className="text-sm font-bold">Keluar</p>
+                          <p className="text-xs mt-0.5" style={{ opacity: 0.7 }}>Stok berkurang</p>
+                        </div>
                       </button>
                     </div>
                   </div>
 
                   {/* Product */}
                   <div>
-                    <label className="text-xs font-bold uppercase tracking-wider mb-2 block" style={{ color: '#a1a1aa' }}>Pilih Produk</label>
+                    <label className="text-xs font-bold uppercase tracking-wider mb-2 flex items-center gap-2" style={{ color: '#a1a1aa' }}>
+                      <svg className="w-4 h-4 text-violet-400" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" /></svg>
+                      Pilih Produk
+                    </label>
                     <div className="relative" ref={productDropdownRef}>
                       <input type="text" value={productSearch} onChange={e => { setProductSearch(e.target.value); setShowProductDropdown(true); setSelectedProduct('') }} onFocus={() => setShowProductDropdown(true)} className="w-full rounded-xl text-sm px-4 py-3 font-medium focus:outline-none" style={{ background: '#0f0f0f', color: '#fafafa' }} placeholder="Cari nama produk atau SKU..." autoComplete="off" />
                       {showProductDropdown && (
@@ -173,7 +189,10 @@ export default function NewTransactionPage() {
                   {/* Quantity & Date */}
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="text-xs font-bold uppercase tracking-wider mb-2 block" style={{ color: '#a1a1aa' }}>Jumlah</label>
+                      <label className="text-xs font-bold uppercase tracking-wider mb-2 flex items-center gap-2" style={{ color: '#a1a1aa' }}>
+                        <svg className="w-4 h-4 text-cyan-400" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M5.25 8.25h15m-16.5 7.5h15m-1.8-13.5l-3.9 19.5m-2.1-19.5l-3.9 19.5" /></svg>
+                        Jumlah
+                      </label>
                       <div className="flex items-center gap-2">
                         <button type="button" onClick={() => setQuantity(Math.max(1, quantity - 1))} className="w-10 h-10 rounded-lg flex items-center justify-center font-bold text-lg shrink-0" style={{ background: '#0f0f0f', color: '#fafafa' }}>-</button>
                         <input type="number" min={1} value={quantity} onChange={e => setQuantity(Math.max(1, +e.target.value))} className="flex-1 min-w-0 rounded-lg text-center text-lg font-bold py-2 focus:outline-none" style={{ background: '#0f0f0f', color: '#fafafa' }} />
@@ -181,14 +200,20 @@ export default function NewTransactionPage() {
                       </div>
                     </div>
                     <div>
-                      <label className="text-xs font-bold uppercase tracking-wider mb-2 block" style={{ color: '#a1a1aa' }}>Tanggal</label>
+                      <label className="text-xs font-bold uppercase tracking-wider mb-2 flex items-center gap-2" style={{ color: '#a1a1aa' }}>
+                        <svg className="w-4 h-4 text-amber-400" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" /></svg>
+                        Tanggal
+                      </label>
                       <input type="date" value={date} onChange={e => setDate(e.target.value)} className="w-full rounded-lg text-sm px-4 py-3 font-medium focus:outline-none" style={{ background: '#0f0f0f', color: '#fafafa', colorScheme: 'dark' }} />
                     </div>
                   </div>
 
                   {/* Note */}
                   <div>
-                    <label className="text-xs font-bold uppercase tracking-wider mb-2 block" style={{ color: '#a1a1aa' }}>Catatan <span className="normal-case font-normal" style={{ color: '#71717a' }}>(opsional)</span></label>
+                    <label className="text-xs font-bold uppercase tracking-wider mb-2 flex items-center gap-2" style={{ color: '#a1a1aa' }}>
+                      <svg className="w-4 h-4 text-pink-400" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" /></svg>
+                      Catatan <span className="normal-case font-normal" style={{ color: '#71717a' }}>(opsional)</span>
+                    </label>
                     <textarea value={note} onChange={e => setNote(e.target.value.slice(0, 200))} maxLength={200} rows={3} className="w-full rounded-lg text-sm px-4 py-3 resize-none font-medium focus:outline-none" style={{ background: '#0f0f0f', color: '#fafafa' }} placeholder="Tambahkan catatan..." />
                     <p className="text-right text-[10px] mt-1" style={{ color: '#71717a' }}>{note.length}/200</p>
                   </div>
