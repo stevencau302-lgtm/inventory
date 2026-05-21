@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { Product, Category, getProducts, getCategories, saveProducts, uid, loadSampleData, saveProduct, fetchCategories } from '@/lib/store'
 import { useToast } from '@/components/Toast'
 import { Package, DollarSign, ArrowLeft, Save } from 'lucide-react'
+import BarcodeScanner from '@/components/BarcodeScanner'
 
 function formatRupiah(value: number): string {
   if (value === 0) return 'Rp 0'
@@ -22,6 +23,7 @@ export default function NewProductPage() {
   const [categories, setCategories] = useState<Category[]>([])
   const [mounted, setMounted] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [showScanner, setShowScanner] = useState(false)
 
   const [name, setName] = useState('')
   const [sku, setSku] = useState('')
@@ -58,6 +60,11 @@ export default function NewProductPage() {
       toast(`${name} berhasil ditambahkan!`, 'success')
       router.push('/products')
     }, 400)
+  }
+
+  const handleScanResult = (code: string) => {
+    setSku(code)
+    setShowScanner(false)
   }
 
   // Clear-on-focus handlers
@@ -109,40 +116,41 @@ export default function NewProductPage() {
     setMinStockDisplay(raw)
   }
 
-  const inputClass = 'w-full rounded-xl text-sm px-4 py-3 font-medium focus:outline-none focus:ring-2 focus:ring-[#FDC800]/40 transition-all'
+  const inputClass = 'w-full rounded-xl text-sm px-3 py-2.5 sm:px-4 sm:py-3 font-medium focus:outline-none focus:ring-2 focus:ring-[#FDC800]/40 transition-all'
   const inputStyle = { background: '#0f0f0f', color: '#fafafa' }
   const labelClass = 'text-xs font-bold uppercase tracking-wider mb-2 block'
   const labelStyle = { color: '#a1a1aa' }
 
   return (
     <div className="min-h-screen" style={{ background: '#0f0f0f', fontFamily: 'Inter, system-ui, sans-serif' }}>
-      <div className="flex items-start justify-center min-h-screen py-10 px-4 sm:px-6">
+      <div className="flex items-start justify-center min-h-screen py-6 sm:py-10 px-3 sm:px-6">
         <div className="w-full max-w-5xl">
 
           {/* Back */}
-          <button onClick={() => router.push('/products')} className="group flex items-center gap-2 text-sm font-semibold mb-6 transition-colors" style={{ color: '#e4e4e7' }}>
+          <button onClick={() => router.push('/products')} className="group flex items-center gap-2 text-sm font-semibold mb-4 sm:mb-6 transition-colors" style={{ color: '#e4e4e7' }}>
             <ArrowLeft size={16} className="group-hover:-translate-x-0.5 transition-transform" />
             Kembali
           </button>
 
           {/* Two Column */}
-          <div className="flex flex-col lg:flex-row gap-6">
+          <div className="flex flex-col lg:flex-row gap-4 sm:gap-6">
 
             {/* LEFT — Form */}
             <div className="flex-1 min-w-0">
-              <div className="rounded-xl p-6 sm:p-8" style={{ background: '#1a1a1a' }}>
+              <div className="rounded-xl p-4 sm:p-6 lg:p-8" style={{ background: '#1a1a1a' }}>
                 {/* Header */}
-                <div className="flex items-center gap-4 mb-8">
-                  <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ background: '#FDC800' }}>
-                    <Package size={24} color="#1C293C" />
+                <div className="flex items-center gap-3 sm:gap-4 mb-6 sm:mb-8">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center shrink-0" style={{ background: '#FDC800' }}>
+                    <Package size={20} className="sm:hidden" color="#1C293C" />
+                    <Package size={24} className="hidden sm:block" color="#1C293C" />
                   </div>
                   <div>
-                    <h1 className="text-2xl font-black" style={{ color: '#fafafa' }}>Produk Baru</h1>
-                    <p className="text-sm" style={{ color: '#71717a' }}>Tambahkan produk ke inventory</p>
+                    <h1 className="text-xl sm:text-2xl font-black" style={{ color: '#fafafa' }}>Produk Baru</h1>
+                    <p className="text-xs sm:text-sm" style={{ color: '#71717a' }}>Tambahkan produk ke inventory</p>
                   </div>
                 </div>
 
-                <form onSubmit={handleSubmit} className="space-y-8">
+                <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
 
                   {/* Section: Informasi Dasar */}
                   <div className="space-y-4">
@@ -162,7 +170,18 @@ export default function NewProductPage() {
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                           <label className={labelClass} style={labelStyle}>Kode Produk / SKU</label>
-                          <input type="text" required value={sku} onChange={e => setSku(e.target.value)} className={inputClass} style={inputStyle} placeholder="SKU-001" />
+                          <div className="flex gap-2">
+                            <input type="text" required value={sku} onChange={e => setSku(e.target.value)} className={`${inputClass} flex-1`} style={inputStyle} placeholder="SKU-001" />
+                            <button
+                              type="button"
+                              onClick={() => setShowScanner(true)}
+                              className="shrink-0 w-10 h-10 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center transition hover:opacity-80"
+                              style={{ background: 'rgba(253,200,0,0.1)' }}
+                              title="Scan Barcode"
+                            >
+                              <svg className="w-[18px] h-[18px]" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="#FDC800"><path strokeLinecap="round" strokeLinejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z" /><path strokeLinecap="round" strokeLinejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0z" /></svg>
+                            </button>
+                          </div>
                         </div>
                         <div>
                           <label className={labelClass} style={labelStyle}>Kategori</label>
@@ -194,6 +213,7 @@ export default function NewProductPage() {
                         <label className={labelClass} style={labelStyle}>Harga per Unit</label>
                         <input
                           type="text"
+                          inputMode="numeric"
                           required
                           value={priceDisplay}
                           onChange={handlePriceChange}
@@ -206,11 +226,12 @@ export default function NewProductPage() {
                       </div>
 
                       {/* Stok Awal & Minimum Stok */}
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="grid grid-cols-2 gap-3 sm:gap-4">
                         <div>
                           <label className={labelClass} style={labelStyle}>Stok Awal</label>
                           <input
                             type="text"
+                            inputMode="numeric"
                             required
                             value={stockDisplay}
                             onChange={handleStockChange}
@@ -225,6 +246,7 @@ export default function NewProductPage() {
                           <label className={labelClass} style={labelStyle}>Minimum Stok</label>
                           <input
                             type="text"
+                            inputMode="numeric"
                             required
                             value={minStockDisplay}
                             onChange={handleMinStockChange}
@@ -240,9 +262,9 @@ export default function NewProductPage() {
                   </div>
 
                   {/* Submit */}
-                  <div className="flex gap-3 pt-2">
-                    <button type="button" onClick={() => router.push('/products')} className="px-5 py-3 rounded-lg text-sm font-bold transition-all" style={{ background: '#0f0f0f', color: '#e4e4e7' }}>Batal</button>
-                    <button type="submit" disabled={loading} className="flex-1 py-3.5 rounded-lg text-sm font-bold transition-all disabled:opacity-50 flex items-center justify-center gap-2" style={{ background: '#FDC800', color: '#1C293C' }}>
+                  <div className="flex flex-col-reverse sm:flex-row gap-2 sm:gap-3 pt-2">
+                    <button type="button" onClick={() => router.push('/products')} className="w-full sm:w-auto px-5 py-3 rounded-lg text-sm font-bold transition-all text-center" style={{ background: '#0f0f0f', color: '#e4e4e7' }}>Batal</button>
+                    <button type="submit" disabled={loading} className="w-full sm:flex-1 py-3 sm:py-3.5 rounded-lg text-sm font-bold transition-all disabled:opacity-50 flex items-center justify-center gap-2" style={{ background: '#FDC800', color: '#1C293C' }}>
                       {loading ? 'Menyimpan...' : (<><Save size={16} />Simpan Produk</>)}
                     </button>
                   </div>
@@ -250,8 +272,8 @@ export default function NewProductPage() {
               </div>
             </div>
 
-            {/* RIGHT — Preview */}
-            <div className="lg:w-[300px] shrink-0">
+            {/* RIGHT — Preview (hidden on small mobile, shown on sm+) */}
+            <div className="hidden sm:block lg:w-[300px] shrink-0">
               <div className="lg:sticky lg:top-8 space-y-4">
                 <div className="rounded-xl overflow-hidden" style={{ background: '#1a1a1a' }}>
                   <div className="px-5 py-3.5 flex items-center gap-2 font-bold text-sm" style={{ background: '#FDC800', color: '#1C293C' }}>
@@ -299,6 +321,14 @@ export default function NewProductPage() {
           </div>
         </div>
       </div>
+
+      {/* Barcode Scanner */}
+      {showScanner && (
+        <BarcodeScanner
+          onScan={handleScanResult}
+          onClose={() => setShowScanner(false)}
+        />
+      )}
     </div>
   )
 }
