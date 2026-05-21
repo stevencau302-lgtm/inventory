@@ -102,50 +102,68 @@ export default function TransactionsPage() {
 
 
   return (
-    <div className="relative overflow-hidden -m-4 md:-m-6 p-4 md:p-6 min-h-[calc(100vh-3.5rem)]"
-      style={{
-        backgroundImage: 'radial-gradient(circle at 1px 1px, rgba(255,255,255,0.07) 1px, transparent 0)',
-        backgroundSize: '24px 24px'
-      }}
+    <div className="relative overflow-hidden -m-4 md:-m-6 min-h-[calc(100vh-3.5rem)]"
+      style={{ background: 'linear-gradient(135deg, #0a0a1a 0%, #0d1117 30%, #0a0f0d 60%, #0a0a1a 100%)' }}
     >
-      {/* Glow blob 1 - indigo top-left */}
+      {/* Grid pattern overlay */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          backgroundImage: 'linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px)',
+          backgroundSize: '40px 40px',
+        }}
+      />
+      {/* Dot accent overlay */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          backgroundImage: 'radial-gradient(circle, rgba(99,102,241,0.15) 1px, transparent 1px)',
+          backgroundSize: '40px 40px',
+          backgroundPosition: '20px 20px',
+        }}
+      />
+      {/* Glow blob 1 - indigo/blue top-left */}
       <div
         className="absolute pointer-events-none"
         style={{
-          width: '500px',
-          height: '500px',
+          width: '600px',
+          height: '600px',
           borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(99,102,241,0.12) 0%, rgba(99,102,241,0.04) 40%, transparent 70%)',
-          top: '-150px',
-          left: '-150px',
+          background: 'radial-gradient(circle, rgba(99,102,241,0.20) 0%, rgba(99,102,241,0.08) 35%, transparent 65%)',
+          top: '-200px',
+          left: '-200px',
         }}
       />
-      {/* Glow blob 2 - emerald bottom-right */}
+      {/* Glow blob 2 - emerald/teal bottom-right */}
       <div
         className="absolute pointer-events-none"
         style={{
-          width: '450px',
-          height: '450px',
+          width: '550px',
+          height: '550px',
           borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(16,185,129,0.10) 0%, rgba(16,185,129,0.03) 40%, transparent 70%)',
-          bottom: '-120px',
-          right: '-120px',
+          background: 'radial-gradient(circle, rgba(16,185,129,0.18) 0%, rgba(16,185,129,0.06) 35%, transparent 65%)',
+          bottom: '-180px',
+          right: '-180px',
         }}
       />
-      {/* Glow blob 3 - subtle purple/pink center */}
+      {/* Glow blob 3 - violet/purple center-right */}
       <div
         className="absolute pointer-events-none"
         style={{
-          width: '300px',
-          height: '300px',
+          width: '400px',
+          height: '400px',
           borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(139,92,246,0.06) 0%, transparent 60%)',
-          top: '40%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
+          background: 'radial-gradient(circle, rgba(139,92,246,0.12) 0%, rgba(139,92,246,0.04) 40%, transparent 65%)',
+          top: '30%',
+          right: '-50px',
         }}
       />
-    <div className="relative space-y-3 sm:space-y-4 max-w-2xl mx-auto px-1 sm:px-0 py-2">
+      {/* Subtle gradient line top */}
+      <div
+        className="absolute top-0 left-0 right-0 h-[1px] pointer-events-none"
+        style={{ background: 'linear-gradient(90deg, transparent, rgba(99,102,241,0.3) 30%, rgba(16,185,129,0.3) 70%, transparent)' }}
+      />
+    <div className="relative space-y-3 sm:space-y-4 max-w-2xl mx-auto px-4 md:px-6 py-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <h1 className="text-base sm:text-lg font-bold text-cozy-text dark:text-[#fafafa]">Transaksi</h1>
