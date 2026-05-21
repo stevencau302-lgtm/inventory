@@ -102,37 +102,50 @@ export default function TransactionsPage() {
 
 
   return (
-    <div className="relative overflow-hidden min-h-full"
+    <div className="relative overflow-hidden -m-4 md:-m-6 p-4 md:p-6 min-h-[calc(100vh-3.5rem)]"
       style={{
-        backgroundImage: 'linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px)',
-        backgroundSize: '32px 32px'
+        backgroundImage: 'radial-gradient(circle at 1px 1px, rgba(255,255,255,0.07) 1px, transparent 0)',
+        backgroundSize: '24px 24px'
       }}
     >
-      {/* Glow blob 1 - indigo/purple top-left */}
+      {/* Glow blob 1 - indigo top-left */}
       <div
         className="absolute pointer-events-none"
         style={{
-          width: '400px',
-          height: '400px',
+          width: '500px',
+          height: '500px',
           borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(99,102,241,0.15) 0%, transparent 70%)',
-          top: '-100px',
-          left: '-100px',
+          background: 'radial-gradient(circle, rgba(99,102,241,0.12) 0%, rgba(99,102,241,0.04) 40%, transparent 70%)',
+          top: '-150px',
+          left: '-150px',
         }}
       />
       {/* Glow blob 2 - emerald bottom-right */}
       <div
         className="absolute pointer-events-none"
         style={{
-          width: '350px',
-          height: '350px',
+          width: '450px',
+          height: '450px',
           borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(16,185,129,0.12) 0%, transparent 70%)',
-          bottom: '-80px',
-          right: '-80px',
+          background: 'radial-gradient(circle, rgba(16,185,129,0.10) 0%, rgba(16,185,129,0.03) 40%, transparent 70%)',
+          bottom: '-120px',
+          right: '-120px',
         }}
       />
-    <div className="relative space-y-3 sm:space-y-4 max-w-2xl mx-auto px-1 sm:px-0 py-6">
+      {/* Glow blob 3 - subtle purple/pink center */}
+      <div
+        className="absolute pointer-events-none"
+        style={{
+          width: '300px',
+          height: '300px',
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(139,92,246,0.06) 0%, transparent 60%)',
+          top: '40%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+        }}
+      />
+    <div className="relative space-y-3 sm:space-y-4 max-w-2xl mx-auto px-1 sm:px-0 py-2">
       {/* Header */}
       <div className="flex items-center justify-between">
         <h1 className="text-base sm:text-lg font-bold text-cozy-text dark:text-[#fafafa]">Transaksi</h1>
