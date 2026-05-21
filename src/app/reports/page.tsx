@@ -311,7 +311,7 @@ export default function ReportsPage() {
               <h3 className="text-sm font-semibold text-[#FDC800]">Top 5 Stagnan</h3>
             </div>
             <div className="space-y-3">
-              {topStagnant.map((item, i) => (
+              {topStagnant.length > 0 ? topStagnant.map((item, i) => (
                 <div key={i} className="flex items-center gap-3">
                   <span className="w-7 h-7 rounded-lg bg-[#FDC800]/10 text-[#FDC800] text-xs font-bold flex items-center justify-center shrink-0">
                     {i + 1}
@@ -322,7 +322,7 @@ export default function ReportsPage() {
                   </div>
                   <span className="text-sm font-bold text-[#FDC800]">{item.count}</span>
                 </div>
-              ))}
+              )) : <p className="text-sm text-zinc-500">Tidak ada produk stagnan</p>}
             </div>
           </div>
         </div>
