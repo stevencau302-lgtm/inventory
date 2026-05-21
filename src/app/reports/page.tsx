@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useMemo } from 'react'
 import dynamic from 'next/dynamic'
-import { Product, Category, Transaction, getProducts, getCategories, getTransactions, formatRp, loadSampleData } from '@/lib/store'
+import { Product, Category, Transaction, fetchProducts, fetchCategories, fetchTransactions, formatRp } from '@/lib/store'
 
 const RechartsBarChart = dynamic(
   () => import('recharts').then((mod) => {
@@ -35,17 +35,16 @@ export default function ReportsPage() {
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
-    let p = getProducts()
-    let c = getCategories()
-    if (p.length === 0) {
-      const data = loadSampleData()
-      p = data.products
-      c = data.categories
+    async function loadData() {
+      const p = await fetchProducts()
+      const c = await fetchCategories()
+      const tx = await fetchTransactions()
+      setProducts(p)
+      setCategories(c)
+      setTransactions(tx)
+      setMounted(true)
     }
-    setProducts(p)
-    setCategories(c)
-    setTransactions(getTransactions())
-    setMounted(true)
+    loadData()
   }, [])
 
   // ---- Computed Data ----
