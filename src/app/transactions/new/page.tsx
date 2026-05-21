@@ -153,55 +153,55 @@ export default function NewTransactionPage() {
           <label className="text-xs font-bold uppercase tracking-wider text-zinc-400 mb-3 block">
             Tipe Transaksi
           </label>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="flex flex-col gap-3">
             <button
               type="button"
               onClick={() => setType('in')}
-              className={`relative p-4 sm:p-5 rounded-2xl text-left transition-all duration-300 active:scale-[0.97] overflow-hidden ${
+              className={`relative w-full p-4 sm:p-5 rounded-2xl text-left transition-all duration-300 active:scale-[0.97] overflow-hidden ${
                 type === 'in'
                   ? 'bg-[#16A34A] text-white ring-2 ring-[#16A34A]/50 shadow-lg shadow-[#16A34A]/20'
                   : 'bg-[#1a1a1a] text-zinc-300 border border-white/[0.06] hover:border-[#16A34A]/30'
               }`}
             >
-              <div className="flex items-center gap-3">
-                <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${
+              <div className="flex items-center gap-4">
+                <div className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all ${
                   type === 'in' ? 'bg-white/20' : 'bg-[#16A34A]/10'
                 }`}>
-                  <ArrowDownCircle className={`w-5 h-5 ${type === 'in' ? 'text-white' : 'text-[#16A34A]'}`} />
+                  <ArrowDownCircle className={`w-6 h-6 ${type === 'in' ? 'text-white' : 'text-[#16A34A]'}`} />
                 </div>
-                <div>
-                  <p className="text-sm font-bold">Masuk</p>
-                  <p className={`text-xs mt-0.5 ${type === 'in' ? 'text-white/70' : 'text-zinc-500'}`}>Stok bertambah +</p>
+                <div className="flex-1">
+                  <p className="text-base font-bold">Barang Masuk</p>
+                  <p className={`text-sm mt-0.5 ${type === 'in' ? 'text-white/70' : 'text-zinc-500'}`}>Stok bertambah +</p>
                 </div>
+                {type === 'in' && (
+                  <div className="w-3 h-3 rounded-full bg-white animate-pulse shrink-0" />
+                )}
               </div>
-              {type === 'in' && (
-                <div className="absolute top-2 right-2 w-2 h-2 rounded-full bg-white animate-pulse" />
-              )}
             </button>
 
             <button
               type="button"
               onClick={() => setType('out')}
-              className={`relative p-4 sm:p-5 rounded-2xl text-left transition-all duration-300 active:scale-[0.97] overflow-hidden ${
+              className={`relative w-full p-4 sm:p-5 rounded-2xl text-left transition-all duration-300 active:scale-[0.97] overflow-hidden ${
                 type === 'out'
                   ? 'bg-[#DC2626] text-white ring-2 ring-[#DC2626]/50 shadow-lg shadow-[#DC2626]/20'
                   : 'bg-[#1a1a1a] text-zinc-300 border border-white/[0.06] hover:border-[#DC2626]/30'
               }`}
             >
-              <div className="flex items-center gap-3">
-                <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${
+              <div className="flex items-center gap-4">
+                <div className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all ${
                   type === 'out' ? 'bg-white/20' : 'bg-[#DC2626]/10'
                 }`}>
-                  <ArrowUpCircle className={`w-5 h-5 ${type === 'out' ? 'text-white' : 'text-[#DC2626]'}`} />
+                  <ArrowUpCircle className={`w-6 h-6 ${type === 'out' ? 'text-white' : 'text-[#DC2626]'}`} />
                 </div>
-                <div>
-                  <p className="text-sm font-bold">Keluar</p>
-                  <p className={`text-xs mt-0.5 ${type === 'out' ? 'text-white/70' : 'text-zinc-500'}`}>Stok berkurang -</p>
+                <div className="flex-1">
+                  <p className="text-base font-bold">Barang Keluar</p>
+                  <p className={`text-sm mt-0.5 ${type === 'out' ? 'text-white/70' : 'text-zinc-500'}`}>Stok berkurang -</p>
                 </div>
+                {type === 'out' && (
+                  <div className="w-3 h-3 rounded-full bg-white animate-pulse shrink-0" />
+                )}
               </div>
-              {type === 'out' && (
-                <div className="absolute top-2 right-2 w-2 h-2 rounded-full bg-white animate-pulse" />
-              )}
             </button>
           </div>
         </div>
