@@ -2,8 +2,13 @@
 
 import { useEffect, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
-import { Product, Transaction, getProducts, getTransactions, saveProducts, saveTransactions, formatRp, uid, loadSampleData, fetchProducts, saveProduct, saveTransaction } from '@/lib/store'
+import { Product, Transaction, formatRp, uid, fetchProducts, saveProduct, saveTransaction } from '@/lib/store'
 import { useToast } from '@/components/Toast'
+import {
+  ArrowLeft, ArrowDownCircle, ArrowUpCircle, Search, Package,
+  Hash, CalendarDays, FileText, Save, Loader2, AlertTriangle,
+  ChevronDown, X, Minus, Plus, Sparkles
+} from 'lucide-react'
 
 type TransactionType = 'in' | 'out'
 
@@ -11,7 +16,6 @@ export default function NewTransactionPage() {
   const router = useRouter()
   const { toast } = useToast()
   const [products, setProducts] = useState<Product[]>([])
-  const [transactions, setTransactions] = useState<Transaction[]>([])
   const [type, setType] = useState<TransactionType>('in')
   const [selectedProduct, setSelectedProduct] = useState('')
   const [quantity, setQuantity] = useState(1)
@@ -21,6 +25,7 @@ export default function NewTransactionPage() {
   const [showProductDropdown, setShowProductDropdown] = useState(false)
   const [mounted, setMounted] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [success, setSuccess] = useState(false)
   const productDropdownRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -34,13 +39,22 @@ export default function NewTransactionPage() {
 
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
-      if (productDropdownRef.current && !productDropdownRef.current.contains(e.target as Node)) setShowProductDropdown(false)
+      if (productDropdownRef.current && !productDropdownRef.current.contains(e.target as Node)) {
+        setShowProductDropdown(false)
+      }
     }
     document.addEventListener('mousedown', handleClick)
     return () => document.removeEventListener('mousedown', handleClick)
   }, [])
 
-  if (!mounted) return null
+  if (!mounted) return (
+    <div className="flex items-center justify-center min-h-[80vh]">
+      <div className="flex flex-col items-center gap-3 animate-pulse">
+        <Loader2 className="w-8 h-8 text-[#FDC800] animate-spin" />
+        <p className="text-zinc-500 text-sm">Memuat...</p>
+      </div>
+    </div>
+  )
 
   const filteredProducts = products.filter(p =>
     p.name.toLowerCase().includes(productSearch.toLowerCase()) ||
@@ -48,6 +62,7 @@ export default function NewTransactionPage() {
     p.category.toLowerCase().includes(productSearch.toLowerCase())
   )
   const selected = products.find(p => p.id === selectedProduct)
+  const stockAfter = selected ? selected.stock + (type === 'in' ? quantity : -quantity) : 0
 
   const handleSelectProduct = (id: string) => {
     setSelectedProduct(id)
@@ -56,225 +71,358 @@ export default function NewTransactionPage() {
     setShowProductDropdown(false)
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!selectedProduct) { toast('Pilih produk terlebih dahulu!', 'error'); return }
     const product = products.find(p => p.id === selectedProduct)
     if (!product) return
     if (type === 'out' && product.stock < quantity) { toast(`Stok tidak cukup! Sisa: ${product.stock}`, 'error'); return }
+
     setLoading(true)
-    setTimeout(() => {
-      const updatedProduct = {
-        ...product,
-        stock: type === 'in' ? product.stock + quantity : product.stock - quantity,
-        updatedAt: new Date().toISOString()
-      }
-      const newTx: Transaction = { id: uid(), productId: product.id, productName: product.name, type, quantity, note, createdAt: new Date().toISOString() }
-      saveProduct(updatedProduct)
-      saveTransaction(newTx)
-      toast(type === 'in' ? `+${quantity} ${product.name} berhasil dicatat masuk` : `-${quantity} ${product.name} berhasil dicatat keluar`, 'success')
-      router.push('/transactions')
-    }, 500)
+    await new Promise(r => setTimeout(r, 600))
+
+    const updatedProduct = {
+      ...product,
+      stock: type === 'in' ? product.stock + quantity : product.stock - quantity,
+      updatedAt: new Date().toISOString()
+    }
+    const newTx: Transaction = {
+      id: uid(),
+      productId: product.id,
+      productName: product.name,
+      type,
+      quantity,
+      note,
+      createdAt: new Date().toISOString()
+    }
+
+    await saveProduct(updatedProduct)
+    await saveTransaction(newTx)
+
+    setSuccess(true)
+    toast(
+      type === 'in'
+        ? `+${quantity} ${product.name} berhasil dicatat masuk`
+        : `-${quantity} ${product.name} berhasil dicatat keluar`,
+      'success'
+    )
+
+    setTimeout(() => router.push('/transactions'), 1200)
+  }
+
+  // Success animation
+  if (success) {
+    return (
+      <div className="flex items-center justify-center min-h-[80vh]">
+        <div className="flex flex-col items-center gap-4 animate-[fadeInUp_0.5s_ease-out]">
+          <div className="w-20 h-20 rounded-full bg-[#16A34A]/10 flex items-center justify-center animate-[scaleIn_0.4s_ease-out]">
+            <Sparkles className="w-10 h-10 text-[#16A34A]" />
+          </div>
+          <p className="text-xl font-bold text-[#fafafa]">Transaksi Tersimpan!</p>
+          <p className="text-sm text-zinc-500">Mengalihkan...</p>
+        </div>
+      </div>
+    )
   }
 
   return (
-    <div className="min-h-screen" style={{ background: '#0f0f0f', fontFamily: 'Inter, system-ui, sans-serif' }}>
-      {/* Content */}
-      <div className="flex items-start justify-center min-h-screen py-10 px-4 sm:px-6">
-        <div className="w-full max-w-5xl">
+    <div className="max-w-lg mx-auto pb-24 sm:pb-8">
+      {/* Back Button */}
+      <button
+        onClick={() => router.push('/transactions')}
+        className="group flex items-center gap-2 text-sm font-semibold text-zinc-400 hover:text-[#fafafa] mb-6 transition-all active:scale-95"
+      >
+        <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+        Kembali
+      </button>
 
-          {/* Back */}
-          <button onClick={() => router.push('/transactions')} className="group flex items-center gap-2 text-sm font-semibold mb-6 transition-colors" style={{ color: '#e4e4e7' }}>
-            <svg className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" /></svg>
-            Kembali
-          </button>
-
-          {/* Two Column */}
-          <div className="flex flex-col lg:flex-row gap-6">
-
-            {/* LEFT — Form Card */}
-            <div className="flex-1 min-w-0">
-              <div className="rounded-xl p-6 sm:p-8" style={{ background: '#1a1a1a' }}>
-                {/* Header */}
-                <div className="flex items-center gap-4 mb-6">
-                  <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ background: '#FDC800' }}>
-                    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="#1C293C"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
-                  </div>
-                  <div>
-                    <h1 className="text-2xl font-black" style={{ color: '#fafafa' }}>Transaksi Baru</h1>
-                    <p className="text-sm" style={{ color: '#71717a' }}>Catat barang masuk atau keluar</p>
-                  </div>
-                </div>
-
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  {/* Type */}
-                  <div>
-                    <label className="text-xs font-bold uppercase tracking-wider mb-3 flex items-center gap-2" style={{ color: '#a1a1aa' }}>
-                      <svg className="w-4 h-4 text-orange-400" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" /></svg>
-                      Tipe Transaksi
-                    </label>
-                    <div className="grid grid-cols-2 gap-3">
-                      <button type="button" onClick={() => setType('in')} className="p-4 rounded-xl text-left transition-all flex items-center gap-3" style={{ background: type === 'in' ? '#16A34A' : '#0f0f0f', color: type === 'in' ? '#fff' : '#e4e4e7' }}>
-                        <div className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0" style={{ background: type === 'in' ? 'rgba(255,255,255,0.2)' : 'rgba(22,163,74,0.15)' }}>
-                          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" style={{ color: type === 'in' ? '#fff' : '#16A34A' }}><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18L9 11.25l4.306 4.306a11.95 11.95 0 015.814-5.518l2.74-1.22m0 0l-5.94-2.281m5.94 2.28l-2.28 5.941" /></svg>
-                        </div>
-                        <div>
-                          <p className="text-sm font-bold">Masuk</p>
-                          <p className="text-xs mt-0.5" style={{ opacity: 0.7 }}>Stok bertambah</p>
-                        </div>
-                      </button>
-                      <button type="button" onClick={() => setType('out')} className="p-4 rounded-xl text-left transition-all flex items-center gap-3" style={{ background: type === 'out' ? '#DC2626' : '#0f0f0f', color: type === 'out' ? '#fff' : '#e4e4e7' }}>
-                        <div className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0" style={{ background: type === 'out' ? 'rgba(255,255,255,0.2)' : 'rgba(220,38,38,0.15)' }}>
-                          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" style={{ color: type === 'out' ? '#fff' : '#DC2626' }}><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6L9 12.75l4.286-4.286a11.948 11.948 0 014.306 6.43l.776 2.898m0 0l3.182-5.511m-3.182 5.51l-5.511-3.181" /></svg>
-                        </div>
-                        <div>
-                          <p className="text-sm font-bold">Keluar</p>
-                          <p className="text-xs mt-0.5" style={{ opacity: 0.7 }}>Stok berkurang</p>
-                        </div>
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Product */}
-                  <div>
-                    <label className="text-xs font-bold uppercase tracking-wider mb-2 flex items-center gap-2" style={{ color: '#a1a1aa' }}>
-                      <svg className="w-4 h-4 text-violet-400" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" /></svg>
-                      Pilih Produk
-                    </label>
-                    <div className="relative" ref={productDropdownRef}>
-                      <input type="text" value={productSearch} onChange={e => { setProductSearch(e.target.value); setShowProductDropdown(true); setSelectedProduct('') }} onFocus={() => setShowProductDropdown(true)} className="w-full rounded-xl text-sm px-4 py-3 font-medium focus:outline-none" style={{ background: '#0f0f0f', color: '#fafafa' }} placeholder="Cari nama produk atau SKU..." autoComplete="off" />
-                      {showProductDropdown && (
-                        <div className="absolute z-50 left-0 right-0 top-full mt-1 rounded-xl overflow-hidden max-h-56 overflow-y-auto" style={{ background: '#1a1a1a' }}>
-                          {filteredProducts.length === 0 ? (
-                            <div className="px-4 py-4 text-center text-xs" style={{ color: '#71717a' }}>Produk tidak ditemukan</div>
-                          ) : filteredProducts.map(p => (
-                            <button key={p.id} type="button" onClick={() => handleSelectProduct(p.id)} className="w-full flex items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-[#FDC800]/10" style={{ borderBottom: '1px solid #27272a' }}>
-                              <div className="w-8 h-8 rounded-lg flex items-center justify-center text-[10px] font-black shrink-0" style={{ background: '#432DD7', color: '#fff' }}>{p.name.substring(0, 2).toUpperCase()}</div>
-                              <div className="flex-1 min-w-0">
-                                <p className="text-sm font-semibold truncate" style={{ color: '#fafafa' }}>{p.name}</p>
-                                <p className="text-[11px]" style={{ color: '#71717a' }}>{p.sku} · Stok: {p.stock}</p>
-                              </div>
-                              <span className="text-[11px] font-medium shrink-0" style={{ color: '#71717a' }}>{formatRp(p.price)}</span>
-                            </button>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Selected Product */}
-                  {selected && (
-                    <div className="rounded-xl p-4" style={{ background: '#432DD7', color: '#fff' }}>
-                      <p className="text-sm font-bold">{selected.name}</p>
-                      <p className="text-xs mt-0.5 opacity-70">{selected.sku} · {selected.category}</p>
-                      <div className="grid grid-cols-3 gap-2 mt-3">
-                        <div className="rounded-lg px-2 py-1.5 text-center" style={{ background: 'rgba(255,255,255,0.15)' }}>
-                          <p className="text-[10px] opacity-70">Stok</p>
-                          <p className="text-sm font-bold">{selected.stock}</p>
-                        </div>
-                        <div className="rounded-lg px-2 py-1.5 text-center" style={{ background: 'rgba(255,255,255,0.15)' }}>
-                          <p className="text-[10px] opacity-70">Harga</p>
-                          <p className="text-sm font-bold">{formatRp(selected.price)}</p>
-                        </div>
-                        <div className="rounded-lg px-2 py-1.5 text-center" style={{ background: 'rgba(255,255,255,0.15)' }}>
-                          <p className="text-[10px] opacity-70">Min</p>
-                          <p className="text-sm font-bold">{selected.minStock}</p>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Quantity & Date */}
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="text-xs font-bold uppercase tracking-wider mb-2 flex items-center gap-2" style={{ color: '#a1a1aa' }}>
-                        <svg className="w-4 h-4 text-cyan-400" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M5.25 8.25h15m-16.5 7.5h15m-1.8-13.5l-3.9 19.5m-2.1-19.5l-3.9 19.5" /></svg>
-                        Jumlah
-                      </label>
-                      <div className="flex items-center gap-2">
-                        <button type="button" onClick={() => setQuantity(Math.max(1, quantity - 1))} className="w-10 h-10 rounded-lg flex items-center justify-center font-bold text-lg shrink-0" style={{ background: '#0f0f0f', color: '#fafafa' }}>-</button>
-                        <input type="number" min={1} value={quantity} onChange={e => setQuantity(Math.max(1, +e.target.value))} className="flex-1 min-w-0 rounded-lg text-center text-lg font-bold py-2 focus:outline-none" style={{ background: '#0f0f0f', color: '#fafafa' }} />
-                        <button type="button" onClick={() => setQuantity(quantity + 1)} className="w-10 h-10 rounded-lg flex items-center justify-center font-bold text-lg shrink-0" style={{ background: '#0f0f0f', color: '#fafafa' }}>+</button>
-                      </div>
-                    </div>
-                    <div>
-                      <label className="text-xs font-bold uppercase tracking-wider mb-2 flex items-center gap-2" style={{ color: '#a1a1aa' }}>
-                        <svg className="w-4 h-4 text-amber-400" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" /></svg>
-                        Tanggal
-                      </label>
-                      <input type="date" value={date} onChange={e => setDate(e.target.value)} className="w-full rounded-lg text-sm px-4 py-3 font-medium focus:outline-none" style={{ background: '#0f0f0f', color: '#fafafa', colorScheme: 'dark' }} />
-                    </div>
-                  </div>
-
-                  {/* Note */}
-                  <div>
-                    <label className="text-xs font-bold uppercase tracking-wider mb-2 flex items-center gap-2" style={{ color: '#a1a1aa' }}>
-                      <svg className="w-4 h-4 text-pink-400" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" /></svg>
-                      Catatan <span className="normal-case font-normal" style={{ color: '#71717a' }}>(opsional)</span>
-                    </label>
-                    <textarea value={note} onChange={e => setNote(e.target.value.slice(0, 200))} maxLength={200} rows={3} className="w-full rounded-lg text-sm px-4 py-3 resize-none font-medium focus:outline-none" style={{ background: '#0f0f0f', color: '#fafafa' }} placeholder="Tambahkan catatan..." />
-                    <p className="text-right text-[10px] mt-1" style={{ color: '#71717a' }}>{note.length}/200</p>
-                  </div>
-
-                  {/* Submit */}
-                  <div className="flex gap-3 pt-2">
-                    <button type="button" onClick={() => router.push('/transactions')} className="px-5 py-3 rounded-lg text-sm font-bold transition-all" style={{ background: '#0f0f0f', color: '#e4e4e7' }}>Batal</button>
-                    <button type="submit" disabled={loading} className="flex-1 py-3.5 rounded-lg text-sm font-bold transition-all disabled:opacity-50 flex items-center justify-center gap-2" style={{ background: '#FDC800', color: '#1C293C' }}>
-                      {loading ? 'Menyimpan...' : (<><svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"><path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7"/><path d="M7 3v4a1 1 0 0 0 1 1h7"/></svg>Simpan Transaksi</>)}
-                    </button>
-                  </div>
-                </form>
-              </div>
-            </div>
-
-            {/* RIGHT — Summary */}
-            <div className="lg:w-[300px] shrink-0">
-              <div className="lg:sticky lg:top-8 space-y-4">
-                <div className="rounded-xl overflow-hidden" style={{ background: '#1a1a1a' }}>
-                  <div className="px-5 py-3.5 flex items-center gap-2 font-bold text-sm" style={{ background: '#FDC800', color: '#1C293C' }}>
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z" /></svg>
-                    Ringkasan
-                  </div>
-                  {selected ? (
-                    <div className="px-5 py-4 space-y-3">
-                      <div className="flex items-center gap-3 pb-3" style={{ borderBottom: '1px solid #27272a' }}>
-                        <div className="w-9 h-9 rounded-lg flex items-center justify-center text-[10px] font-black" style={{ background: '#432DD7', color: '#fff' }}>{selected.name.substring(0, 2).toUpperCase()}</div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-bold truncate" style={{ color: '#fafafa' }}>{selected.name}</p>
-                          <p className="text-[10px]" style={{ color: '#71717a' }}>{selected.category}</p>
-                        </div>
-                      </div>
-                      <div className="space-y-2">
-                        <div className="flex justify-between"><span className="text-xs" style={{ color: '#71717a' }}>Tipe</span><span className="text-xs font-bold px-2 py-0.5 rounded-md" style={{ background: type === 'in' ? '#16A34A' : '#DC2626', color: '#fff' }}>{type === 'in' ? 'Masuk' : 'Keluar'}</span></div>
-                        <div className="flex justify-between"><span className="text-xs" style={{ color: '#71717a' }}>Jumlah</span><span className="text-sm font-black" style={{ color: type === 'in' ? '#16A34A' : '#DC2626' }}>{type === 'in' ? '+' : '-'}{quantity}</span></div>
-                        <div className="flex justify-between"><span className="text-xs" style={{ color: '#71717a' }}>Tanggal</span><span className="text-xs font-medium" style={{ color: '#e4e4e7' }}>{new Date(date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}</span></div>
-                      </div>
-                      <div className="rounded-lg p-3 mt-2" style={{ background: '#0f0f0f' }}>
-                        <div className="flex justify-between mb-1"><span className="text-[11px]" style={{ color: '#71717a' }}>Stok saat ini</span><span className="text-sm font-bold" style={{ color: '#e4e4e7' }}>{selected.stock}</span></div>
-                        <div className="flex justify-between"><span className="text-[11px]" style={{ color: '#71717a' }}>Stok setelah</span><span className="text-lg font-black" style={{ color: (selected.stock + (type === 'in' ? quantity : -quantity)) < selected.minStock ? '#D97706' : '#fafafa' }}>{selected.stock + (type === 'in' ? quantity : -quantity)}</span></div>
-                        {(selected.stock + (type === 'in' ? quantity : -quantity)) < selected.minStock && (
-                          <div className="flex items-center gap-1.5 mt-2 px-2 py-1.5 rounded-md" style={{ background: 'rgba(217, 119, 6, 0.15)' }}>
-                            <svg className="w-3 h-3 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="#D97706"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" /></svg>
-                            <span className="text-[10px] font-semibold" style={{ color: '#D97706' }}>Di bawah minimum ({selected.minStock})</span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="px-5 py-8 text-center">
-                      <div className="w-12 h-12 rounded-xl mx-auto mb-3 flex items-center justify-center" style={{ background: '#0f0f0f' }}>
-                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="#71717a"><path strokeLinecap="round" strokeLinejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" /></svg>
-                      </div>
-                      <p className="text-xs font-medium" style={{ color: '#71717a' }}>Pilih produk untuk melihat ringkasan</p>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-
-          </div>
+      {/* Header */}
+      <div className="flex items-center gap-3 mb-8">
+        <div className="w-12 h-12 rounded-xl bg-[#FDC800]/10 flex items-center justify-center">
+          <Package className="w-6 h-6 text-[#FDC800]" />
+        </div>
+        <div>
+          <h1 className="text-xl sm:text-2xl font-bold text-[#fafafa]">Transaksi Baru</h1>
+          <p className="text-sm text-zinc-500">Catat barang masuk atau keluar</p>
         </div>
       </div>
+
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {/* === TIPE TRANSAKSI === */}
+        <div>
+          <label className="text-xs font-bold uppercase tracking-wider text-zinc-400 mb-3 block">
+            Tipe Transaksi
+          </label>
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              type="button"
+              onClick={() => setType('in')}
+              className={`relative p-4 sm:p-5 rounded-2xl text-left transition-all duration-300 active:scale-[0.97] overflow-hidden ${
+                type === 'in'
+                  ? 'bg-[#16A34A] text-white ring-2 ring-[#16A34A]/50 shadow-lg shadow-[#16A34A]/20'
+                  : 'bg-[#1a1a1a] text-zinc-300 border border-white/[0.06] hover:border-[#16A34A]/30'
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${
+                  type === 'in' ? 'bg-white/20' : 'bg-[#16A34A]/10'
+                }`}>
+                  <ArrowDownCircle className={`w-5 h-5 ${type === 'in' ? 'text-white' : 'text-[#16A34A]'}`} />
+                </div>
+                <div>
+                  <p className="text-sm font-bold">Masuk</p>
+                  <p className={`text-xs mt-0.5 ${type === 'in' ? 'text-white/70' : 'text-zinc-500'}`}>Stok bertambah +</p>
+                </div>
+              </div>
+              {type === 'in' && (
+                <div className="absolute top-2 right-2 w-2 h-2 rounded-full bg-white animate-pulse" />
+              )}
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setType('out')}
+              className={`relative p-4 sm:p-5 rounded-2xl text-left transition-all duration-300 active:scale-[0.97] overflow-hidden ${
+                type === 'out'
+                  ? 'bg-[#DC2626] text-white ring-2 ring-[#DC2626]/50 shadow-lg shadow-[#DC2626]/20'
+                  : 'bg-[#1a1a1a] text-zinc-300 border border-white/[0.06] hover:border-[#DC2626]/30'
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${
+                  type === 'out' ? 'bg-white/20' : 'bg-[#DC2626]/10'
+                }`}>
+                  <ArrowUpCircle className={`w-5 h-5 ${type === 'out' ? 'text-white' : 'text-[#DC2626]'}`} />
+                </div>
+                <div>
+                  <p className="text-sm font-bold">Keluar</p>
+                  <p className={`text-xs mt-0.5 ${type === 'out' ? 'text-white/70' : 'text-zinc-500'}`}>Stok berkurang -</p>
+                </div>
+              </div>
+              {type === 'out' && (
+                <div className="absolute top-2 right-2 w-2 h-2 rounded-full bg-white animate-pulse" />
+              )}
+            </button>
+          </div>
+        </div>
+
+        {/* === PILIH PRODUK === */}
+        <div>
+          <label className="text-xs font-bold uppercase tracking-wider text-zinc-400 mb-3 block">
+            Pilih Produk
+          </label>
+          <div className="relative" ref={productDropdownRef}>
+            <div className="relative">
+              <Search className="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500 pointer-events-none" />
+              <input
+                type="text"
+                value={productSearch}
+                onChange={e => { setProductSearch(e.target.value); setShowProductDropdown(true); setSelectedProduct('') }}
+                onFocus={() => setShowProductDropdown(true)}
+                className="w-full rounded-xl text-sm pl-11 pr-10 py-3.5 font-medium bg-[#0f0f0f] text-[#fafafa] border-none focus:outline-none focus:ring-2 focus:ring-[#FDC800]/50 transition-all placeholder:text-zinc-600"
+                placeholder="Cari nama produk atau SKU..."
+                autoComplete="off"
+              />
+              {productSearch && (
+                <button
+                  type="button"
+                  onClick={() => { setProductSearch(''); setSelectedProduct(''); setShowProductDropdown(true) }}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300 transition-colors active:scale-90"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              )}
+            </div>
+
+            {/* Dropdown */}
+            {showProductDropdown && (
+              <div className="absolute z-50 left-0 right-0 top-full mt-2 rounded-xl bg-[#1a1a1a] border border-white/[0.06] max-h-64 overflow-y-auto shadow-2xl shadow-black/50 animate-[slideDown_0.2s_ease-out]">
+                {filteredProducts.length === 0 ? (
+                  <div className="px-4 py-6 text-center text-sm text-zinc-500">Produk tidak ditemukan</div>
+                ) : filteredProducts.map(p => (
+                  <button
+                    key={p.id}
+                    type="button"
+                    onClick={() => handleSelectProduct(p.id)}
+                    className={`w-full flex items-center gap-3 px-4 py-3 text-left transition-all hover:bg-[#FDC800]/5 active:bg-[#FDC800]/10 border-b border-white/[0.04] last:border-b-0 ${selectedProduct === p.id ? 'bg-[#FDC800]/5' : ''}`}
+                  >
+                    <div className="w-9 h-9 rounded-lg bg-[#432DD7] flex items-center justify-center text-[10px] font-black text-white shrink-0">
+                      {p.name.substring(0, 2).toUpperCase()}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-[#fafafa] truncate">{p.name}</p>
+                      <p className="text-[11px] text-zinc-500">{p.sku} · Stok: {p.stock}</p>
+                    </div>
+                    <span className="text-[11px] font-medium text-zinc-500 shrink-0">{formatRp(p.price)}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* === SELECTED PRODUCT CARD === */}
+        {selected && (
+          <div className="rounded-2xl bg-[#432DD7] p-4 sm:p-5 text-white animate-[fadeInUp_0.3s_ease-out]">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-10 h-10 rounded-lg bg-white/15 flex items-center justify-center text-xs font-black">
+                {selected.name.substring(0, 2).toUpperCase()}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-bold truncate">{selected.name}</p>
+                <p className="text-xs text-white/60">{selected.sku} · {selected.category}</p>
+              </div>
+            </div>
+            <div className="grid grid-cols-3 gap-2">
+              <div className="rounded-xl bg-white/10 px-3 py-2 text-center">
+                <p className="text-[10px] text-white/60">Stok</p>
+                <p className="text-base font-bold">{selected.stock}</p>
+              </div>
+              <div className="rounded-xl bg-white/10 px-3 py-2 text-center">
+                <p className="text-[10px] text-white/60">Harga</p>
+                <p className="text-xs font-bold">{formatRp(selected.price)}</p>
+              </div>
+              <div className="rounded-xl bg-white/10 px-3 py-2 text-center">
+                <p className="text-[10px] text-white/60">Setelah</p>
+                <p className={`text-base font-bold ${stockAfter < selected.minStock ? 'text-amber-300' : 'text-white'}`}>
+                  {stockAfter}
+                </p>
+              </div>
+            </div>
+            {stockAfter < selected.minStock && (
+              <div className="flex items-center gap-2 mt-3 px-3 py-2 rounded-xl bg-amber-500/20 animate-[fadeIn_0.3s_ease-out]">
+                <AlertTriangle className="w-3.5 h-3.5 text-amber-300 shrink-0" />
+                <span className="text-[11px] font-semibold text-amber-300">Di bawah minimum ({selected.minStock})</span>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* === JUMLAH === */}
+        <div>
+          <label className="text-xs font-bold uppercase tracking-wider text-zinc-400 mb-3 block">
+            Jumlah
+          </label>
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setQuantity(Math.max(1, quantity - 1))}
+              className="w-14 h-14 rounded-xl bg-[#1a1a1a] border border-white/[0.06] flex items-center justify-center text-[#fafafa] hover:bg-white/[0.04] active:scale-90 transition-all shrink-0"
+            >
+              <Minus className="w-5 h-5" />
+            </button>
+            <input
+              type="number"
+              min={1}
+              value={quantity}
+              onChange={e => setQuantity(Math.max(1, +e.target.value))}
+              className="flex-1 min-w-0 rounded-xl text-center text-2xl font-bold py-3 bg-[#0f0f0f] text-[#fafafa] border-none focus:outline-none focus:ring-2 focus:ring-[#FDC800]/50 transition-all"
+            />
+            <button
+              type="button"
+              onClick={() => setQuantity(quantity + 1)}
+              className="w-14 h-14 rounded-xl bg-[#1a1a1a] border border-white/[0.06] flex items-center justify-center text-[#fafafa] hover:bg-white/[0.04] active:scale-90 transition-all shrink-0"
+            >
+              <Plus className="w-5 h-5" />
+            </button>
+          </div>
+          {/* Quick buttons */}
+          <div className="flex gap-2 mt-3">
+            {[5, 10, 25, 50, 100].map(n => (
+              <button
+                key={n}
+                type="button"
+                onClick={() => setQuantity(n)}
+                className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all active:scale-95 ${
+                  quantity === n
+                    ? 'bg-[#FDC800] text-[#1a1a1a]'
+                    : 'bg-[#1a1a1a] text-zinc-400 border border-white/[0.06] hover:border-[#FDC800]/30'
+                }`}
+              >
+                {n}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* === TANGGAL === */}
+        <div>
+          <label className="text-xs font-bold uppercase tracking-wider text-zinc-400 mb-3 flex items-center gap-2">
+            <CalendarDays className="w-3.5 h-3.5 text-[#FDC800]" />
+            Tanggal
+          </label>
+          <input
+            type="date"
+            value={date}
+            onChange={e => setDate(e.target.value)}
+            className="w-full rounded-xl text-sm px-4 py-3.5 font-medium bg-[#0f0f0f] text-[#fafafa] border-none focus:outline-none focus:ring-2 focus:ring-[#FDC800]/50 transition-all"
+            style={{ colorScheme: 'dark' }}
+          />
+        </div>
+
+        {/* === CATATAN === */}
+        <div>
+          <label className="text-xs font-bold uppercase tracking-wider text-zinc-400 mb-3 flex items-center gap-2">
+            <FileText className="w-3.5 h-3.5 text-[#432DD7]" />
+            Catatan
+            <span className="normal-case font-normal text-zinc-600">(opsional)</span>
+          </label>
+          <textarea
+            value={note}
+            onChange={e => setNote(e.target.value.slice(0, 200))}
+            maxLength={200}
+            rows={3}
+            className="w-full rounded-xl text-sm px-4 py-3.5 resize-none font-medium bg-[#0f0f0f] text-[#fafafa] border-none focus:outline-none focus:ring-2 focus:ring-[#FDC800]/50 transition-all placeholder:text-zinc-600"
+            placeholder="Tambahkan catatan..."
+          />
+          <p className="text-right text-[10px] mt-1.5 text-zinc-600">{note.length}/200</p>
+        </div>
+
+        {/* === SUBMIT BUTTONS === */}
+        <div className="flex gap-3 pt-4">
+          <button
+            type="button"
+            onClick={() => router.push('/transactions')}
+            className="px-5 py-3.5 rounded-xl text-sm font-bold bg-[#1a1a1a] border border-white/[0.06] text-zinc-300 hover:bg-white/[0.04] transition-all active:scale-95"
+          >
+            Batal
+          </button>
+          <button
+            type="submit"
+            disabled={loading || !selectedProduct}
+            className="flex-1 py-3.5 rounded-xl text-sm font-bold bg-[#FDC800] text-[#1a1a1a] hover:bg-[#FDC800]/90 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all active:scale-[0.97] shadow-lg shadow-[#FDC800]/20"
+          >
+            {loading ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <>
+                <Save className="w-4 h-4" />
+                Simpan Transaksi
+              </>
+            )}
+          </button>
+        </div>
+      </form>
+
+      {/* Custom keyframes */}
+      <style jsx global>{`
+        @keyframes fadeInUp {
+          from { opacity: 0; transform: translateY(12px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        @keyframes scaleIn {
+          from { opacity: 0; transform: scale(0.8); }
+          to { opacity: 1; transform: scale(1); }
+        }
+        @keyframes slideDown {
+          from { opacity: 0; transform: translateY(-8px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
     </div>
   )
 }
