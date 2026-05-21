@@ -16,7 +16,11 @@ export default function TransactionsPage() {
   useEffect(() => {
     async function loadData() {
       let p = await fetchProducts()
-      if (p.length === 0) { const data = loadSampleData(); p = data.products }
+      if (p.length === 0 && !localStorage.getItem('inv_seeded')) {
+        const data = loadSampleData()
+        p = data.products
+        localStorage.setItem('inv_seeded', '1')
+      }
       setProducts(p)
       const tx = await fetchTransactions()
       setTransactions(tx)

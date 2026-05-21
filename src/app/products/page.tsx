@@ -24,10 +24,11 @@ export default function ProductsPage() {
     async function loadData() {
       let p = await fetchProducts()
       let c = await fetchCategories()
-      if (p.length === 0) {
+      if (p.length === 0 && !localStorage.getItem('inv_seeded')) {
         const data = loadSampleData()
         p = data.products
         c = data.categories
+        localStorage.setItem('inv_seeded', '1')
       }
       setProducts(p)
       setCategories(c)
