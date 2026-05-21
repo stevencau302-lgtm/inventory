@@ -102,7 +102,37 @@ export default function TransactionsPage() {
 
 
   return (
-    <div className="space-y-3 sm:space-y-4 max-w-2xl mx-auto px-1 sm:px-0">
+    <div className="relative overflow-hidden min-h-screen bg-zinc-950"
+      style={{
+        backgroundImage: 'linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px)',
+        backgroundSize: '32px 32px'
+      }}
+    >
+      {/* Glow blob 1 - indigo/purple top-left */}
+      <div
+        className="absolute pointer-events-none"
+        style={{
+          width: '400px',
+          height: '400px',
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(99,102,241,0.08) 0%, transparent 70%)',
+          top: '-100px',
+          left: '-100px',
+        }}
+      />
+      {/* Glow blob 2 - emerald bottom-right */}
+      <div
+        className="absolute pointer-events-none"
+        style={{
+          width: '350px',
+          height: '350px',
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(16,185,129,0.06) 0%, transparent 70%)',
+          bottom: '-80px',
+          right: '-80px',
+        }}
+      />
+    <div className="relative space-y-3 sm:space-y-4 max-w-2xl mx-auto px-1 sm:px-0 py-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <h1 className="text-base sm:text-lg font-bold text-cozy-text dark:text-[#fafafa]">Transaksi</h1>
@@ -279,6 +309,7 @@ export default function TransactionsPage() {
           )}
         </div>
       )}
+    </div>
     </div>
   )
 }
