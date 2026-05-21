@@ -14,20 +14,10 @@ export default function Dashboard() {
 
   useEffect(() => {
     async function loadData() {
-      let p = await fetchProducts()
-      if (!p.length && !localStorage.getItem('inv_seeded')) {
-        const d = loadSampleData()
-        p = d.products
-        localStorage.setItem('inv_seeded', '1')
-      }
+      const p = await fetchProducts()
       setProducts(p)
 
-      let tx = await fetchTransactions()
-      if (!tx.length && !localStorage.getItem('inv_tx_seeded')) {
-        tx = generateSampleTransactions(p)
-        saveTransactions(tx)
-        localStorage.setItem('inv_tx_seeded', '1')
-      }
+      const tx = await fetchTransactions()
       setTransactions(tx)
       setMounted(true)
     }
