@@ -76,11 +76,11 @@ export default function ProductsPage() {
     setDeleteModal({ open: true, id, name })
   }
 
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
+    await deleteProduct(deleteModal.id)
     const updated = products.filter(p => p.id !== deleteModal.id)
     setProducts(updated)
-    saveProducts(updated)
-    deleteProduct(deleteModal.id)
+    localStorage.setItem('inv_products', JSON.stringify(updated))
     toast('Produk dihapus!', 'success')
     setDeleteModal({ open: false, id: '', name: '' })
   }
