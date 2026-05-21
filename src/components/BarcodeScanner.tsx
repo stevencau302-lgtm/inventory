@@ -1,7 +1,7 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
-import { X } from 'lucide-react'
+import { useEffect, useRef, useState, useCallback } from 'react'
+import { X, ScanBarcode } from 'lucide-react'
 
 interface BarcodeScannerProps {
   onScan: (code: string) => void
@@ -13,16 +13,31 @@ export default function BarcodeScanner({ onScan, onClose }: BarcodeScannerProps)
   const html5QrCodeRef = useRef<any>(null)
   const [error, setError] = useState('')
   const [isStarting, setIsStarting] = useState(true)
+  const onScanRef = useRef(onScan)
+  const mountedRef = useRef(true)
+
+  // Keep ref updated
+  onScanRef.current = onScan
 
   useEffect(() => {
+    mountedRef.current = true
     let scanner: any = null
+    let stopped = false
 
     const startScanner = async () => {
       try {
+        // Small delay to ensure DOM is ready
+        await new Promise(resolve => setTimeout(resolve, 100))
+        
+        if (!mountedRef.current) return
+        
         const { Html5Qrcode } = await import('html5-qrcode')
+        
+        if (!mountedRef.current) return
+        
         const scannerId = 'barcode-scanner-region'
-
-        if (!document.getElementById(scannerId)) return
+        const element = document.getElementById(scannerId)
+        if (!element) return
 
         scanner = new Html5Qrcode(scannerId)
         html5QrCodeRef.current = scanner
@@ -35,17 +50,31 @@ export default function BarcodeScanner({ onScan, onClose }: BarcodeScannerProps)
             aspectRatio: 1.0,
           },
           (decodedText: string) => {
-            onScan(decodedText)
-            scanner.stop().catch(() => {})
+            if (stopped) return
+            stopped = true
+            // Stop scanner first, then call onScan
+            scanner.stop().catch(() => {}).finally(() => {
+              if (mountedRef.current) {
+                onScanRef.current(decodedText)
+              }
+            })
           },
-          () => {}
+          () => {
+            // ignore scan errors (no code found)
+          }
         )
-        setIsStarting(false)
+        
+        if (mountedRef.current) {
+          setIsStarting(false)
+        }
       } catch (err: any) {
+        if (!mountedRef.current) return
         setIsStarting(false)
-        if (err?.message?.includes('NotAllowedError') || err?.name === 'NotAllowedError') {
+        
+        const errMsg = err?.message || err?.toString() || ''
+        if (errMsg.includes('NotAllowedError') || err?.name === 'NotAllowedError') {
           setError('Akses kamera ditolak. Izinkan akses kamera di pengaturan browser.')
-        } else if (err?.message?.includes('NotFoundError') || err?.name === 'NotFoundError') {
+        } else if (errMsg.includes('NotFoundError') || err?.name === 'NotFoundError') {
           setError('Kamera tidak ditemukan pada perangkat ini.')
         } else {
           setError('Gagal membuka kamera. Pastikan browser mendukung akses kamera.')
@@ -56,12 +85,19 @@ export default function BarcodeScanner({ onScan, onClose }: BarcodeScannerProps)
     startScanner()
 
     return () => {
+      mountedRef.current = false
+      stopped = true
       if (html5QrCodeRef.current) {
-        html5QrCodeRef.current.stop().catch(() => {})
-        html5QrCodeRef.current.clear().catch(() => {})
+        try {
+          html5QrCodeRef.current.stop().catch(() => {})
+        } catch {}
+        try {
+          html5QrCodeRef.current.clear()
+        } catch {}
+        html5QrCodeRef.current = null
       }
     }
-  }, [onScan])
+  }, [])
 
   return (
     <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/90 backdrop-blur-sm" onClick={onClose}>
@@ -73,7 +109,7 @@ export default function BarcodeScanner({ onScan, onClose }: BarcodeScannerProps)
         {/* Header */}
         <div className="flex items-center justify-between p-4" style={{ borderBottom: '1px solid #27272a' }}>
           <div className="flex items-center gap-2">
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="#FDC800"><path strokeLinecap="round" strokeLinejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z" /><path strokeLinecap="round" strokeLinejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0z" /></svg>
+            <ScanBarcode size={16} color="#FDC800" />
             <h3 className="text-sm font-bold text-white">Scan Barcode / QR</h3>
           </div>
           <button
