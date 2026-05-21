@@ -6,8 +6,8 @@ import { Product, Transaction, formatRp, uid, fetchProducts, saveProduct, saveTr
 import { useToast } from '@/components/Toast'
 import {
   ArrowLeft, ArrowDownCircle, ArrowUpCircle, Search, Package,
-  Hash, CalendarDays, FileText, Save, Loader2, AlertTriangle,
-  ChevronDown, X, Minus, Plus, Sparkles
+  CalendarDays, FileText, Save, Loader2, AlertTriangle,
+  X, Minus, Plus, Sparkles, ScanBarcode, Zap
 } from 'lucide-react'
 
 type TransactionType = 'in' | 'out'
@@ -26,7 +26,11 @@ export default function NewTransactionPage() {
   const [mounted, setMounted] = useState(false)
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
+  const [scanMode, setScanMode] = useState(false)
+  const [scanBuffer, setScanBuffer] = useState('')
+  const [lastScanTime, setLastScanTime] = useState(0)
   const productDropdownRef = useRef<HTMLDivElement>(null)
+  const scanInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     async function loadData() {
@@ -46,6 +50,60 @@ export default function NewTransactionPage() {
     document.addEventListener('mousedown', handleClick)
     return () => document.removeEventListener('mousedown', handleClick)
   }, [])
+
+  // Barcode scanner: listen for rapid keystrokes globally
+  useEffect(() => {
+    let buffer = ''
+    let timeout: NodeJS.Timeout | null = null
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Ignore if user is typing in a regular input (not scan input)
+      const target = e.target as HTMLElement
+      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') {
+        if (target !== scanInputRef.current) return
+      }
+
+      if (e.key === 'Enter' && buffer.length >= 3) {
+        // Try to match SKU
+        const matched = products.find(p =>
+          p.sku.toLowerCase() === buffer.toLowerCase() ||
+          p.sku.toLowerCase().replace(/[-_\s]/g, '') === buffer.toLowerCase().replace(/[-_\s]/g, '')
+        )
+        if (matched) {
+          handleSelectProduct(matched.id)
+          setProductSearch(matched.name)
+          toast(`Produk ditemukan: ${matched.name}`, 'success')
+        } else {
+          toast(`SKU "${buffer}" tidak ditemukan`, 'error')
+        }
+        buffer = ''
+        setScanBuffer('')
+        return
+      }
+
+      if (e.key.length === 1) {
+        buffer += e.key
+        setScanBuffer(buffer)
+
+        if (timeout) clearTimeout(timeout)
+        timeout = setTimeout(() => {
+          buffer = ''
+          setScanBuffer('')
+        }, 500) // Reset after 500ms idle (scanner sends all chars rapidly)
+      }
+    }
+
+    if (scanMode) {
+      document.addEventListener('keydown', handleKeyDown)
+      // Auto-focus scan input
+      setTimeout(() => scanInputRef.current?.focus(), 100)
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown)
+      if (timeout) clearTimeout(timeout)
+    }
+  }, [scanMode, products])
 
   if (!mounted) return (
     <div className="flex items-center justify-center min-h-[80vh]">
@@ -69,6 +127,29 @@ export default function NewTransactionPage() {
     const p = products.find(pr => pr.id === id)
     if (p) setProductSearch(p.name)
     setShowProductDropdown(false)
+    setScanMode(false)
+  }
+
+  const handleScanInput = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      const val = (e.target as HTMLInputElement).value.trim()
+      if (val.length >= 2) {
+        const matched = products.find(p =>
+          p.sku.toLowerCase() === val.toLowerCase() ||
+          p.sku.toLowerCase().replace(/[-_\s]/g, '') === val.toLowerCase().replace(/[-_\s]/g, '')
+        )
+        if (matched) {
+          handleSelectProduct(matched.id)
+          setProductSearch(matched.name)
+          toast(`Produk ditemukan: ${matched.name}`, 'success')
+        } else {
+          toast(`SKU "${val}" tidak ditemukan`, 'error')
+        }
+      }
+      ;(e.target as HTMLInputElement).value = ''
+      setScanBuffer('')
+    }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -208,9 +289,48 @@ export default function NewTransactionPage() {
 
         {/* === PILIH PRODUK === */}
         <div>
-          <label className="text-xs font-bold uppercase tracking-wider text-zinc-400 mb-3 block">
-            Pilih Produk
-          </label>
+          <div className="flex items-center justify-between mb-3">
+            <label className="text-xs font-bold uppercase tracking-wider text-zinc-400">
+              Pilih Produk
+            </label>
+            <button
+              type="button"
+              onClick={() => setScanMode(!scanMode)}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-bold transition-all active:scale-95 ${
+                scanMode
+                  ? 'bg-[#FDC800] text-[#1a1a1a] shadow-md shadow-[#FDC800]/20'
+                  : 'bg-[#1a1a1a] text-zinc-400 border border-white/[0.06] hover:border-[#FDC800]/30'
+              }`}
+            >
+              <ScanBarcode className="w-3.5 h-3.5" />
+              {scanMode ? 'Scan Aktif' : 'Scan Barcode'}
+            </button>
+          </div>
+
+          {/* Scan Mode */}
+          {scanMode && (
+            <div className="mb-3 rounded-xl bg-[#FDC800]/5 border border-[#FDC800]/20 p-4 animate-[fadeInUp_0.2s_ease-out]">
+              <div className="flex items-center gap-2 mb-2">
+                <Zap className="w-4 h-4 text-[#FDC800] animate-pulse" />
+                <p className="text-xs font-semibold text-[#FDC800]">Mode Scanner Aktif</p>
+              </div>
+              <p className="text-[11px] text-zinc-500 mb-3">Arahkan barcode scanner ke field ini atau ketik SKU manual lalu tekan Enter</p>
+              <input
+                ref={scanInputRef}
+                type="text"
+                onKeyDown={handleScanInput}
+                className="w-full rounded-lg text-sm px-4 py-3 font-mono font-bold bg-[#0f0f0f] text-[#FDC800] border border-[#FDC800]/30 focus:outline-none focus:ring-2 focus:ring-[#FDC800]/50 transition-all placeholder:text-zinc-600 placeholder:font-normal"
+                placeholder="Scan atau ketik SKU di sini..."
+                autoComplete="off"
+                autoFocus
+              />
+              {scanBuffer && (
+                <p className="mt-2 text-xs text-zinc-500 font-mono">Buffer: <span className="text-[#FDC800]">{scanBuffer}</span></p>
+              )}
+            </div>
+          )}
+
+          {/* Search dropdown */}
           <div className="relative" ref={productDropdownRef}>
             <div className="relative">
               <Search className="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500 pointer-events-none" />
@@ -325,23 +445,6 @@ export default function NewTransactionPage() {
             >
               <Plus className="w-5 h-5" />
             </button>
-          </div>
-          {/* Quick buttons */}
-          <div className="flex gap-2 mt-3">
-            {[5, 10, 25, 50, 100].map(n => (
-              <button
-                key={n}
-                type="button"
-                onClick={() => setQuantity(n)}
-                className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all active:scale-95 ${
-                  quantity === n
-                    ? 'bg-[#FDC800] text-[#1a1a1a]'
-                    : 'bg-[#1a1a1a] text-zinc-400 border border-white/[0.06] hover:border-[#FDC800]/30'
-                }`}
-              >
-                {n}
-              </button>
-            ))}
           </div>
         </div>
 
