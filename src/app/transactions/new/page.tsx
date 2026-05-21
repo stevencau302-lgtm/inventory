@@ -118,7 +118,7 @@ export default function NewTransactionPage() {
                     <div className="grid grid-cols-2 gap-3">
                       <button type="button" onClick={() => setType('in')} className="p-4 rounded-xl text-left transition-all flex items-center gap-3" style={{ background: type === 'in' ? '#16A34A' : '#0f0f0f', color: type === 'in' ? '#fff' : '#e4e4e7' }}>
                         <div className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0" style={{ background: type === 'in' ? 'rgba(255,255,255,0.2)' : 'rgba(22,163,74,0.15)' }}>
-                          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" style={{ color: type === 'in' ? '#fff' : '#16A34A' }}><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 13.5L12 21m0 0l-7.5-7.5M12 21V3" /></svg>
+                          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" style={{ color: type === 'in' ? '#fff' : '#16A34A' }}><path strokeLinecap="round" strokeLinejoin="round" d="M9 3.75H6.912a2.25 2.25 0 00-2.15 1.588L2.35 13.177a2.25 2.25 0 00-.1.661V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18v-4.162c0-.224-.034-.447-.1-.661L19.24 5.338a2.25 2.25 0 00-2.15-1.588H15M2.25 13.5h3.86a2.25 2.25 0 012.012 1.244l.256.512a2.25 2.25 0 002.013 1.244h3.218a2.25 2.25 0 002.013-1.244l.256-.512a2.25 2.25 0 012.013-1.244h3.859M12 3v8.25m0 0l-3-3m3 3l3-3" /></svg>
                         </div>
                         <div>
                           <p className="text-sm font-bold">Masuk</p>
@@ -127,7 +127,7 @@ export default function NewTransactionPage() {
                       </button>
                       <button type="button" onClick={() => setType('out')} className="p-4 rounded-xl text-left transition-all flex items-center gap-3" style={{ background: type === 'out' ? '#DC2626' : '#0f0f0f', color: type === 'out' ? '#fff' : '#e4e4e7' }}>
                         <div className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0" style={{ background: type === 'out' ? 'rgba(255,255,255,0.2)' : 'rgba(220,38,38,0.15)' }}>
-                          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" style={{ color: type === 'out' ? '#fff' : '#DC2626' }}><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 10.5L12 3m0 0l7.5 7.5M12 3v18" /></svg>
+                          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" style={{ color: type === 'out' ? '#fff' : '#DC2626' }}><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" /></svg>
                         </div>
                         <div>
                           <p className="text-sm font-bold">Keluar</p>
@@ -222,7 +222,7 @@ export default function NewTransactionPage() {
                   <div className="flex gap-3 pt-2">
                     <button type="button" onClick={() => router.push('/transactions')} className="px-5 py-3 rounded-lg text-sm font-bold transition-all" style={{ background: '#0f0f0f', color: '#e4e4e7' }}>Batal</button>
                     <button type="submit" disabled={loading} className="flex-1 py-3.5 rounded-lg text-sm font-bold transition-all disabled:opacity-50 flex items-center justify-center gap-2" style={{ background: '#FDC800', color: '#1C293C' }}>
-                      {loading ? 'Menyimpan...' : (<><svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>Simpan Transaksi</>)}
+                      {loading ? 'Menyimpan...' : (<><svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M3 7.5V6a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 6v1.5m0 0v9A2.25 2.25 0 0118.75 18.75H5.25A2.25 2.25 0 013 16.5v-9m18 0H3m6 9h6m-3-3v6" /></svg>Simpan Transaksi</>)}
                     </button>
                   </div>
                 </form>
