@@ -127,7 +127,7 @@ export default function NewTransactionPage() {
 
       {/* Content */}
       <div className="relative flex items-start justify-center min-h-screen py-8 px-4 sm:px-6">
-        <div className="w-full max-w-lg">
+        <div className="w-full max-w-5xl">
 
           {/* Back button */}
           <button onClick={() => router.push('/transactions')} className="group flex items-center gap-2 text-zinc-500 hover:text-white text-sm mb-6 transition-colors">
@@ -135,32 +135,29 @@ export default function NewTransactionPage() {
             Kembali
           </button>
 
-          {/* Main Card - Glassmorphism */}
+          {/* Two Column Layout */}
+          <div className="flex flex-col lg:flex-row gap-6">
+          {/* LEFT - Form */}
+          <div className="flex-1 min-w-0">
           <div className="relative rounded-3xl overflow-hidden">
-            {/* Gradient border effect */}
             <div className="absolute inset-0 rounded-3xl p-[1px]" style={{ background: 'linear-gradient(135deg, rgba(99,102,241,0.5) 0%, rgba(16,185,129,0.3) 50%, rgba(168,85,247,0.5) 100%)' }}>
               <div className="w-full h-full rounded-3xl bg-[#0c0c14]" />
             </div>
-
             <div className="relative" style={{ background: 'rgba(12,12,20,0.8)', backdropFilter: 'blur(40px)' }}>
-              {/* Header */}
-              <div className="px-6 sm:px-8 pt-8 pb-6">
-                <div className="flex items-center gap-4 mb-2">
-                  <div className="w-12 h-12 rounded-2xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', boxShadow: '0 8px 32px rgba(16,185,129,0.3)' }}>
-                    <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+              <div className="px-6 pt-6 pb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', boxShadow: '0 8px 32px rgba(16,185,129,0.3)' }}>
+                    <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
                   </div>
                   <div>
-                    <h1 className="text-xl font-bold text-white">Transaksi Baru</h1>
-                    <p className="text-zinc-500 text-sm">Catat barang masuk atau keluar</p>
+                    <h1 className="text-lg font-bold text-white">Transaksi Baru</h1>
+                    <p className="text-zinc-500 text-xs">Catat barang masuk atau keluar</p>
                   </div>
                 </div>
               </div>
+              <div className="mx-6 h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.1) 50%, transparent)' }} />
 
-              {/* Divider */}
-              <div className="mx-6 sm:mx-8 h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.1) 50%, transparent)' }} />
-
-              {/* Form */}
-              <form onSubmit={handleSubmit} className="px-6 sm:px-8 py-6 space-y-6">
+              <form onSubmit={handleSubmit} className="px-6 py-5 space-y-5">
 
                 {/* Transaction Type */}
                 <div>
@@ -332,79 +329,70 @@ export default function NewTransactionPage() {
                   <p className="text-right text-[10px] text-zinc-700 mt-1">{note.length}/200</p>
                 </div>
 
-                {/* Ringkasan Transaksi */}
-                {selected && (
-                  <div className="rounded-xl overflow-hidden" style={{ border: '1px solid rgba(255,255,255,0.06)' }}>
-                    <div className="px-4 py-2.5 flex items-center gap-2" style={{ background: 'rgba(255,255,255,0.03)' }}>
-                      <svg className="w-3.5 h-3.5 text-zinc-500" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z" /></svg>
-                      <span className="text-xs font-medium text-zinc-400">Ringkasan</span>
-                    </div>
-                    <div className="px-4 py-3 space-y-2">
-                      <div className="flex justify-between items-center">
-                        <span className="text-xs text-zinc-500">Produk</span>
-                        <span className="text-xs font-medium text-white">{selected.name}</span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-xs text-zinc-500">Tipe</span>
-                        <span className={`text-xs font-medium ${type === 'in' ? 'text-emerald-400' : 'text-red-400'}`}>{type === 'in' ? 'Barang Masuk' : 'Barang Keluar'}</span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-xs text-zinc-500">Jumlah</span>
-                        <span className={`text-xs font-bold ${type === 'in' ? 'text-emerald-400' : 'text-red-400'}`}>{type === 'in' ? '+' : '-'}{quantity} unit</span>
-                      </div>
-                      <div className="h-px my-1" style={{ background: 'rgba(255,255,255,0.05)' }} />
-                      <div className="flex justify-between items-center">
-                        <span className="text-xs text-zinc-500">Stok sekarang</span>
-                        <span className="text-xs text-zinc-300">{selected.stock} unit</span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-xs text-zinc-500">Stok setelah</span>
-                        <span className={`text-sm font-bold ${(selected.stock + (type === 'in' ? quantity : -quantity)) < selected.minStock ? 'text-amber-400' : 'text-white'}`}>
-                          {selected.stock + (type === 'in' ? quantity : -quantity)} unit
-                        </span>
-                      </div>
-                      {(selected.stock + (type === 'in' ? quantity : -quantity)) < selected.minStock && (
-                        <div className="flex items-center gap-1.5 mt-1 px-2.5 py-1.5 rounded-lg" style={{ background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.2)' }}>
-                          <svg className="w-3 h-3 text-amber-400 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" /></svg>
-                          <span className="text-[10px] text-amber-400">Stok akan di bawah minimum ({selected.minStock})</span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                )}
-
-                {/* Submit */}
-                <div className="pt-2 flex gap-3">
-                  <button type="button" onClick={() => router.push('/transactions')}
-                    className="px-5 py-3 rounded-xl text-zinc-400 text-sm font-medium hover:text-white transition-all"
-                    style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
-                    Batal
-                  </button>
-                  <button type="submit" disabled={loading}
-                    className="flex-1 py-3.5 rounded-xl text-white text-sm font-semibold transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                    style={{
-                      background: type === 'in'
-                        ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)'
-                        : 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
-                      boxShadow: type === 'in'
-                        ? '0 8px 32px rgba(16,185,129,0.3), inset 0 1px 0 rgba(255,255,255,0.1)'
-                        : '0 8px 32px rgba(239,68,68,0.3), inset 0 1px 0 rgba(255,255,255,0.1)',
-                    }}>
-                    {loading ? (
-                      <>
-                        <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" /></svg>
-                        Menyimpan...
-                      </>
-                    ) : (
-                      <>
-                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" /></svg>
-                        Simpan Transaksi
-                      </>
-                    )}
+                {/* Submit mobile */}
+                <div className="pt-1 flex gap-3 lg:hidden">
+                  <button type="button" onClick={() => router.push('/transactions')} className="px-5 py-3 rounded-xl text-zinc-400 text-sm font-medium hover:text-white transition-all" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>Batal</button>
+                  <button type="submit" disabled={loading} className="flex-1 py-3.5 rounded-xl text-white text-sm font-semibold transition-all duration-300 disabled:opacity-50 flex items-center justify-center gap-2" style={{ background: type === 'in' ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)' : 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)', boxShadow: type === 'in' ? '0 8px 32px rgba(16,185,129,0.3)' : '0 8px 32px rgba(239,68,68,0.3)' }}>
+                    {loading ? (<><svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" /></svg>Menyimpan...</>) : (<><svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" /></svg>Simpan Transaksi</>)}
                   </button>
                 </div>
               </form>
             </div>
+          </div>
+          </div>
+          {/* RIGHT - Summary Sticky */}
+          <div className="lg:w-[300px] shrink-0">
+            <div className="lg:sticky lg:top-8 space-y-4">
+              <div className="rounded-2xl overflow-hidden" style={{ background: 'rgba(12,12,20,0.9)', border: '1px solid rgba(255,255,255,0.06)', backdropFilter: 'blur(20px)' }}>
+                <div className="px-5 py-3.5 flex items-center gap-2" style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                  <svg className="w-4 h-4 text-indigo-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z" /></svg>
+                  <span className="text-sm font-semibold text-white">Ringkasan</span>
+                </div>
+                {selected ? (
+                  <div className="px-5 py-4 space-y-3">
+                    <div className="flex items-center gap-3 pb-3" style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                      <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg, rgba(99,102,241,0.3), rgba(168,85,247,0.3))' }}>
+                        <span className="text-[10px] font-bold text-indigo-300">{selected.name.substring(0, 2).toUpperCase()}</span>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-white truncate">{selected.name}</p>
+                        <p className="text-[10px] text-zinc-500">{selected.category}</p>
+                      </div>
+                    </div>
+                    <div className="space-y-2.5">
+                      <div className="flex justify-between"><span className="text-xs text-zinc-500">Tipe</span><span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${type === 'in' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-red-500/10 text-red-400'}`}>{type === 'in' ? 'Masuk' : 'Keluar'}</span></div>
+                      <div className="flex justify-between"><span className="text-xs text-zinc-500">Jumlah</span><span className={`text-sm font-bold ${type === 'in' ? 'text-emerald-400' : 'text-red-400'}`}>{type === 'in' ? '+' : '-'}{quantity}</span></div>
+                      <div className="flex justify-between"><span className="text-xs text-zinc-500">Tanggal</span><span className="text-xs text-zinc-300">{new Date(date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}</span></div>
+                    </div>
+                    <div className="mt-3 rounded-xl p-3" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)' }}>
+                      <div className="flex justify-between mb-2"><span className="text-[11px] text-zinc-500">Stok saat ini</span><span className="text-sm text-zinc-300">{selected.stock}</span></div>
+                      <div className="flex justify-between"><span className="text-[11px] text-zinc-500">Stok setelah</span><span className={`text-lg font-bold ${(selected.stock + (type === 'in' ? quantity : -quantity)) < selected.minStock ? 'text-amber-400' : 'text-white'}`}>{selected.stock + (type === 'in' ? quantity : -quantity)}</span></div>
+                      {(selected.stock + (type === 'in' ? quantity : -quantity)) < selected.minStock && (
+                        <div className="flex items-center gap-1.5 mt-2 px-2 py-1.5 rounded-lg" style={{ background: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.15)' }}>
+                          <svg className="w-3 h-3 text-amber-400 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" /></svg>
+                          <span className="text-[10px] text-amber-400">Di bawah minimum ({selected.minStock})</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="px-5 py-8 text-center">
+                    <div className="w-12 h-12 rounded-full mx-auto mb-3 flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.04)' }}>
+                      <svg className="w-5 h-5 text-zinc-600" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" /></svg>
+                    </div>
+                    <p className="text-xs text-zinc-600">Pilih produk untuk melihat ringkasan</p>
+                  </div>
+                )}
+              </div>
+              {/* Desktop submit */}
+              <div className="hidden lg:flex flex-col gap-2">
+                <button type="button" onClick={() => { const f = document.querySelector('form'); f?.requestSubmit() }} disabled={loading} className="w-full py-3.5 rounded-xl text-white text-sm font-semibold transition-all disabled:opacity-50 flex items-center justify-center gap-2" style={{ background: type === 'in' ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)' : 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)', boxShadow: type === 'in' ? '0 8px 32px rgba(16,185,129,0.3)' : '0 8px 32px rgba(239,68,68,0.3)' }}>
+                  {loading ? (<><svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" /></svg>Menyimpan...</>) : (<><svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" /></svg>Simpan Transaksi</>)}
+                </button>
+                <button type="button" onClick={() => router.push('/transactions')} className="w-full py-3 rounded-xl text-zinc-400 text-sm font-medium hover:text-white transition-all text-center" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>Batal</button>
+              </div>
+            </div>
+          </div>
           </div>
 
         </div>
