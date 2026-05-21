@@ -1,187 +1,405 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Product, Category, getProducts, getCategories, formatRp, loadSampleData } from '@/lib/store'
+import { fetchProducts, fetchCategories, fetchTransactions, formatRp, Product, Category, Transaction } from '@/lib/supabase'
+import {
+  Package,
+  DollarSign,
+  BarChart3,
+  Tag,
+  AlertTriangle,
+  XCircle,
+  TrendingUp,
+  TrendingDown,
+  ArrowDownCircle,
+  ArrowUpCircle,
+  Loader2,
+  PieChart,
+  Activity,
+} from 'lucide-react'
 
 export default function ReportsPage() {
   const [products, setProducts] = useState<Product[]>([])
   const [categories, setCategories] = useState<Category[]>([])
-  const [mounted, setMounted] = useState(false)
+  const [transactions, setTransactions] = useState<Transaction[]>([])
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    let p = getProducts()
-    let c = getCategories()
-    if (p.length === 0) {
-      const data = loadSampleData()
-      p = data.products
-      c = data.categories
+    async function loadData() {
+      try {
+        const [p, c, t] = await Promise.all([
+          fetchProducts(),
+          fetchCategories(),
+          fetchTransactions(),
+        ])
+        setProducts(p)
+        setCategories(c)
+        setTransactions(t)
+      } catch (err) {
+        console.error('Failed to load report data:', err)
+      } finally {
+        setLoading(false)
+      }
     }
-    setProducts(p)
-    setCategories(c)
-    setMounted(true)
+    loadData()
   }, [])
 
-  if (!mounted) return null
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="flex flex-col items-center gap-3">
+          <Loader2 className="w-8 h-8 text-[#FDC800] animate-spin" />
+          <p className="text-zinc-400 text-sm font-medium">Memuat laporan...</p>
+        </div>
+      </div>
+    )
+  }
 
   const totalItems = products.reduce((s, p) => s + p.stock, 0)
   const totalValue = products.reduce((s, p) => s + p.price * p.stock, 0)
   const avgPrice = products.length ? products.reduce((s, p) => s + p.price, 0) / products.length : 0
-  const lowStock = products.filter(p => p.stock > 0 && p.stock <= p.minStock)
+  const lowStock = products.filter(p => p.stock > 0 && p.stock <= p.min_stock)
   const outStock = products.filter(p => p.stock === 0)
+
+  const totalIn = transactions.filter(t => t.type === 'in').reduce((s, t) => s + t.quantity, 0)
+  const totalOut = transactions.filter(t => t.type === 'out').reduce((s, t) => s + t.quantity, 0)
+
   const topCategory = categories.map(c => ({
     ...c,
     count: products.filter(p => p.category === c.name).length,
-    value: products.filter(p => p.category === c.name).reduce((s, p) => s + p.price * p.stock, 0)
+    value: products.filter(p => p.category === c.name).reduce((s, p) => s + p.price * p.stock, 0),
   })).sort((a, b) => b.value - a.value)
 
+  // Recent transactions (last 10)
+  const recentTx = transactions.slice(0, 10)
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
+      {/* Page Header */}
       <div>
-        <h1 className="text-2xl md:text-3xl font-bold text-cozy-text dark:text-[#fafafa]">Laporan</h1>
-        <p className="text-cozy-muted text-sm mt-1">Ringkasan inventory kamu</p>
+        <div className="flex items-center gap-3 mb-1">
+          <div className="w-10 h-10 rounded-xl bg-[#FDC800]/10 flex items-center justify-center">
+            <BarChart3 className="w-5 h-5 text-[#FDC800]" />
+          </div>
+          <div>
+            <h1 className="text-2xl md:text-3xl font-bold text-[#fafafa]">Laporan Inventory</h1>
+            <p className="text-zinc-500 text-sm">Ringkasan performa dan status inventory kamu</p>
+          </div>
+        </div>
       </div>
 
-      {/* Summary Cards */}
+      {/* Summary Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <ReportStat label="Total Unit" value={totalItems.toLocaleString()} icon={<BoxesIcon />} color="brand" />
-        <ReportStat label="Total Nilai" value={formatRp(totalValue)} icon={<MoneyIcon />} color="emerald" />
-        <ReportStat label="Rata-rata Harga" value={formatRp(avgPrice)} icon={<ChartIcon />} color="purple" />
-        <ReportStat label="Total Kategori" value={categories.length.toString()} icon={<TagIcon />} color="amber" />
+        <StatCard
+          label="Total Unit"
+          value={totalItems.toLocaleString('id-ID')}
+          icon={<Package className="w-5 h-5" />}
+          iconBg="bg-[#FDC800]/10"
+          iconColor="text-[#FDC800]"
+        />
+        <StatCard
+          label="Total Nilai Stok"
+          value={formatRp(totalValue)}
+          icon={<DollarSign className="w-5 h-5" />}
+          iconBg="bg-[#16A34A]/10"
+          iconColor="text-[#16A34A]"
+        />
+        <StatCard
+          label="Rata-rata Harga"
+          value={formatRp(avgPrice)}
+          icon={<PieChart className="w-5 h-5" />}
+          iconBg="bg-[#432DD7]/10"
+          iconColor="text-[#432DD7]"
+        />
+        <StatCard
+          label="Total Kategori"
+          value={categories.length.toString()}
+          icon={<Tag className="w-5 h-5" />}
+          iconBg="bg-[#FDC800]/10"
+          iconColor="text-[#FDC800]"
+        />
+      </div>
+
+      {/* Transaction Flow Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <StatCard
+          label="Total Masuk"
+          value={`+${totalIn.toLocaleString('id-ID')}`}
+          icon={<ArrowDownCircle className="w-5 h-5" />}
+          iconBg="bg-[#16A34A]/10"
+          iconColor="text-[#16A34A]"
+          valueColor="text-[#16A34A]"
+        />
+        <StatCard
+          label="Total Keluar"
+          value={`-${totalOut.toLocaleString('id-ID')}`}
+          icon={<ArrowUpCircle className="w-5 h-5" />}
+          iconBg="bg-[#DC2626]/10"
+          iconColor="text-[#DC2626]"
+          valueColor="text-[#DC2626]"
+        />
+        <StatCard
+          label="Stok Rendah"
+          value={lowStock.length.toString()}
+          icon={<AlertTriangle className="w-5 h-5" />}
+          iconBg="bg-amber-500/10"
+          iconColor="text-amber-400"
+          valueColor="text-amber-400"
+        />
+        <StatCard
+          label="Stok Habis"
+          value={outStock.length.toString()}
+          icon={<XCircle className="w-5 h-5" />}
+          iconBg="bg-[#DC2626]/10"
+          iconColor="text-[#DC2626]"
+          valueColor="text-[#DC2626]"
+        />
       </div>
 
       {/* Category Breakdown */}
-      <div className="glass-card overflow-hidden">
-        <div className="p-5 border-b border-white/5">
-          <h2 className="font-semibold text-cozy-text dark:text-[#fafafa]">Nilai Per Kategori</h2>
-          <p className="text-xs text-cozy-muted mt-1">Distribusi nilai inventory berdasarkan kategori</p>
+      <div className="rounded-2xl bg-[#1a1a1a] border border-white/[0.06] overflow-hidden">
+        <div className="p-6 border-b border-white/[0.06]">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-[#432DD7]/10 flex items-center justify-center">
+              <PieChart className="w-4 h-4 text-[#432DD7]" />
+            </div>
+            <div>
+              <h2 className="font-semibold text-[#fafafa]">Nilai Per Kategori</h2>
+              <p className="text-xs text-zinc-500">Distribusi nilai inventory berdasarkan kategori</p>
+            </div>
+          </div>
         </div>
-        <div className="p-5 space-y-4">
-          {topCategory.map(cat => {
+        <div className="p-6 space-y-5">
+          {topCategory.map((cat) => {
             const pct = totalValue > 0 ? (cat.value / totalValue) * 100 : 0
             return (
               <div key={cat.id}>
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-3">
-                    <div className="w-3 h-3 rounded-full" style={{ background: cat.color }} />
-                    <span className="text-sm font-medium text-cozy-text dark:text-[#fafafa]">{cat.name}</span>
-                    <span className="text-xs text-cozy-muted">{cat.count} produk</span>
+                    <div className="w-3 h-3 rounded-full" style={{ background: cat.color || '#432DD7' }} />
+                    <span className="text-sm font-medium text-[#fafafa]">{cat.name}</span>
+                    <span className="text-xs text-zinc-500 bg-white/[0.04] px-2 py-0.5 rounded-full">{cat.count} produk</span>
                   </div>
-                  <div className="text-right">
-                    <span className="text-sm font-semibold text-cozy-text dark:text-[#fafafa]">{formatRp(cat.value)}</span>
-                    <span className="text-xs text-cozy-muted ml-2">({pct.toFixed(1)}%)</span>
+                  <div className="text-right flex items-center gap-2">
+                    <span className="text-sm font-semibold text-[#fafafa]">{formatRp(cat.value)}</span>
+                    <span className="text-xs font-medium text-[#FDC800] bg-[#FDC800]/10 px-2 py-0.5 rounded-full">{pct.toFixed(1)}%</span>
                   </div>
                 </div>
-                <div className="h-2 rounded-full bg-cozy-border dark:bg-[#2a2a2e] overflow-hidden">
-                  <div 
+                <div className="h-2 rounded-full bg-white/[0.04] overflow-hidden">
+                  <div
                     className="h-full rounded-full transition-all duration-700 ease-out"
-                    style={{ width: `${pct}%`, background: cat.color }}
+                    style={{ width: `${pct}%`, background: cat.color || '#432DD7' }}
                   />
                 </div>
               </div>
             )
           })}
           {topCategory.length === 0 && (
-            <p className="text-center text-slate-500 py-8">Belum ada data</p>
+            <p className="text-center text-zinc-500 py-8">Belum ada data kategori</p>
           )}
         </div>
       </div>
 
-      {/* Alerts */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {/* Low Stock */}
-        <div className="glass-card overflow-hidden">
-          <div className="p-5 border-b border-white/5 flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-amber-500/15 flex items-center justify-center">
-              <svg className="w-4 h-4 text-amber-400" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
-              </svg>
+      {/* Alerts & Recent Activity */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Low Stock Alert */}
+        <div className="rounded-2xl bg-[#1a1a1a] border border-white/[0.06] overflow-hidden">
+          <div className="p-5 border-b border-white/[0.06] flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-amber-500/10 flex items-center justify-center">
+              <AlertTriangle className="w-4 h-4 text-amber-400" />
             </div>
             <div>
-              <h3 className="font-semibold text-cozy-text dark:text-[#fafafa] text-sm">Stok Rendah</h3>
-              <p className="text-xs text-cozy-muted">{lowStock.length} produk perlu restock</p>
+              <h3 className="font-semibold text-[#fafafa] text-sm">Stok Rendah</h3>
+              <p className="text-xs text-zinc-500">{lowStock.length} produk perlu restock</p>
             </div>
           </div>
-          <div className="divide-y divide-white/[0.03]">
+          <div className="divide-y divide-white/[0.06]">
             {lowStock.slice(0, 5).map(p => (
-              <div key={p.id} className="px-5 py-3 flex items-center justify-between">
+              <div key={p.id} className="px-5 py-3.5 flex items-center justify-between hover:bg-white/[0.02] transition-colors">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-500/20 to-amber-600/5 flex items-center justify-center text-amber-400 text-[10px] font-bold">
+                  <div className="w-9 h-9 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-400 text-[10px] font-bold">
                     {p.name.substring(0, 2).toUpperCase()}
                   </div>
                   <div>
-                    <p className="text-sm text-cozy-text dark:text-[#fafafa] font-medium">{p.name}</p>
-                    <p className="text-[11px] text-cozy-muted">{p.category}</p>
+                    <p className="text-sm text-[#fafafa] font-medium">{p.name}</p>
+                    <p className="text-[11px] text-zinc-500">{p.category}</p>
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="text-sm font-semibold text-amber-400">{p.stock}</p>
-                  <p className="text-[10px] text-cozy-muted">min: {p.minStock}</p>
+                  <p className="text-sm font-bold text-amber-400">{p.stock}</p>
+                  <p className="text-[10px] text-zinc-500">min: {p.min_stock}</p>
                 </div>
               </div>
             ))}
-            {lowStock.length === 0 && <p className="px-5 py-6 text-center text-slate-500 text-sm">Semua stok aman</p>}
+            {lowStock.length === 0 && (
+              <div className="px-5 py-8 text-center">
+                <p className="text-zinc-500 text-sm">Semua stok aman ✓</p>
+              </div>
+            )}
           </div>
         </div>
 
         {/* Out of Stock */}
-        <div className="glass-card overflow-hidden">
-          <div className="p-5 border-b border-white/5 flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-red-500/15 flex items-center justify-center">
-              <svg className="w-4 h-4 text-red-400" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
-              </svg>
+        <div className="rounded-2xl bg-[#1a1a1a] border border-white/[0.06] overflow-hidden">
+          <div className="p-5 border-b border-white/[0.06] flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-[#DC2626]/10 flex items-center justify-center">
+              <XCircle className="w-4 h-4 text-[#DC2626]" />
             </div>
             <div>
-              <h3 className="font-semibold text-cozy-text dark:text-[#fafafa] text-sm">Stok Habis</h3>
-              <p className="text-xs text-cozy-muted">{outStock.length} produk habis</p>
+              <h3 className="font-semibold text-[#fafafa] text-sm">Stok Habis</h3>
+              <p className="text-xs text-zinc-500">{outStock.length} produk habis total</p>
             </div>
           </div>
-          <div className="divide-y divide-white/[0.03]">
+          <div className="divide-y divide-white/[0.06]">
             {outStock.slice(0, 5).map(p => (
-              <div key={p.id} className="px-5 py-3 flex items-center justify-between">
+              <div key={p.id} className="px-5 py-3.5 flex items-center justify-between hover:bg-white/[0.02] transition-colors">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-red-500/20 to-red-600/5 flex items-center justify-center text-red-400 text-[10px] font-bold">
+                  <div className="w-9 h-9 rounded-xl bg-[#DC2626]/10 flex items-center justify-center text-[#DC2626] text-[10px] font-bold">
                     {p.name.substring(0, 2).toUpperCase()}
                   </div>
                   <div>
-                    <p className="text-sm text-cozy-text dark:text-[#fafafa] font-medium">{p.name}</p>
-                    <p className="text-[11px] text-cozy-muted">{p.category}</p>
+                    <p className="text-sm text-[#fafafa] font-medium">{p.name}</p>
+                    <p className="text-[11px] text-zinc-500">{p.category}</p>
                   </div>
                 </div>
-                <span className="badge badge-danger">Habis</span>
+                <span className="text-xs font-semibold text-[#DC2626] bg-[#DC2626]/10 px-2.5 py-1 rounded-lg">
+                  Habis
+                </span>
               </div>
             ))}
-            {outStock.length === 0 && <p className="px-5 py-6 text-center text-cozy-muted text-sm">Tidak ada produk habis</p>}
+            {outStock.length === 0 && (
+              <div className="px-5 py-8 text-center">
+                <p className="text-zinc-500 text-sm">Tidak ada produk habis ✓</p>
+              </div>
+            )}
           </div>
         </div>
       </div>
-    </div>
-  )
-}
 
-function ReportStat({ label, value, icon, color }: { label: string, value: string, icon: React.ReactNode, color: string }) {
-  const colors: Record<string, string> = {
-    brand: 'from-brand-500/20 to-brand-600/5 text-brand-400',
-    emerald: 'from-emerald-500/20 to-emerald-600/5 text-emerald-400',
-    purple: 'from-purple-500/20 to-purple-600/5 text-purple-400',
-    amber: 'from-amber-500/20 to-amber-600/5 text-amber-400',
-  }
-  return (
-    <div className="stat-card">
-      <div className="flex items-center gap-3">
-        <div className={`w-11 h-11 rounded-xl bg-gradient-to-br ${colors[color]} flex items-center justify-center shrink-0`}>
-          {icon}
+      {/* Recent Transactions */}
+      <div className="rounded-2xl bg-[#1a1a1a] border border-white/[0.06] overflow-hidden">
+        <div className="p-6 border-b border-white/[0.06]">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-[#FDC800]/10 flex items-center justify-center">
+              <Activity className="w-4 h-4 text-[#FDC800]" />
+            </div>
+            <div>
+              <h2 className="font-semibold text-[#fafafa]">Aktivitas Terakhir</h2>
+              <p className="text-xs text-zinc-500">10 transaksi terakhir</p>
+            </div>
+          </div>
         </div>
-        <div className="min-w-0">
-          <p className="text-lg font-bold text-cozy-text dark:text-[#fafafa] truncate">{value}</p>
-          <p className="text-[11px] text-cozy-muted">{label}</p>
+        <div className="divide-y divide-white/[0.06]">
+          {recentTx.map(tx => (
+            <div key={tx.id} className="px-6 py-4 flex items-center gap-4 hover:bg-white/[0.02] transition-colors">
+              <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${
+                tx.type === 'in' ? 'bg-[#16A34A]/10' : 'bg-[#DC2626]/10'
+              }`}>
+                {tx.type === 'in' ? (
+                  <TrendingUp className="w-4 h-4 text-[#16A34A]" />
+                ) : (
+                  <TrendingDown className="w-4 h-4 text-[#DC2626]" />
+                )}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-[#fafafa] truncate">{tx.product_name}</p>
+                <p className="text-[11px] text-zinc-500">
+                  {new Date(tx.created_at).toLocaleDateString('id-ID', {
+                    day: 'numeric',
+                    month: 'short',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  })}
+                  {tx.note && ` · ${tx.note}`}
+                </p>
+              </div>
+              <span className={`text-sm font-bold px-3 py-1 rounded-lg shrink-0 ${
+                tx.type === 'in'
+                  ? 'text-[#16A34A] bg-[#16A34A]/10'
+                  : 'text-[#DC2626] bg-[#DC2626]/10'
+              }`}>
+                {tx.type === 'in' ? '+' : '-'}{tx.quantity}
+              </span>
+            </div>
+          ))}
+          {recentTx.length === 0 && (
+            <div className="px-6 py-10 text-center">
+              <p className="text-zinc-500 text-sm">Belum ada aktivitas transaksi</p>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Top Products by Value */}
+      <div className="rounded-2xl bg-[#1a1a1a] border border-white/[0.06] overflow-hidden">
+        <div className="p-6 border-b border-white/[0.06]">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-[#432DD7]/10 flex items-center justify-center">
+              <TrendingUp className="w-4 h-4 text-[#432DD7]" />
+            </div>
+            <div>
+              <h2 className="font-semibold text-[#fafafa]">Top Produk (Nilai Stok)</h2>
+              <p className="text-xs text-zinc-500">Produk dengan nilai inventory terbesar</p>
+            </div>
+          </div>
+        </div>
+        <div className="divide-y divide-white/[0.06]">
+          {products
+            .map(p => ({ ...p, totalValue: p.price * p.stock }))
+            .sort((a, b) => b.totalValue - a.totalValue)
+            .slice(0, 5)
+            .map((p, idx) => (
+              <div key={p.id} className="px-6 py-4 flex items-center gap-4 hover:bg-white/[0.02] transition-colors">
+                <div className="w-8 h-8 rounded-lg bg-[#432DD7]/10 flex items-center justify-center shrink-0">
+                  <span className="text-xs font-bold text-[#432DD7]">#{idx + 1}</span>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-[#fafafa] truncate">{p.name}</p>
+                  <p className="text-[11px] text-zinc-500">{p.category} · {p.stock} unit × {formatRp(p.price)}</p>
+                </div>
+                <span className="text-sm font-bold text-[#FDC800] shrink-0">
+                  {formatRp(p.totalValue)}
+                </span>
+              </div>
+            ))}
+          {products.length === 0 && (
+            <div className="px-6 py-10 text-center">
+              <p className="text-zinc-500 text-sm">Belum ada data produk</p>
+            </div>
+          )}
         </div>
       </div>
     </div>
   )
 }
 
-function BoxesIcon() { return <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" /></svg> }
-function MoneyIcon() { return <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z" /></svg> }
-function ChartIcon() { return <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" /></svg> }
-function TagIcon() { return <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z M6 6h.008v.008H6V6z" /></svg> }
+function StatCard({
+  label,
+  value,
+  icon,
+  iconBg,
+  iconColor,
+  valueColor,
+}: {
+  label: string
+  value: string
+  icon: React.ReactNode
+  iconBg: string
+  iconColor: string
+  valueColor?: string
+}) {
+  return (
+    <div className="rounded-2xl bg-[#1a1a1a] border border-white/[0.06] p-5 hover:border-white/[0.12] transition-colors">
+      <div className="flex items-center gap-3">
+        <div className={`w-11 h-11 rounded-xl ${iconBg} flex items-center justify-center shrink-0 ${iconColor}`}>
+          {icon}
+        </div>
+        <div className="min-w-0">
+          <p className={`text-lg font-bold truncate ${valueColor || 'text-[#fafafa]'}`}>{value}</p>
+          <p className="text-[11px] text-zinc-500 font-medium">{label}</p>
+        </div>
+      </div>
+    </div>
+  )
+}
