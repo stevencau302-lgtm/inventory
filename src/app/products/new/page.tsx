@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Product, Category, getProducts, getCategories, saveProducts, uid, loadSampleData, saveProduct, fetchCategories } from '@/lib/store'
 import { useToast } from '@/components/Toast'
-import { Package, DollarSign, ArrowLeft, Save } from 'lucide-react'
+import { Package, DollarSign, ArrowLeft, Save, ScanBarcode } from 'lucide-react'
 import BarcodeScanner from '@/components/BarcodeScanner'
 
 function formatRupiah(value: number): string {
@@ -179,7 +179,7 @@ export default function NewProductPage() {
                               style={{ background: 'rgba(253,200,0,0.1)' }}
                               title="Scan Barcode"
                             >
-                              <svg className="w-[18px] h-[18px]" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="#FDC800"><path strokeLinecap="round" strokeLinejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z" /><path strokeLinecap="round" strokeLinejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0z" /></svg>
+                              <ScanBarcode size={18} color="#FDC800" />
                             </button>
                           </div>
                         </div>
@@ -202,9 +202,9 @@ export default function NewProductPage() {
 
                   {/* Section: Harga & Stok */}
                   <div className="space-y-4">
-                    <div className="flex items-center gap-2 pb-2" style={{ borderBottom: '1px solid rgba(67, 45, 215, 0.3)' }}>
-                      <DollarSign size={16} className="text-[#432DD7]" />
-                      <h3 className="text-xs font-bold uppercase tracking-wider" style={{ color: '#432DD7' }}>Harga & Stok</h3>
+                    <div className="flex items-center gap-2 pb-2" style={{ borderBottom: '1px solid rgba(253, 200, 0, 0.2)' }}>
+                      <DollarSign size={16} className="text-[#FDC800]" />
+                      <h3 className="text-xs font-bold uppercase tracking-wider" style={{ color: '#FDC800' }}>Harga & Stok</h3>
                     </div>
 
                     <div className="space-y-4">
