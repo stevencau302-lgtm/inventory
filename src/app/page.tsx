@@ -33,7 +33,10 @@ export default function Dashboard() {
   const alertProducts = products.filter(p => p.stock > 0 && p.stock <= p.minStock)
 
   const bestSellers = [...products]
-    .map(p => ({ ...p, sold: Math.max(0, (p.minStock * 5) - p.stock + 15) }))
+    .map(p => {
+      const sold = transactions.filter(t => t.productId === p.id && t.type === 'out').reduce((s, t) => s + t.quantity, 0)
+      return { ...p, sold }
+    })
     .sort((a, b) => b.sold - a.sold)
     .slice(0, 5)
 
