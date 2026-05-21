@@ -27,10 +27,13 @@ export default function NewTransactionPage() {
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
   const [scanMode, setScanMode] = useState(false)
+  const [scanActive, setScanActive] = useState(false)
   const [scanBuffer, setScanBuffer] = useState('')
-  const [lastScanTime, setLastScanTime] = useState(0)
   const productDropdownRef = useRef<HTMLDivElement>(null)
   const scanInputRef = useRef<HTMLInputElement>(null)
+  const videoRef = useRef<HTMLVideoElement>(null)
+  const streamRef = useRef<MediaStream | null>(null)
+  const scanIntervalRef = useRef<NodeJS.Timeout | null>(null)
 
   useEffect(() => {
     async function loadData() {
@@ -51,59 +54,77 @@ export default function NewTransactionPage() {
     return () => document.removeEventListener('mousedown', handleClick)
   }, [])
 
-  // Barcode scanner: listen for rapid keystrokes globally
+  // Camera barcode scanning
   useEffect(() => {
-    let buffer = ''
-    let timeout: NodeJS.Timeout | null = null
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      // Ignore if user is typing in a regular input (not scan input)
-      const target = e.target as HTMLElement
-      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') {
-        if (target !== scanInputRef.current) return
+    if (!scanMode) {
+      // Cleanup when scan mode is turned off
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach(track => track.stop())
+        streamRef.current = null
       }
+      if (scanIntervalRef.current) {
+        clearInterval(scanIntervalRef.current)
+        scanIntervalRef.current = null
+      }
+      setScanActive(false)
+      return
+    }
 
-      if (e.key === 'Enter' && buffer.length >= 3) {
-        // Try to match SKU
-        const matched = products.find(p =>
-          p.sku.toLowerCase() === buffer.toLowerCase() ||
-          p.sku.toLowerCase().replace(/[-_\s]/g, '') === buffer.toLowerCase().replace(/[-_\s]/g, '')
-        )
-        if (matched) {
-          handleSelectProduct(matched.id)
-          setProductSearch(matched.name)
-          toast(`Produk ditemukan: ${matched.name}`, 'success')
-        } else {
-          toast(`SKU "${buffer}" tidak ditemukan`, 'error')
+    let cancelled = false
+
+    async function startCamera() {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } }
+        })
+        if (cancelled) { stream.getTracks().forEach(t => t.stop()); return }
+        streamRef.current = stream
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream
+          await videoRef.current.play()
         }
-        buffer = ''
-        setScanBuffer('')
-        return
-      }
+        setScanActive(true)
 
-      if (e.key.length === 1) {
-        buffer += e.key
-        setScanBuffer(buffer)
+        // Use BarcodeDetector if available (Chrome, Edge, Android)
+        if ('BarcodeDetector' in window) {
+          const detector = new (window as any).BarcodeDetector({
+            formats: ['ean_13', 'ean_8', 'code_128', 'code_39', 'qr_code', 'upc_a', 'upc_e', 'itf']
+          })
 
-        if (timeout) clearTimeout(timeout)
-        timeout = setTimeout(() => {
-          buffer = ''
-          setScanBuffer('')
-        }, 500) // Reset after 500ms idle (scanner sends all chars rapidly)
+          scanIntervalRef.current = setInterval(async () => {
+            if (!videoRef.current || videoRef.current.readyState < 2) return
+            try {
+              const barcodes = await detector.detect(videoRef.current)
+              if (barcodes.length > 0) {
+                const code = barcodes[0].rawValue
+                handleBarcodeScan(code)
+              }
+            } catch {}
+          }, 300)
+        } else {
+          // Fallback: no native BarcodeDetector — user needs to type SKU manually
+          toast('Kamera aktif, tapi browser ini tidak support auto-scan. Ketik SKU manual di bawah.', 'error')
+        }
+      } catch (err) {
+        toast('Tidak bisa akses kamera. Pastikan izin kamera diaktifkan.', 'error')
+        setScanMode(false)
       }
     }
 
-    if (scanMode) {
-      document.addEventListener('keydown', handleKeyDown)
-      // Auto-focus scan input
-      setTimeout(() => scanInputRef.current?.focus(), 100)
-    }
+    startCamera()
 
     return () => {
-      document.removeEventListener('keydown', handleKeyDown)
-      if (timeout) clearTimeout(timeout)
+      cancelled = true
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach(track => track.stop())
+        streamRef.current = null
+      }
+      if (scanIntervalRef.current) {
+        clearInterval(scanIntervalRef.current)
+        scanIntervalRef.current = null
+      }
     }
-  }, [scanMode, products])
+  }, [scanMode])
 
   if (!mounted) return (
     <div className="flex items-center justify-center min-h-[80vh]">
@@ -122,6 +143,23 @@ export default function NewTransactionPage() {
   const selected = products.find(p => p.id === selectedProduct)
   const stockAfter = selected ? selected.stock + (type === 'in' ? quantity : -quantity) : 0
 
+  const handleBarcodeScan = (code: string) => {
+    const matched = products.find(p =>
+      p.sku.toLowerCase() === code.toLowerCase() ||
+      p.sku.toLowerCase().replace(/[-_\s]/g, '') === code.toLowerCase().replace(/[-_\s]/g, '')
+    )
+    if (matched) {
+      handleSelectProduct(matched.id)
+      setProductSearch(matched.name)
+      toast(`Produk ditemukan: ${matched.name}`, 'success')
+      // Vibrate for haptic feedback on mobile
+      if (navigator.vibrate) navigator.vibrate(100)
+    } else {
+      toast(`SKU "${code}" tidak ditemukan di database`, 'error')
+      if (navigator.vibrate) navigator.vibrate([50, 50, 50])
+    }
+  }
+
   const handleSelectProduct = (id: string) => {
     setSelectedProduct(id)
     const p = products.find(pr => pr.id === id)
@@ -135,20 +173,9 @@ export default function NewTransactionPage() {
       e.preventDefault()
       const val = (e.target as HTMLInputElement).value.trim()
       if (val.length >= 2) {
-        const matched = products.find(p =>
-          p.sku.toLowerCase() === val.toLowerCase() ||
-          p.sku.toLowerCase().replace(/[-_\s]/g, '') === val.toLowerCase().replace(/[-_\s]/g, '')
-        )
-        if (matched) {
-          handleSelectProduct(matched.id)
-          setProductSearch(matched.name)
-          toast(`Produk ditemukan: ${matched.name}`, 'success')
-        } else {
-          toast(`SKU "${val}" tidak ditemukan`, 'error')
-        }
+        handleBarcodeScan(val)
       }
       ;(e.target as HTMLInputElement).value = ''
-      setScanBuffer('')
     }
   }
 
@@ -307,26 +334,58 @@ export default function NewTransactionPage() {
             </button>
           </div>
 
-          {/* Scan Mode */}
+          {/* Scan Mode — Camera */}
           {scanMode && (
             <div className="mb-3 rounded-xl bg-[#FDC800]/5 border border-[#FDC800]/20 p-4 animate-[fadeInUp_0.2s_ease-out]">
-              <div className="flex items-center gap-2 mb-2">
-                <Zap className="w-4 h-4 text-[#FDC800] animate-pulse" />
-                <p className="text-xs font-semibold text-[#FDC800]">Mode Scanner Aktif</p>
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <Zap className="w-4 h-4 text-[#FDC800] animate-pulse" />
+                  <p className="text-xs font-semibold text-[#FDC800]">Kamera Scanner</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setScanMode(false)}
+                  className="text-zinc-500 hover:text-zinc-300 active:scale-90 transition-all"
+                >
+                  <X className="w-4 h-4" />
+                </button>
               </div>
-              <p className="text-[11px] text-zinc-500 mb-3">Arahkan barcode scanner ke field ini atau ketik SKU manual lalu tekan Enter</p>
-              <input
-                ref={scanInputRef}
-                type="text"
-                onKeyDown={handleScanInput}
-                className="w-full rounded-lg text-sm px-4 py-3 font-mono font-bold bg-[#0f0f0f] text-[#FDC800] border border-[#FDC800]/30 focus:outline-none focus:ring-2 focus:ring-[#FDC800]/50 transition-all placeholder:text-zinc-600 placeholder:font-normal"
-                placeholder="Scan atau ketik SKU di sini..."
-                autoComplete="off"
-                autoFocus
-              />
-              {scanBuffer && (
-                <p className="mt-2 text-xs text-zinc-500 font-mono">Buffer: <span className="text-[#FDC800]">{scanBuffer}</span></p>
-              )}
+              <p className="text-[11px] text-zinc-500 mb-3">Arahkan kamera ke barcode produk</p>
+              <div className="relative rounded-lg overflow-hidden bg-black aspect-[4/3]">
+                <video
+                  ref={videoRef}
+                  autoPlay
+                  playsInline
+                  muted
+                  className="w-full h-full object-cover"
+                />
+                {/* Scan overlay */}
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                  <div className="w-[70%] h-[40%] border-2 border-[#FDC800]/60 rounded-xl relative">
+                    <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-[#FDC800] rounded-tl-lg" />
+                    <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-[#FDC800] rounded-tr-lg" />
+                    <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-[#FDC800] rounded-bl-lg" />
+                    <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-[#FDC800] rounded-br-lg" />
+                    <div className="absolute top-1/2 left-0 right-0 h-[2px] bg-[#FDC800]/40 animate-[scanLine_2s_ease-in-out_infinite]" />
+                  </div>
+                </div>
+                {!scanActive && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/60">
+                    <p className="text-xs text-zinc-400">Mengaktifkan kamera...</p>
+                  </div>
+                )}
+              </div>
+              {/* Manual SKU input fallback */}
+              <div className="mt-3">
+                <input
+                  ref={scanInputRef}
+                  type="text"
+                  onKeyDown={handleScanInput}
+                  className="w-full rounded-lg text-sm px-4 py-2.5 font-mono bg-[#0f0f0f] text-[#FDC800] border border-[#FDC800]/20 focus:outline-none focus:ring-2 focus:ring-[#FDC800]/50 transition-all placeholder:text-zinc-600 placeholder:font-normal"
+                  placeholder="Atau ketik SKU manual + Enter"
+                  autoComplete="off"
+                />
+              </div>
             </div>
           )}
 
@@ -524,6 +583,10 @@ export default function NewTransactionPage() {
         @keyframes slideDown {
           from { opacity: 0; transform: translateY(-8px); }
           to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes scanLine {
+          0%, 100% { transform: translateY(-100%); opacity: 0.4; }
+          50% { transform: translateY(100%); opacity: 1; }
         }
       `}</style>
     </div>
