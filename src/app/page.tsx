@@ -63,11 +63,11 @@ export default function Dashboard() {
       <DashboardCharts products={products} transactions={transactions} />
 
       {/* Bottom: Transactions + Best Sellers */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Recent Transactions */}
-        <div className="rounded-xl overflow-hidden border border-white/[0.08] bg-[#161616]">
+        <div className="rounded-xl overflow-hidden border border-white/[0.06] bg-[#1a1a1a]">
           <div className="px-5 py-4 border-b border-white/[0.06] flex items-center gap-2">
-            <svg className="w-4 h-4 text-indigo-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" /></svg>
+            <svg className="w-4 h-4 text-[#818cf8]" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" /></svg>
             <h3 className="text-sm font-semibold text-white">Transaksi Terbaru</h3>
           </div>
           <div className="p-4 space-y-2">
@@ -94,22 +94,20 @@ export default function Dashboard() {
         </div>
 
         {/* Best Sellers */}
-        <div className="rounded-xl overflow-hidden border border-white/[0.08] bg-[#161616]">
+        <div className="rounded-xl overflow-hidden border border-white/[0.06] bg-[#1a1a1a]">
           <div className="px-5 py-4 border-b border-white/[0.06] flex items-center gap-2">
-            <svg className="w-4 h-4 text-indigo-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 013 3h-15a3 3 0 013-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497m5.007 0a7.454 7.454 0 01-.982-3.172M9.497 14.25a7.454 7.454 0 00.981-3.172M5.25 4.236c-.996.178-1.768.535-2.251 1.084m13.004 0a15.522 15.522 0 00-12.003 0m12.003 0c.996.178 1.768.535 2.251 1.084" /></svg>
+            <svg className="w-4 h-4 text-[#FDC800]" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 013 3h-15a3 3 0 013-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497m5.007 0a7.454 7.454 0 01-.982-3.172M9.497 14.25a7.454 7.454 0 00.981-3.172M5.25 4.236c-.996.178-1.768.535-2.251 1.084m13.004 0a15.522 15.522 0 00-12.003 0m12.003 0c.996.178 1.768.535 2.251 1.084" /></svg>
             <h3 className="text-sm font-semibold text-white">Produk Terlaris</h3>
           </div>
           <div className="p-4 space-y-2">
             {bestSellers.map((p, i) => (
-              <div key={p.id} className="flex items-center justify-between px-3 py-2.5 rounded-lg bg-white/[0.02] border border-white/[0.05]">
-                <div className="flex items-center gap-3">
-                  <div className="w-7 h-7 rounded-full bg-indigo-500/15 text-indigo-400 flex items-center justify-center text-[11px] font-bold">{i + 1}</div>
-                  <span className="text-[13px] font-medium text-zinc-200">{p.name}</span>
+              <div key={p.id} className="flex items-center gap-3 px-3 py-3 rounded-lg bg-white/[0.02] border border-white/[0.05]">
+                <div className="w-8 h-8 rounded-lg bg-[#FDC800]/10 text-[#FDC800] flex items-center justify-center text-xs font-bold shrink-0">{i + 1}</div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-[#fafafa] truncate">{p.name}</p>
+                  <p className="text-[11px] text-zinc-500 mt-0.5">{p.sold} terjual</p>
                 </div>
-                <div className="flex items-center gap-2.5">
-                  {i < 3 && <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-indigo-500/15 text-indigo-300">Best Seller</span>}
-                  <span className="text-[12px] text-zinc-500">{p.sold} terjual</span>
-                </div>
+                {i < 3 && <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-[#FDC800]/10 text-[#FDC800] shrink-0">Best Seller</span>}
               </div>
             ))}
           </div>
@@ -117,7 +115,7 @@ export default function Dashboard() {
       </div>
 
       {/* Peringatan Section */}
-      <div className="rounded-xl overflow-hidden border border-white/[0.08] bg-[#161616]">
+      <div className="rounded-xl overflow-hidden border border-white/[0.06] bg-[#1a1a1a]">
         <div className="px-5 py-4 border-b border-white/[0.06] flex items-center justify-between">
           <div className="flex items-center gap-3">
             <svg className="w-5 h-5 text-amber-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" /></svg>
