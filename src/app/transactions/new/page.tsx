@@ -7,16 +7,23 @@ import { useToast } from '@/components/Toast'
 import {
   ArrowLeft, ArrowDownCircle, ArrowUpCircle, Search, Package,
   CalendarDays, FileText, Save, Loader2, AlertTriangle,
-  X, Minus, Plus, Sparkles, ScanBarcode, Zap
+  X, Minus, Plus, Sparkles, ScanBarcode, Zap, Trash2
 } from 'lucide-react'
 
 type TransactionType = 'in' | 'out'
+
+interface TransactionItem {
+  productId: string
+  productName: string
+  quantity: number
+}
 
 export default function NewTransactionPage() {
   const router = useRouter()
   const { toast } = useToast()
   const [products, setProducts] = useState<Product[]>([])
   const [type, setType] = useState<TransactionType>('in')
+  const [items, setItems] = useState<TransactionItem[]>([])
   const [selectedProduct, setSelectedProduct] = useState('')
   const [quantity, setQuantity] = useState(1)
   const [note, setNote] = useState('')
@@ -34,6 +41,7 @@ export default function NewTransactionPage() {
   const videoRef = useRef<HTMLVideoElement>(null)
   const streamRef = useRef<MediaStream | null>(null)
   const scanIntervalRef = useRef<NodeJS.Timeout | null>(null)
+
 
   useEffect(() => {
     async function loadData() {
@@ -85,6 +93,7 @@ export default function NewTransactionPage() {
         }
         setScanActive(true)
 
+
         // Use BarcodeDetector if available (Chrome, Edge, Android)
         if ('BarcodeDetector' in window) {
           const detector = new (window as any).BarcodeDetector({
@@ -125,6 +134,7 @@ export default function NewTransactionPage() {
       }
     }
   }, [scanMode])
+
 
   if (!mounted) return (
     <div className="flex items-center justify-center min-h-[80vh]">
@@ -179,44 +189,85 @@ export default function NewTransactionPage() {
     }
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+
+  const handleAddItem = () => {
     if (!selectedProduct) { toast('Pilih produk terlebih dahulu!', 'error'); return }
     const product = products.find(p => p.id === selectedProduct)
     if (!product) return
-    if (type === 'out' && product.stock < quantity) { toast(`Stok tidak cukup! Sisa: ${product.stock}`, 'error'); return }
+    // Check if product already in list
+    const existing = items.find(item => item.productId === selectedProduct)
+    if (existing) {
+      toast('Produk sudah ada di list. Hapus dulu jika ingin mengubah jumlah.', 'error')
+      return
+    }
+    if (type === 'out' && product.stock < quantity) {
+      toast(`Stok tidak cukup! Sisa: ${product.stock}`, 'error')
+      return
+    }
+    setItems([...items, { productId: product.id, productName: product.name, quantity }])
+    setSelectedProduct('')
+    setProductSearch('')
+    setQuantity(1)
+    toast(`${product.name} ditambahkan ke list`, 'success')
+  }
+
+  const handleRemoveItem = (index: number) => {
+    setItems(items.filter((_, i) => i !== index))
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (items.length === 0) { toast('Tambahkan minimal 1 produk ke list!', 'error'); return }
+
+    // Validate all items stock
+    for (const item of items) {
+      const product = products.find(p => p.id === item.productId)
+      if (!product) { toast(`Produk tidak ditemukan`, 'error'); return }
+      if (type === 'out' && product.stock < item.quantity) {
+        toast(`Stok ${product.name} tidak cukup! Sisa: ${product.stock}`, 'error')
+        return
+      }
+    }
 
     setLoading(true)
     await new Promise(r => setTimeout(r, 600))
 
-    const updatedProduct = {
-      ...product,
-      stock: type === 'in' ? product.stock + quantity : product.stock - quantity,
-      updatedAt: new Date().toISOString()
-    }
-    const newTx: Transaction = {
-      id: uid(),
-      productId: product.id,
-      productName: product.name,
-      type,
-      quantity,
-      note,
-      createdAt: new Date().toISOString()
-    }
+    // Create a transaction for each item and update stock
+    for (const item of items) {
+      const product = products.find(p => p.id === item.productId)
+      if (!product) continue
 
-    await saveProduct(updatedProduct)
-    await saveTransaction(newTx)
+      const updatedProduct = {
+        ...product,
+        stock: type === 'in' ? product.stock + item.quantity : product.stock - item.quantity,
+        updatedAt: new Date().toISOString()
+      }
+      const newTx: Transaction = {
+        id: uid(),
+        productId: product.id,
+        productName: product.name,
+        type,
+        quantity: item.quantity,
+        note,
+        createdAt: new Date().toISOString()
+      }
+
+      await saveProduct(updatedProduct)
+      await saveTransaction(newTx)
+    }
 
     setSuccess(true)
+    const totalItems = items.reduce((sum, item) => sum + item.quantity, 0)
     toast(
       type === 'in'
-        ? `+${quantity} ${product.name} berhasil dicatat masuk`
-        : `-${quantity} ${product.name} berhasil dicatat keluar`,
+        ? `+${totalItems} item dari ${items.length} produk berhasil dicatat masuk`
+        : `-${totalItems} item dari ${items.length} produk berhasil dicatat keluar`,
       'success'
     )
 
     setTimeout(() => router.push('/transactions'), 1200)
   }
+
 
   // Success animation
   if (success) {
@@ -234,7 +285,7 @@ export default function NewTransactionPage() {
   }
 
   return (
-    <div className="max-w-5xl mx-auto pb-24 sm:pb-8">
+    <div className="max-w-6xl mx-auto pb-24 sm:pb-8">
       {/* Back Button */}
       <button
         onClick={() => router.push('/transactions')}
@@ -255,10 +306,11 @@ export default function NewTransactionPage() {
         </div>
       </div>
 
-      <div className="flex flex-col lg:flex-row gap-6">
+      <div className="flex flex-col lg:flex-row gap-6" style={{ overflow: 'visible' }}>
       {/* LEFT - Form */}
-      <div className="flex-1 min-w-0 max-w-lg">
+      <div className="flex-1 min-w-0">
       <form onSubmit={handleSubmit} className="space-y-6">
+
         {/* === TIPE TRANSAKSI === */}
         <div>
           <label className="text-xs font-bold uppercase tracking-wider text-zinc-400 mb-3 block">
@@ -316,6 +368,7 @@ export default function NewTransactionPage() {
             </button>
           </div>
         </div>
+
 
         {/* === PILIH PRODUK === */}
         <div>
@@ -392,6 +445,7 @@ export default function NewTransactionPage() {
             </div>
           )}
 
+
           {/* Search dropdown */}
           <div className="relative" ref={productDropdownRef}>
             <div className="relative">
@@ -443,6 +497,7 @@ export default function NewTransactionPage() {
           </div>
         </div>
 
+
         {/* === SELECTED PRODUCT CARD === */}
         {selected && (
           <div className="rounded-2xl bg-[#432DD7] p-4 sm:p-5 text-white animate-[fadeInUp_0.3s_ease-out]">
@@ -480,6 +535,7 @@ export default function NewTransactionPage() {
           </div>
         )}
 
+
         {/* === JUMLAH === */}
         <div>
           <label className="text-xs font-bold uppercase tracking-wider text-zinc-400 mb-3 block">
@@ -509,6 +565,51 @@ export default function NewTransactionPage() {
             </button>
           </div>
         </div>
+
+        {/* === TAMBAH KE LIST BUTTON === */}
+        <button
+          type="button"
+          onClick={handleAddItem}
+          disabled={!selectedProduct}
+          className="w-full py-3.5 rounded-xl text-sm font-bold bg-[#432DD7] text-white hover:bg-[#432DD7]/90 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all active:scale-[0.97] shadow-lg shadow-[#432DD7]/20"
+        >
+          <Plus className="w-4 h-4" />
+          Tambah ke List
+        </button>
+
+
+        {/* === ITEMS LIST === */}
+        {items.length > 0 && (
+          <div className="space-y-2">
+            <label className="text-xs font-bold uppercase tracking-wider text-zinc-400 block">
+              Produk Ditambahkan ({items.length})
+            </label>
+            <div className="space-y-2">
+              {items.map((item, index) => (
+                <div
+                  key={`${item.productId}-${index}`}
+                  className="flex items-center gap-3 px-4 py-3 rounded-xl bg-[#1a1a1a] border border-white/[0.06] animate-[fadeInUp_0.2s_ease-out]"
+                >
+                  <div className="w-8 h-8 rounded-lg bg-[#432DD7] flex items-center justify-center text-[9px] font-black text-white shrink-0">
+                    {item.productName.substring(0, 2).toUpperCase()}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-[#fafafa] truncate">{item.productName}</p>
+                    <p className="text-[11px] text-zinc-500">Qty: {item.quantity}</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveItem(index)}
+                    className="w-8 h-8 rounded-lg bg-red-500/10 flex items-center justify-center text-red-400 hover:bg-red-500/20 active:scale-90 transition-all shrink-0"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
 
         {/* === TANGGAL === */}
         <div>
@@ -543,7 +644,7 @@ export default function NewTransactionPage() {
           <p className="text-right text-[10px] mt-1.5 text-zinc-600">{note.length}/200</p>
         </div>
 
-        {/* === SUBMIT BUTTONS === */}
+        {/* === SUBMIT BUTTONS (mobile) === */}
         <div className="flex gap-3 pt-4 lg:hidden">
           <button
             type="button"
@@ -554,7 +655,7 @@ export default function NewTransactionPage() {
           </button>
           <button
             type="submit"
-            disabled={loading || !selectedProduct}
+            disabled={loading || items.length === 0}
             className="flex-1 py-3.5 rounded-xl text-sm font-bold bg-[#FDC800] text-[#1a1a1a] hover:bg-[#FDC800]/90 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all active:scale-[0.97] shadow-lg shadow-[#FDC800]/20"
           >
             {loading ? (
@@ -570,55 +671,66 @@ export default function NewTransactionPage() {
       </form>
       </div>
 
+
       {/* RIGHT - Ringkasan Sticky (desktop only) */}
-      <div className="hidden lg:block lg:w-[300px] shrink-0">
-        <div className="lg:sticky lg:top-8 space-y-4">
+      <div className="hidden lg:block lg:w-[320px] shrink-0">
+        <div style={{ position: 'sticky', top: '2rem', maxHeight: 'calc(100vh - 4rem)', overflowY: 'auto' }} className="space-y-4">
           <div className="rounded-xl overflow-hidden" style={{ background: '#1a1a1a' }}>
             <div className="px-5 py-3.5 flex items-center gap-2 font-bold text-sm" style={{ background: '#FDC800', color: '#1C293C' }}>
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z" /></svg>
               Ringkasan
             </div>
-            {selected ? (
+            {items.length > 0 ? (
               <div className="px-5 py-4 space-y-3">
-                <div className="flex items-center gap-3 pb-3" style={{ borderBottom: '1px solid #27272a' }}>
-                  <div className="w-10 h-10 rounded-lg flex items-center justify-center text-xs font-black" style={{ background: '#432DD7', color: '#fff' }}>
-                    {selected.name.substring(0, 2).toUpperCase()}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-bold truncate" style={{ color: '#fafafa' }}>{selected.name}</p>
-                    <p className="text-[10px]" style={{ color: '#71717a' }}>{selected.sku} · {selected.category}</p>
-                  </div>
+                {/* Items list */}
+                <div className="space-y-2 pb-3" style={{ borderBottom: '1px solid #27272a' }}>
+                  {items.map((item, index) => (
+                    <div key={`${item.productId}-${index}`} className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg flex items-center justify-center text-[9px] font-black" style={{ background: '#432DD7', color: '#fff' }}>
+                        {item.productName.substring(0, 2).toUpperCase()}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs font-semibold truncate" style={{ color: '#fafafa' }}>{item.productName}</p>
+                        <p className="text-[10px]" style={{ color: '#71717a' }}>Qty: {item.quantity}</p>
+                      </div>
+                    </div>
+                  ))}
                 </div>
+                {/* Summary info */}
                 <div className="space-y-2">
-                  <div className="flex justify-between"><span className="text-xs" style={{ color: '#71717a' }}>Tipe</span><span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${type === 'in' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-red-500/10 text-red-400'}`}>{type === 'in' ? 'Masuk' : 'Keluar'}</span></div>
-                  <div className="flex justify-between"><span className="text-xs" style={{ color: '#71717a' }}>Jumlah</span><span className={`text-sm font-bold ${type === 'in' ? 'text-emerald-400' : 'text-red-400'}`}>{type === 'in' ? '+' : '-'}{quantity}</span></div>
-                  <div className="flex justify-between"><span className="text-xs" style={{ color: '#71717a' }}>Tanggal</span><span className="text-xs" style={{ color: '#fafafa' }}>{new Date(date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}</span></div>
-                </div>
-                <div className="rounded-lg p-3 mt-2" style={{ background: '#0f0f0f' }}>
-                  <div className="flex justify-between mb-2"><span className="text-[11px]" style={{ color: '#71717a' }}>Stok saat ini</span><span className="text-sm font-bold" style={{ color: '#fafafa' }}>{selected.stock}</span></div>
-                  <div className="flex justify-between"><span className="text-[11px]" style={{ color: '#71717a' }}>Stok setelah</span><span className={`text-lg font-bold ${stockAfter < selected.minStock ? 'text-amber-400' : ''}`} style={stockAfter >= selected.minStock ? { color: '#fafafa' } : {}}>{stockAfter}</span></div>
-                </div>
-                {stockAfter < selected.minStock && (
-                  <div className="flex items-center gap-1.5 mt-2 px-2 py-1.5 rounded-md" style={{ background: 'rgba(217, 119, 6, 0.15)' }}>
-                    <svg className="w-3 h-3 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="#D97706"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" /></svg>
-                    <span className="text-[10px] font-semibold" style={{ color: '#D97706' }}>Di bawah minimum ({selected.minStock})</span>
+                  <div className="flex justify-between">
+                    <span className="text-xs" style={{ color: '#71717a' }}>Total Item</span>
+                    <span className="text-sm font-bold" style={{ color: '#fafafa' }}>{items.reduce((sum, item) => sum + item.quantity, 0)}</span>
                   </div>
-                )}
+                  <div className="flex justify-between">
+                    <span className="text-xs" style={{ color: '#71717a' }}>Produk</span>
+                    <span className="text-sm font-bold" style={{ color: '#fafafa' }}>{items.length}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-xs" style={{ color: '#71717a' }}>Tipe</span>
+                    <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${type === 'in' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-red-500/10 text-red-400'}`}>{type === 'in' ? 'Masuk' : 'Keluar'}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-xs" style={{ color: '#71717a' }}>Tanggal</span>
+                    <span className="text-xs" style={{ color: '#fafafa' }}>{new Date(date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+                  </div>
+                </div>
               </div>
             ) : (
               <div className="px-5 py-8 text-center">
                 <div className="w-12 h-12 rounded-xl mx-auto mb-3 flex items-center justify-center" style={{ background: '#0f0f0f' }}>
                   <Package className="w-5 h-5 text-zinc-600" />
                 </div>
-                <p className="text-xs font-medium" style={{ color: '#71717a' }}>Pilih produk untuk melihat ringkasan</p>
+                <p className="text-xs font-medium" style={{ color: '#71717a' }}>Belum ada produk ditambahkan</p>
               </div>
             )}
           </div>
+
           {/* Desktop submit buttons */}
           <button
             type="button"
             onClick={() => { const f = document.querySelector('form'); f?.requestSubmit() }}
-            disabled={loading || !selectedProduct}
+            disabled={loading || items.length === 0}
             className="w-full py-3.5 rounded-xl text-sm font-bold disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all active:scale-[0.97]"
             style={{ background: '#FDC800', color: '#1C293C' }}
           >
