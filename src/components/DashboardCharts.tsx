@@ -8,22 +8,24 @@ interface Props {
 }
 
 export default function DashboardCharts({ products, transactions }: Props) {
-  // Bar chart: Top 5 products by simulated sales
+  // Bar chart: Top 5 products by stock value
   const barData = [...products]
     .map(p => ({
       name: p.name.length > 12 ? p.name.substring(0, 12) + '...' : p.name,
-      penjualan: Math.max(0, (p.minStock * 5) - p.stock + 15),
+      penjualan: p.stock,
     }))
     .sort((a, b) => b.penjualan - a.penjualan)
     .slice(0, 5)
 
-  // Line chart: Last 7 days transactions
+  // Line chart: Last 7 days transactions (real data)
   const days = ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min']
+  const now = new Date()
   const lineData = days.map((day, i) => {
-    const masuk = transactions.filter(t => t.type === 'in').length > 0
-      ? Math.floor(Math.random() * 25) + 5
-      : Math.floor(Math.random() * 15) + 3
-    const keluar = Math.floor(Math.random() * 20) + 3
+    const dayDate = new Date(now)
+    dayDate.setDate(now.getDate() - (6 - i))
+    const dayStr = dayDate.toISOString().split('T')[0]
+    const masuk = transactions.filter(t => t.type === 'in' && t.createdAt.startsWith(dayStr)).reduce((s, t) => s + t.quantity, 0)
+    const keluar = transactions.filter(t => t.type === 'out' && t.createdAt.startsWith(dayStr)).reduce((s, t) => s + t.quantity, 0)
     return { name: day, masuk, keluar }
   })
 
