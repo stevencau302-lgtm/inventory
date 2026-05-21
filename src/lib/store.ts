@@ -252,13 +252,11 @@ function getCategoriesLocal(): Category[] {
 
 export function saveProducts(products: Product[]) {
   localStorage.setItem('inv_products', JSON.stringify(products))
-  // Also sync to Supabase in background
-  saveProductsBatch(products).catch(() => {})
+  // Sync individual products to Supabase (not batch to avoid re-inserting deleted ones)
 }
 
 export function saveCategories(categories: Category[]) {
   localStorage.setItem('inv_categories', JSON.stringify(categories))
-  saveCategoriesBatch(categories).catch(() => {})
 }
 
 export function getTransactions(): Transaction[] {
@@ -272,7 +270,6 @@ function getTransactionsLocal(): Transaction[] {
 
 export function saveTransactions(transactions: Transaction[]) {
   localStorage.setItem('inv_transactions', JSON.stringify(transactions))
-  saveTransactionsBatch(transactions).catch(() => {})
 }
 
 // ─── Sample Data (seeds into Supabase) ───

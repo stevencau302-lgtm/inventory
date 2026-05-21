@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { Product, Category, getProducts, getCategories, saveProducts, formatRp, getStatus, getStatusLabel, loadSampleData, fetchProducts, fetchCategories, deleteProduct } from '@/lib/store'
+import { Product, Category, getProducts, getCategories, saveProducts, formatRp, getStatus, getStatusLabel, loadSampleData, fetchProducts, fetchCategories, deleteProduct, saveProduct } from '@/lib/store'
 import { useToast } from '@/components/Toast'
 import ProductModal from '@/components/ProductModal'
 import DeleteModal from '@/components/DeleteModal'
@@ -22,14 +22,8 @@ export default function ProductsPage() {
 
   useEffect(() => {
     async function loadData() {
-      let p = await fetchProducts()
-      let c = await fetchCategories()
-      if (p.length === 0 && !localStorage.getItem('inv_seeded')) {
-        const data = loadSampleData()
-        p = data.products
-        c = data.categories
-        localStorage.setItem('inv_seeded', '1')
-      }
+      const p = await fetchProducts()
+      const c = await fetchCategories()
       setProducts(p)
       setCategories(c)
       setMounted(true)
@@ -68,7 +62,8 @@ export default function ProductsPage() {
       toast('Produk berhasil ditambahkan!', 'success')
     }
     setProducts(updated)
-    saveProducts(updated)
+    saveProduct(product)
+    localStorage.setItem('inv_products', JSON.stringify(updated))
     setModalOpen(false)
     setEditProduct(null)
   }
