@@ -102,7 +102,7 @@ export default function TransactionsPage() {
 
 
   return (
-    <div className="relative overflow-hidden min-h-screen bg-zinc-950"
+    <div className="relative overflow-hidden min-h-full"
       style={{
         backgroundImage: 'linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px)',
         backgroundSize: '32px 32px'
@@ -115,7 +115,7 @@ export default function TransactionsPage() {
           width: '400px',
           height: '400px',
           borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(99,102,241,0.08) 0%, transparent 70%)',
+          background: 'radial-gradient(circle, rgba(99,102,241,0.15) 0%, transparent 70%)',
           top: '-100px',
           left: '-100px',
         }}
@@ -127,7 +127,7 @@ export default function TransactionsPage() {
           width: '350px',
           height: '350px',
           borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(16,185,129,0.06) 0%, transparent 70%)',
+          background: 'radial-gradient(circle, rgba(16,185,129,0.12) 0%, transparent 70%)',
           bottom: '-80px',
           right: '-80px',
         }}
