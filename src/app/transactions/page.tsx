@@ -162,8 +162,67 @@ export default function TransactionsPage() {
         </button>
       </div>
 
-      {/* Transaction History Table - vibrant colors */}
-      <div className="rounded-xl overflow-hidden border border-white/10">
+      {/* Mobile Card List */}
+      <div className="md:hidden space-y-3">
+        {filteredTx.slice(0, 20).map((tx) => (
+          <div key={tx.id} className="rounded-xl bg-[#1a1a1a] border border-white/[0.06] p-4 active:scale-[0.99] transition-all">
+            <div className="flex items-center gap-3">
+              <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${tx.type === 'in' ? 'bg-[#16A34A]/10' : 'bg-[#DC2626]/10'}`}>
+                {tx.type === 'in' ? (
+                  <svg className="w-5 h-5 text-[#16A34A]" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941" /></svg>
+                ) : (
+                  <svg className="w-5 h-5 text-[#DC2626]" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6L9 12.75l4.286-4.286a11.948 11.948 0 014.306 6.43l.776 2.898m0 0l3.182-5.511m-3.182 5.51l-5.511-3.181" /></svg>
+                )}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold text-[#fafafa] truncate">{tx.productName}</p>
+                <p className="text-[11px] text-zinc-500 mt-0.5">
+                  {new Date(tx.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
+                  {tx.note && ` · ${tx.note}`}
+                </p>
+              </div>
+              <div className="text-right shrink-0">
+                <p className={`text-base font-bold ${tx.type === 'in' ? 'text-[#16A34A]' : 'text-[#DC2626]'}`}>
+                  {tx.type === 'in' ? '+' : '-'}{tx.quantity}
+                </p>
+                <span className={`text-[9px] font-bold uppercase ${tx.type === 'in' ? 'text-[#16A34A]/70' : 'text-[#DC2626]/70'}`}>
+                  {tx.type === 'in' ? 'MASUK' : 'KELUAR'}
+                </span>
+              </div>
+            </div>
+            {editingId === tx.id && (
+              <div className="mt-3 pt-3 border-t border-white/[0.06] space-y-2">
+                <input type="number" value={editQuantity} onChange={e => setEditQuantity(Number(e.target.value))} className="w-full px-3 py-2 rounded-lg bg-[#0f0f0f] text-sm text-[#fafafa] focus:outline-none focus:ring-2 focus:ring-[#FDC800]/50" min={1} placeholder="Jumlah" />
+                <input type="text" value={editNote} onChange={e => setEditNote(e.target.value)} className="w-full px-3 py-2 rounded-lg bg-[#0f0f0f] text-sm text-[#fafafa] focus:outline-none focus:ring-2 focus:ring-[#FDC800]/50" placeholder="Catatan..." />
+                <div className="flex gap-2">
+                  <button onClick={() => handleEditSave(tx)} className="flex-1 py-2 rounded-lg bg-[#16A34A] text-white text-xs font-bold active:scale-95 transition-all">Simpan</button>
+                  <button onClick={handleEditCancel} className="flex-1 py-2 rounded-lg bg-zinc-800 text-zinc-300 text-xs font-bold active:scale-95 transition-all">Batal</button>
+                </div>
+              </div>
+            )}
+            {editingId !== tx.id && (
+              <div className="mt-3 pt-3 border-t border-white/[0.06] flex gap-2">
+                <button onClick={() => handleEditStart(tx)} className="flex-1 py-2 rounded-lg bg-[#432DD7]/10 text-[#432DD7] text-xs font-bold active:scale-95 transition-all">Edit</button>
+                <button onClick={() => handleDelete(tx.id, tx.productName)} className="flex-1 py-2 rounded-lg bg-[#DC2626]/10 text-[#DC2626] text-xs font-bold active:scale-95 transition-all">Hapus</button>
+              </div>
+            )}
+          </div>
+        ))}
+        {filteredTx.length === 0 && (
+          <div className="text-center py-12 text-zinc-500 text-sm">Belum ada transaksi</div>
+        )}
+        {filteredTx.length > 0 && (
+          <div className="rounded-xl bg-[#1a1a1a] border border-white/[0.06] p-4 flex items-center justify-between">
+            <p className="text-xs text-zinc-400">{filteredTx.length} transaksi</p>
+            <p className={`text-sm font-bold ${filteredTx.reduce((s, t) => s + (t.type === 'in' ? t.quantity : -t.quantity), 0) >= 0 ? 'text-[#16A34A]' : 'text-[#DC2626]'}`}>
+              Net: {filteredTx.reduce((s, t) => s + (t.type === 'in' ? t.quantity : -t.quantity), 0) >= 0 ? '+' : ''}{filteredTx.reduce((s, t) => s + (t.type === 'in' ? t.quantity : -t.quantity), 0)}
+            </p>
+          </div>
+        )}
+      </div>
+
+      {/* Desktop Table */}
+      <div className="hidden md:block rounded-xl overflow-hidden border border-white/10">
         <div className="overflow-x-auto max-h-[500px]">
           <table className="w-full border-collapse">
             <thead className="sticky top-0 z-10">
