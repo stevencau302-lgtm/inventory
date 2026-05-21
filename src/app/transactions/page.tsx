@@ -88,12 +88,10 @@ export default function TransactionsPage() {
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            <Link href="/transactions/new" className="px-4 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-white text-sm font-semibold transition flex items-center gap-2 shadow-lg shadow-emerald-500/20">
+            <Link href="/transactions/new" className="px-4 py-2 rounded-lg bg-[#FDC800] hover:bg-[#FDC800]/90 text-[#1a1a1a] text-sm font-bold transition flex items-center gap-2 shadow-lg shadow-[#FDC800]/20 active:scale-95">
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
-              Single Entry
+              Catat Transaksi
             </Link>
-            <button className="px-4 py-2 rounded-lg bg-violet-600 hover:bg-violet-500 text-white text-sm font-semibold transition shadow-lg shadow-violet-600/20">Bulk Entry</button>
-            <button className="px-4 py-2 rounded-lg bg-amber-500 hover:bg-amber-400 text-white text-sm font-semibold transition shadow-lg shadow-amber-500/20">Email Laporan</button>
           </div>
         </div>
       </div>
