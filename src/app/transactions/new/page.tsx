@@ -710,8 +710,10 @@ function BulkEntryForm({ products, router, toast }: { products: Product[]; route
                 <input
                   type="number"
                   min={1}
-                  value={row.quantity}
-                  onChange={e => updateRow(index, { quantity: Math.max(1, +e.target.value) })}
+                  value={row.quantity || ''}
+                  onFocus={e => { if (row.quantity <= 1) e.target.value = '' }}
+                  onChange={e => updateRow(index, { quantity: Math.max(0, +e.target.value) })}
+                  onBlur={e => { if (!e.target.value || +e.target.value < 1) updateRow(index, { quantity: 1 }) }}
                   className="w-full rounded-lg text-xs text-center px-2 py-2 bg-[#0f0f0f] text-[#fafafa] border-none focus:outline-none focus:ring-1 focus:ring-[#FDC800]/50"
                 />
 
