@@ -7,23 +7,16 @@ import { useToast } from '@/components/Toast'
 import {
   ArrowLeft, ArrowDownCircle, ArrowUpCircle, Search, Package,
   CalendarDays, FileText, Save, Loader2, AlertTriangle,
-  X, Minus, Plus, Sparkles, ScanBarcode, Zap, Trash2
+  X, Minus, Plus, Sparkles, ScanBarcode, Zap
 } from 'lucide-react'
 
 type TransactionType = 'in' | 'out'
-
-interface TransactionItem {
-  productId: string
-  productName: string
-  quantity: number
-}
 
 export default function NewTransactionPage() {
   const router = useRouter()
   const { toast } = useToast()
   const [products, setProducts] = useState<Product[]>([])
   const [type, setType] = useState<TransactionType>('in')
-  const [items, setItems] = useState<TransactionItem[]>([])
   const [selectedProduct, setSelectedProduct] = useState('')
   const [quantity, setQuantity] = useState(1)
   const [note, setNote] = useState('')
@@ -33,15 +26,7 @@ export default function NewTransactionPage() {
   const [mounted, setMounted] = useState(false)
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
-  const [scanMode, setScanMode] = useState(false)
-  const [scanActive, setScanActive] = useState(false)
-  const [scanBuffer, setScanBuffer] = useState('')
   const productDropdownRef = useRef<HTMLDivElement>(null)
-  const scanInputRef = useRef<HTMLInputElement>(null)
-  const videoRef = useRef<HTMLVideoElement>(null)
-  const streamRef = useRef<MediaStream | null>(null)
-  const scanIntervalRef = useRef<NodeJS.Timeout | null>(null)
-
 
   useEffect(() => {
     async function loadData() {
@@ -62,80 +47,6 @@ export default function NewTransactionPage() {
     return () => document.removeEventListener('mousedown', handleClick)
   }, [])
 
-  // Camera barcode scanning
-  useEffect(() => {
-    if (!scanMode) {
-      // Cleanup when scan mode is turned off
-      if (streamRef.current) {
-        streamRef.current.getTracks().forEach(track => track.stop())
-        streamRef.current = null
-      }
-      if (scanIntervalRef.current) {
-        clearInterval(scanIntervalRef.current)
-        scanIntervalRef.current = null
-      }
-      setScanActive(false)
-      return
-    }
-
-    let cancelled = false
-
-    async function startCamera() {
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } }
-        })
-        if (cancelled) { stream.getTracks().forEach(t => t.stop()); return }
-        streamRef.current = stream
-        if (videoRef.current) {
-          videoRef.current.srcObject = stream
-          await videoRef.current.play()
-        }
-        setScanActive(true)
-
-
-        // Use BarcodeDetector if available (Chrome, Edge, Android)
-        if ('BarcodeDetector' in window) {
-          const detector = new (window as any).BarcodeDetector({
-            formats: ['ean_13', 'ean_8', 'code_128', 'code_39', 'qr_code', 'upc_a', 'upc_e', 'itf']
-          })
-
-          scanIntervalRef.current = setInterval(async () => {
-            if (!videoRef.current || videoRef.current.readyState < 2) return
-            try {
-              const barcodes = await detector.detect(videoRef.current)
-              if (barcodes.length > 0) {
-                const code = barcodes[0].rawValue
-                handleBarcodeScan(code)
-              }
-            } catch {}
-          }, 300)
-        } else {
-          // Fallback: no native BarcodeDetector — user needs to type SKU manually
-          toast('Kamera aktif, tapi browser ini tidak support auto-scan. Ketik SKU manual di bawah.', 'error')
-        }
-      } catch (err) {
-        toast('Tidak bisa akses kamera. Pastikan izin kamera diaktifkan.', 'error')
-        setScanMode(false)
-      }
-    }
-
-    startCamera()
-
-    return () => {
-      cancelled = true
-      if (streamRef.current) {
-        streamRef.current.getTracks().forEach(track => track.stop())
-        streamRef.current = null
-      }
-      if (scanIntervalRef.current) {
-        clearInterval(scanIntervalRef.current)
-        scanIntervalRef.current = null
-      }
-    }
-  }, [scanMode])
-
-
   if (!mounted) return (
     <div className="flex items-center justify-center min-h-[80vh]">
       <div className="flex flex-col items-center gap-3 animate-pulse">
@@ -151,123 +62,57 @@ export default function NewTransactionPage() {
     p.category.toLowerCase().includes(productSearch.toLowerCase())
   )
   const selected = products.find(p => p.id === selectedProduct)
-  const stockAfter = selected ? selected.stock + (type === 'in' ? quantity : -quantity) : 0
-
-  const handleBarcodeScan = (code: string) => {
-    const matched = products.find(p =>
-      p.sku.toLowerCase() === code.toLowerCase() ||
-      p.sku.toLowerCase().replace(/[-_\s]/g, '') === code.toLowerCase().replace(/[-_\s]/g, '')
-    )
-    if (matched) {
-      handleSelectProduct(matched.id)
-      setProductSearch(matched.name)
-      toast(`Produk ditemukan: ${matched.name}`, 'success')
-      // Vibrate for haptic feedback on mobile
-      if (navigator.vibrate) navigator.vibrate(100)
-    } else {
-      toast(`SKU "${code}" tidak ditemukan di database`, 'error')
-      if (navigator.vibrate) navigator.vibrate([50, 50, 50])
-    }
-  }
 
   const handleSelectProduct = (id: string) => {
     setSelectedProduct(id)
     const p = products.find(pr => pr.id === id)
     if (p) setProductSearch(p.name)
     setShowProductDropdown(false)
-    setScanMode(false)
-  }
-
-  const handleScanInput = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      e.preventDefault()
-      const val = (e.target as HTMLInputElement).value.trim()
-      if (val.length >= 2) {
-        handleBarcodeScan(val)
-      }
-      ;(e.target as HTMLInputElement).value = ''
-    }
-  }
-
-
-  const handleAddItem = () => {
-    if (!selectedProduct) { toast('Pilih produk terlebih dahulu!', 'error'); return }
-    const product = products.find(p => p.id === selectedProduct)
-    if (!product) return
-    // Check if product already in list
-    const existing = items.find(item => item.productId === selectedProduct)
-    if (existing) {
-      toast('Produk sudah ada di list. Hapus dulu jika ingin mengubah jumlah.', 'error')
-      return
-    }
-    if (type === 'out' && product.stock < quantity) {
-      toast(`Stok tidak cukup! Sisa: ${product.stock}`, 'error')
-      return
-    }
-    setItems([...items, { productId: product.id, productName: product.name, quantity }])
-    setSelectedProduct('')
-    setProductSearch('')
-    setQuantity(1)
-    toast(`${product.name} ditambahkan ke list`, 'success')
-  }
-
-  const handleRemoveItem = (index: number) => {
-    setItems(items.filter((_, i) => i !== index))
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (items.length === 0) { toast('Tambahkan minimal 1 produk ke list!', 'error'); return }
+    if (!selectedProduct) { toast('Pilih produk terlebih dahulu!', 'error'); return }
 
-    // Validate all items stock
-    for (const item of items) {
-      const product = products.find(p => p.id === item.productId)
-      if (!product) { toast(`Produk tidak ditemukan`, 'error'); return }
-      if (type === 'out' && product.stock < item.quantity) {
-        toast(`Stok ${product.name} tidak cukup! Sisa: ${product.stock}`, 'error')
-        return
-      }
+    const product = products.find(p => p.id === selectedProduct)
+    if (!product) { toast('Produk tidak ditemukan', 'error'); return }
+
+    if (type === 'out' && product.stock < quantity) {
+      toast(`Stok tidak cukup! Sisa: ${product.stock}`, 'error')
+      return
     }
 
     setLoading(true)
     await new Promise(r => setTimeout(r, 600))
 
-    // Create a transaction for each item and update stock
-    for (const item of items) {
-      const product = products.find(p => p.id === item.productId)
-      if (!product) continue
-
-      const updatedProduct = {
-        ...product,
-        stock: type === 'in' ? product.stock + item.quantity : product.stock - item.quantity,
-        updatedAt: new Date().toISOString()
-      }
-      const newTx: Transaction = {
-        id: uid(),
-        productId: product.id,
-        productName: product.name,
-        type,
-        quantity: item.quantity,
-        note,
-        createdAt: new Date().toISOString()
-      }
-
-      await saveProduct(updatedProduct)
-      await saveTransaction(newTx)
+    const updatedProduct = {
+      ...product,
+      stock: type === 'in' ? product.stock + quantity : product.stock - quantity,
+      updatedAt: new Date().toISOString()
+    }
+    const newTx: Transaction = {
+      id: uid(),
+      productId: product.id,
+      productName: product.name,
+      type,
+      quantity,
+      note,
+      createdAt: new Date(date).toISOString()
     }
 
+    await saveProduct(updatedProduct)
+    await saveTransaction(newTx)
+
     setSuccess(true)
-    const totalItems = items.reduce((sum, item) => sum + item.quantity, 0)
     toast(
       type === 'in'
-        ? `+${totalItems} item dari ${items.length} produk berhasil dicatat masuk`
-        : `-${totalItems} item dari ${items.length} produk berhasil dicatat keluar`,
+        ? `+${quantity} ${product.name} berhasil dicatat masuk`
+        : `-${quantity} ${product.name} berhasil dicatat keluar`,
       'success'
     )
 
     setTimeout(() => router.push('/transactions'), 1200)
   }
-
 
   // Success animation
   if (success) {
@@ -285,7 +130,7 @@ export default function NewTransactionPage() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto pb-24 sm:pb-8">
+    <div className="max-w-3xl mx-auto pb-24 lg:pb-8">
       {/* Back Button */}
       <button
         onClick={() => router.push('/transactions')}
@@ -306,9 +151,6 @@ export default function NewTransactionPage() {
         </div>
       </div>
 
-      <div className="flex flex-col lg:flex-row gap-6" style={{ overflow: 'visible' }}>
-      {/* LEFT - Form */}
-      <div className="flex-1 min-w-0">
       <form onSubmit={handleSubmit} className="space-y-6">
 
         {/* === TIPE TRANSAKSI === */}
@@ -316,7 +158,7 @@ export default function NewTransactionPage() {
           <label className="text-xs font-bold uppercase tracking-wider text-zinc-400 mb-3 block">
             Tipe Transaksi
           </label>
-          <div className="flex flex-col gap-3">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
             <button
               type="button"
               onClick={() => setType('in')}
@@ -369,82 +211,11 @@ export default function NewTransactionPage() {
           </div>
         </div>
 
-
-        {/* === PILIH PRODUK === */}
-        <div>
-          <div className="flex items-center justify-between mb-3">
-            <label className="text-xs font-bold uppercase tracking-wider text-zinc-400">
-              Pilih Produk
-            </label>
-            <button
-              type="button"
-              onClick={() => setScanMode(!scanMode)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-bold transition-all active:scale-95 ${
-                scanMode
-                  ? 'bg-[#FDC800] text-[#1a1a1a] shadow-md shadow-[#FDC800]/20'
-                  : 'bg-[#1a1a1a] text-zinc-400 border border-white/[0.06] hover:border-[#FDC800]/30'
-              }`}
-            >
-              <ScanBarcode className="w-3.5 h-3.5" />
-              {scanMode ? 'Scan Aktif' : 'Scan Barcode'}
-            </button>
-          </div>
-
-          {/* Scan Mode — Camera */}
-          {scanMode && (
-            <div className="mb-3 rounded-xl bg-[#FDC800]/5 border border-[#FDC800]/20 p-4 animate-[fadeInUp_0.2s_ease-out]">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2">
-                  <Zap className="w-4 h-4 text-[#FDC800] animate-pulse" />
-                  <p className="text-xs font-semibold text-[#FDC800]">Kamera Scanner</p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setScanMode(false)}
-                  className="text-zinc-500 hover:text-zinc-300 active:scale-90 transition-all"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-              <p className="text-[11px] text-zinc-500 mb-3">Arahkan kamera ke barcode produk</p>
-              <div className="relative rounded-lg overflow-hidden bg-black aspect-[4/3]">
-                <video
-                  ref={videoRef}
-                  autoPlay
-                  playsInline
-                  muted
-                  className="w-full h-full object-cover"
-                />
-                {/* Scan overlay */}
-                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                  <div className="w-[70%] h-[40%] border-2 border-[#FDC800]/60 rounded-xl relative">
-                    <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-[#FDC800] rounded-tl-lg" />
-                    <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-[#FDC800] rounded-tr-lg" />
-                    <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-[#FDC800] rounded-bl-lg" />
-                    <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-[#FDC800] rounded-br-lg" />
-                    <div className="absolute top-1/2 left-0 right-0 h-[2px] bg-[#FDC800]/40 animate-[scanLine_2s_ease-in-out_infinite]" />
-                  </div>
-                </div>
-                {!scanActive && (
-                  <div className="absolute inset-0 flex items-center justify-center bg-black/60">
-                    <p className="text-xs text-zinc-400">Mengaktifkan kamera...</p>
-                  </div>
-                )}
-              </div>
-              {/* Manual SKU input fallback */}
-              <div className="mt-3">
-                <input
-                  ref={scanInputRef}
-                  type="text"
-                  onKeyDown={handleScanInput}
-                  className="w-full rounded-lg text-sm px-4 py-2.5 font-mono bg-[#0f0f0f] text-[#FDC800] border border-[#FDC800]/20 focus:outline-none focus:ring-2 focus:ring-[#FDC800]/50 transition-all placeholder:text-zinc-600 placeholder:font-normal"
-                  placeholder="Atau ketik SKU manual + Enter"
-                  autoComplete="off"
-                />
-              </div>
-            </div>
-          )}
-
+        {/* === DETAIL PRODUK === */}
+        <div className="rounded-xl bg-[#1a1a1a] border border-white/[0.06] p-5 space-y-4">
+          <label className="text-xs font-bold uppercase tracking-wider text-zinc-400 block">
+            Detail Produk
+          </label>
 
           {/* Search dropdown */}
           <div className="relative" ref={productDropdownRef}>
@@ -472,7 +243,7 @@ export default function NewTransactionPage() {
 
             {/* Dropdown */}
             {showProductDropdown && (
-              <div className="absolute z-50 left-0 right-0 top-full mt-2 rounded-xl bg-[#1a1a1a] border border-white/[0.06] max-h-64 overflow-y-auto shadow-2xl shadow-black/50 animate-[slideDown_0.2s_ease-out]">
+              <div className="absolute z-50 left-0 right-0 top-full mt-2 rounded-xl bg-[#0f0f0f] border border-white/[0.06] max-h-64 overflow-y-auto shadow-2xl shadow-black/50 animate-[slideDown_0.2s_ease-out]">
                 {filteredProducts.length === 0 ? (
                   <div className="px-4 py-6 text-center text-sm text-zinc-500">Produk tidak ditemukan</div>
                 ) : filteredProducts.map(p => (
@@ -482,7 +253,7 @@ export default function NewTransactionPage() {
                     onClick={() => handleSelectProduct(p.id)}
                     className={`w-full flex items-center gap-3 px-4 py-3 text-left transition-all hover:bg-[#FDC800]/5 active:bg-[#FDC800]/10 border-b border-white/[0.04] last:border-b-0 ${selectedProduct === p.id ? 'bg-[#FDC800]/5' : ''}`}
                   >
-                    <div className="w-9 h-9 rounded-lg bg-[#432DD7] flex items-center justify-center text-[10px] font-black text-white shrink-0">
+                    <div className="w-9 h-9 rounded-lg bg-[#FDC800]/10 flex items-center justify-center text-[10px] font-black text-[#FDC800] shrink-0">
                       {p.name.substring(0, 2).toUpperCase()}
                     </div>
                     <div className="flex-1 min-w-0">
@@ -495,107 +266,80 @@ export default function NewTransactionPage() {
               </div>
             )}
           </div>
-        </div>
 
+          {/* Product Info */}
+          {selected && (
+            <div className="grid grid-cols-3 gap-3 rounded-lg bg-[#0f0f0f] p-3">
+              <div>
+                <p className="text-[10px] text-zinc-500 uppercase tracking-wider">Stok Saat Ini</p>
+                <p className="text-sm font-bold text-[#fafafa] mt-0.5">{selected.stock}</p>
+              </div>
+              <div>
+                <p className="text-[10px] text-zinc-500 uppercase tracking-wider">Harga</p>
+                <p className="text-sm font-bold text-[#fafafa] mt-0.5">{formatRp(selected.price)}</p>
+              </div>
+              <div>
+                <p className="text-[10px] text-zinc-500 uppercase tracking-wider">Min Stok</p>
+                <p className="text-sm font-bold text-[#fafafa] mt-0.5">{selected.minStock}</p>
+              </div>
+            </div>
+          )}
 
-
-
-
-        {/* === JUMLAH === */}
-        <div>
-          <label className="text-xs font-bold uppercase tracking-wider text-zinc-400 mb-3 block">
-            Jumlah
-          </label>
-          <div className="flex items-center gap-3">
-            <button
-              type="button"
-              onClick={() => setQuantity(Math.max(1, quantity - 1))}
-              className="w-14 h-14 rounded-xl bg-[#1a1a1a] border border-white/[0.06] flex items-center justify-center text-[#fafafa] hover:bg-white/[0.04] active:scale-90 transition-all shrink-0"
-            >
-              <Minus className="w-5 h-5" />
-            </button>
-            <input
-              type="number"
-              min={1}
-              value={quantity}
-              onChange={e => setQuantity(Math.max(1, +e.target.value))}
-              className="flex-1 min-w-0 rounded-xl text-center text-2xl font-bold py-3 bg-[#0f0f0f] text-[#fafafa] border-none focus:outline-none focus:ring-2 focus:ring-[#FDC800]/50 transition-all"
-            />
-            <button
-              type="button"
-              onClick={() => setQuantity(quantity + 1)}
-              className="w-14 h-14 rounded-xl bg-[#1a1a1a] border border-white/[0.06] flex items-center justify-center text-[#fafafa] hover:bg-white/[0.04] active:scale-90 transition-all shrink-0"
-            >
-              <Plus className="w-5 h-5" />
-            </button>
-          </div>
-        </div>
-
-        {/* === TAMBAH KE LIST BUTTON === */}
-        <button
-          type="button"
-          onClick={handleAddItem}
-          disabled={!selectedProduct}
-          className="w-full py-3.5 rounded-xl text-sm font-bold bg-[#432DD7] text-white hover:bg-[#432DD7]/90 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all active:scale-[0.97] shadow-lg shadow-[#432DD7]/20"
-        >
-          <Plus className="w-4 h-4" />
-          Tambah ke List
-        </button>
-
-
-        {/* === ITEMS LIST === */}
-        {items.length > 0 && (
-          <div className="space-y-2">
-            <label className="text-xs font-bold uppercase tracking-wider text-zinc-400 block">
-              Produk Ditambahkan ({items.length})
-            </label>
-            <div className="space-y-2">
-              {items.map((item, index) => (
-                <div
-                  key={`${item.productId}-${index}`}
-                  className="flex items-center gap-3 px-4 py-3 rounded-xl bg-[#1a1a1a] border border-white/[0.06] animate-[fadeInUp_0.2s_ease-out]"
+          {/* Jumlah & Tanggal — side by side on desktop */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            {/* Jumlah */}
+            <div>
+              <label className="text-[11px] font-semibold text-zinc-500 uppercase tracking-wider mb-2 block">Jumlah</label>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                  className="w-11 h-11 rounded-xl bg-[#0f0f0f] border border-white/[0.06] flex items-center justify-center text-[#fafafa] hover:bg-white/[0.04] active:scale-90 transition-all shrink-0"
                 >
-                  <div className="w-8 h-8 rounded-lg bg-[#432DD7] flex items-center justify-center text-[9px] font-black text-white shrink-0">
-                    {item.productName.substring(0, 2).toUpperCase()}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-[#fafafa] truncate">{item.productName}</p>
-                    <p className="text-[11px] text-zinc-500">Qty: {item.quantity}</p>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveItem(index)}
-                    className="w-8 h-8 rounded-lg bg-red-500/10 flex items-center justify-center text-red-400 hover:bg-red-500/20 active:scale-90 transition-all shrink-0"
-                  >
-                    <Trash2 className="w-3.5 h-3.5" />
-                  </button>
-                </div>
-              ))}
+                  <Minus className="w-4 h-4" />
+                </button>
+                <input
+                  type="number"
+                  min={1}
+                  value={quantity}
+                  onChange={e => setQuantity(Math.max(1, +e.target.value))}
+                  className="flex-1 min-w-0 rounded-xl text-center text-lg font-bold py-2.5 bg-[#0f0f0f] text-[#fafafa] border-none focus:outline-none focus:ring-2 focus:ring-[#FDC800]/50 transition-all"
+                />
+                <button
+                  type="button"
+                  onClick={() => setQuantity(quantity + 1)}
+                  className="w-11 h-11 rounded-xl bg-[#0f0f0f] border border-white/[0.06] flex items-center justify-center text-[#fafafa] hover:bg-white/[0.04] active:scale-90 transition-all shrink-0"
+                >
+                  <Plus className="w-4 h-4" />
+                </button>
+              </div>
+              {selected && type === 'out' && quantity > selected.stock && (
+                <p className="text-[11px] text-red-400 mt-1.5 flex items-center gap-1">
+                  <AlertTriangle className="w-3 h-3" />
+                  Stok tidak cukup
+                </p>
+              )}
+            </div>
+
+            {/* Tanggal */}
+            <div>
+              <label className="text-[11px] font-semibold text-zinc-500 uppercase tracking-wider mb-2 block">Tanggal</label>
+              <input
+                type="date"
+                value={date}
+                onChange={e => setDate(e.target.value)}
+                className="w-full rounded-xl text-sm px-4 py-3 font-medium bg-[#0f0f0f] text-[#fafafa] border-none focus:outline-none focus:ring-2 focus:ring-[#FDC800]/50 transition-all"
+                style={{ colorScheme: 'dark' }}
+              />
             </div>
           </div>
-        )}
-
-
-        {/* === TANGGAL === */}
-        <div>
-          <label className="text-xs font-bold uppercase tracking-wider text-zinc-400 mb-3 flex items-center gap-2">
-            <CalendarDays className="w-3.5 h-3.5 text-[#FDC800]" />
-            Tanggal
-          </label>
-          <input
-            type="date"
-            value={date}
-            onChange={e => setDate(e.target.value)}
-            className="w-full rounded-xl text-sm px-4 py-3.5 font-medium bg-[#0f0f0f] text-[#fafafa] border-none focus:outline-none focus:ring-2 focus:ring-[#FDC800]/50 transition-all"
-            style={{ colorScheme: 'dark' }}
-          />
         </div>
 
-        {/* === CATATAN === */}
+        {/* === KETERANGAN === */}
         <div>
           <label className="text-xs font-bold uppercase tracking-wider text-zinc-400 mb-3 flex items-center gap-2">
-            <FileText className="w-3.5 h-3.5 text-[#432DD7]" />
-            Catatan
+            <FileText className="w-3.5 h-3.5 text-[#FDC800]" />
+            Keterangan
             <span className="normal-case font-normal text-zinc-600">(opsional)</span>
           </label>
           <textarea
@@ -604,131 +348,42 @@ export default function NewTransactionPage() {
             maxLength={200}
             rows={3}
             className="w-full rounded-xl text-sm px-4 py-3.5 resize-none font-medium bg-[#0f0f0f] text-[#fafafa] border-none focus:outline-none focus:ring-2 focus:ring-[#FDC800]/50 transition-all placeholder:text-zinc-600"
-            placeholder="Tambahkan catatan..."
+            placeholder="Tambahkan catatan transaksi..."
           />
           <p className="text-right text-[10px] mt-1.5 text-zinc-600">{note.length}/200</p>
         </div>
 
-        {/* === SUBMIT BUTTONS (mobile) === */}
-        <div className="flex gap-3 pt-4 lg:hidden">
+        {/* === SUBMIT BUTTONS === */}
+        <div className="flex justify-end gap-3 pt-2">
           <button
             type="button"
             onClick={() => router.push('/transactions')}
-            className="px-5 py-3.5 rounded-xl text-sm font-bold bg-[#1a1a1a] border border-white/[0.06] text-zinc-300 hover:bg-white/[0.04] transition-all active:scale-95"
+            className="px-5 py-3 rounded-xl text-sm font-bold bg-[#1a1a1a] border border-white/[0.06] text-zinc-300 hover:bg-white/[0.04] transition-all active:scale-95"
           >
             Batal
           </button>
           <button
             type="submit"
-            disabled={loading || items.length === 0}
-            className="flex-1 py-3.5 rounded-xl text-sm font-bold bg-[#FDC800] text-[#1a1a1a] hover:bg-[#FDC800]/90 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all active:scale-[0.97] shadow-lg shadow-[#FDC800]/20"
+            disabled={loading || !selectedProduct}
+            className="px-6 py-3 rounded-xl text-sm font-bold bg-[#FDC800] text-[#000000] hover:bg-[#FDC800]/90 disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2 transition-all active:scale-[0.97] shadow-lg shadow-[#FDC800]/20"
           >
             {loading ? (
               <Loader2 className="w-4 h-4 animate-spin" />
             ) : (
               <>
                 <Save className="w-4 h-4" />
-                Simpan Transaksi
+                Catat Transaksi
               </>
             )}
           </button>
         </div>
       </form>
-      </div>
-
-
-      {/* RIGHT - Ringkasan Sticky (desktop only) */}
-      <div className="hidden lg:block lg:w-[320px] shrink-0">
-        <div style={{ position: 'sticky', top: '2rem', maxHeight: 'calc(100vh - 4rem)', overflowY: 'auto' }} className="space-y-4">
-          <div className="rounded-xl overflow-hidden" style={{ background: '#1a1a1a' }}>
-            <div className="px-5 py-3.5 flex items-center gap-2 font-bold text-sm" style={{ background: '#FDC800', color: '#1C293C' }}>
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z" /></svg>
-              Ringkasan
-            </div>
-            {items.length > 0 ? (
-              <div className="px-5 py-4 space-y-3">
-                {/* Items list */}
-                <div className="space-y-2 pb-3" style={{ borderBottom: '1px solid #27272a' }}>
-                  {items.map((item, index) => (
-                    <div key={`${item.productId}-${index}`} className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-lg flex items-center justify-center text-[9px] font-black" style={{ background: '#432DD7', color: '#fff' }}>
-                        {item.productName.substring(0, 2).toUpperCase()}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-xs font-semibold truncate" style={{ color: '#fafafa' }}>{item.productName}</p>
-                        <p className="text-[10px]" style={{ color: '#71717a' }}>Qty: {item.quantity}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                {/* Summary info */}
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <span className="text-xs" style={{ color: '#71717a' }}>Total Item</span>
-                    <span className="text-sm font-bold" style={{ color: '#fafafa' }}>{items.reduce((sum, item) => sum + item.quantity, 0)}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-xs" style={{ color: '#71717a' }}>Produk</span>
-                    <span className="text-sm font-bold" style={{ color: '#fafafa' }}>{items.length}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-xs" style={{ color: '#71717a' }}>Tipe</span>
-                    <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${type === 'in' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-red-500/10 text-red-400'}`}>{type === 'in' ? 'Masuk' : 'Keluar'}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-xs" style={{ color: '#71717a' }}>Tanggal</span>
-                    <span className="text-xs" style={{ color: '#fafafa' }}>{new Date(date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <div className="px-5 py-8 text-center">
-                <div className="w-12 h-12 rounded-xl mx-auto mb-3 flex items-center justify-center" style={{ background: '#0f0f0f' }}>
-                  <Package className="w-5 h-5 text-zinc-600" />
-                </div>
-                <p className="text-xs font-medium" style={{ color: '#71717a' }}>Belum ada produk ditambahkan</p>
-              </div>
-            )}
-          </div>
-
-          {/* Desktop submit buttons */}
-          <button
-            type="button"
-            onClick={() => { const f = document.querySelector('form'); f?.requestSubmit() }}
-            disabled={loading || items.length === 0}
-            className="w-full py-3.5 rounded-xl text-sm font-bold disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all active:scale-[0.97]"
-            style={{ background: '#FDC800', color: '#1C293C' }}
-          >
-            {loading ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            ) : (
-              <>
-                <Save className="w-4 h-4" />
-                Simpan Transaksi
-              </>
-            )}
-          </button>
-          <button
-            type="button"
-            onClick={() => router.push('/transactions')}
-            className="w-full py-3 rounded-xl text-sm font-bold transition-all text-center"
-            style={{ background: '#0f0f0f', color: '#e4e4e7' }}
-          >
-            Batal
-          </button>
-        </div>
-      </div>
-      </div>
 
       {/* Custom keyframes */}
       <style jsx global>{`
         @keyframes fadeInUp {
           from { opacity: 0; transform: translateY(12px); }
           to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes fadeIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
         }
         @keyframes scaleIn {
           from { opacity: 0; transform: scale(0.8); }
@@ -737,10 +392,6 @@ export default function NewTransactionPage() {
         @keyframes slideDown {
           from { opacity: 0; transform: translateY(-8px); }
           to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes scanLine {
-          0%, 100% { transform: translateY(-100%); opacity: 0.4; }
-          50% { transform: translateY(100%); opacity: 1; }
         }
       `}</style>
     </div>
