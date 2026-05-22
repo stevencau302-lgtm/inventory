@@ -219,13 +219,13 @@ export default function TransactionsPage() {
           <table className="w-full border-collapse">
             <thead className="sticky top-0 z-10">
               <tr className="bg-[#0f0f0f]">
-                <th className="border-b border-white/[0.06] w-[48px] px-2 py-3 text-center text-[11px] font-bold text-[#FDC800]/80 uppercase tracking-wide">No</th>
-                <th className="border-b border-white/[0.06] px-3 py-3 text-left text-[11px] font-bold text-[#FDC800]/80 uppercase tracking-wide">Produk</th>
-                <th className="border-b border-white/[0.06] w-[100px] px-2 py-3 text-center text-[11px] font-bold text-[#FDC800]/80 uppercase tracking-wide">Tipe</th>
-                <th className="border-b border-white/[0.06] w-[80px] px-2 py-3 text-center text-[11px] font-bold text-[#FDC800]/80 uppercase tracking-wide">Jumlah</th>
-                <th className="border-b border-white/[0.06] w-[180px] px-3 py-3 text-left text-[11px] font-bold text-[#FDC800]/80 uppercase tracking-wide">Tanggal</th>
-                <th className="border-b border-white/[0.06] px-3 py-3 text-left text-[11px] font-bold text-[#FDC800]/80 uppercase tracking-wide">Catatan</th>
-                <th className="border-b border-white/[0.06] w-[90px] px-2 py-3 text-center text-[11px] font-bold text-[#FDC800]/80 uppercase tracking-wide">Aksi</th>
+                <th className="border-b border-white/[0.06] w-[48px] px-2 py-3 text-center text-[11px] font-bold text-white uppercase tracking-wide">No</th>
+                <th className="border-b border-white/[0.06] px-3 py-3 text-left text-[11px] font-bold text-white uppercase tracking-wide">Produk</th>
+                <th className="border-b border-white/[0.06] w-[100px] px-2 py-3 text-center text-[11px] font-bold text-white uppercase tracking-wide">Tipe</th>
+                <th className="border-b border-white/[0.06] w-[80px] px-2 py-3 text-center text-[11px] font-bold text-white uppercase tracking-wide">Jumlah</th>
+                <th className="border-b border-white/[0.06] w-[180px] px-3 py-3 text-left text-[11px] font-bold text-white uppercase tracking-wide">Tanggal</th>
+                <th className="border-b border-white/[0.06] px-3 py-3 text-left text-[11px] font-bold text-white uppercase tracking-wide">Catatan</th>
+                <th className="border-b border-white/[0.06] w-[90px] px-2 py-3 text-center text-[11px] font-bold text-white uppercase tracking-wide">Aksi</th>
               </tr>
             </thead>
             <tbody>
