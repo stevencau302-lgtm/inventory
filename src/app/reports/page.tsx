@@ -186,7 +186,7 @@ export default function ReportsPage() {
         <StatCard label="Total Nilai Stok" value={formatRp(totalValue)} icon={<DollarSign className="w-5 h-5" />} iconBg="bg-[#16A34A]/10" iconColor="text-[#16A34A]" />
         <StatCard label="Rata-rata Harga" value={formatRp(avgPrice)} icon={<PieChart className="w-5 h-5" />} iconBg="bg-[#432DD7]/10" iconColor="text-[#432DD7]" />
         <StatCard label="Dead Stock" value={`${deadStock.length} produk`} icon={<Skull className="w-5 h-5" />} iconBg="bg-[#DC2626]/10" iconColor="text-[#DC2626]" valueColor="text-[#DC2626]" />
-        <StatCard label="Perputaran Stok" value={`${stockTurnover}x`} icon={<RotateCcw className="w-5 h-5" />} iconBg="bg-[#432DD7]/10" iconColor="text-[#432DD7]" />
+        <StatCard label="Perputaran Stok" value={Number(stockTurnover) > 0 ? `${stockTurnover}x` : 'Menunggu data'} subtitle={Number(stockTurnover) === 0 ? 'Muncul setelah ada penjualan' : undefined} icon={<RotateCcw className="w-5 h-5" />} iconBg="bg-[#432DD7]/10" iconColor="text-[#432DD7]" />
         <StatCard label="Total Kategori" value={categories.length.toString()} icon={<Tag className="w-5 h-5" />} iconBg="bg-[#FDC800]/10" iconColor="text-[#FDC800]" />
       </div>
 
@@ -226,7 +226,12 @@ export default function ReportsPage() {
               </div>
             )
           })}
-          {topCategory.length === 0 && <p className="text-center text-zinc-500 py-8">Belum ada data</p>}
+          {topCategory.length === 0 && (
+            <div className="text-center py-10">
+              <p className="text-sm text-zinc-400">Belum ada kategori produk</p>
+              <p className="text-xs text-zinc-600 mt-1">Tambahkan kategori dan produk untuk melihat distribusi nilai</p>
+            </div>
+          )}
         </div>
       </div>
 
@@ -324,7 +329,12 @@ export default function ReportsPage() {
                   </div>
                   <span className="text-sm font-bold text-[#16A34A]">{item.count}</span>
                 </div>
-              )) : <p className="text-sm text-zinc-500">Belum ada transaksi keluar</p>}
+              )) : (
+                <div className="text-center py-6">
+                  <p className="text-sm text-zinc-400">Belum ada transaksi keluar</p>
+                  <p className="text-xs text-zinc-600 mt-1">Mulai input penjualan pertama untuk melihat produk terlaris</p>
+                </div>
+              )}
             </div>
           </div>
           {/* Top 5 Stagnan */}
@@ -345,7 +355,12 @@ export default function ReportsPage() {
                   </div>
                   <span className="text-sm font-bold text-[#FDC800]">{item.count}</span>
                 </div>
-              )) : <p className="text-sm text-zinc-500">Tidak ada produk stagnan</p>}
+              )) : (
+                <div className="text-center py-6">
+                  <p className="text-sm text-zinc-400">Semua produk masih aktif bergerak</p>
+                  <p className="text-xs text-zinc-600 mt-1">Tidak ada produk yang diam tanpa transaksi</p>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -395,7 +410,12 @@ export default function ReportsPage() {
                 </div>
               )
             })}
-            {lowStock.length === 0 && <p className="px-5 py-8 text-center text-zinc-500 text-sm">Semua stok aman ✓</p>}
+            {lowStock.length === 0 && (
+              <div className="px-5 py-8 text-center">
+                <p className="text-sm text-emerald-400/80">Semua stok aman</p>
+                <p className="text-xs text-zinc-600 mt-1">Tidak ada produk yang mendekati batas minimum</p>
+              </div>
+            )}
           </div>
         </div>
 
@@ -426,7 +446,12 @@ export default function ReportsPage() {
                 <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-lg bg-[#DC2626]/10 text-[#DC2626]">Habis</span>
               </div>
             ))}
-            {outStock.length === 0 && <p className="px-5 py-8 text-center text-zinc-500 text-sm">Tidak ada produk habis ✓</p>}
+            {outStock.length === 0 && (
+              <div className="px-5 py-8 text-center">
+                <p className="text-sm text-emerald-400/80">Semua produk tersedia</p>
+                <p className="text-xs text-zinc-600 mt-1">Tidak ada produk dengan stok kosong saat ini</p>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -436,8 +461,8 @@ export default function ReportsPage() {
 
 
 // ===== STAT CARD COMPONENT =====
-function StatCard({ label, value, icon, iconBg, iconColor, valueColor }: {
-  label: string; value: string; icon: React.ReactNode; iconBg: string; iconColor: string; valueColor?: string
+function StatCard({ label, value, icon, iconBg, iconColor, valueColor, subtitle }: {
+  label: string; value: string; icon: React.ReactNode; iconBg: string; iconColor: string; valueColor?: string; subtitle?: string
 }) {
   return (
     <div className="rounded-2xl bg-[#1a1a1a] border border-white/[0.06] p-5 hover:border-white/[0.12] transition-all">
@@ -448,6 +473,7 @@ function StatCard({ label, value, icon, iconBg, iconColor, valueColor }: {
         <div className="min-w-0">
           <p className={`text-lg font-bold truncate ${valueColor || 'text-[#fafafa]'}`}>{value}</p>
           <p className="text-[11px] text-zinc-500 font-medium">{label}</p>
+          {subtitle && <p className="text-[10px] text-zinc-600 mt-0.5">{subtitle}</p>}
         </div>
       </div>
     </div>
@@ -578,7 +604,10 @@ function DeadStockTable({ deadStock, transactions, formatRp }: { deadStock: Prod
           </table>
         </div>
       ) : (
-        <div className="p-10 text-center text-zinc-500 text-sm">Tidak ada dead stock — semua produk memiliki transaksi keluar ✓</div>
+        <div className="p-10 text-center">
+          <p className="text-sm text-emerald-400/80">Tidak ada dead stock</p>
+          <p className="text-xs text-zinc-600 mt-1">Semua produk memiliki transaksi keluar — inventory bergerak sehat</p>
+        </div>
       )}
     </div>
   )
