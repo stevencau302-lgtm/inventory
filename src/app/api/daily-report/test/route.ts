@@ -62,22 +62,22 @@ export async function POST(request: Request) {
     const inBySku = aggregateBySku(inTx, productMap)
     const outBySku = aggregateBySku(outTx, productMap)
 
-    let message = `📦 Rekap Inventory Harian\n📅 ${formatDateID(nowWIB)}\n`
+    let message = `Rekap Inventory Harian\n${formatDateID(nowWIB)}\n`
 
     if (txList.length === 0) {
-      message += `\n━━━━━━━━━━\n✅ Tidak ada transaksi hari ini.\n\nSemua stok aman! 🎉`
+      message += `\n— Tidak ada transaksi hari ini.`
     } else {
       if (inBySku.length > 0) {
-        message += `\n━━━━━━━━━━\n📥 SKU MASUK\n\n`
-        inBySku.forEach(item => { message += `${item.sku} → +${item.qty} pcs\n` })
+        message += `\n━━━━━━━━━━\nSKU MASUK\n\n`
+        inBySku.forEach(item => { message += `${item.sku}  +${item.qty} pcs\n` })
       }
       if (outBySku.length > 0) {
-        message += `\n━━━━━━━━━━\n📤 SKU KELUAR\n\n`
-        outBySku.forEach(item => { message += `${item.sku} → -${item.qty} pcs\n` })
+        message += `\n━━━━━━━━━━\nSKU KELUAR\n\n`
+        outBySku.forEach(item => { message += `${item.sku}  -${item.qty} pcs\n` })
       }
       message += `\n━━━━━━━━━━\n`
-      if (inBySku.length > 0) message += `📊 Total SKU Masuk : ${inBySku.length}\n📦 Total Barang Masuk : ${inBySku.reduce((s, i) => s + i.qty, 0)} pcs\n`
-      if (outBySku.length > 0) message += `📊 Total SKU Keluar : ${outBySku.length}\n📦 Total Barang Keluar : ${outBySku.reduce((s, i) => s + i.qty, 0)} pcs`
+      if (inBySku.length > 0) message += `Total SKU Masuk: ${inBySku.length}\nTotal Barang Masuk: ${inBySku.reduce((s, i) => s + i.qty, 0)} pcs\n`
+      if (outBySku.length > 0) message += `Total SKU Keluar: ${outBySku.length}\nTotal Barang Keluar: ${outBySku.reduce((s, i) => s + i.qty, 0)} pcs`
     }
 
     // Send via Fonnte
