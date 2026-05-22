@@ -31,44 +31,37 @@ export async function POST(request: Request) {
 
     const supabase = createClient(supabaseUrl, supabaseKey)
 
-    // Get today's date range (WIB = UTC+7)
+    // Get today (WIB)
     const now = new Date()
     const wibOffset = 7 * 60 * 60 * 1000
     const nowWIB = new Date(now.getTime() + wibOffset)
     const todayStr = nowWIB.toISOString().split('T')[0]
-    const startOfDay = `${todayStr}T00:00:00+07:00`
-    const endOfDay = `${todayStr}T23:59:59+07:00`
+    const startUTC = new Date(`${todayStr}T00:00:00+07:00`).toISOString()
+    const endUTC = new Date(`${todayStr}T23:59:59+07:00`).toISOString()
 
-    // Fetch today's transactions
     const { data: transactions } = await supabase
       .from('transactions')
       .select('*')
-      .gte('created_at', startOfDay)
-      .lte('created_at', endOfDay)
+      .gte('created_at', startUTC)
+      .lte('created_at', endUTC)
       .order('created_at', { ascending: true })
 
     const txList = (transactions || []) as Transaction[]
 
     // Get product SKUs
-    const productIds = [...new Set(txList.map(t => t.product_id))]
-    let productMap = new Map<string, Product>()
+    const productIds = [...new Set(txList.map((t: Transaction) => t.product_id))]
+    const productMap = new Map<string, Product>()
     if (productIds.length > 0) {
-      const { data: products } = await supabase
-        .from('products')
-        .select('id, name, sku, stock')
-        .in('id', productIds)
+      const { data: products } = await supabase.from('products').select('id, name, sku, stock').in('id', productIds)
       ;(products || []).forEach((p: Product) => productMap.set(p.id, p))
     }
 
-    // Group by type
-    const inTx = txList.filter(t => t.type === 'in')
-    const outTx = txList.filter(t => t.type === 'out')
-
-    // Aggregate by SKU
+    // Build message
+    const inTx = txList.filter((t: Transaction) => t.type === 'in')
+    const outTx = txList.filter((t: Transaction) => t.type === 'out')
     const inBySku = aggregateBySku(inTx, productMap)
     const outBySku = aggregateBySku(outTx, productMap)
 
-    // Build message
     let message = `📦 Rekap Inventory Harian\n📅 ${formatDateID(nowWIB)}\n`
 
     if (txList.length === 0) {
@@ -78,38 +71,20 @@ export async function POST(request: Request) {
         message += `\n━━━━━━━━━━\n📥 SKU MASUK\n\n`
         inBySku.forEach(item => { message += `${item.sku} → +${item.qty} pcs\n` })
       }
-
       if (outBySku.length > 0) {
         message += `\n━━━━━━━━━━\n📤 SKU KELUAR\n\n`
         outBySku.forEach(item => { message += `${item.sku} → -${item.qty} pcs\n` })
       }
-
-      const totalSkuKeluar = outBySku.length
-      const totalQtyKeluar = outBySku.reduce((s, i) => s + i.qty, 0)
-      const totalSkuMasuk = inBySku.length
-      const totalQtyMasuk = inBySku.reduce((s, i) => s + i.qty, 0)
-
       message += `\n━━━━━━━━━━\n`
-      if (inBySku.length > 0) {
-        message += `📊 Total SKU Masuk : ${totalSkuMasuk}\n📦 Total Barang Masuk : ${totalQtyMasuk} pcs\n`
-      }
-      if (outBySku.length > 0) {
-        message += `📊 Total SKU Keluar : ${totalSkuKeluar}\n📦 Total Barang Keluar : ${totalQtyKeluar} pcs`
-      }
+      if (inBySku.length > 0) message += `📊 Total SKU Masuk : ${inBySku.length}\n📦 Total Barang Masuk : ${inBySku.reduce((s, i) => s + i.qty, 0)} pcs\n`
+      if (outBySku.length > 0) message += `📊 Total SKU Keluar : ${outBySku.length}\n📦 Total Barang Keluar : ${outBySku.reduce((s, i) => s + i.qty, 0)} pcs`
     }
 
     // Send via Fonnte
     const response = await fetch('https://api.fonnte.com/send', {
       method: 'POST',
-      headers: {
-        'Authorization': token,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        target,
-        message: message.trim(),
-        typing: false,
-      }),
+      headers: { 'Authorization': token, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ target, message: message.trim(), typing: false }),
     })
 
     const result = await response.json()
@@ -117,8 +92,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: result.reason || result.message || 'Fonnte API error' }, { status: 400 })
     }
 
-    return NextResponse.json({ success: true, message: 'Test report sent successfully' })
-
+    return NextResponse.json({ success: true })
   } catch (error: any) {
     return NextResponse.json({ error: error.message || 'Internal error' }, { status: 500 })
   }

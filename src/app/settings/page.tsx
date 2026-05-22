@@ -190,21 +190,31 @@ function WhatsAppSettings() {
   const [targetNumber, setTargetNumber] = useState('')
   const [schedule, setSchedule] = useState('20:00')
   const [sending, setSending] = useState(false)
+  const [saving, setSaving] = useState(false)
   const [testResult, setTestResult] = useState<string | null>(null)
   const { toast } = useToast()
 
   useEffect(() => {
-    // Load saved config from localStorage (UI only - actual config in env vars)
-    setFonntToken(localStorage.getItem('fonnte_token') || '')
-    setTargetNumber(localStorage.getItem('fonnte_target') || '')
-    setSchedule(localStorage.getItem('fonnte_schedule') || '20:00')
+    // Load config from Supabase via API
+    fetch('/api/settings').then(r => r.json()).then(data => {
+      if (data.fonnte_token) setFonntToken(data.fonnte_token)
+      if (data.fonnte_target) setTargetNumber(data.fonnte_target)
+      if (data.fonnte_schedule) setSchedule(data.fonnte_schedule)
+    }).catch(() => {})
   }, [])
 
-  const handleSave = () => {
-    localStorage.setItem('fonnte_token', fonntToken)
-    localStorage.setItem('fonnte_target', targetNumber)
-    localStorage.setItem('fonnte_schedule', schedule)
-    toast('Konfigurasi WhatsApp tersimpan!', 'success')
+  const handleSave = async () => {
+    setSaving(true)
+    try {
+      const res = await fetch('/api/settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fonnte_token: fonntToken, fonnte_target: targetNumber, fonnte_schedule: schedule }),
+      })
+      if (res.ok) toast('Konfigurasi WhatsApp tersimpan!', 'success')
+      else toast('Gagal menyimpan konfigurasi', 'error')
+    } catch { toast('Gagal menyimpan', 'error') }
+    finally { setSaving(false) }
   }
 
   const handleTestSend = async () => {
@@ -283,9 +293,10 @@ function WhatsAppSettings() {
         <div className="flex gap-2 pt-2">
           <button
             onClick={handleSave}
-            className="flex-1 px-4 py-2.5 rounded-lg bg-green-500/15 text-green-400 text-xs font-bold hover:bg-green-500 hover:text-white transition-all active:scale-95"
+            disabled={saving}
+            className="flex-1 px-4 py-2.5 rounded-lg bg-green-500/15 text-green-400 text-xs font-bold hover:bg-green-500 hover:text-white transition-all active:scale-95 disabled:opacity-50"
           >
-            Simpan Konfigurasi
+            {saving ? 'Menyimpan...' : 'Simpan Konfigurasi'}
           </button>
           <button
             onClick={handleTestSend}
@@ -306,10 +317,8 @@ function WhatsAppSettings() {
 
         <div className="border-t border-white/[0.06] pt-4 mt-4">
           <p className="text-[10px] text-zinc-500 leading-relaxed">
-            <span className="font-semibold text-zinc-400">Catatan:</span> Untuk produksi, set environment variables berikut di Vercel Dashboard:<br/>
-            • <code className="text-green-400/80">FONNTE_TOKEN</code> — Token API dari fonnte.com<br/>
-            • <code className="text-green-400/80">FONNTE_TARGET_NUMBER</code> — Nomor WA tujuan<br/>
-            • <code className="text-green-400/80">CRON_SECRET</code> — Secret untuk proteksi endpoint
+            <span className="font-semibold text-zinc-400">Cara kerja:</span> Konfigurasi disimpan di database Supabase. Cron job Vercel akan otomatis kirim laporan tiap hari jam 20:00 WIB menggunakan token & nomor yang tersimpan di sini.<br/><br/>
+            <span className="font-semibold text-zinc-400">Setup Supabase:</span> Buat tabel <code className="text-green-400/80">settings</code> dengan kolom: <code className="text-green-400/80">key</code> (text, primary) dan <code className="text-green-400/80">value</code> (text).
           </p>
         </div>
       </div>
