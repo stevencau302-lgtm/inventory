@@ -68,12 +68,12 @@ export async function POST(request: Request) {
       message += `\n— Tidak ada transaksi hari ini.`
     } else {
       if (inBySku.length > 0) {
-        message += `\n━━━━━━━━━━\nSKU MASUK\n\n`
-        inBySku.forEach(item => { message += `${item.sku}  +${item.qty} pcs\n` })
+        message += `\n━━━━━━━━━━\nSKU MASUK :\n\n`
+        inBySku.forEach(item => { message += `${item.sku}  ${item.qty} pcs\n` })
       }
       if (outBySku.length > 0) {
-        message += `\n━━━━━━━━━━\nSKU KELUAR\n\n`
-        outBySku.forEach(item => { message += `${item.sku}  -${item.qty} pcs\n` })
+        message += `\n━━━━━━━━━━\nSKU KELUAR :\n\n`
+        outBySku.forEach(item => { message += `${item.sku}  ${item.qty} pcs\n` })
       }
       message += `\n━━━━━━━━━━\n`
       if (inBySku.length > 0) message += `Total SKU Masuk: ${inBySku.length}\nTotal Barang Masuk: ${inBySku.reduce((s, i) => s + i.qty, 0)} pcs\n`

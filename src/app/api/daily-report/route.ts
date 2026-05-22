@@ -104,13 +104,13 @@ async function buildMessage(supabase: any, txList: Transaction[], nowWIB: Date):
   let message = `Rekap Inventory Harian\n${formatDateID(nowWIB)}\n`
 
   if (inBySku.length > 0) {
-    message += `\n━━━━━━━━━━\nSKU MASUK\n\n`
-    inBySku.forEach(item => { message += `${item.sku}  +${item.qty} pcs\n` })
+    message += `\n━━━━━━━━━━\nSKU MASUK :\n\n`
+    inBySku.forEach(item => { message += `${item.sku}  ${item.qty} pcs\n` })
   }
 
   if (outBySku.length > 0) {
-    message += `\n━━━━━━━━━━\nSKU KELUAR\n\n`
-    outBySku.forEach(item => { message += `${item.sku}  -${item.qty} pcs\n` })
+    message += `\n━━━━━━━━━━\nSKU KELUAR :\n\n`
+    outBySku.forEach(item => { message += `${item.sku}  ${item.qty} pcs\n` })
   }
 
   message += `\n━━━━━━━━━━\n`
