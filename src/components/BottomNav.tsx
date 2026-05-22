@@ -20,8 +20,8 @@ export default function BottomNav() {
           if (item.label === 'add') return (
             <Link key={item.href} href={item.href} className="relative -top-5">
               <div className="w-14 h-14 rounded-2xl flex items-center justify-center active:scale-95 transition"
-                style={{ background: '#6366f1', boxShadow: '0 4px 20px rgba(99, 102, 241, 0.4)' }}>
-                <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+                style={{ background: '#FDC800', boxShadow: '0 4px 20px rgba(253, 200, 0, 0.4)' }}>
+                <svg className="w-6 h-6 text-[#000000]" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
               </div>
             </Link>
           )

@@ -162,47 +162,48 @@ export default function TransactionsPage() {
       </div>
 
       {/* Mobile Card List */}
-      <div className="md:hidden space-y-3">
+      <div className="md:hidden space-y-2.5">
         {filteredTx.slice(0, 20).map((tx) => (
-          <div key={tx.id} className="rounded-xl bg-[#1a1a1a] border border-white/[0.06] p-4 active:scale-[0.99] transition-all">
-            <div className="flex items-center gap-3">
-              <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${tx.type === 'in' ? 'bg-[#16A34A]/10' : 'bg-[#DC2626]/10'}`}>
-                {tx.type === 'in' ? (
-                  <svg className="w-5 h-5 text-[#16A34A]" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941" /></svg>
-                ) : (
-                  <svg className="w-5 h-5 text-[#DC2626]" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6L9 12.75l4.286-4.286a11.948 11.948 0 014.306 6.43l.776 2.898m0 0l3.182-5.511m-3.182 5.51l-5.511-3.181" /></svg>
-                )}
+          <div key={tx.id} className="relative rounded-xl bg-[#1a1a1a] border border-[#2a2a2a] px-3.5 py-3 transition-all">
+            {/* Action buttons — top right */}
+            {editingId !== tx.id && (
+              <div className="absolute top-2.5 right-2.5 flex gap-1.5">
+                <button onClick={() => handleEditStart(tx)} className="w-[36px] h-[36px] rounded-lg bg-[#2a2a2a] flex items-center justify-center active:scale-90 transition-all">
+                  <svg className="w-4 h-4 text-[#9CA3AF]" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" /></svg>
+                </button>
+                <button onClick={() => handleDelete(tx.id, tx.productName)} className="w-[36px] h-[36px] rounded-lg bg-[#2a2a2a] flex items-center justify-center active:scale-90 transition-all">
+                  <svg className="w-4 h-4 text-[#DC2626]" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" /></svg>
+                </button>
               </div>
+            )}
+
+            <div className="flex items-center gap-3 pr-20">
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-[#fafafa] truncate">{tx.productName}</p>
+                <p className="text-[13px] font-semibold text-[#fafafa] truncate">{tx.productName}</p>
                 <p className="text-[11px] text-zinc-500 mt-0.5">
                   {new Date(tx.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
                   {tx.note && ` · ${tx.note}`}
                 </p>
               </div>
-              <div className="text-right shrink-0">
-                <p className={`text-base font-bold ${tx.type === 'in' ? 'text-[#16A34A]' : 'text-[#DC2626]'}`}>
-                  {tx.type === 'in' ? '+' : '-'}{tx.quantity}
-                </p>
-                <span className={`text-[9px] font-bold uppercase ${tx.type === 'in' ? 'text-[#16A34A]/70' : 'text-[#DC2626]/70'}`}>
-                  {tx.type === 'in' ? 'MASUK' : 'KELUAR'}
-                </span>
-              </div>
             </div>
+            <div className="flex items-center justify-between mt-2">
+              <span className={`px-2 py-0.5 rounded text-[9px] font-bold uppercase ${tx.type === 'in' ? 'bg-[#16A34A]/10 text-[#16A34A]' : 'bg-[#DC2626]/10 text-[#DC2626]'}`}>
+                {tx.type === 'in' ? 'MASUK' : 'KELUAR'}
+              </span>
+              <p className={`text-base font-bold ${tx.type === 'in' ? 'text-[#16A34A]' : 'text-[#DC2626]'}`}>
+                {tx.type === 'in' ? '+' : '-'}{tx.quantity} <span className="text-[11px] font-medium text-zinc-500">unit</span>
+              </p>
+            </div>
+
+            {/* Edit mode inline */}
             {editingId === tx.id && (
-              <div className="mt-3 pt-3 border-t border-white/[0.06] space-y-2">
+              <div className="mt-3 pt-3 border-t border-[#2a2a2a] space-y-2">
                 <input type="number" value={editQuantity} onChange={e => setEditQuantity(Number(e.target.value))} className="w-full px-3 py-2 rounded-lg bg-[#0f0f0f] text-sm text-[#fafafa] focus:outline-none focus:ring-2 focus:ring-[#FDC800]/50" min={1} placeholder="Jumlah" />
                 <input type="text" value={editNote} onChange={e => setEditNote(e.target.value)} className="w-full px-3 py-2 rounded-lg bg-[#0f0f0f] text-sm text-[#fafafa] focus:outline-none focus:ring-2 focus:ring-[#FDC800]/50" placeholder="Catatan..." />
                 <div className="flex gap-2">
                   <button onClick={() => handleEditSave(tx)} className="flex-1 py-2 rounded-lg bg-[#16A34A] text-white text-xs font-bold active:scale-95 transition-all">Simpan</button>
                   <button onClick={handleEditCancel} className="flex-1 py-2 rounded-lg bg-zinc-800 text-zinc-300 text-xs font-bold active:scale-95 transition-all">Batal</button>
                 </div>
-              </div>
-            )}
-            {editingId !== tx.id && (
-              <div className="mt-3 pt-3 border-t border-white/[0.06] flex gap-2">
-                <button onClick={() => handleEditStart(tx)} className="flex-1 py-2.5 rounded-lg bg-white/[0.04] border border-white/[0.06] text-zinc-300 text-xs font-semibold active:scale-95 transition-all hover:bg-white/[0.08]">Edit</button>
-                <button onClick={() => handleDelete(tx.id, tx.productName)} className="flex-1 py-2.5 rounded-lg bg-[#DC2626]/10 border border-[#DC2626]/20 text-[#DC2626] text-xs font-semibold active:scale-95 transition-all hover:bg-[#DC2626]/20">Hapus</button>
               </div>
             )}
           </div>
