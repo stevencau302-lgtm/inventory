@@ -11,25 +11,31 @@ import {
 
 const RechartsBarChart = dynamic(
   () => import('recharts').then((mod) => {
-    const { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } = mod
+    const { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Cell } = mod
     const Chart = ({ data }: { data: { week: string; masuk: number; keluar: number }[] }) => (
-      <ResponsiveContainer width="100%" height={260}>
-        <BarChart data={data} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
-          <XAxis dataKey="week" tick={{ fill: '#71717a', fontSize: 12 }} axisLine={false} tickLine={false} />
-          <YAxis tick={{ fill: '#71717a', fontSize: 12 }} axisLine={false} tickLine={false} />
-          <Tooltip
-            contentStyle={{ background: '#1a1a1a', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '12px', color: '#fafafa' }}
-            labelStyle={{ color: '#a1a1aa' }}
-          />
-          <Bar dataKey="masuk" name="Masuk" fill="#16A34A" radius={[6, 6, 0, 0]} />
-          <Bar dataKey="keluar" name="Keluar" fill="#DC2626" radius={[6, 6, 0, 0]} />
+      <ResponsiveContainer width="100%" height={280}>
+        <BarChart data={data} margin={{ top: 20, right: 10, left: -10, bottom: 0 }} barCategoryGap="20%">
+          <CartesianGrid strokeDasharray="0" stroke="rgba(255,255,255,0.03)" vertical={false} />
+          <XAxis dataKey="week" tick={{ fill: '#52525b', fontSize: 11, fontWeight: 500 }} axisLine={false} tickLine={false} dy={8} />
+          <YAxis tick={{ fill: '#3f3f46', fontSize: 11 }} axisLine={false} tickLine={false} dx={-4} />
+          <Bar dataKey="masuk" name="Masuk" radius={[8, 8, 0, 0]} fill="url(#gradientMasuk)" isAnimationActive={false} />
+          <Bar dataKey="keluar" name="Keluar" radius={[8, 8, 0, 0]} fill="url(#gradientKeluar)" isAnimationActive={false} />
+          <defs>
+            <linearGradient id="gradientMasuk" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#22c55e" stopOpacity={0.9} />
+              <stop offset="100%" stopColor="#16A34A" stopOpacity={0.4} />
+            </linearGradient>
+            <linearGradient id="gradientKeluar" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#f87171" stopOpacity={0.9} />
+              <stop offset="100%" stopColor="#DC2626" stopOpacity={0.4} />
+            </linearGradient>
+          </defs>
         </BarChart>
       </ResponsiveContainer>
     )
     return Chart
   }),
-  { ssr: false, loading: () => <div className="h-[260px] flex items-center justify-center text-zinc-500 text-sm">Memuat grafik...</div> }
+  { ssr: false, loading: () => <div className="h-[280px] flex items-center justify-center text-zinc-500 text-sm">Memuat grafik...</div> }
 )
 
 export default function ReportsPage() {
@@ -226,45 +232,62 @@ export default function ReportsPage() {
 
 
       {/* ===== RINGKASAN TRANSAKSI 30 HARI ===== */}
-      <div className="rounded-2xl bg-[#1a1a1a] border border-white/[0.06] overflow-hidden">
-        <div className="p-6 border-b border-white/[0.06]">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-[#FDC800]/10 flex items-center justify-center">
-              <Activity className="w-4 h-4 text-[#FDC800]" />
+      <div className="rounded-2xl overflow-hidden" style={{ background: 'linear-gradient(135deg, #0f1419 0%, #1a1a2e 50%, #16213e 100%)', border: '1px solid rgba(99, 102, 241, 0.08)' }}>
+        <div className="p-6 border-b border-white/[0.04]">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(139, 92, 246, 0.1))' }}>
+                <Activity className="w-5 h-5 text-indigo-400" />
+              </div>
+              <div>
+                <h2 className="font-bold text-[#fafafa] text-lg">Ringkasan Transaksi</h2>
+                <p className="text-xs text-zinc-500 mt-0.5">Performa 30 hari terakhir</p>
+              </div>
             </div>
-            <div>
-              <h2 className="font-semibold text-[#fafafa]">Ringkasan Transaksi</h2>
-              <p className="text-xs text-zinc-500 mt-0.5">30 hari terakhir</p>
+            <div className="hidden sm:flex items-center gap-3">
+              <div className="flex items-center gap-1.5">
+                <div className="w-2.5 h-2.5 rounded-full bg-emerald-400" />
+                <span className="text-[11px] text-zinc-400">Masuk</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <div className="w-2.5 h-2.5 rounded-full bg-red-400" />
+                <span className="text-[11px] text-zinc-400">Keluar</span>
+              </div>
             </div>
           </div>
         </div>
         <div className="p-6 space-y-6">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div className="rounded-xl bg-[#16A34A]/[0.06] border border-[#16A34A]/20 p-4">
-              <div className="flex items-center gap-2 mb-1">
-                <ArrowDownCircle className="w-4 h-4 text-[#16A34A]" />
-                <p className="text-xs text-zinc-400">Total Masuk</p>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div className="rounded-xl p-5" style={{ background: 'rgba(22, 163, 74, 0.06)', border: '1px solid rgba(22, 163, 74, 0.12)' }}>
+              <div className="flex items-center gap-2 mb-2">
+                <ArrowDownCircle className="w-4 h-4 text-emerald-400" />
+                <p className="text-[11px] text-zinc-400 font-medium uppercase tracking-wider">Barang Masuk</p>
               </div>
-              <p className="text-xl font-bold text-[#16A34A]">+{totalMasuk30.toLocaleString()}</p>
+              <p className="text-3xl font-bold text-emerald-400">+{totalMasuk30.toLocaleString()}</p>
+              <p className="text-[11px] text-zinc-500 mt-1">unit dalam 30 hari</p>
             </div>
-            <div className="rounded-xl bg-[#DC2626]/[0.06] border border-[#DC2626]/20 p-4">
-              <div className="flex items-center gap-2 mb-1">
-                <ArrowUpCircle className="w-4 h-4 text-[#DC2626]" />
-                <p className="text-xs text-zinc-400">Total Keluar</p>
+            <div className="rounded-xl p-5" style={{ background: 'rgba(220, 38, 38, 0.06)', border: '1px solid rgba(220, 38, 38, 0.12)' }}>
+              <div className="flex items-center gap-2 mb-2">
+                <ArrowUpCircle className="w-4 h-4 text-red-400" />
+                <p className="text-[11px] text-zinc-400 font-medium uppercase tracking-wider">Barang Keluar</p>
               </div>
-              <p className="text-xl font-bold text-[#DC2626]">-{totalKeluar30.toLocaleString()}</p>
+              <p className="text-3xl font-bold text-red-400">-{totalKeluar30.toLocaleString()}</p>
+              <p className="text-[11px] text-zinc-500 mt-1">unit dalam 30 hari</p>
             </div>
-            <div className="rounded-xl bg-[#432DD7]/[0.06] border border-[#432DD7]/20 p-4">
-              <div className="flex items-center gap-2 mb-1">
-                <TrendingUp className="w-4 h-4 text-[#432DD7]" />
-                <p className="text-xs text-zinc-400">Selisih Net</p>
+            <div className="rounded-xl p-5" style={{ background: 'rgba(99, 102, 241, 0.06)', border: '1px solid rgba(99, 102, 241, 0.12)' }}>
+              <div className="flex items-center gap-2 mb-2">
+                <TrendingUp className="w-4 h-4 text-indigo-400" />
+                <p className="text-[11px] text-zinc-400 font-medium uppercase tracking-wider">Selisih Net</p>
               </div>
-              <p className={`text-xl font-bold ${netSelisih >= 0 ? 'text-[#16A34A]' : 'text-[#DC2626]'}`}>
+              <p className={`text-3xl font-bold ${netSelisih >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
                 {netSelisih >= 0 ? '+' : ''}{netSelisih.toLocaleString()}
               </p>
+              <p className="text-[11px] text-zinc-500 mt-1">{netSelisih >= 0 ? 'stok bertambah' : 'stok berkurang'}</p>
             </div>
           </div>
-          <RechartsBarChart data={weeklyData} />
+          <div className="rounded-xl p-4" style={{ background: 'rgba(255,255,255,0.02)' }}>
+            <RechartsBarChart data={weeklyData} />
+          </div>
         </div>
       </div>
 
