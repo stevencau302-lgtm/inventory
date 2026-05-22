@@ -562,10 +562,8 @@ function BulkEntryForm({ products, router, toast }: { products: Product[]; route
     setRows(rows.filter((_, i) => i !== index))
   }
 
-  const updateRow = (index: number, field: string, value: any) => {
-    const updated = [...rows]
-    ;(updated[index] as any)[field] = value
-    setRows(updated)
+  const updateRow = (index: number, fields: Record<string, any>) => {
+    setRows(prev => prev.map((r, i) => i === index ? { ...r, ...fields } : r))
   }
 
   const selectProduct = (index: number, productId: string) => {
@@ -687,9 +685,9 @@ function BulkEntryForm({ products, router, toast }: { products: Product[]; route
                   <input
                     type="text"
                     value={row.search}
-                    onChange={e => { updateRow(index, 'search', e.target.value); updateRow(index, 'showDropdown', true); updateRow(index, 'productId', '') }}
-                    onFocus={() => updateRow(index, 'showDropdown', true)}
-                    onBlur={() => setTimeout(() => updateRow(index, 'showDropdown', false), 200)}
+                    onChange={e => { updateRow(index, { search: e.target.value, showDropdown: true, productId: '' }) }}
+                    onFocus={() => updateRow(index, { showDropdown: true })}
+                    onBlur={() => setTimeout(() => updateRow(index, { showDropdown: false }), 250)}
                     className="w-full rounded-lg text-xs px-3 py-2 bg-[#0f0f0f] text-[#fafafa] border-none focus:outline-none focus:ring-1 focus:ring-[#FDC800]/50 placeholder:text-zinc-600"
                     placeholder="Pilih produk..."
                   />
@@ -713,7 +711,7 @@ function BulkEntryForm({ products, router, toast }: { products: Product[]; route
                   type="number"
                   min={1}
                   value={row.quantity}
-                  onChange={e => updateRow(index, 'quantity', Math.max(1, +e.target.value))}
+                  onChange={e => updateRow(index, { quantity: Math.max(1, +e.target.value) })}
                   className="w-full rounded-lg text-xs text-center px-2 py-2 bg-[#0f0f0f] text-[#fafafa] border-none focus:outline-none focus:ring-1 focus:ring-[#FDC800]/50"
                 />
 
@@ -721,7 +719,7 @@ function BulkEntryForm({ products, router, toast }: { products: Product[]; route
                 <input
                   type="date"
                   value={row.date}
-                  onChange={e => updateRow(index, 'date', e.target.value)}
+                  onChange={e => updateRow(index, { date: e.target.value })}
                   className="w-full rounded-lg text-xs px-2 py-2 bg-[#0f0f0f] text-[#fafafa] border-none focus:outline-none focus:ring-1 focus:ring-[#FDC800]/50"
                   style={{ colorScheme: 'dark' }}
                 />
@@ -730,7 +728,7 @@ function BulkEntryForm({ products, router, toast }: { products: Product[]; route
                 <input
                   type="text"
                   value={row.note}
-                  onChange={e => updateRow(index, 'note', e.target.value)}
+                  onChange={e => updateRow(index, { note: e.target.value })}
                   className="w-full rounded-lg text-xs px-3 py-2 bg-[#0f0f0f] text-[#fafafa] border-none focus:outline-none focus:ring-1 focus:ring-[#FDC800]/50 placeholder:text-zinc-600"
                   placeholder="Opsional"
                 />
