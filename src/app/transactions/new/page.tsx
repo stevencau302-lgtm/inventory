@@ -547,66 +547,65 @@ export default function NewTransactionPage() {
 // Bulk Entry Form Component
 function BulkEntryForm({ products, router, toast }: { products: Product[]; router: any; toast: any }) {
   const [type, setType] = useState<TransactionType>('in')
-  const [items, setItems] = useState<{ productId: string; productName: string; quantity: number }[]>([])
-  const [selectedProduct, setSelectedProduct] = useState('')
-  const [quantity, setQuantity] = useState(1)
-  const [productSearch, setProductSearch] = useState('')
-  const [showDropdown, setShowDropdown] = useState(false)
-  const [note, setNote] = useState('')
-  const [date, setDate] = useState(new Date().toISOString().split('T')[0])
+  const [rows, setRows] = useState<{ id: string; productId: string; quantity: number; date: string; note: string; search: string; showDropdown: boolean }[]>([
+    { id: uid(), productId: '', quantity: 1, date: new Date().toISOString().split('T')[0], note: '', search: '', showDropdown: false }
+  ])
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
-  const dropdownRef = useRef<HTMLDivElement>(null)
 
-  useEffect(() => {
-    const handleClick = (e: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) setShowDropdown(false)
-    }
-    document.addEventListener('mousedown', handleClick)
-    return () => document.removeEventListener('mousedown', handleClick)
-  }, [])
-
-  const filteredProducts = products.filter(p =>
-    p.name.toLowerCase().includes(productSearch.toLowerCase()) ||
-    p.sku.toLowerCase().includes(productSearch.toLowerCase())
-  )
-
-  const handleAddItem = () => {
-    if (!selectedProduct) { toast('Pilih produk dulu!', 'error'); return }
-    const product = products.find(p => p.id === selectedProduct)
-    if (!product) return
-    if (items.find(i => i.productId === selectedProduct)) { toast('Produk sudah ada di list', 'error'); return }
-    if (type === 'out' && product.stock < quantity) { toast(`Stok tidak cukup! Sisa: ${product.stock}`, 'error'); return }
-    setItems([...items, { productId: product.id, productName: product.name, quantity }])
-    setSelectedProduct('')
-    setProductSearch('')
-    setQuantity(1)
+  const addRow = () => {
+    setRows([...rows, { id: uid(), productId: '', quantity: 1, date: new Date().toISOString().split('T')[0], note: '', search: '', showDropdown: false }])
   }
 
-  const handleRemoveItem = (index: number) => setItems(items.filter((_, i) => i !== index))
+  const removeRow = (index: number) => {
+    if (rows.length <= 1) return
+    setRows(rows.filter((_, i) => i !== index))
+  }
+
+  const updateRow = (index: number, field: string, value: any) => {
+    const updated = [...rows]
+    ;(updated[index] as any)[field] = value
+    setRows(updated)
+  }
+
+  const selectProduct = (index: number, productId: string) => {
+    const product = products.find(p => p.id === productId)
+    if (!product) return
+    const updated = [...rows]
+    updated[index].productId = productId
+    updated[index].search = product.name
+    updated[index].showDropdown = false
+    setRows(updated)
+  }
 
   const handleSubmit = async () => {
-    if (items.length === 0) { toast('Tambah minimal 1 produk!', 'error'); return }
+    const validRows = rows.filter(r => r.productId)
+    if (validRows.length === 0) { toast('Pilih minimal 1 produk!', 'error'); return }
+
+    for (const row of validRows) {
+      const product = products.find(p => p.id === row.productId)
+      if (!product) continue
+      if (type === 'out' && product.stock < row.quantity) {
+        toast(`Stok ${product.name} tidak cukup! Sisa: ${product.stock}`, 'error')
+        return
+      }
+    }
+
     setLoading(true)
     await new Promise(r => setTimeout(r, 600))
 
-    for (const item of items) {
-      const product = products.find(p => p.id === item.productId)
+    for (const row of validRows) {
+      const product = products.find(p => p.id === row.productId)
       if (!product) continue
-      if (type === 'out' && product.stock < item.quantity) {
-        toast(`Stok ${product.name} tidak cukup!`, 'error')
-        setLoading(false)
-        return
-      }
-      const updatedProduct = { ...product, stock: type === 'in' ? product.stock + item.quantity : product.stock - item.quantity, updatedAt: new Date().toISOString() }
-      const newTx: Transaction = { id: uid(), productId: product.id, productName: product.name, type, quantity: item.quantity, note, createdAt: new Date(date).toISOString() }
+      const updatedProduct = { ...product, stock: type === 'in' ? product.stock + row.quantity : product.stock - row.quantity, updatedAt: new Date().toISOString() }
+      const newTx: Transaction = { id: uid(), productId: product.id, productName: product.name, type, quantity: row.quantity, note: row.note, createdAt: new Date(row.date).toISOString() }
       await saveProduct(updatedProduct)
       await saveTransaction(newTx)
     }
 
     setSuccess(true)
-    const totalQty = items.reduce((s, i) => s + i.quantity, 0)
-    toast(`${totalQty} item dari ${items.length} produk berhasil dicatat`, 'success')
+    const totalQty = validRows.reduce((s, r) => s + r.quantity, 0)
+    toast(`${totalQty} item dari ${validRows.length} produk berhasil dicatat`, 'success')
     setTimeout(() => router.push('/transactions'), 1200)
   }
 
@@ -623,120 +622,136 @@ function BulkEntryForm({ products, router, toast }: { products: Product[]; route
   }
 
   return (
-    <div className="max-w-3xl mx-auto pb-24 lg:pb-8">
+    <div className="max-w-5xl mx-auto pb-24 lg:pb-8">
       <button onClick={() => router.push('/transactions')} className="group flex items-center gap-2 text-sm font-semibold text-zinc-400 hover:text-[#fafafa] mb-6 transition-all active:scale-95">
         <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
         Kembali
       </button>
 
-      <div className="flex items-center gap-3 mb-8">
-        <div className="w-12 h-12 rounded-xl bg-[#FDC800]/10 flex items-center justify-center">
-          <Layers className="w-6 h-6 text-[#FDC800]" />
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-[#FDC800]/10 flex items-center justify-center">
+            <Layers className="w-5 h-5 text-[#FDC800]" />
+          </div>
+          <div>
+            <h1 className="text-lg sm:text-xl font-bold text-[#fafafa]">Bulk Entry</h1>
+            <p className="text-xs text-zinc-500">Catat banyak produk sekaligus</p>
+          </div>
         </div>
-        <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-[#fafafa]">Bulk Entry</h1>
-          <p className="text-sm text-zinc-500">Catat banyak produk sekaligus</p>
+
+        {/* Pill toggle tipe */}
+        <div className="flex rounded-lg overflow-hidden border border-[#2a2a2a]">
+          <button type="button" onClick={() => setType('in')} className={`px-3 py-1.5 text-xs font-bold transition-all ${type === 'in' ? 'bg-[#16A34A] text-white' : 'bg-[#2a2a2a] text-zinc-400'}`}>
+            Masuk
+          </button>
+          <button type="button" onClick={() => setType('out')} className={`px-3 py-1.5 text-xs font-bold transition-all ${type === 'out' ? 'bg-[#DC2626] text-white' : 'bg-[#2a2a2a] text-zinc-400'}`}>
+            Keluar
+          </button>
         </div>
       </div>
 
-      <div className="space-y-6">
-        {/* Tipe */}
-        <div>
-          <label className="text-xs font-bold uppercase tracking-wider text-zinc-400 mb-3 block">Tipe Transaksi</label>
-          <div className="grid grid-cols-2 gap-3">
-            <button type="button" onClick={() => setType('in')} className={`p-4 rounded-xl text-left transition-all active:scale-[0.97] ${type === 'in' ? 'bg-[#16A34A] text-white ring-2 ring-[#16A34A]/50' : 'bg-[#1a1a1a] text-zinc-300 border border-[#2a2a2a]'}`}>
-              <ArrowDownCircle className={`w-5 h-5 mb-2 ${type === 'in' ? 'text-white' : 'text-[#16A34A]'}`} />
-              <p className="text-sm font-bold">Barang Masuk</p>
-            </button>
-            <button type="button" onClick={() => setType('out')} className={`p-4 rounded-xl text-left transition-all active:scale-[0.97] ${type === 'out' ? 'bg-[#DC2626] text-white ring-2 ring-[#DC2626]/50' : 'bg-[#1a1a1a] text-zinc-300 border border-[#2a2a2a]'}`}>
-              <ArrowUpCircle className={`w-5 h-5 mb-2 ${type === 'out' ? 'text-white' : 'text-[#DC2626]'}`} />
-              <p className="text-sm font-bold">Barang Keluar</p>
-            </button>
-          </div>
-        </div>
-
-        {/* Add product */}
-        <div className="rounded-xl bg-[#1a1a1a] border border-[#2a2a2a] p-4 space-y-3">
-          <label className="text-xs font-bold uppercase tracking-wider text-zinc-400 block">Tambah Produk</label>
-          <div className="relative" ref={dropdownRef}>
-            <div className="relative">
-              <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" />
-              <input
-                type="text"
-                value={productSearch}
-                onChange={e => { setProductSearch(e.target.value); setShowDropdown(true); setSelectedProduct('') }}
-                onFocus={() => setShowDropdown(true)}
-                className="w-full rounded-lg text-sm pl-10 pr-4 py-3 bg-[#0f0f0f] text-[#fafafa] border-none focus:outline-none focus:ring-2 focus:ring-[#FDC800]/50 placeholder:text-zinc-600"
-                placeholder="Cari produk..."
-              />
-            </div>
-            {showDropdown && (
-              <div className="absolute z-50 left-0 right-0 top-full mt-1 rounded-lg bg-[#0f0f0f] border border-[#2a2a2a] max-h-48 overflow-y-auto shadow-xl">
-                {filteredProducts.length === 0 ? (
-                  <p className="px-4 py-3 text-sm text-zinc-500 text-center">Tidak ditemukan</p>
-                ) : filteredProducts.slice(0, 8).map(p => (
-                  <button key={p.id} type="button" onClick={() => { setSelectedProduct(p.id); setProductSearch(p.name); setShowDropdown(false) }}
-                    className={`w-full flex items-center justify-between px-4 py-2.5 text-left hover:bg-[#FDC800]/5 border-b border-[#2a2a2a] last:border-b-0 ${selectedProduct === p.id ? 'bg-[#FDC800]/5' : ''}`}>
-                    <div>
-                      <p className="text-sm text-[#fafafa]">{p.name}</p>
-                      <p className="text-[11px] text-zinc-500">{p.sku} · Stok: {p.stock}</p>
-                    </div>
-                    <span className="text-[11px] text-zinc-500">{formatRp(p.price)}</span>
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-          <div className="flex gap-2">
-            <div className="flex items-center gap-1.5 flex-1">
-              <button type="button" onClick={() => setQuantity(Math.max(1, quantity - 1))} className="w-9 h-9 rounded-lg bg-[#0f0f0f] border border-[#2a2a2a] flex items-center justify-center text-[#fafafa] active:scale-90 transition-all shrink-0"><Minus className="w-3.5 h-3.5" /></button>
-              <input type="number" min={1} value={quantity} onChange={e => setQuantity(Math.max(1, +e.target.value))} className="flex-1 rounded-lg text-center text-sm font-bold py-2 bg-[#0f0f0f] text-[#fafafa] border-none focus:outline-none focus:ring-2 focus:ring-[#FDC800]/50" />
-              <button type="button" onClick={() => setQuantity(quantity + 1)} className="w-9 h-9 rounded-lg bg-[#0f0f0f] border border-[#2a2a2a] flex items-center justify-center text-[#fafafa] active:scale-90 transition-all shrink-0"><Plus className="w-3.5 h-3.5" /></button>
-            </div>
-            <button type="button" onClick={handleAddItem} disabled={!selectedProduct} className="px-4 py-2 rounded-lg bg-[#FDC800] text-[#000000] text-sm font-bold disabled:opacity-40 active:scale-95 transition-all">
-              <Plus className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-
-        {/* Items list */}
-        {items.length > 0 && (
-          <div className="space-y-2">
-            <label className="text-xs font-bold uppercase tracking-wider text-zinc-400 block">Produk ({items.length})</label>
-            {items.map((item, index) => (
-              <div key={`${item.productId}-${index}`} className="flex items-center gap-3 px-4 py-3 rounded-xl bg-[#1a1a1a] border border-[#2a2a2a]">
-                <div className="w-8 h-8 rounded-lg bg-[#FDC800]/10 flex items-center justify-center text-[9px] font-black text-[#FDC800] shrink-0">{item.productName.substring(0, 2).toUpperCase()}</div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-[#fafafa] truncate">{item.productName}</p>
-                  <p className="text-[11px] text-zinc-500">Qty: {item.quantity}</p>
-                </div>
-                <button type="button" onClick={() => handleRemoveItem(index)} className="w-8 h-8 rounded-lg bg-[#2a2a2a] flex items-center justify-center text-[#DC2626] active:scale-90 transition-all shrink-0">
-                  <X className="w-3.5 h-3.5" />
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Tanggal & Catatan */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label className="text-[11px] font-semibold text-zinc-500 uppercase tracking-wider mb-2 block">Tanggal</label>
-            <input type="date" value={date} onChange={e => setDate(e.target.value)} className="w-full rounded-lg text-sm px-4 py-3 bg-[#0f0f0f] text-[#fafafa] border-none focus:outline-none focus:ring-2 focus:ring-[#FDC800]/50" style={{ colorScheme: 'dark' }} />
-          </div>
-          <div>
-            <label className="text-[11px] font-semibold text-zinc-500 uppercase tracking-wider mb-2 block">Catatan (opsional)</label>
-            <input type="text" value={note} onChange={e => setNote(e.target.value)} className="w-full rounded-lg text-sm px-4 py-3 bg-[#0f0f0f] text-[#fafafa] border-none focus:outline-none focus:ring-2 focus:ring-[#FDC800]/50 placeholder:text-zinc-600" placeholder="Catatan..." />
-          </div>
-        </div>
-
-        {/* Submit */}
-        <div className="flex justify-end gap-3 pt-2">
-          <button type="button" onClick={() => router.push('/transactions')} className="px-5 py-3 rounded-xl text-sm font-bold bg-[#1a1a1a] border border-[#2a2a2a] text-zinc-300 active:scale-95 transition-all">Batal</button>
-          <button type="button" onClick={handleSubmit} disabled={loading || items.length === 0} className="px-6 py-3 rounded-xl text-sm font-bold bg-[#FDC800] text-[#000000] disabled:opacity-40 flex items-center gap-2 active:scale-[0.97] transition-all shadow-lg shadow-[#FDC800]/20">
-            {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Save className="w-4 h-4" />Catat {items.length} Transaksi</>}
+      {/* Item Transaksi Section */}
+      <div className="rounded-xl bg-[#1a1a1a] border border-[#2a2a2a] overflow-hidden">
+        <div className="flex items-center justify-between px-4 py-3 border-b border-[#2a2a2a]">
+          <p className="text-xs font-bold uppercase tracking-wider text-zinc-400">Item Transaksi</p>
+          <button type="button" onClick={addRow} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#FDC800] text-[#000000] text-[11px] font-bold active:scale-95 transition-all">
+            <Plus className="w-3.5 h-3.5" />
+            Tambah Baris
           </button>
         </div>
+
+        {/* Table header - desktop */}
+        <div className="hidden md:grid grid-cols-[40px_1fr_80px_120px_1fr_40px] gap-2 px-4 py-2 bg-[#0f0f0f] border-b border-[#2a2a2a]">
+          <span className="text-[10px] font-bold text-zinc-500 uppercase">#</span>
+          <span className="text-[10px] font-bold text-zinc-500 uppercase">Produk</span>
+          <span className="text-[10px] font-bold text-zinc-500 uppercase">Jumlah</span>
+          <span className="text-[10px] font-bold text-zinc-500 uppercase">Tanggal</span>
+          <span className="text-[10px] font-bold text-zinc-500 uppercase">Keterangan</span>
+          <span className="text-[10px] font-bold text-zinc-500 uppercase text-center">Aksi</span>
+        </div>
+
+        {/* Rows */}
+        <div className="divide-y divide-[#2a2a2a]">
+          {rows.map((row, index) => {
+            const filteredForRow = products.filter(p =>
+              p.name.toLowerCase().includes(row.search.toLowerCase()) ||
+              p.sku.toLowerCase().includes(row.search.toLowerCase())
+            )
+            return (
+              <div key={row.id} className="md:grid md:grid-cols-[40px_1fr_80px_120px_1fr_40px] md:gap-2 md:items-center px-4 py-3 space-y-2 md:space-y-0">
+                {/* # */}
+                <span className="hidden md:block text-xs text-zinc-500 font-medium">{index + 1}</span>
+
+                {/* Produk */}
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={row.search}
+                    onChange={e => { updateRow(index, 'search', e.target.value); updateRow(index, 'showDropdown', true); updateRow(index, 'productId', '') }}
+                    onFocus={() => updateRow(index, 'showDropdown', true)}
+                    onBlur={() => setTimeout(() => updateRow(index, 'showDropdown', false), 200)}
+                    className="w-full rounded-lg text-xs px-3 py-2 bg-[#0f0f0f] text-[#fafafa] border-none focus:outline-none focus:ring-1 focus:ring-[#FDC800]/50 placeholder:text-zinc-600"
+                    placeholder="Pilih produk..."
+                  />
+                  {row.showDropdown && row.search && (
+                    <div className="absolute z-50 left-0 right-0 top-full mt-1 rounded-lg bg-[#0f0f0f] border border-[#2a2a2a] max-h-36 overflow-y-auto shadow-xl">
+                      {filteredForRow.slice(0, 5).map(p => (
+                        <button key={p.id} type="button" onMouseDown={() => selectProduct(index, p.id)}
+                          className="w-full px-3 py-2 text-left hover:bg-[#FDC800]/5 border-b border-[#2a2a2a] last:border-b-0">
+                          <p className="text-xs text-[#fafafa]">{p.name}</p>
+                          <p className="text-[10px] text-zinc-500">{p.sku} · Stok: {p.stock}</p>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Jumlah */}
+                <input
+                  type="number"
+                  min={1}
+                  value={row.quantity}
+                  onChange={e => updateRow(index, 'quantity', Math.max(1, +e.target.value))}
+                  className="w-full rounded-lg text-xs text-center px-2 py-2 bg-[#0f0f0f] text-[#fafafa] border-none focus:outline-none focus:ring-1 focus:ring-[#FDC800]/50"
+                />
+
+                {/* Tanggal */}
+                <input
+                  type="date"
+                  value={row.date}
+                  onChange={e => updateRow(index, 'date', e.target.value)}
+                  className="w-full rounded-lg text-xs px-2 py-2 bg-[#0f0f0f] text-[#fafafa] border-none focus:outline-none focus:ring-1 focus:ring-[#FDC800]/50"
+                  style={{ colorScheme: 'dark' }}
+                />
+
+                {/* Keterangan */}
+                <input
+                  type="text"
+                  value={row.note}
+                  onChange={e => updateRow(index, 'note', e.target.value)}
+                  className="w-full rounded-lg text-xs px-3 py-2 bg-[#0f0f0f] text-[#fafafa] border-none focus:outline-none focus:ring-1 focus:ring-[#FDC800]/50 placeholder:text-zinc-600"
+                  placeholder="Opsional"
+                />
+
+                {/* Hapus */}
+                <div className="flex justify-center">
+                  <button type="button" onClick={() => removeRow(index)} disabled={rows.length <= 1}
+                    className="w-7 h-7 rounded-lg bg-[#2a2a2a] flex items-center justify-center text-[#DC2626] disabled:opacity-30 active:scale-90 transition-all">
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      </div>
+
+      {/* Submit */}
+      <div className="flex justify-end gap-3 mt-6">
+        <button type="button" onClick={() => router.push('/transactions')} className="px-5 py-3 rounded-xl text-sm font-bold bg-[#1a1a1a] border border-[#2a2a2a] text-zinc-300 active:scale-95 transition-all">Batal</button>
+        <button type="button" onClick={handleSubmit} disabled={loading || rows.filter(r => r.productId).length === 0} className="px-6 py-3 rounded-xl text-sm font-bold bg-[#FDC800] text-[#000000] disabled:opacity-40 flex items-center gap-2 active:scale-[0.97] transition-all shadow-lg shadow-[#FDC800]/20">
+          {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Save className="w-4 h-4" />Catat {rows.filter(r => r.productId).length} Transaksi</>}
+        </button>
       </div>
 
       <style jsx global>{`
