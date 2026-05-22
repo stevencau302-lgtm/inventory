@@ -212,7 +212,6 @@ export default function ReportsPage() {
                 </div>
                 <div className="h-2 rounded-full bg-white/[0.04] overflow-hidden">
                   <div className="h-full rounded-full transition-all duration-700 ease-out" style={{ width: `${pct}%`, background: cat.color || '#a855f7' }} />
-                  </div>
                 </div>
               </div>
             )
