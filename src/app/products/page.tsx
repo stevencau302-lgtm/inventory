@@ -54,15 +54,18 @@ export default function ProductsPage() {
     let updated: Product[]
     const existing = products.findIndex(p => p.id === product.id)
     if (existing > -1) {
+      // Editing: preserve current stock (stock changes only via transactions)
+      const preservedProduct = { ...product, stock: products[existing].stock }
       updated = [...products]
-      updated[existing] = product
+      updated[existing] = preservedProduct
       toast('Produk berhasil diperbarui!', 'success')
+      saveProduct(preservedProduct)
     } else {
       updated = [product, ...products]
       toast('Produk berhasil ditambahkan!', 'success')
+      saveProduct(product)
     }
     setProducts(updated)
-    saveProduct(product)
     localStorage.setItem('inv_products', JSON.stringify(updated))
     setModalOpen(false)
     setEditProduct(null)
@@ -97,7 +100,7 @@ export default function ProductsPage() {
             </div>
             <div>
               <h1 className="text-2xl lg:text-3xl font-bold text-white">Master Produk</h1>
-              <p className="text-zinc-400 text-sm mt-0.5">{products.length} produk terdaftar</p>
+              <p className="text-zinc-400 text-sm mt-0.5">{products.length} produk terdaftar &middot; Data barang & stok awal</p>
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-2">

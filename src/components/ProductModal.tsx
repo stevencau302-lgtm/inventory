@@ -136,13 +136,20 @@ export default function ProductModal({ isOpen, onClose, onSave, product, categor
                 </select>
               </div>
 
-              {/* Stok */}
+              {/* Stok Awal (only editable on new product) */}
               <div className="space-y-1.5">
                 <label className="text-[11px] font-bold uppercase tracking-wider flex items-center gap-1.5" style={{ color: '#a1a1aa' }}>
                   <svg className="w-3.5 h-3.5 text-emerald-400" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" /></svg>
-                  Stok
+                  {product ? 'Stok Saat Ini' : 'Stok Awal'}
                 </label>
-                <input type="number" inputMode="numeric" required min={0} value={stock} onChange={e => setStock(+e.target.value)} className="w-full rounded-lg text-sm px-3 py-2.5 sm:px-4 sm:py-3 font-medium focus:outline-none focus:ring-2 focus:ring-[#FDC800]/50" style={{ background: '#0f0f0f', color: '#fafafa' }} />
+                {product ? (
+                  <div className="w-full rounded-lg text-sm px-3 py-2.5 sm:px-4 sm:py-3 font-medium flex items-center justify-between" style={{ background: '#0f0f0f', color: '#71717a' }}>
+                    <span>{stock}</span>
+                    <span className="text-[10px] text-zinc-600">Ubah via Transaksi</span>
+                  </div>
+                ) : (
+                  <input type="number" inputMode="numeric" required min={0} value={stock} onChange={e => setStock(+e.target.value)} className="w-full rounded-lg text-sm px-3 py-2.5 sm:px-4 sm:py-3 font-medium focus:outline-none focus:ring-2 focus:ring-[#FDC800]/50" style={{ background: '#0f0f0f', color: '#fafafa' }} placeholder="Stok pertama kali masuk" />
+                )}
               </div>
 
               {/* Harga */}
