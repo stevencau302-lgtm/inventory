@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Product, Transaction, getProducts, getTransactions, formatRp, loadSampleData, fetchProducts, fetchTransactions, deleteTransaction, saveTransaction } from '@/lib/store'
+import { Product, Transaction, getProducts, getTransactions, formatRp, loadSampleData, fetchProducts, fetchTransactions, deleteTransaction, saveTransaction, saveProduct } from '@/lib/store'
 import { useToast } from '@/components/Toast'
 import DeleteModal from '@/components/DeleteModal'
 import Link from 'next/link'
@@ -99,9 +99,23 @@ export default function TransactionsPage() {
   }
 
   const confirmDelete = async () => {
+    // Find the transaction to rollback stock
+    const tx = transactions.find(t => t.id === deleteModal.id)
+    if (tx) {
+      const product = products.find(p => p.id === tx.productId)
+      if (product) {
+        // Rollback: if it was 'out', add stock back; if 'in', subtract stock back
+        const rollbackStock = tx.type === 'out'
+          ? product.stock + tx.quantity
+          : Math.max(0, product.stock - tx.quantity)
+        const updatedProduct = { ...product, stock: rollbackStock, updatedAt: new Date().toISOString() }
+        await saveProduct(updatedProduct)
+        setProducts(prev => prev.map(p => p.id === product.id ? updatedProduct : p))
+      }
+    }
     await deleteTransaction(deleteModal.id)
     setTransactions(prev => prev.filter(t => t.id !== deleteModal.id))
-    toast('Transaksi berhasil dihapus!', 'success')
+    toast('Transaksi dihapus & stok dikembalikan!', 'success')
     setDeleteModal({ open: false, id: '', name: '' })
   }
 
