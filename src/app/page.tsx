@@ -37,6 +37,7 @@ export default function Dashboard() {
       const sold = transactions.filter(t => t.productId === p.id && t.type === 'out').reduce((s, t) => s + t.quantity, 0)
       return { ...p, sold }
     })
+    .filter(p => p.sold > 0)
     .sort((a, b) => b.sold - a.sold)
     .slice(0, 5)
 
@@ -100,16 +101,23 @@ export default function Dashboard() {
             <h3 className="text-sm font-semibold text-white">Produk Terlaris</h3>
           </div>
           <div className="p-4 space-y-2">
-            {bestSellers.map((p, i) => (
-              <div key={p.id} className="flex items-center gap-3 px-3 py-3 rounded-lg bg-white/[0.02] border border-white/[0.05]">
-                <div className="w-8 h-8 rounded-lg bg-[#FDC800]/10 text-[#FDC800] flex items-center justify-center text-xs font-bold shrink-0">{i + 1}</div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-[#fafafa] truncate">{p.name}</p>
-                  <p className="text-[11px] text-zinc-500 mt-0.5">{p.sold} terjual</p>
-                </div>
-                {i < 3 && <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-[#FDC800]/10 text-[#FDC800] shrink-0">Best Seller</span>}
+            {bestSellers.length === 0 ? (
+              <div className="text-center py-10">
+                <svg className="w-12 h-12 mx-auto text-zinc-600 mb-3" fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" /></svg>
+                <p className="text-zinc-500 text-sm">Belum ada data penjualan</p>
               </div>
-            ))}
+            ) : (
+              bestSellers.map((p, i) => (
+                <div key={p.id} className="flex items-center gap-3 px-3 py-3 rounded-lg bg-white/[0.02] border border-white/[0.05]">
+                  <div className="w-8 h-8 rounded-lg bg-[#FDC800]/10 text-[#FDC800] flex items-center justify-center text-xs font-bold shrink-0">{i + 1}</div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-[#fafafa] truncate">{p.name}</p>
+                    <p className="text-[11px] text-zinc-500 mt-0.5">{p.sold} terjual</p>
+                  </div>
+                  {i < 3 && p.sold > 0 && <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-[#FDC800]/10 text-[#FDC800] shrink-0">Best Seller</span>}
+                </div>
+              ))
+            )}
           </div>
         </div>
       </div>
