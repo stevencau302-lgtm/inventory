@@ -6,8 +6,80 @@ import { Product, Category, Transaction, fetchProducts, fetchCategories, fetchTr
 import {
   BarChart3, Package, DollarSign, Tag, TrendingUp, TrendingDown,
   AlertTriangle, XCircle, ArrowDownCircle, ArrowUpCircle,
-  Activity, PieChart, Loader2, Download, RotateCcw, Skull, Sparkles
+  Activity, PieChart, Loader2, RotateCcw, Skull,
+  Calendar, ChevronDown, FileSpreadsheet
 } from 'lucide-react'
+
+type DateRange = '7d' | '30d' | '3m' | '6m' | '1y' | 'all' | 'custom'
+
+function getDateRangeMs(range: DateRange, customFrom?: string, customTo?: string): { from: number; to: number; label: string } {
+  const now = Date.now()
+  const to = now
+  switch (range) {
+    case '7d': return { from: now - 7 * 24 * 60 * 60 * 1000, to, label: '7 Hari Terakhir' }
+    case '30d': return { from: now - 30 * 24 * 60 * 60 * 1000, to, label: '30 Hari Terakhir' }
+    case '3m': return { from: now - 90 * 24 * 60 * 60 * 1000, to, label: '3 Bulan Terakhir' }
+    case '6m': return { from: now - 180 * 24 * 60 * 60 * 1000, to, label: '6 Bulan Terakhir' }
+    case '1y': return { from: now - 365 * 24 * 60 * 60 * 1000, to, label: '1 Tahun Terakhir' }
+    case 'all': return { from: 0, to, label: 'Semua Waktu' }
+    case 'custom': {
+      const f = customFrom ? new Date(customFrom).getTime() : now - 30 * 24 * 60 * 60 * 1000
+      const t = customTo ? new Date(customTo + 'T23:59:59').getTime() : now
+      return { from: f, to: t, label: 'Custom' }
+    }
+    default: return { from: now - 30 * 24 * 60 * 60 * 1000, to, label: '30 Hari Terakhir' }
+  }
+}
+
+function exportToCSV(products: Product[], transactions: Transaction[], categories: Category[], rangeLabel: string) {
+  const rows: string[][] = []
+
+  // Sheet 1: Ringkasan Produk
+  rows.push(['=== LAPORAN INVENTORY ==='])
+  rows.push([`Periode: ${rangeLabel}`])
+  rows.push([`Tanggal Export: ${new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })}`])
+  rows.push([])
+  rows.push(['--- DAFTAR PRODUK ---'])
+  rows.push(['Nama', 'SKU', 'Kategori', 'Stok', 'Min Stok', 'Harga', 'Nilai Stok', 'Status'])
+  products.forEach(p => {
+    const status = p.stock === 0 ? 'Habis' : p.stock <= p.minStock ? 'Stok Rendah' : 'Tersedia'
+    rows.push([p.name, p.sku, p.category, String(p.stock), String(p.minStock), String(p.price), String(p.price * p.stock), status])
+  })
+
+  rows.push([])
+  rows.push(['--- TRANSAKSI ---'])
+  rows.push(['Tanggal', 'Produk', 'Tipe', 'Jumlah', 'Catatan'])
+  transactions.forEach(t => {
+    rows.push([
+      new Date(t.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
+      t.productName,
+      t.type === 'in' ? 'Masuk' : 'Keluar',
+      String(t.quantity),
+      t.note || '-'
+    ])
+  })
+
+  rows.push([])
+  rows.push(['--- RINGKASAN ---'])
+  rows.push(['Total Produk', String(products.length)])
+  rows.push(['Total Unit', String(products.reduce((s, p) => s + p.stock, 0))])
+  rows.push(['Total Nilai Inventory', String(products.reduce((s, p) => s + p.price * p.stock, 0))])
+  rows.push(['Total Transaksi', String(transactions.length)])
+  rows.push(['Total Masuk', String(transactions.filter(t => t.type === 'in').reduce((s, t) => s + t.quantity, 0))])
+  rows.push(['Total Keluar', String(transactions.filter(t => t.type === 'out').reduce((s, t) => s + t.quantity, 0))])
+  rows.push(['Total Kategori', String(categories.length)])
+
+  const csvContent = rows.map(row => row.map(cell => `"${cell.replace(/"/g, '""')}"`).join(',')).join('\n')
+  const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' })
+  const url = URL.createObjectURL(blob)
+  const link = document.createElement('a')
+  link.href = url
+  link.download = `laporan-inventory-${new Date().toISOString().split('T')[0]}.csv`
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
+  URL.revokeObjectURL(url)
+}
 
 const RechartsBarChart = dynamic(
   () => import('recharts').then((mod) => {
@@ -44,6 +116,10 @@ export default function ReportsPage() {
   const [categories, setCategories] = useState<Category[]>([])
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [mounted, setMounted] = useState(false)
+  const [dateRange, setDateRange] = useState<DateRange>('30d')
+  const [customFrom, setCustomFrom] = useState('')
+  const [customTo, setCustomTo] = useState('')
+  const [showDatePicker, setShowDatePicker] = useState(false)
 
   useEffect(() => {
     async function loadData() {
@@ -85,58 +161,62 @@ export default function ReportsPage() {
   })).sort((a, b) => b.value - a.value), [categories, products])
 
 
-  const last30Days = useMemo(() => {
-    const now = Date.now()
-    const thirtyDaysAgo = now - 30 * 24 * 60 * 60 * 1000
-    return transactions.filter(t => new Date(t.createdAt).getTime() >= thirtyDaysAgo)
-  }, [transactions])
+  const { from: rangeFrom, to: rangeTo, label: rangeLabel } = useMemo(() => getDateRangeMs(dateRange, customFrom, customTo), [dateRange, customFrom, customTo])
 
-  const totalMasuk30 = useMemo(() => last30Days.filter(t => t.type === 'in').reduce((s, t) => s + t.quantity, 0), [last30Days])
-  const totalKeluar30 = useMemo(() => last30Days.filter(t => t.type === 'out').reduce((s, t) => s + t.quantity, 0), [last30Days])
-  const netSelisih = totalMasuk30 - totalKeluar30
+  const filteredTransactions = useMemo(() => {
+    return transactions.filter(t => {
+      const ts = new Date(t.createdAt).getTime()
+      return ts >= rangeFrom && ts <= rangeTo
+    })
+  }, [transactions, rangeFrom, rangeTo])
+
+  const totalMasukRange = useMemo(() => filteredTransactions.filter(t => t.type === 'in').reduce((s, t) => s + t.quantity, 0), [filteredTransactions])
+  const totalKeluarRange = useMemo(() => filteredTransactions.filter(t => t.type === 'out').reduce((s, t) => s + t.quantity, 0), [filteredTransactions])
+  const netSelisih = totalMasukRange - totalKeluarRange
 
   const weeklyData = useMemo(() => {
-    const now = Date.now()
+    const rangeDays = Math.max(1, Math.ceil((rangeTo - rangeFrom) / (24 * 60 * 60 * 1000)))
+    const numWeeks = Math.min(Math.max(Math.ceil(rangeDays / 7), 2), 12)
     const weeks: { week: string; masuk: number; keluar: number }[] = []
-    for (let i = 3; i >= 0; i--) {
-      const weekStart = now - (i + 1) * 7 * 24 * 60 * 60 * 1000
-      const weekEnd = now - i * 7 * 24 * 60 * 60 * 1000
+    const weekDuration = (rangeTo - rangeFrom) / numWeeks
+    for (let i = 0; i < numWeeks; i++) {
+      const weekStart = rangeFrom + i * weekDuration
+      const weekEnd = rangeFrom + (i + 1) * weekDuration
       const weekTx = transactions.filter(t => {
         const ts = new Date(t.createdAt).getTime()
         return ts >= weekStart && ts < weekEnd
       })
+      const label = numWeeks <= 4 ? `Minggu ${i + 1}` : new Date(weekStart).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })
       weeks.push({
-        week: `Minggu ${4 - i}`,
+        week: label,
         masuk: weekTx.filter(t => t.type === 'in').reduce((s, t) => s + t.quantity, 0),
         keluar: weekTx.filter(t => t.type === 'out').reduce((s, t) => s + t.quantity, 0),
       })
     }
     return weeks
-  }, [transactions])
+  }, [transactions, rangeFrom, rangeTo])
 
   const topActive = useMemo(() => {
     const outCounts: Record<string, { name: string; category: string; count: number }> = {}
-    transactions.filter(t => t.type === 'out').forEach(t => {
+    filteredTransactions.filter(t => t.type === 'out').forEach(t => {
       if (!outCounts[t.productId]) outCounts[t.productId] = { name: t.productName, category: '', count: 0 }
       outCounts[t.productId].count += t.quantity
       const prod = products.find(p => p.id === t.productId)
       if (prod) outCounts[t.productId].category = prod.category
     })
     return Object.values(outCounts).sort((a, b) => b.count - a.count).slice(0, 5)
-  }, [transactions, products])
+  }, [filteredTransactions, products])
 
   const topStagnant = useMemo(() => {
     const now = Date.now()
-    const thirtyDaysMs = 30 * 24 * 60 * 60 * 1000
     const eligibleProducts = products.filter(p => (now - new Date(p.createdAt).getTime()) >= 7 * 24 * 60 * 60 * 1000)
-    const recentOutTx = transactions.filter(t => t.type === 'out' && (now - new Date(t.createdAt).getTime()) < thirtyDaysMs)
     const outCounts: Record<string, number> = {}
-    recentOutTx.forEach(t => { outCounts[t.productId] = (outCounts[t.productId] || 0) + t.quantity })
+    filteredTransactions.filter(t => t.type === 'out').forEach(t => { outCounts[t.productId] = (outCounts[t.productId] || 0) + t.quantity })
     return eligibleProducts
       .map(p => ({ name: p.name, category: p.category, count: outCounts[p.id] || 0 }))
       .sort((a, b) => a.count - b.count)
       .slice(0, 5)
-  }, [products, transactions])
+  }, [products, filteredTransactions])
 
   const lowStock = useMemo(() => products.filter(p => p.stock > 0 && p.stock <= p.minStock), [products])
   const outStock = useMemo(() => products.filter(p => p.stock === 0), [products])
@@ -164,10 +244,78 @@ export default function ReportsPage() {
             <p className="text-zinc-500 text-sm mt-0.5">Ringkasan performa & status inventory</p>
           </div>
         </div>
-        <button className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium border border-white/[0.06] bg-white/[0.03] text-zinc-400 hover:text-zinc-200 hover:border-white/[0.12] transition-all">
-          <Download className="w-4 h-4" />
-          Export
-        </button>
+        <div className="flex items-center gap-2">
+          {/* Date Range Picker */}
+          <div className="relative">
+            <button
+              onClick={() => setShowDatePicker(!showDatePicker)}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium border border-white/[0.06] bg-white/[0.03] text-zinc-300 hover:text-white hover:border-white/[0.12] transition-all"
+            >
+              <Calendar className="w-4 h-4 text-indigo-400" />
+              <span>{rangeLabel}</span>
+              <ChevronDown className="w-3.5 h-3.5 text-zinc-500" />
+            </button>
+            {showDatePicker && (
+              <>
+                <div className="fixed inset-0 z-40" onClick={() => setShowDatePicker(false)} />
+                <div className="absolute right-0 top-full mt-2 z-50 w-72 rounded-xl border border-white/[0.08] bg-[#1a1a1e] shadow-2xl shadow-black/50 overflow-hidden">
+                  <div className="p-2 space-y-0.5">
+                    {([
+                      { value: '7d', label: '7 Hari Terakhir' },
+                      { value: '30d', label: '30 Hari Terakhir' },
+                      { value: '3m', label: '3 Bulan Terakhir' },
+                      { value: '6m', label: '6 Bulan Terakhir' },
+                      { value: '1y', label: '1 Tahun Terakhir' },
+                      { value: 'all', label: 'Semua Waktu' },
+                    ] as { value: DateRange; label: string }[]).map(opt => (
+                      <button
+                        key={opt.value}
+                        onClick={() => { setDateRange(opt.value); setShowDatePicker(false) }}
+                        className={`w-full text-left px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
+                          dateRange === opt.value ? 'bg-indigo-500/15 text-indigo-400' : 'text-zinc-300 hover:bg-white/[0.04]'
+                        }`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="border-t border-white/[0.06] p-3 space-y-2">
+                    <p className="text-[11px] text-zinc-500 font-medium uppercase tracking-wider">Custom Range</p>
+                    <div className="grid grid-cols-2 gap-2">
+                      <input
+                        type="date"
+                        value={customFrom}
+                        onChange={e => setCustomFrom(e.target.value)}
+                        className="w-full px-2.5 py-2 rounded-lg text-xs bg-black/30 border border-white/[0.06] text-zinc-300 outline-none focus:border-indigo-500/50"
+                      />
+                      <input
+                        type="date"
+                        value={customTo}
+                        onChange={e => setCustomTo(e.target.value)}
+                        className="w-full px-2.5 py-2 rounded-lg text-xs bg-black/30 border border-white/[0.06] text-zinc-300 outline-none focus:border-indigo-500/50"
+                      />
+                    </div>
+                    <button
+                      onClick={() => { if (customFrom) { setDateRange('custom'); setShowDatePicker(false) } }}
+                      disabled={!customFrom}
+                      className="w-full py-2 rounded-lg text-xs font-semibold bg-indigo-500/20 text-indigo-400 hover:bg-indigo-500/30 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                    >
+                      Terapkan
+                    </button>
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+          {/* Export CSV */}
+          <button
+            onClick={() => exportToCSV(products, filteredTransactions, categories, rangeLabel)}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium border border-white/[0.06] bg-white/[0.03] text-zinc-400 hover:text-emerald-400 hover:border-emerald-500/30 hover:bg-emerald-500/5 transition-all"
+          >
+            <FileSpreadsheet className="w-4 h-4" />
+            <span className="hidden sm:inline">Export CSV</span>
+          </button>
+        </div>
       </div>
 
 
@@ -226,7 +374,7 @@ export default function ReportsPage() {
       </GlassPanel>
 
 
-      {/* ===== RINGKASAN TRANSAKSI 30 HARI ===== */}
+      {/* ===== RINGKASAN TRANSAKSI ===== */}
       <GlassPanel>
         <div className="p-5 border-b border-white/[0.06]">
           <div className="flex items-center justify-between">
@@ -236,7 +384,7 @@ export default function ReportsPage() {
               </div>
               <div>
                 <h2 className="font-semibold text-white">Ringkasan Transaksi</h2>
-                <p className="text-xs text-zinc-500">Performa 30 hari terakhir</p>
+                <p className="text-xs text-zinc-500">Performa {rangeLabel.toLowerCase()}</p>
               </div>
             </div>
             <div className="hidden sm:flex items-center gap-3">
@@ -258,16 +406,16 @@ export default function ReportsPage() {
                 <ArrowDownCircle className="w-3.5 h-3.5 text-emerald-400" />
                 <p className="text-[11px] text-zinc-500 font-medium uppercase tracking-wider">Barang Masuk</p>
               </div>
-              <p className="text-2xl font-bold text-white">+{totalMasuk30.toLocaleString()}</p>
-              <p className="text-[11px] text-zinc-600 mt-0.5">unit dalam 30 hari</p>
+              <p className="text-2xl font-bold text-white">+{totalMasukRange.toLocaleString()}</p>
+              <p className="text-[11px] text-zinc-600 mt-0.5">unit · {rangeLabel.toLowerCase()}</p>
             </div>
             <div className="rounded-xl p-4 bg-white/[0.02] border border-white/[0.04]">
               <div className="flex items-center gap-2 mb-2">
                 <ArrowUpCircle className="w-3.5 h-3.5 text-red-400" />
                 <p className="text-[11px] text-zinc-500 font-medium uppercase tracking-wider">Barang Keluar</p>
               </div>
-              <p className="text-2xl font-bold text-white">-{totalKeluar30.toLocaleString()}</p>
-              <p className="text-[11px] text-zinc-600 mt-0.5">unit dalam 30 hari</p>
+              <p className="text-2xl font-bold text-white">-{totalKeluarRange.toLocaleString()}</p>
+              <p className="text-[11px] text-zinc-600 mt-0.5">unit · {rangeLabel.toLowerCase()}</p>
             </div>
             <div className="rounded-xl p-4 bg-white/[0.02] border border-white/[0.04]">
               <div className="flex items-center gap-2 mb-2">
