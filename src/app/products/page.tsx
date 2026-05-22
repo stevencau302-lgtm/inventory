@@ -200,14 +200,7 @@ export default function ProductsPage() {
                 <tr><td colSpan={8} className="border border-white/10 text-center py-12 text-slate-500">Tidak ada produk ditemukan</td></tr>
               )}
             </tbody>
-            <tfoot>
-              <tr className="bg-zinc-800 border-t-2 border-white/20">
-                <td colSpan={4} className="border border-white/10 px-3 py-2.5 text-xs font-medium text-zinc-300">Total: {filtered.length} produk</td>
-                <td className="border border-white/10 px-2 py-2.5 text-center font-mono text-xs font-medium text-zinc-300">{filtered.reduce((s, p) => s + p.stock, 0)}</td>
-                <td className="border border-white/10 px-3 py-2.5 text-right font-mono text-xs font-medium text-zinc-300">{formatRp(filtered.reduce((s, p) => s + p.price * p.stock, 0))}</td>
-                <td colSpan={2} className="border border-white/10 px-2 py-2.5 text-center text-xs text-zinc-500">Total Inventory</td>
-              </tr>
-            </tfoot>
+
           </table>
         </div>
       </div>
