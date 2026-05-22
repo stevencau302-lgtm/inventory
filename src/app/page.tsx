@@ -1,6 +1,6 @@
 'use client'
 import { useEffect, useState } from 'react'
-import { Product, Transaction, getProducts, getCategories, getTransactions, saveTransactions, formatRp, getStatus, getStatusLabel, loadSampleData, uid } from '@/lib/store'
+import { Product, Transaction, getProducts, getTransactions, formatRp, loadSampleData } from '@/lib/store'
 import dynamic from 'next/dynamic'
 
 const DashboardCharts = dynamic(() => import('@/components/DashboardCharts'), { ssr: false })
@@ -17,11 +17,7 @@ export default function Dashboard() {
     if (!p.length) { const d = loadSampleData(); p = d.products }
     setProducts(p)
 
-    let tx = getTransactions()
-    if (!tx.length) {
-      tx = generateSampleTransactions(p)
-      saveTransactions(tx)
-    }
+    const tx = getTransactions()
     setTransactions(tx)
     setMounted(true)
   }, [])
@@ -52,8 +48,13 @@ export default function Dashboard() {
     ? 'Semua stok tersedia'
     : 'Produk tidak tersedia'
 
+  // Calculate best sellers from actual out-transactions
+  const outTx = transactions.filter(t => t.type === 'out')
+  const salesMap: Record<string, number> = {}
+  outTx.forEach(t => { salesMap[t.productId] = (salesMap[t.productId] || 0) + t.quantity })
   const bestSellers = [...products]
-    .map(p => ({ ...p, sold: Math.max(0, (p.minStock * 5) - p.stock + 15) }))
+    .map(p => ({ ...p, sold: salesMap[p.id] || 0 }))
+    .filter(p => p.sold > 0)
     .sort((a, b) => b.sold - a.sold)
     .slice(0, 5)
 
@@ -91,26 +92,38 @@ export default function Dashboard() {
             <svg className="w-4 h-4 text-orange-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" /></svg>
             <h3 className="text-sm font-semibold text-white">Transaksi Terbaru</h3>
           </div>
-          <div className="p-4 space-y-2">
-            {paginatedTx.map(tx => (
-              <div key={tx.id} className="flex items-center justify-between px-3 py-2.5 rounded-xl bg-white/[0.03] border border-white/[0.05]">
-                <div>
-                  <p className="text-[13px] font-semibold text-zinc-200">{tx.productName}</p>
-                  <p className="text-[11px] text-zinc-500 mt-0.5">{new Date(tx.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
+          <div className="p-4">
+            {transactions.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-10 text-center">
+                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-orange-500/15 to-amber-500/15 border border-orange-500/15 flex items-center justify-center mb-3">
+                  <svg className="w-7 h-7 text-orange-400/70" fill="none" viewBox="0 0 24 24" strokeWidth={1.2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" /></svg>
                 </div>
-                <div className="flex items-center gap-3">
-                  <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${tx.type === 'in' ? 'bg-emerald-500/15 text-emerald-400' : 'bg-red-500/15 text-red-400'}`}>
-                    {tx.type === 'in' ? 'Masuk' : 'Keluar'}
-                  </span>
-                  <span className="text-[13px] font-semibold text-zinc-200">{tx.quantity} unit</span>
+                <h4 className="text-[13px] font-semibold text-zinc-300 mb-1">Belum ada transaksi</h4>
+                <p className="text-[11px] text-zinc-500 max-w-[200px]">Catat barang masuk atau keluar untuk memulai.</p>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {paginatedTx.map(tx => (
+                  <div key={tx.id} className="flex items-center justify-between px-3 py-2.5 rounded-xl bg-white/[0.03] border border-white/[0.05]">
+                    <div>
+                      <p className="text-[13px] font-semibold text-zinc-200">{tx.productName}</p>
+                      <p className="text-[11px] text-zinc-500 mt-0.5">{new Date(tx.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${tx.type === 'in' ? 'bg-emerald-500/15 text-emerald-400' : 'bg-red-500/15 text-red-400'}`}>
+                        {tx.type === 'in' ? 'Masuk' : 'Keluar'}
+                      </span>
+                      <span className="text-[13px] font-semibold text-zinc-200">{tx.quantity} unit</span>
+                    </div>
+                  </div>
+                ))}
+                <div className="flex items-center justify-center gap-4 pt-3 border-t border-white/[0.06]">
+                  <button onClick={() => setTxPage(p => Math.max(1, p - 1))} className="px-3 py-1.5 rounded-lg border border-white/[0.12] text-xs font-medium text-zinc-400 hover:bg-orange-600 hover:text-white hover:border-orange-600 transition">Prev</button>
+                  <span className="text-xs text-zinc-500">{txPage} / {totalTxPages}</span>
+                  <button onClick={() => setTxPage(p => Math.min(totalTxPages, p + 1))} className="px-3 py-1.5 rounded-lg border border-white/[0.12] text-xs font-medium text-zinc-400 hover:bg-orange-600 hover:text-white hover:border-orange-600 transition">Next</button>
                 </div>
               </div>
-            ))}
-            <div className="flex items-center justify-center gap-4 pt-3 border-t border-white/[0.06]">
-              <button onClick={() => setTxPage(p => Math.max(1, p - 1))} className="px-3 py-1.5 rounded-lg border border-white/[0.12] text-xs font-medium text-zinc-400 hover:bg-orange-600 hover:text-white hover:border-orange-600 transition">Prev</button>
-              <span className="text-xs text-zinc-500">{txPage} / {totalTxPages}</span>
-              <button onClick={() => setTxPage(p => Math.min(totalTxPages, p + 1))} className="px-3 py-1.5 rounded-lg border border-white/[0.12] text-xs font-medium text-zinc-400 hover:bg-orange-600 hover:text-white hover:border-orange-600 transition">Next</button>
-            </div>
+            )}
           </div>
         </div>
 
@@ -120,19 +133,31 @@ export default function Dashboard() {
             <svg className="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 013 3h-15a3 3 0 013-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497m5.007 0a7.454 7.454 0 01-.982-3.172M9.497 14.25a7.454 7.454 0 00.981-3.172M5.25 4.236c-.996.178-1.768.535-2.251 1.084m13.004 0a15.522 15.522 0 00-12.003 0m12.003 0c.996.178 1.768.535 2.251 1.084" /></svg>
             <h3 className="text-sm font-semibold text-white">Produk Terlaris</h3>
           </div>
-          <div className="p-4 space-y-2">
-            {bestSellers.map((p, i) => (
-              <div key={p.id} className="flex items-center justify-between px-3 py-2.5 rounded-xl bg-white/[0.03] border border-white/[0.05]">
-                <div className="flex items-center gap-3">
-                  <div className="w-7 h-7 rounded-full bg-orange-500/15 text-orange-400 flex items-center justify-center text-[11px] font-bold">{i + 1}</div>
-                  <span className="text-[13px] font-medium text-zinc-200">{p.name}</span>
+          <div className="p-4">
+            {bestSellers.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-10 text-center">
+                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-500/15 to-cyan-500/15 border border-emerald-500/15 flex items-center justify-center mb-3">
+                  <svg className="w-7 h-7 text-emerald-400/70" fill="none" viewBox="0 0 24 24" strokeWidth={1.2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 013 3h-15a3 3 0 013-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497m5.007 0a7.454 7.454 0 01-.982-3.172M9.497 14.25a7.454 7.454 0 00.981-3.172M5.25 4.236c-.996.178-1.768.535-2.251 1.084m13.004 0a15.522 15.522 0 00-12.003 0m12.003 0c.996.178 1.768.535 2.251 1.084" /></svg>
                 </div>
-                <div className="flex items-center gap-2.5">
-                  {i < 3 && <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-orange-500/15 text-orange-300">Best Seller</span>}
-                  <span className="text-[12px] text-zinc-500">{p.sold} terjual</span>
-                </div>
+                <h4 className="text-[13px] font-semibold text-zinc-300 mb-1">Belum ada produk terlaris</h4>
+                <p className="text-[11px] text-zinc-500 max-w-[200px]">Ranking akan muncul setelah transaksi keluar pertama.</p>
               </div>
-            ))}
+            ) : (
+              <div className="space-y-2">
+                {bestSellers.map((p, i) => (
+                  <div key={p.id} className="flex items-center justify-between px-3 py-2.5 rounded-xl bg-white/[0.03] border border-white/[0.05]">
+                    <div className="flex items-center gap-3">
+                      <div className="w-7 h-7 rounded-full bg-orange-500/15 text-orange-400 flex items-center justify-center text-[11px] font-bold">{i + 1}</div>
+                      <span className="text-[13px] font-medium text-zinc-200">{p.name}</span>
+                    </div>
+                    <div className="flex items-center gap-2.5">
+                      {i < 3 && <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-orange-500/15 text-orange-300">Best Seller</span>}
+                      <span className="text-[12px] text-zinc-500">{p.sold} terjual</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -196,23 +221,4 @@ function StatCard({ icon, label, value, desc, color }: { icon: string; label: st
   )
 }
 
-function generateSampleTransactions(products: Product[]): Transaction[] {
-  const txs: Transaction[] = []
-  const now = new Date()
-  for (let i = 0; i < 15; i++) {
-    const p = products[Math.floor(Math.random() * Math.min(products.length, 8))]
-    if (!p) continue
-    const d = new Date(now)
-    d.setDate(d.getDate() - Math.floor(Math.random() * 14))
-    txs.push({
-      id: uid(),
-      productId: p.id,
-      productName: p.name,
-      type: Math.random() > 0.4 ? 'in' : 'out',
-      quantity: Math.floor(Math.random() * 20) + 1,
-      note: '',
-      createdAt: d.toISOString(),
-    })
-  }
-  return txs.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-}
+
