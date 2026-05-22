@@ -155,13 +155,11 @@ export async function saveProduct(product: Product): Promise<void> {
 }
 
 export async function deleteProduct(id: string): Promise<void> {
-  console.log('[Supabase] Deleting product:', id)
   const { error, status, statusText } = await supabase.from('products').delete().eq('id', id)
   if (error) {
     console.error('[Supabase] deleteProduct FAILED:', error.message, error.code, error.details)
     alert('Delete gagal: ' + error.message)
   } else {
-    console.log('[Supabase] deleteProduct SUCCESS, status:', status, statusText)
   }
 }
 
