@@ -1,0 +1,105 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    @apply antialiased;
+    background: #09090B;
+    color: #fafafa;
+    min-height: 100vh;
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply rounded-xl relative overflow-hidden transition-all duration-200;
+    background: #161616;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  .glass-card:hover {
+    border-color: rgba(255, 255, 255, 0.12);
+  }
+
+  .form-input {
+    @apply w-full px-4 py-3 rounded-xl text-sm font-medium outline-none transition-all duration-150;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: #fafafa;
+  }
+  .form-input::placeholder {
+    color: #52525b;
+  }
+  .form-input:focus {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    background: rgba(255, 255, 255, 0.06);
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold
+           transition-all duration-150 cursor-pointer active:scale-[0.97];
+    background: #6366f1;
+    color: #fff;
+    box-shadow: 0 2px 12px rgba(99, 102, 241, 0.25);
+  }
+  .btn-primary:hover {
+    background: #4f46e5;
+    box-shadow: 0 4px 20px rgba(99, 102, 241, 0.35);
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold
+           transition-all duration-150 cursor-pointer active:scale-[0.97];
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: #d4d4d8;
+  }
+  .btn-ghost:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #fafafa;
+  }
+
+  .badge {
+    @apply inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider;
+  }
+  .badge-success {
+    background: rgba(16, 185, 129, 0.12);
+    color: #34d399;
+  }
+  .badge-warning {
+    background: rgba(245, 158, 11, 0.12);
+    color: #fbbf24;
+  }
+  .badge-danger {
+    background: rgba(239, 68, 68, 0.12);
+    color: #f87171;
+  }
+
+  .nav-link {
+    @apply flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150;
+    color: #a1a1aa;
+  }
+  .nav-link:hover {
+    color: #fafafa;
+    background: rgba(255, 255, 255, 0.05);
+  }
+  .nav-link.active {
+    color: #818cf8;
+    background: rgba(99, 102, 241, 0.08);
+    border: 1px solid rgba(99, 102, 241, 0.15);
+    font-weight: 600;
+  }
+}
+
+.safe-area-bottom { padding-bottom: env(safe-area-inset-bottom, 0px); }
+
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #27272a; border-radius: 4px; }
+
+@keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+@keyframes slideOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
+.toast-enter { animation: slideIn 0.3s ease-out; }
+.toast-exit { animation: slideOut 0.3s ease-in forwards; }
