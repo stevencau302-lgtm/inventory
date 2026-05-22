@@ -34,6 +34,24 @@ export default function Dashboard() {
   const outOfStock = products.filter(p => p.stock === 0).length
   const alertProducts = products.filter(p => p.stock > 0 && p.stock <= p.minStock)
 
+  // Calculate dynamic subtexts
+  const now = new Date()
+  const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
+  const newProductsThisWeek = products.filter(p => new Date(p.createdAt) >= oneWeekAgo).length
+  const totalProductDesc = newProductsThisWeek > 0
+    ? `+${newProductsThisWeek} minggu ini`
+    : 'Tidak ada produk baru minggu ini'
+
+  const inventoryValueDesc = 'Total nilai stok saat ini'
+
+  const lowStockDesc = lowStock === 0
+    ? 'Semua stok aman'
+    : 'Perlu restock segera'
+
+  const outOfStockDesc = outOfStock === 0
+    ? 'Semua stok tersedia'
+    : 'Produk tidak tersedia'
+
   const bestSellers = [...products]
     .map(p => ({ ...p, sold: Math.max(0, (p.minStock * 5) - p.stock + 15) }))
     .sort((a, b) => b.sold - a.sold)
@@ -55,10 +73,10 @@ export default function Dashboard() {
 
         {/* Stat Cards */}
         <div className="relative z-10 grid grid-cols-2 lg:grid-cols-4 gap-3">
-          <StatCard icon="box" label="Total Produk" value={String(totalProducts)} desc="Produk terdaftar" color="orange" />
-          <StatCard icon="coins" label="Nilai Inventory" value={formatRp(totalValue)} desc="Total aset inventory" color="emerald" />
-          <StatCard icon="alert" label="Stok Menipis" value={String(lowStock)} desc="Perlu restock segera" color="amber" />
-          <StatCard icon="x-circle" label="Stok Habis" value={String(outOfStock)} desc="Produk tidak tersedia" color="red" />
+          <StatCard icon="box" label="Total Produk" value={String(totalProducts)} desc={totalProductDesc} color="orange" />
+          <StatCard icon="coins" label="Nilai Inventory" value={formatRp(totalValue)} desc={inventoryValueDesc} color="emerald" />
+          <StatCard icon="alert" label="Stok Menipis" value={String(lowStock)} desc={lowStockDesc} color="amber" />
+          <StatCard icon="x-circle" label="Stok Habis" value={String(outOfStock)} desc={outOfStockDesc} color="red" />
         </div>
       </div>
 
