@@ -6,6 +6,7 @@ import { Product, Category, getProducts, getCategories, saveProducts, formatRp, 
 import { useToast } from '@/components/Toast'
 import ProductModal from '@/components/ProductModal'
 import DeleteModal from '@/components/DeleteModal'
+import CsvImportModal from '@/components/CsvImportModal'
 
 export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([])
@@ -17,6 +18,7 @@ export default function ProductsPage() {
   const [modalOpen, setModalOpen] = useState(false)
   const [editProduct, setEditProduct] = useState<Product | null>(null)
   const [deleteModal, setDeleteModal] = useState<{ open: boolean; id: string; name: string }>({ open: false, id: '', name: '' })
+  const [csvModal, setCsvModal] = useState(false)
   const [mounted, setMounted] = useState(false)
   const { toast } = useToast()
 
@@ -89,6 +91,12 @@ export default function ProductsPage() {
     setModalOpen(true)
   }
 
+  const handleCsvImport = (imported: Product[]) => {
+    const updated = [...imported, ...products]
+    setProducts(updated)
+    localStorage.setItem('inv_products', JSON.stringify(updated))
+  }
+
   return (
     <div className="space-y-6">
       {/* Hero Banner */}
@@ -106,7 +114,10 @@ export default function ProductsPage() {
           <div className="flex flex-wrap items-center gap-2">
             <button className="px-4 py-2 rounded-lg border border-white/20 text-zinc-300 text-sm font-medium hover:bg-white/5 transition">Bulk Entry</button>
             <button className="px-4 py-2 rounded-lg border border-white/20 text-zinc-300 text-sm font-medium hover:bg-white/5 transition">Match SKU</button>
-            <button className="px-4 py-2 rounded-lg border border-white/20 text-zinc-300 text-sm font-medium hover:bg-white/5 transition">Import Excel</button>
+            <button onClick={() => setCsvModal(true)} className="px-4 py-2 rounded-lg border border-emerald-500/30 text-emerald-400 text-sm font-medium hover:bg-emerald-500/10 transition flex items-center gap-1.5">
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" /></svg>
+              Import CSV
+            </button>
             <Link href="/products/new" className="px-4 py-2 rounded-lg bg-[#FDC800] hover:bg-[#FDC800]/90 text-[#000000] text-sm font-bold transition flex items-center gap-2 shadow-lg shadow-[#FDC800]/20">
               <svg className="w-4 h-4 text-[#000000]" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
               Tambah Produk
@@ -272,6 +283,14 @@ export default function ProductsPage() {
         productName={deleteModal.name}
         onConfirm={confirmDelete}
         onCancel={() => setDeleteModal({ open: false, id: '', name: '' })}
+      />
+
+      {/* CSV Import Modal */}
+      <CsvImportModal
+        isOpen={csvModal}
+        onClose={() => setCsvModal(false)}
+        onImportComplete={handleCsvImport}
+        existingProducts={products}
       />
     </div>
   )
