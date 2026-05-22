@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { getProducts, getCategories, getTransactions, saveProducts, saveCategories, saveTransactions, loadSampleData, fetchProducts, fetchCategories, fetchTransactions, deleteProduct, deleteCategory, deleteTransaction } from '@/lib/store'
+import { getProducts, getCategories, getTransactions, saveProducts, saveCategories, saveTransactions, fetchProducts, fetchCategories, fetchTransactions, deleteProduct, deleteCategory, deleteTransaction } from '@/lib/store'
 import { useToast } from '@/components/Toast'
 import DeleteModal from '@/components/DeleteModal'
 
@@ -64,8 +64,9 @@ export default function SettingsPage() {
     toast('Semua data berhasil direset!', 'warning')
   }
 
-  const handleLoadSample = () => {
-    const data = loadSampleData()
+  const handleLoadSample = async () => {
+    const { loadSampleDataAsync } = await import('@/lib/store')
+    const data = await loadSampleDataAsync()
     setProductCount(data.products.length)
     setCatCount(data.categories.length)
     toast('Data contoh berhasil dimuat!', 'success')
