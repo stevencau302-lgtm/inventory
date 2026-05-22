@@ -1,6 +1,7 @@
 'use client'
 import { useEffect, useState, useMemo } from 'react'
 import { Product, Transaction, fetchProducts, fetchTransactions, formatRp, getStatus } from '@/lib/store'
+import { TableSkeleton } from '@/components/PageSkeleton'
 
 type StatusFilter = 'all' | 'aman' | 'menipis' | 'habis'
 
@@ -118,7 +119,7 @@ export default function LaporanStok() {
     setTimeout(() => printWindow.print(), 300)
   }
 
-  if (!mounted) return null
+  if (!mounted) return <TableSkeleton />
 
   return (
     <div className="space-y-6">
