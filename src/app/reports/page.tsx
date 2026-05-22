@@ -181,7 +181,7 @@ export default function ReportsPage() {
 
 
       {/* ===== 6 STAT CARDS ===== */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-3">
         <GlassStatCard label="Total Unit" value={totalItems.toLocaleString()} icon={<Package className="w-5 h-5" />} glowColor="purple" valueColor="text-white" />
         <GlassStatCard label="Total Nilai Stok" value={formatRp(totalValue)} icon={<DollarSign className="w-5 h-5" />} glowColor="emerald" valueColor="text-emerald-400" />
         <GlassStatCard label="Rata-rata Harga" value={formatRp(avgPrice)} icon={<PieChart className="w-5 h-5" />} glowColor="purple" valueColor="text-purple-400" />
@@ -512,15 +512,17 @@ function GlassStatCard({ label, value, icon, glowColor, valueColor, subtitle }: 
   const s = styles[glowColor]
 
   return (
-    <div className={`group relative rounded-3xl p-6 border border-white/[0.08] bg-[#0f0f14]/80 backdrop-blur-xl transition-all duration-300 ${s.glow} ${s.hoverBorder} ${s.hoverGlow} hover:translate-y-[-2px]`}>
-      <div className={`absolute top-0 right-0 w-24 h-24 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 ${s.bgGlow}`} />
-      <div className="relative">
-        <div className={`w-11 h-11 rounded-2xl bg-gradient-to-br ${s.iconBg} border ${s.iconBorder} flex items-center justify-center mb-4 ${s.iconText}`}>
+    <div className={`group relative rounded-2xl p-4 border border-white/[0.08] bg-[#0f0f14]/80 backdrop-blur-xl transition-all duration-300 ${s.glow} ${s.hoverBorder} ${s.hoverGlow} hover:translate-y-[-1px]`}>
+      <div className={`absolute top-0 right-0 w-20 h-20 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 ${s.bgGlow}`} />
+      <div className="relative flex items-center gap-3">
+        <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${s.iconBg} border ${s.iconBorder} flex items-center justify-center shrink-0 ${s.iconText}`}>
           {icon}
         </div>
-        <p className={`text-2xl md:text-3xl font-extrabold tracking-tight ${valueColor || 'text-white'}`}>{value}</p>
-        <p className="text-[12px] text-zinc-500 font-medium mt-1 tracking-wide uppercase">{label}</p>
-        {subtitle && <p className="text-[10px] text-zinc-600 mt-0.5">{subtitle}</p>}
+        <div className="min-w-0">
+          <p className={`text-lg md:text-xl font-extrabold tracking-tight truncate ${valueColor || 'text-white'}`}>{value}</p>
+          <p className="text-[11px] text-zinc-500 font-medium tracking-wide uppercase">{label}</p>
+          {subtitle && <p className="text-[9px] text-zinc-600 mt-0.5">{subtitle}</p>}
+        </div>
       </div>
     </div>
   )
