@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Product, Transaction, getProducts, getTransactions, formatRp, fetchProducts, fetchTransactions, deleteTransaction, saveTransaction, saveProduct } from '@/lib/store'
+import { Product, Transaction, formatRp, fetchProducts, fetchTransactions, deleteTransaction, saveTransaction, saveProduct } from '@/lib/store'
 import { useToast } from '@/components/Toast'
 import DeleteModal from '@/components/DeleteModal'
 import Link from 'next/link'
