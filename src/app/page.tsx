@@ -32,6 +32,24 @@ export default function Dashboard() {
   const outOfStock = products.filter(p => p.stock === 0).length
   const alertProducts = products.filter(p => p.stock > 0 && p.stock <= p.minStock)
 
+  // Dynamic subtexts based on real data
+  const now = new Date()
+  const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
+  const newProductsThisWeek = products.filter(p => new Date(p.createdAt) >= oneWeekAgo).length
+  const totalProductSubtitle = newProductsThisWeek > 0
+    ? `+${newProductsThisWeek} minggu ini`
+    : 'Tidak ada produk baru minggu ini'
+
+  const inventoryValueSubtitle = 'Total nilai stok saat ini'
+
+  const lowStockSubtitle = lowStock === 0
+    ? 'Semua stok aman'
+    : 'Perlu restock segera'
+
+  const outOfStockSubtitle = outOfStock === 0
+    ? 'Semua stok tersedia'
+    : 'Produk tidak tersedia'
+
   const bestSellers = [...products]
     .map(p => {
       const sold = transactions.filter(t => t.productId === p.id && t.type === 'out').reduce((s, t) => s + t.quantity, 0)
@@ -54,10 +72,10 @@ export default function Dashboard() {
 
       {/* Stat Cards - clean 4-column grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-        <StatCard icon="box" label="Total produk" value={String(totalProducts)} subtitle="+3 minggu ini" border="border-l-indigo-500" />
-        <StatCard icon="coins" label="Nilai inventory" value={formatRp(totalValue)} subtitle="+12% bulan ini" border="border-l-emerald-500" />
-        <StatCard icon="alert" label="Stok menipis" value={String(lowStock)} subtitle="Perlu restock" border="border-l-amber-500" />
-        <StatCard icon="x-circle" label="Stok habis" value={String(outOfStock)} subtitle="Barang kosong" border="border-l-red-500" />
+        <StatCard icon="box" label="Total produk" value={String(totalProducts)} subtitle={totalProductSubtitle} border="border-l-indigo-500" />
+        <StatCard icon="coins" label="Nilai inventory" value={formatRp(totalValue)} subtitle={inventoryValueSubtitle} border="border-l-emerald-500" />
+        <StatCard icon="alert" label="Stok menipis" value={String(lowStock)} subtitle={lowStockSubtitle} border="border-l-amber-500" />
+        <StatCard icon="x-circle" label="Stok habis" value={String(outOfStock)} subtitle={outOfStockSubtitle} border="border-l-red-500" />
       </div>
 
       {/* Charts */}
