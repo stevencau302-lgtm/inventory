@@ -187,21 +187,27 @@ export default function SettingsPage() {
 /* ─── WhatsApp Settings Component ─── */
 function WhatsAppSettings() {
   const [fonntToken, setFonntToken] = useState('')
-  const [targetNumber, setTargetNumber] = useState('')
+  const [targets, setTargets] = useState('')
   const [schedule, setSchedule] = useState('20:00')
   const [sending, setSending] = useState(false)
   const [saving, setSaving] = useState(false)
+  const [saved, setSaved] = useState(false)
+  const [hasChanges, setHasChanges] = useState(false)
   const [testResult, setTestResult] = useState<string | null>(null)
+  const [loaded, setLoaded] = useState(false)
   const { toast } = useToast()
 
   useEffect(() => {
-    // Load config from Supabase via API
     fetch('/api/settings').then(r => r.json()).then(data => {
       if (data.fonnte_token) setFonntToken(data.fonnte_token)
-      if (data.fonnte_target) setTargetNumber(data.fonnte_target)
+      if (data.fonnte_target) setTargets(data.fonnte_target)
       if (data.fonnte_schedule) setSchedule(data.fonnte_schedule)
-    }).catch(() => {})
+      setLoaded(true)
+      setSaved(!!data.fonnte_token)
+    }).catch(() => setLoaded(true))
   }, [])
+
+  const markChanged = () => { setHasChanges(true); setSaved(false) }
 
   const handleSave = async () => {
     setSaving(true)
@@ -209,17 +215,17 @@ function WhatsAppSettings() {
       const res = await fetch('/api/settings', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ fonnte_token: fonntToken, fonnte_target: targetNumber, fonnte_schedule: schedule }),
+        body: JSON.stringify({ fonnte_token: fonntToken, fonnte_target: targets, fonnte_schedule: schedule }),
       })
-      if (res.ok) toast('Konfigurasi WhatsApp tersimpan!', 'success')
-      else toast('Gagal menyimpan konfigurasi', 'error')
+      if (res.ok) { setSaved(true); setHasChanges(false); toast('Konfigurasi tersimpan!', 'success') }
+      else toast('Gagal menyimpan', 'error')
     } catch { toast('Gagal menyimpan', 'error') }
     finally { setSaving(false) }
   }
 
   const handleTestSend = async () => {
-    if (!fonntToken || !targetNumber) {
-      toast('Isi Token Fonnte dan Nomor WA terlebih dahulu', 'error')
+    if (!fonntToken || !targets) {
+      toast('Isi Token & Target terlebih dahulu', 'error')
       return
     }
     setSending(true)
@@ -228,99 +234,152 @@ function WhatsAppSettings() {
       const res = await fetch('/api/daily-report/test', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token: fonntToken, target: targetNumber }),
+        body: JSON.stringify({ token: fonntToken, target: targets }),
       })
       const data = await res.json()
       if (res.ok && data.success) {
         setTestResult('success')
-        toast('Laporan test berhasil dikirim ke WhatsApp!', 'success')
+        toast('Laporan dikirim!', 'success')
       } else {
         setTestResult('error')
-        toast(data.error || 'Gagal mengirim', 'error')
+        toast(data.error || 'Gagal', 'error')
       }
-    } catch (err) {
-      setTestResult('error')
-      toast('Gagal mengirim test report', 'error')
-    } finally {
-      setSending(false)
-    }
+    } catch { setTestResult('error'); toast('Gagal mengirim', 'error') }
+    finally { setSending(false) }
   }
+
+  const inputClass = "w-full px-4 py-3 rounded-xl text-sm bg-black/40 border border-white/[0.06] text-white placeholder-white/20 outline-none focus:border-green-500/50 focus:bg-black/60 transition-all"
 
   return (
     <div className="rounded-2xl overflow-hidden border border-white/[0.08] bg-[#1a1a1a]">
-      <div className="px-5 py-4 border-b border-white/[0.06] flex items-center gap-3">
-        <div className="w-8 h-8 rounded-lg bg-green-500/15 flex items-center justify-center">
-          <svg className="w-4 h-4 text-green-400" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      {/* Header */}
+      <div className="px-5 py-4 border-b border-white/[0.06] flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-green-500/20 to-green-600/10 border border-green-500/20 flex items-center justify-center">
+            <svg className="w-4.5 h-4.5 text-green-400" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          </div>
+          <div>
+            <h2 className="text-sm font-semibold text-white">Notifikasi WhatsApp</h2>
+            <p className="text-[10px] text-zinc-500">Laporan harian otomatis via Fonnte</p>
+          </div>
         </div>
-        <div>
-          <h2 className="text-sm font-semibold text-white">Notifikasi WhatsApp</h2>
-          <p className="text-[10px] text-zinc-500">Kirim laporan harian otomatis via Fonnte</p>
-        </div>
+        {/* Status badge */}
+        {saved && !hasChanges && (
+          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-green-500/10 border border-green-500/20 text-[10px] font-bold text-green-400">
+            <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>
+            Tersimpan
+          </span>
+        )}
+        {hasChanges && (
+          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-[10px] font-bold text-amber-400">
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+            Belum disimpan
+          </span>
+        )}
       </div>
-      <div className="p-5 space-y-4">
-        <div className="space-y-1.5">
-          <label className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">Token Fonnte</label>
+
+      <div className="p-5 space-y-5">
+        {/* Token */}
+        <div className="space-y-2">
+          <label className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider flex items-center gap-2">
+            <svg className="w-3 h-3 text-zinc-500" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 5.25a3 3 0 013 3m3 0a6 6 0 01-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1121.75 8.25z" /></svg>
+            API Token
+          </label>
           <input
             type="password"
             value={fonntToken}
-            onChange={e => setFonntToken(e.target.value)}
-            className="w-full px-4 py-3 rounded-lg text-sm bg-[#0f0f0f] border-none text-white placeholder-white/30 outline-none focus:ring-2 focus:ring-green-500/50"
+            onChange={e => { setFonntToken(e.target.value); markChanged() }}
+            className={inputClass}
             placeholder="Paste token dari dashboard fonnte.com"
           />
         </div>
-        <div className="space-y-1.5">
-          <label className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">Nomor WhatsApp Tujuan</label>
-          <input
-            type="text"
-            value={targetNumber}
-            onChange={e => setTargetNumber(e.target.value)}
-            className="w-full px-4 py-3 rounded-lg text-sm bg-[#0f0f0f] border-none text-white placeholder-white/30 outline-none focus:ring-2 focus:ring-green-500/50"
-            placeholder="628xxxxxxxxxx"
+
+        {/* Targets */}
+        <div className="space-y-2">
+          <label className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider flex items-center gap-2">
+            <svg className="w-3 h-3 text-zinc-500" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" /></svg>
+            Target (Personal + Grup)
+          </label>
+          <textarea
+            value={targets}
+            onChange={e => { setTargets(e.target.value); markChanged() }}
+            rows={3}
+            className={`${inputClass} resize-none`}
+            placeholder={"628xxxxxxxxxx,120363xxxxx@g.us"}
           />
-          <p className="text-[10px] text-zinc-600">Format: 628xxx (tanpa + atau 0)</p>
+          <div className="flex flex-wrap gap-1.5 mt-1">
+            {targets.split(',').filter(t => t.trim()).map((t, i) => (
+              <span key={i} className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[9px] font-semibold ${
+                t.trim().includes('@g.us') ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20' : 'bg-green-500/10 text-green-400 border border-green-500/20'
+              }`}>
+                {t.trim().includes('@g.us') ? '👥' : '👤'} {t.trim().length > 20 ? t.trim().slice(0, 20) + '...' : t.trim()}
+              </span>
+            ))}
+          </div>
+          <p className="text-[10px] text-zinc-600">Pisahkan dengan koma. Personal: <code className="text-green-400/70">628xxx</code> · Grup: <code className="text-blue-400/70">120363xxx@g.us</code></p>
         </div>
-        <div className="space-y-1.5">
-          <label className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">Jam Kirim Harian</label>
+
+        {/* Schedule */}
+        <div className="space-y-2">
+          <label className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider flex items-center gap-2">
+            <svg className="w-3 h-3 text-zinc-500" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            Jam Kirim Harian (WIB)
+          </label>
           <input
             type="time"
             value={schedule}
-            onChange={e => setSchedule(e.target.value)}
-            className="w-full px-4 py-3 rounded-lg text-sm bg-[#0f0f0f] border-none text-white placeholder-white/30 outline-none focus:ring-2 focus:ring-green-500/50"
+            onChange={e => { setSchedule(e.target.value); markChanged() }}
+            className={inputClass}
           />
-          <p className="text-[10px] text-zinc-600">Jadwal cron diatur via Vercel Dashboard (default: 20:00 WIB)</p>
         </div>
 
-        <div className="flex gap-2 pt-2">
-          <button
-            onClick={handleSave}
-            disabled={saving}
-            className="flex-1 px-4 py-2.5 rounded-lg bg-green-500/15 text-green-400 text-xs font-bold hover:bg-green-500 hover:text-white transition-all active:scale-95 disabled:opacity-50"
-          >
-            {saving ? 'Menyimpan...' : 'Simpan Konfigurasi'}
-          </button>
-          <button
-            onClick={handleTestSend}
-            disabled={sending}
-            className="flex-1 px-4 py-2.5 rounded-lg bg-white/5 text-zinc-300 text-xs font-bold hover:bg-white/10 transition-all active:scale-95 disabled:opacity-50"
-          >
-            {sending ? 'Mengirim...' : 'Test Kirim Sekarang'}
-          </button>
+        {/* Action buttons */}
+        <div className="flex gap-2 pt-3">
+          {hasChanges ? (
+            <button
+              onClick={handleSave}
+              disabled={saving}
+              className="flex-1 px-4 py-3 rounded-xl bg-green-500 text-white text-xs font-bold hover:bg-green-400 transition-all active:scale-[0.98] disabled:opacity-50 shadow-lg shadow-green-500/20"
+            >
+              {saving ? (
+                <span className="flex items-center justify-center gap-2"><span className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Menyimpan...</span>
+              ) : (
+                <span className="flex items-center justify-center gap-2">
+                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>
+                  Simpan Perubahan
+                </span>
+              )}
+            </button>
+          ) : (
+            <button
+              onClick={handleTestSend}
+              disabled={sending || !fonntToken || !targets}
+              className="flex-1 px-4 py-3 rounded-xl bg-white/[0.04] border border-white/[0.08] text-zinc-200 text-xs font-bold hover:bg-white/[0.08] hover:border-green-500/30 transition-all active:scale-[0.98] disabled:opacity-40"
+            >
+              {sending ? (
+                <span className="flex items-center justify-center gap-2"><span className="w-3 h-3 border-2 border-zinc-400/30 border-t-zinc-400 rounded-full animate-spin" /> Mengirim...</span>
+              ) : (
+                <span className="flex items-center justify-center gap-2">
+                  <svg className="w-3.5 h-3.5 text-green-400" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" /></svg>
+                  Test Kirim Sekarang
+                </span>
+              )}
+            </button>
+          )}
         </div>
 
+        {/* Test result */}
         {testResult && (
-          <div className={`flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium ${
-            testResult === 'success' ? 'bg-green-500/10 text-green-400' : 'bg-red-500/10 text-red-400'
+          <div className={`flex items-center gap-2 px-4 py-3 rounded-xl text-xs font-medium ${
+            testResult === 'success' ? 'bg-green-500/10 border border-green-500/20 text-green-400' : 'bg-red-500/10 border border-red-500/20 text-red-400'
           }`}>
-            {testResult === 'success' ? '✓ Laporan berhasil dikirim!' : '✗ Gagal mengirim. Cek token & nomor WA.'}
+            {testResult === 'success' ? (
+              <><svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg> Laporan berhasil dikirim ke semua target!</>
+            ) : (
+              <><svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" /></svg> Gagal mengirim. Cek token & target WA.</>
+            )}
           </div>
         )}
-
-        <div className="border-t border-white/[0.06] pt-4 mt-4">
-          <p className="text-[10px] text-zinc-500 leading-relaxed">
-            <span className="font-semibold text-zinc-400">Cara kerja:</span> Konfigurasi disimpan di database Supabase. Cron job Vercel akan otomatis kirim laporan tiap hari jam 20:00 WIB menggunakan token & nomor yang tersimpan di sini.<br/><br/>
-            <span className="font-semibold text-zinc-400">Setup Supabase:</span> Buat tabel <code className="text-green-400/80">settings</code> dengan kolom: <code className="text-green-400/80">key</code> (text, primary) dan <code className="text-green-400/80">value</code> (text).
-          </p>
-        </div>
       </div>
     </div>
   )
