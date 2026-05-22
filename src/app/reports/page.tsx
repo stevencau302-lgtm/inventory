@@ -7,7 +7,7 @@ import {
   BarChart3, Package, DollarSign, Tag, TrendingUp, TrendingDown,
   AlertTriangle, XCircle, ArrowDownCircle, ArrowUpCircle,
   Activity, PieChart, Loader2, RotateCcw, Skull,
-  Calendar, ChevronDown, FileSpreadsheet
+  Calendar, ChevronDown, FileSpreadsheet, FileText
 } from 'lucide-react'
 
 type DateRange = '7d' | '30d' | '3m' | '6m' | '1y' | 'all' | 'custom'
@@ -79,6 +79,219 @@ function exportToCSV(products: Product[], transactions: Transaction[], categorie
   link.click()
   document.body.removeChild(link)
   URL.revokeObjectURL(url)
+}
+
+async function exportToPDF(products: Product[], transactions: Transaction[], categories: Category[], rangeLabel: string, formatRpFn: (n: number) => string) {
+  const jsPDF = (await import('jspdf')).default
+  await import('jspdf-autotable')
+
+  const doc = new jsPDF('p', 'mm', 'a4') as any
+  const pageWidth = doc.internal.pageSize.getWidth()
+  const now = new Date()
+  const dateStr = now.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })
+  const timeStr = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
+
+  // Colors
+  const primary = [79, 70, 229] // indigo
+  const dark = [24, 24, 27]
+  const gray = [113, 113, 122]
+  const success = [16, 185, 129]
+  const danger = [239, 68, 68]
+
+  // === HEADER ===
+  doc.setFillColor(...primary)
+  doc.rect(0, 0, pageWidth, 42, 'F')
+
+  doc.setTextColor(255, 255, 255)
+  doc.setFontSize(22)
+  doc.setFont('helvetica', 'bold')
+  doc.text('Laporan Inventory', 14, 18)
+
+  doc.setFontSize(10)
+  doc.setFont('helvetica', 'normal')
+  doc.text(`Periode: ${rangeLabel}`, 14, 26)
+  doc.text(`Digenerate: ${dateStr}, ${timeStr}`, 14, 33)
+
+  doc.setFontSize(9)
+  doc.text('InventoryPro', pageWidth - 14, 18, { align: 'right' })
+  doc.text('inventory-rose-delta.vercel.app', pageWidth - 14, 25, { align: 'right' })
+
+  let y = 52
+
+  // === RINGKASAN STATS ===
+  const totalItems = products.reduce((s, p) => s + p.stock, 0)
+  const totalValue = products.reduce((s, p) => s + p.price * p.stock, 0)
+  const totalMasuk = transactions.filter(t => t.type === 'in').reduce((s, t) => s + t.quantity, 0)
+  const totalKeluar = transactions.filter(t => t.type === 'out').reduce((s, t) => s + t.quantity, 0)
+  const lowStock = products.filter(p => p.stock > 0 && p.stock <= p.minStock).length
+  const outStock = products.filter(p => p.stock === 0).length
+
+  doc.setTextColor(...dark)
+  doc.setFontSize(13)
+  doc.setFont('helvetica', 'bold')
+  doc.text('Ringkasan', 14, y)
+  y += 8
+
+  // Stats boxes
+  const stats = [
+    { label: 'Total Produk', value: `${products.length}` },
+    { label: 'Total Unit', value: `${totalItems.toLocaleString()}` },
+    { label: 'Nilai Inventory', value: formatRpFn(totalValue) },
+    { label: 'Kategori', value: `${categories.length}` },
+    { label: 'Stok Masuk', value: `+${totalMasuk.toLocaleString()}` },
+    { label: 'Stok Keluar', value: `-${totalKeluar.toLocaleString()}` },
+    { label: 'Stok Rendah', value: `${lowStock}` },
+    { label: 'Stok Habis', value: `${outStock}` },
+  ]
+
+  const boxW = (pageWidth - 28 - 21) / 4
+  stats.forEach((stat, i) => {
+    const col = i % 4
+    const row = Math.floor(i / 4)
+    const bx = 14 + col * (boxW + 7)
+    const by = y + row * 20
+
+    doc.setFillColor(248, 250, 252)
+    doc.roundedRect(bx, by, boxW, 16, 2, 2, 'F')
+
+    doc.setFontSize(7)
+    doc.setFont('helvetica', 'normal')
+    doc.setTextColor(...gray)
+    doc.text(stat.label.toUpperCase(), bx + 4, by + 5.5)
+
+    doc.setFontSize(11)
+    doc.setFont('helvetica', 'bold')
+    doc.setTextColor(...dark)
+    doc.text(stat.value, bx + 4, by + 12.5)
+  })
+
+  y += 48
+
+  // === TABEL PRODUK ===
+  doc.setTextColor(...dark)
+  doc.setFontSize(13)
+  doc.setFont('helvetica', 'bold')
+  doc.text('Daftar Produk', 14, y)
+  y += 4
+
+  const productRows = products.map(p => [
+    p.name,
+    p.sku,
+    p.category,
+    p.stock.toString(),
+    formatRpFn(p.price),
+    formatRpFn(p.price * p.stock),
+    p.stock === 0 ? 'Habis' : p.stock <= p.minStock ? 'Rendah' : 'OK'
+  ])
+
+  doc.autoTable({
+    startY: y,
+    head: [['Nama Produk', 'SKU', 'Kategori', 'Stok', 'Harga', 'Nilai', 'Status']],
+    body: productRows,
+    theme: 'grid',
+    headStyles: {
+      fillColor: primary,
+      textColor: [255, 255, 255],
+      fontStyle: 'bold',
+      fontSize: 8,
+      cellPadding: 3,
+    },
+    bodyStyles: {
+      fontSize: 7.5,
+      cellPadding: 2.5,
+      textColor: dark,
+    },
+    alternateRowStyles: { fillColor: [249, 250, 251] },
+    columnStyles: {
+      0: { cellWidth: 40 },
+      3: { halign: 'center' },
+      4: { halign: 'right' },
+      5: { halign: 'right' },
+      6: { halign: 'center', cellWidth: 16 },
+    },
+    didParseCell: (data: any) => {
+      if (data.section === 'body' && data.column.index === 6) {
+        const val = data.cell.raw
+        if (val === 'Habis') { data.cell.styles.textColor = danger; data.cell.styles.fontStyle = 'bold' }
+        else if (val === 'Rendah') { data.cell.styles.textColor = [245, 158, 11]; data.cell.styles.fontStyle = 'bold' }
+        else { data.cell.styles.textColor = success }
+      }
+    },
+    margin: { left: 14, right: 14 },
+  })
+
+  y = doc.lastAutoTable.finalY + 12
+
+  // === TABEL TRANSAKSI ===
+  if (y > 240) { doc.addPage(); y = 20 }
+
+  doc.setTextColor(...dark)
+  doc.setFontSize(13)
+  doc.setFont('helvetica', 'bold')
+  doc.text(`Transaksi (${rangeLabel})`, 14, y)
+  y += 4
+
+  const txRows = transactions.slice(0, 50).map(t => [
+    new Date(t.createdAt).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }),
+    t.productName,
+    t.type === 'in' ? 'Masuk' : 'Keluar',
+    t.quantity.toString(),
+    t.note || '-'
+  ])
+
+  doc.autoTable({
+    startY: y,
+    head: [['Tanggal', 'Produk', 'Tipe', 'Qty', 'Catatan']],
+    body: txRows,
+    theme: 'grid',
+    headStyles: {
+      fillColor: [30, 41, 59],
+      textColor: [255, 255, 255],
+      fontStyle: 'bold',
+      fontSize: 8,
+      cellPadding: 3,
+    },
+    bodyStyles: {
+      fontSize: 7.5,
+      cellPadding: 2.5,
+      textColor: dark,
+    },
+    alternateRowStyles: { fillColor: [249, 250, 251] },
+    columnStyles: {
+      0: { cellWidth: 28 },
+      2: { halign: 'center', cellWidth: 18 },
+      3: { halign: 'center', cellWidth: 14 },
+    },
+    didParseCell: (data: any) => {
+      if (data.section === 'body' && data.column.index === 2) {
+        data.cell.styles.textColor = data.cell.raw === 'Masuk' ? success : danger
+        data.cell.styles.fontStyle = 'bold'
+      }
+    },
+    margin: { left: 14, right: 14 },
+  })
+
+  if (transactions.length > 50) {
+    const fY = doc.lastAutoTable.finalY + 4
+    doc.setFontSize(7)
+    doc.setTextColor(...gray)
+    doc.text(`Menampilkan 50 dari ${transactions.length} transaksi`, 14, fY)
+  }
+
+  // === FOOTER (all pages) ===
+  const totalPages = doc.internal.getNumberOfPages()
+  for (let i = 1; i <= totalPages; i++) {
+    doc.setPage(i)
+    const pH = doc.internal.pageSize.getHeight()
+    doc.setDrawColor(228, 228, 231)
+    doc.line(14, pH - 14, pageWidth - 14, pH - 14)
+    doc.setFontSize(7)
+    doc.setTextColor(...gray)
+    doc.text('InventoryPro — Laporan digenerate otomatis', 14, pH - 8)
+    doc.text(`Halaman ${i} dari ${totalPages}`, pageWidth - 14, pH - 8, { align: 'right' })
+  }
+
+  doc.save(`laporan-inventory-${now.toISOString().split('T')[0]}.pdf`)
 }
 
 const RechartsBarChart = dynamic(
@@ -313,7 +526,15 @@ export default function ReportsPage() {
             className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium border border-white/[0.06] bg-white/[0.03] text-zinc-400 hover:text-emerald-400 hover:border-emerald-500/30 hover:bg-emerald-500/5 transition-all"
           >
             <FileSpreadsheet className="w-4 h-4" />
-            <span className="hidden sm:inline">Export CSV</span>
+            <span className="hidden sm:inline">CSV</span>
+          </button>
+          {/* Export PDF */}
+          <button
+            onClick={() => exportToPDF(products, filteredTransactions, categories, rangeLabel, formatRp)}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium border border-white/[0.06] bg-white/[0.03] text-zinc-400 hover:text-red-400 hover:border-red-500/30 hover:bg-red-500/5 transition-all"
+          >
+            <FileText className="w-4 h-4" />
+            <span className="hidden sm:inline">PDF</span>
           </button>
         </div>
       </div>
