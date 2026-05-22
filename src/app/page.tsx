@@ -212,7 +212,48 @@ export default function Dashboard() {
   )
 }
 
+function useCountUp(end: number, duration: number = 1200) {
+  const [count, setCount] = useState(0)
+  useEffect(() => {
+    if (end === 0) { setCount(0); return }
+    let start = 0
+    const startTime = performance.now()
+    const step = (currentTime: number) => {
+      const elapsed = currentTime - startTime
+      const progress = Math.min(elapsed / duration, 1)
+      // ease-out cubic
+      const eased = 1 - Math.pow(1 - progress, 3)
+      setCount(Math.floor(eased * end))
+      if (progress < 1) requestAnimationFrame(step)
+    }
+    requestAnimationFrame(step)
+  }, [end, duration])
+  return count
+}
+
+function AnimatedValue({ value, formatFn }: { value: string; formatFn?: (n: number) => string }) {
+  // Extract number from value string
+  const numMatch = value.replace(/[^\d]/g, '')
+  const num = parseInt(numMatch) || 0
+  const animated = useCountUp(num)
+
+  // If it's a formatted currency (contains "Rp"), format it
+  if (formatFn && num > 0) {
+    return <>{formatFn(animated)}</>
+  }
+  // If pure number
+  if (/^\d+$/.test(value)) {
+    return <>{animated}</>
+  }
+  // Fallback: show original value
+  return <>{value}</>
+}
+
 function StatCard({ icon, label, value, subtitle, border }: { icon: string; label: string; value: string; subtitle: string; border: string }) {
+  // Determine if value is a number or currency
+  const isRupiah = value.includes('Rp')
+  const isPureNumber = /^\d+$/.test(value)
+
   return (
     <div className={`rounded-xl p-4 bg-[#161616] border border-white/[0.08] border-l-2 ${border}`}>
       <div className="flex items-center gap-3 mb-2">
@@ -224,7 +265,9 @@ function StatCard({ icon, label, value, subtitle, border }: { icon: string; labe
         </div>
         <p className="text-xs text-zinc-400 font-normal">{label}</p>
       </div>
-      <p className="text-lg font-semibold text-white whitespace-nowrap">{value}</p>
+      <p className="text-lg font-semibold text-white whitespace-nowrap">
+        {isRupiah ? <AnimatedValue value={value} formatFn={formatRp} /> : isPureNumber ? <AnimatedValue value={value} /> : value}
+      </p>
       <p className="text-xs text-zinc-500 mt-1">{subtitle}</p>
     </div>
   )
