@@ -144,12 +144,9 @@ export default function ReportsPage() {
 
   if (!mounted) return (
     <div className="flex items-center justify-center min-h-[60vh]">
-      <div className="flex flex-col items-center gap-4">
-        <div className="relative">
-          <div className="absolute inset-0 rounded-full bg-purple-500/20 blur-xl animate-pulse" />
-          <Loader2 className="w-10 h-10 text-purple-400 animate-spin relative" />
-        </div>
-        <p className="text-zinc-500 text-sm font-medium tracking-wide">Memuat analisa...</p>
+      <div className="flex flex-col items-center gap-3">
+        <Loader2 className="w-8 h-8 text-zinc-400 animate-spin" />
+        <p className="text-zinc-500 text-sm font-medium">Memuat laporan...</p>
       </div>
     </div>
   )
@@ -157,71 +154,64 @@ export default function ReportsPage() {
   return (
     <div className="space-y-10">
       {/* ===== HEADER ===== */}
-      <div className="relative">
-        <div className="absolute -top-10 -left-10 w-72 h-72 bg-purple-500/[0.04] rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute -top-5 right-20 w-48 h-48 bg-emerald-500/[0.04] rounded-full blur-3xl pointer-events-none" />
-        <div className="relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-500/20 to-purple-600/10 border border-purple-500/20 flex items-center justify-center shadow-[0_0_20px_rgba(168,85,247,0.15)]">
-              <BarChart3 className="w-6 h-6 text-purple-400" />
-            </div>
-            <div>
-              <h1 className="text-3xl md:text-4xl font-extrabold bg-gradient-to-r from-white via-white to-zinc-400 bg-clip-text text-transparent tracking-tight">
-                Analisa Inventory
-              </h1>
-              <p className="text-zinc-500 text-sm mt-0.5">Insight real-time performa & status inventory</p>
-            </div>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-white/[0.04] border border-white/[0.06] flex items-center justify-center">
+            <BarChart3 className="w-5 h-5 text-zinc-400" />
           </div>
-          <button className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl text-sm font-semibold border border-white/[0.08] bg-[#0f0f14]/80 backdrop-blur-xl text-zinc-300 hover:border-purple-500/30 hover:shadow-[0_0_20px_rgba(168,85,247,0.08)] transition-all duration-300">
-            <Download className="w-4 h-4" />
-            Export
-          </button>
+          <div>
+            <h1 className="text-2xl md:text-3xl font-bold text-white">Analisa Inventory</h1>
+            <p className="text-zinc-500 text-sm mt-0.5">Ringkasan performa & status inventory</p>
+          </div>
         </div>
+        <button className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium border border-white/[0.06] bg-white/[0.03] text-zinc-400 hover:text-zinc-200 hover:border-white/[0.12] transition-all">
+          <Download className="w-4 h-4" />
+          Export
+        </button>
       </div>
 
 
       {/* ===== 6 STAT CARDS ===== */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-3">
-        <GlassStatCard label="Total Unit" value={totalItems.toLocaleString()} icon={<Package className="w-5 h-5" />} glowColor="purple" valueColor="text-white" />
-        <GlassStatCard label="Total Nilai Stok" value={formatRp(totalValue)} icon={<DollarSign className="w-5 h-5" />} glowColor="emerald" valueColor="text-emerald-400" />
-        <GlassStatCard label="Rata-rata Harga" value={formatRp(avgPrice)} icon={<PieChart className="w-5 h-5" />} glowColor="purple" valueColor="text-purple-400" />
-        <GlassStatCard label="Dead Stock" value={`${deadStock.length} produk`} icon={<Skull className="w-5 h-5" />} glowColor="red" valueColor="text-red-400" />
-        <GlassStatCard label="Perputaran Stok" value={Number(stockTurnover) > 0 ? `${stockTurnover}x` : 'Menunggu data'} icon={<RotateCcw className="w-5 h-5" />} glowColor="purple" valueColor="text-purple-400" subtitle={Number(stockTurnover) === 0 ? 'Muncul setelah ada penjualan' : undefined} />
-        <GlassStatCard label="Total Kategori" value={categories.length.toString()} icon={<Tag className="w-5 h-5" />} glowColor="emerald" valueColor="text-white" />
+        <GlassStatCard label="Total Unit" value={totalItems.toLocaleString()} icon={<Package className="w-4 h-4" />} accent="text-blue-400" accentBg="bg-blue-500/10" />
+        <GlassStatCard label="Total Nilai Stok" value={formatRp(totalValue)} icon={<DollarSign className="w-4 h-4" />} accent="text-emerald-400" accentBg="bg-emerald-500/10" />
+        <GlassStatCard label="Rata-rata Harga" value={formatRp(avgPrice)} icon={<PieChart className="w-4 h-4" />} accent="text-violet-400" accentBg="bg-violet-500/10" />
+        <GlassStatCard label="Dead Stock" value={`${deadStock.length} produk`} icon={<Skull className="w-4 h-4" />} accent="text-red-400" accentBg="bg-red-500/10" />
+        <GlassStatCard label="Perputaran Stok" value={Number(stockTurnover) > 0 ? `${stockTurnover}x` : '—'} icon={<RotateCcw className="w-4 h-4" />} accent="text-amber-400" accentBg="bg-amber-500/10" subtitle={Number(stockTurnover) === 0 ? 'Belum ada penjualan' : undefined} />
+        <GlassStatCard label="Total Kategori" value={categories.length.toString()} icon={<Tag className="w-4 h-4" />} accent="text-cyan-400" accentBg="bg-cyan-500/10" />
       </div>
 
       {/* ===== NILAI PER KATEGORI ===== */}
       <GlassPanel>
-        <div className="p-7 border-b border-white/[0.06]">
+        <div className="p-5 border-b border-white/[0.06]">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500/20 to-purple-600/10 border border-purple-500/20 flex items-center justify-center shadow-[0_0_12px_rgba(168,85,247,0.1)]">
-              <PieChart className="w-5 h-5 text-purple-400" />
+            <div className="w-8 h-8 rounded-lg bg-violet-500/10 flex items-center justify-center">
+              <PieChart className="w-4 h-4 text-violet-400" />
             </div>
             <div>
-              <h2 className="font-bold text-white tracking-tight text-lg">Distribusi Nilai Kategori</h2>
-              <p className="text-xs text-zinc-500 mt-0.5">Breakdown nilai inventory per kategori</p>
+              <h2 className="font-semibold text-white">Nilai Per Kategori</h2>
+              <p className="text-xs text-zinc-500">Distribusi nilai inventory berdasarkan kategori</p>
             </div>
           </div>
         </div>
-        <div className="p-7 space-y-6">
+        <div className="p-5 space-y-4">
           {topCategory.map(cat => {
             const pct = totalValue > 0 ? (cat.value / totalValue) * 100 : 0
             return (
               <div key={cat.id}>
                 <div className="flex items-center justify-between mb-2.5">
                   <div className="flex items-center gap-3">
-                    <div className="w-3.5 h-3.5 rounded-full shadow-[0_0_8px_currentColor]" style={{ background: cat.color || '#a855f7', color: cat.color || '#a855f7' }} />
-                    <span className="text-sm font-semibold text-white">{cat.name}</span>
-                    <span className="text-[11px] text-zinc-500 bg-white/[0.04] border border-white/[0.06] px-2.5 py-0.5 rounded-full">{cat.count} produk</span>
+                    <div className="w-3 h-3 rounded-full" style={{ background: cat.color || '#a855f7' }} />
+                    <span className="text-sm font-medium text-white">{cat.name}</span>
+                    <span className="text-[11px] text-zinc-500 bg-white/[0.04] px-2 py-0.5 rounded-full">{cat.count} produk</span>
                   </div>
-                  <div className="text-right flex items-center gap-3">
-                    <span className="text-sm font-bold text-white">{formatRp(cat.value)}</span>
-                    <span className="text-[11px] font-bold text-purple-400 bg-purple-500/10 border border-purple-500/20 px-2.5 py-0.5 rounded-full">{pct.toFixed(1)}%</span>
+                  <div className="text-right flex items-center gap-2">
+                    <span className="text-sm font-semibold text-white">{formatRp(cat.value)}</span>
+                    <span className="text-[11px] font-medium text-zinc-400 bg-white/[0.04] px-2 py-0.5 rounded-full">{pct.toFixed(1)}%</span>
                   </div>
                 </div>
-                <div className="h-2.5 rounded-full bg-white/[0.04] border border-white/[0.04] overflow-hidden">
-                  <div className="h-full rounded-full transition-all duration-1000 ease-out relative" style={{ width: `${pct}%`, background: `linear-gradient(90deg, ${cat.color || '#a855f7'}88, ${cat.color || '#a855f7'})` }}>
-                    <div className="absolute inset-0 rounded-full opacity-50" style={{ boxShadow: `0 0 8px ${cat.color || '#a855f7'}` }} />
+                <div className="h-2 rounded-full bg-white/[0.04] overflow-hidden">
+                  <div className="h-full rounded-full transition-all duration-700 ease-out" style={{ width: `${pct}%`, background: cat.color || '#a855f7' }} />
                   </div>
                 </div>
               </div>
@@ -239,59 +229,59 @@ export default function ReportsPage() {
 
       {/* ===== RINGKASAN TRANSAKSI 30 HARI ===== */}
       <GlassPanel>
-        <div className="p-7 border-b border-white/[0.06]">
+        <div className="p-5 border-b border-white/[0.06]">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500/20 to-purple-600/10 border border-indigo-500/20 flex items-center justify-center shadow-[0_0_12px_rgba(99,102,241,0.1)]">
-                <Activity className="w-5 h-5 text-indigo-400" />
+              <div className="w-8 h-8 rounded-lg bg-indigo-500/10 flex items-center justify-center">
+                <Activity className="w-4 h-4 text-indigo-400" />
               </div>
               <div>
-                <h2 className="font-bold text-white text-lg tracking-tight">Ringkasan Transaksi</h2>
-                <p className="text-xs text-zinc-500 mt-0.5">Performa 30 hari terakhir</p>
+                <h2 className="font-semibold text-white">Ringkasan Transaksi</h2>
+                <p className="text-xs text-zinc-500">Performa 30 hari terakhir</p>
               </div>
             </div>
-            <div className="hidden sm:flex items-center gap-4">
+            <div className="hidden sm:flex items-center gap-3">
               <div className="flex items-center gap-1.5">
-                <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.5)]" />
-                <span className="text-[11px] text-zinc-400">Masuk</span>
+                <div className="w-2 h-2 rounded-full bg-emerald-400" />
+                <span className="text-[11px] text-zinc-500">Masuk</span>
               </div>
               <div className="flex items-center gap-1.5">
-                <div className="w-2.5 h-2.5 rounded-full bg-red-400 shadow-[0_0_6px_rgba(248,113,113,0.5)]" />
-                <span className="text-[11px] text-zinc-400">Keluar</span>
+                <div className="w-2 h-2 rounded-full bg-red-400" />
+                <span className="text-[11px] text-zinc-500">Keluar</span>
               </div>
             </div>
           </div>
         </div>
-        <div className="p-7 space-y-6">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div className="rounded-2xl p-6 border border-emerald-500/15 bg-emerald-500/[0.04] backdrop-blur-sm">
-              <div className="flex items-center gap-2 mb-3">
-                <ArrowDownCircle className="w-4 h-4 text-emerald-400" />
-                <p className="text-[11px] text-zinc-400 font-semibold uppercase tracking-wider">Barang Masuk</p>
+        <div className="p-5 space-y-5">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div className="rounded-xl p-4 bg-white/[0.02] border border-white/[0.04]">
+              <div className="flex items-center gap-2 mb-2">
+                <ArrowDownCircle className="w-3.5 h-3.5 text-emerald-400" />
+                <p className="text-[11px] text-zinc-500 font-medium uppercase tracking-wider">Barang Masuk</p>
               </div>
-              <p className="text-3xl md:text-4xl font-extrabold text-emerald-400 tracking-tight">+{totalMasuk30.toLocaleString()}</p>
-              <p className="text-[11px] text-zinc-500 mt-1.5">unit dalam 30 hari</p>
+              <p className="text-2xl font-bold text-white">+{totalMasuk30.toLocaleString()}</p>
+              <p className="text-[11px] text-zinc-600 mt-0.5">unit dalam 30 hari</p>
             </div>
-            <div className="rounded-2xl p-6 border border-red-500/15 bg-red-500/[0.04] backdrop-blur-sm">
-              <div className="flex items-center gap-2 mb-3">
-                <ArrowUpCircle className="w-4 h-4 text-red-400" />
-                <p className="text-[11px] text-zinc-400 font-semibold uppercase tracking-wider">Barang Keluar</p>
+            <div className="rounded-xl p-4 bg-white/[0.02] border border-white/[0.04]">
+              <div className="flex items-center gap-2 mb-2">
+                <ArrowUpCircle className="w-3.5 h-3.5 text-red-400" />
+                <p className="text-[11px] text-zinc-500 font-medium uppercase tracking-wider">Barang Keluar</p>
               </div>
-              <p className="text-3xl md:text-4xl font-extrabold text-red-400 tracking-tight">-{totalKeluar30.toLocaleString()}</p>
-              <p className="text-[11px] text-zinc-500 mt-1.5">unit dalam 30 hari</p>
+              <p className="text-2xl font-bold text-white">-{totalKeluar30.toLocaleString()}</p>
+              <p className="text-[11px] text-zinc-600 mt-0.5">unit dalam 30 hari</p>
             </div>
-            <div className="rounded-2xl p-6 border border-purple-500/15 bg-purple-500/[0.04] backdrop-blur-sm">
-              <div className="flex items-center gap-2 mb-3">
-                <TrendingUp className="w-4 h-4 text-purple-400" />
-                <p className="text-[11px] text-zinc-400 font-semibold uppercase tracking-wider">Selisih Net</p>
+            <div className="rounded-xl p-4 bg-white/[0.02] border border-white/[0.04]">
+              <div className="flex items-center gap-2 mb-2">
+                <TrendingUp className="w-3.5 h-3.5 text-zinc-400" />
+                <p className="text-[11px] text-zinc-500 font-medium uppercase tracking-wider">Selisih Net</p>
               </div>
-              <p className={`text-3xl md:text-4xl font-extrabold tracking-tight ${netSelisih >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+              <p className={`text-2xl font-bold ${netSelisih >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
                 {netSelisih >= 0 ? '+' : ''}{netSelisih.toLocaleString()}
               </p>
-              <p className="text-[11px] text-zinc-500 mt-1.5">{netSelisih >= 0 ? 'stok bertambah' : 'stok berkurang'}</p>
+              <p className="text-[11px] text-zinc-600 mt-0.5">{netSelisih >= 0 ? 'stok bertambah' : 'stok berkurang'}</p>
             </div>
           </div>
-          <div className="rounded-2xl p-5 border border-white/[0.04] bg-white/[0.01]">
+          <div className="rounded-xl p-4 bg-white/[0.02] border border-white/[0.04]">
             <RechartsBarChart data={weeklyData} />
           </div>
         </div>
@@ -300,37 +290,35 @@ export default function ReportsPage() {
 
       {/* ===== PRODUK AKTIF vs STAGNAN ===== */}
       <GlassPanel>
-        <div className="p-7 border-b border-white/[0.06]">
+        <div className="p-5 border-b border-white/[0.06]">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500/20 to-yellow-600/10 border border-amber-500/20 flex items-center justify-center shadow-[0_0_12px_rgba(245,158,11,0.1)]">
-              <TrendingUp className="w-5 h-5 text-amber-400" />
+            <div className="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center">
+              <TrendingUp className="w-4 h-4 text-amber-400" />
             </div>
             <div>
-              <h2 className="font-bold text-white text-lg tracking-tight">Produk Aktif vs Stagnan</h2>
-              <p className="text-xs text-zinc-500 mt-0.5">Berdasarkan jumlah transaksi keluar</p>
+              <h2 className="font-semibold text-white">Produk Aktif vs Stagnan</h2>
+              <p className="text-xs text-zinc-500">Berdasarkan jumlah transaksi keluar</p>
             </div>
           </div>
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-white/[0.06]">
           {/* Top 5 Terlaris */}
-          <div className="p-7">
-            <div className="flex items-center gap-2 mb-5">
-              <div className="w-7 h-7 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
-                <TrendingUp className="w-3.5 h-3.5 text-emerald-400" />
-              </div>
-              <h3 className="text-sm font-bold text-emerald-400">Top 5 Terlaris</h3>
+          <div className="p-5">
+            <div className="flex items-center gap-2 mb-4">
+              <TrendingUp className="w-3.5 h-3.5 text-emerald-400" />
+              <h3 className="text-sm font-medium text-zinc-300">Top 5 Terlaris</h3>
             </div>
-            <div className="space-y-3">
+            <div className="space-y-2">
               {topActive.length > 0 ? topActive.map((item, i) => (
-                <div key={i} className="flex items-center gap-3 p-3 rounded-xl hover:bg-white/[0.02] transition-all duration-200">
-                  <span className="w-8 h-8 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-extrabold flex items-center justify-center shrink-0">
+                <div key={i} className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-white/[0.02] transition-colors">
+                  <span className="w-6 h-6 rounded-md bg-white/[0.04] text-zinc-400 text-[10px] font-bold flex items-center justify-center shrink-0">
                     {i + 1}
                   </span>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm text-white font-medium truncate">{item.name}</p>
-                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/[0.04] border border-white/[0.06] text-zinc-500">{item.category || '-'}</span>
+                    <span className="text-[10px] text-zinc-500">{item.category || '-'}</span>
                   </div>
-                  <span className="text-base font-extrabold text-emerald-400">{item.count}</span>
+                  <span className="text-sm font-bold text-white">{item.count}</span>
                 </div>
               )) : (
                 <div className="text-center py-8">
@@ -341,24 +329,22 @@ export default function ReportsPage() {
             </div>
           </div>
           {/* Top 5 Stagnan */}
-          <div className="p-7">
-            <div className="flex items-center gap-2 mb-5">
-              <div className="w-7 h-7 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center">
-                <TrendingDown className="w-3.5 h-3.5 text-amber-400" />
-              </div>
-              <h3 className="text-sm font-bold text-amber-400">Top 5 Stagnan</h3>
+          <div className="p-5">
+            <div className="flex items-center gap-2 mb-4">
+              <TrendingDown className="w-3.5 h-3.5 text-amber-400" />
+              <h3 className="text-sm font-medium text-zinc-300">Top 5 Stagnan</h3>
             </div>
-            <div className="space-y-3">
+            <div className="space-y-2">
               {topStagnant.length > 0 ? topStagnant.map((item, i) => (
-                <div key={i} className="flex items-center gap-3 p-3 rounded-xl hover:bg-white/[0.02] transition-all duration-200">
-                  <span className="w-8 h-8 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-extrabold flex items-center justify-center shrink-0">
+                <div key={i} className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-white/[0.02] transition-colors">
+                  <span className="w-6 h-6 rounded-md bg-white/[0.04] text-zinc-400 text-[10px] font-bold flex items-center justify-center shrink-0">
                     {i + 1}
                   </span>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm text-white font-medium truncate">{item.name}</p>
-                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/[0.04] border border-white/[0.06] text-zinc-500">{item.category}</span>
+                    <span className="text-[10px] text-zinc-500">{item.category}</span>
                   </div>
-                  <span className="text-base font-extrabold text-amber-400">{item.count}</span>
+                  <span className="text-sm font-bold text-white">{item.count}</span>
                 </div>
               )) : (
                 <div className="text-center py-8">
@@ -379,12 +365,12 @@ export default function ReportsPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Low Stock */}
         <GlassPanel>
-          <div className="p-6 border-b border-white/[0.06] flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500/20 to-amber-600/10 border border-amber-500/20 flex items-center justify-center shadow-[0_0_12px_rgba(245,158,11,0.1)]">
-              <AlertTriangle className="w-5 h-5 text-amber-400" />
+          <div className="p-5 border-b border-white/[0.06] flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center">
+              <AlertTriangle className="w-4 h-4 text-amber-400" />
             </div>
             <div>
-              <h3 className="font-bold text-white">Stok Rendah</h3>
+              <h3 className="font-semibold text-white text-sm">Stok Rendah</h3>
               <p className="text-xs text-zinc-500">{lowStock.length} produk perlu restock</p>
             </div>
           </div>
@@ -396,7 +382,7 @@ export default function ReportsPage() {
                 <div key={p.id} className="px-6 py-4 hover:bg-white/[0.02] transition-all duration-200">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/15 flex items-center justify-center text-amber-400 text-[11px] font-bold">
+                      <div className="w-9 h-9 rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-400 text-[10px] font-bold">
                         {p.name.substring(0, 2).toUpperCase()}
                       </div>
                       <div>
@@ -405,7 +391,7 @@ export default function ReportsPage() {
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="text-xl font-extrabold text-amber-400">{p.stock}</p>
+                      <p className="text-sm font-bold text-white">{p.stock}</p>
                       <p className="text-[10px] text-zinc-600">min: {p.minStock}</p>
                     </div>
                   </div>
@@ -426,12 +412,12 @@ export default function ReportsPage() {
 
         {/* Out of Stock */}
         <GlassPanel>
-          <div className="p-6 border-b border-white/[0.06] flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-red-500/20 to-red-600/10 border border-red-500/20 flex items-center justify-center shadow-[0_0_12px_rgba(239,68,68,0.1)]">
-              <XCircle className="w-5 h-5 text-red-400" />
+          <div className="p-5 border-b border-white/[0.06] flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-red-500/10 flex items-center justify-center">
+              <XCircle className="w-4 h-4 text-red-400" />
             </div>
             <div>
-              <h3 className="font-bold text-white">Stok Habis</h3>
+              <h3 className="font-semibold text-white text-sm">Stok Habis</h3>
               <p className="text-xs text-zinc-500">{outStock.length} produk habis</p>
             </div>
           </div>
@@ -439,7 +425,7 @@ export default function ReportsPage() {
             {outStock.slice(0, 5).map(p => (
               <div key={p.id} className="px-6 py-4 flex items-center justify-between hover:bg-white/[0.02] transition-all duration-200">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-red-500/10 border border-red-500/15 flex items-center justify-center text-red-400 text-[11px] font-bold">
+                  <div className="w-9 h-9 rounded-lg bg-red-500/10 flex items-center justify-center text-red-400 text-[10px] font-bold">
                     {p.name.substring(0, 2).toUpperCase()}
                   </div>
                   <div>
@@ -447,7 +433,7 @@ export default function ReportsPage() {
                     <p className="text-[11px] text-zinc-500">{p.category}</p>
                   </div>
                 </div>
-                <span className="text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400">Habis</span>
+                <span className="text-[10px] font-semibold px-2 py-1 rounded-md bg-red-500/10 text-red-400">Habis</span>
               </div>
             ))}
             {outStock.length === 0 && (
@@ -467,61 +453,26 @@ export default function ReportsPage() {
 /* ─── GlassPanel Component ─── */
 function GlassPanel({ children }: { children: React.ReactNode }) {
   return (
-    <div className="relative group">
-      <div className="absolute -inset-[1px] rounded-3xl bg-gradient-to-r from-purple-500/10 via-transparent to-emerald-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-sm" />
-      <div className="relative rounded-3xl overflow-hidden border border-white/[0.08] bg-[#0f0f14]/80 backdrop-blur-xl shadow-[0_0_40px_rgba(0,0,0,0.4)] group-hover:border-white/[0.12] transition-all duration-300">
-        {children}
-      </div>
+    <div className="rounded-2xl overflow-hidden border border-white/[0.06] bg-[#141418] hover:border-white/[0.1] transition-colors duration-200">
+      {children}
     </div>
   )
 }
 
 /* ─── GlassStatCard Component ─── */
-function GlassStatCard({ label, value, icon, glowColor, valueColor, subtitle }: {
-  label: string; value: string; icon: React.ReactNode; glowColor: 'purple' | 'emerald' | 'red'; valueColor?: string; subtitle?: string
+function GlassStatCard({ label, value, icon, accent, accentBg, subtitle }: {
+  label: string; value: string; icon: React.ReactNode; accent: string; accentBg: string; subtitle?: string
 }) {
-  const styles = {
-    purple: {
-      iconBg: 'from-purple-500/20 to-purple-600/10',
-      iconBorder: 'border-purple-500/25',
-      iconText: 'text-purple-400',
-      glow: 'shadow-[0_0_20px_rgba(168,85,247,0.06)]',
-      hoverBorder: 'group-hover:border-purple-500/30',
-      hoverGlow: 'group-hover:shadow-[0_0_30px_rgba(168,85,247,0.1)]',
-      bgGlow: 'bg-purple-500/5',
-    },
-    emerald: {
-      iconBg: 'from-emerald-500/20 to-emerald-600/10',
-      iconBorder: 'border-emerald-500/25',
-      iconText: 'text-emerald-400',
-      glow: 'shadow-[0_0_20px_rgba(16,185,129,0.06)]',
-      hoverBorder: 'group-hover:border-emerald-500/30',
-      hoverGlow: 'group-hover:shadow-[0_0_30px_rgba(16,185,129,0.1)]',
-      bgGlow: 'bg-emerald-500/5',
-    },
-    red: {
-      iconBg: 'from-red-500/20 to-red-600/10',
-      iconBorder: 'border-red-500/25',
-      iconText: 'text-red-400',
-      glow: 'shadow-[0_0_20px_rgba(239,68,68,0.06)]',
-      hoverBorder: 'group-hover:border-red-500/30',
-      hoverGlow: 'group-hover:shadow-[0_0_30px_rgba(239,68,68,0.1)]',
-      bgGlow: 'bg-red-500/5',
-    },
-  }
-  const s = styles[glowColor]
-
   return (
-    <div className={`group relative rounded-2xl p-4 border border-white/[0.08] bg-[#0f0f14]/80 backdrop-blur-xl transition-all duration-300 ${s.glow} ${s.hoverBorder} ${s.hoverGlow} hover:translate-y-[-1px]`}>
-      <div className={`absolute top-0 right-0 w-20 h-20 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 ${s.bgGlow}`} />
-      <div className="relative flex items-center gap-3">
-        <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${s.iconBg} border ${s.iconBorder} flex items-center justify-center shrink-0 ${s.iconText}`}>
+    <div className="rounded-2xl p-4 border border-white/[0.06] bg-[#141418] hover:border-white/[0.1] transition-colors duration-200">
+      <div className="flex items-center gap-3">
+        <div className={`w-9 h-9 rounded-lg ${accentBg} flex items-center justify-center shrink-0 ${accent}`}>
           {icon}
         </div>
         <div className="min-w-0">
-          <p className={`text-lg md:text-xl font-extrabold tracking-tight truncate ${valueColor || 'text-white'}`}>{value}</p>
-          <p className="text-[11px] text-zinc-500 font-medium tracking-wide uppercase">{label}</p>
-          {subtitle && <p className="text-[9px] text-zinc-600 mt-0.5">{subtitle}</p>}
+          <p className="text-lg font-bold text-white truncate">{value}</p>
+          <p className="text-[11px] text-zinc-500 font-medium">{label}</p>
+          {subtitle && <p className="text-[9px] text-zinc-600">{subtitle}</p>}
         </div>
       </div>
     </div>
@@ -582,18 +533,18 @@ function DeadStockTable({ deadStock, transactions, formatRp }: { deadStock: Prod
 
   return (
     <GlassPanel>
-      <div className="p-7 border-b border-white/[0.06] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+      <div className="p-5 border-b border-white/[0.06] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-red-500/20 to-red-600/10 border border-red-500/20 flex items-center justify-center shadow-[0_0_12px_rgba(239,68,68,0.1)]">
-            <Skull className="w-5 h-5 text-red-400" />
+          <div className="w-8 h-8 rounded-lg bg-red-500/10 flex items-center justify-center">
+            <Skull className="w-4 h-4 text-red-400" />
           </div>
           <div>
-            <h2 className="font-bold text-white text-lg tracking-tight">Dead Stock</h2>
+            <h2 className="font-semibold text-white">Dead Stock</h2>
             <p className="text-xs text-zinc-500">{deadStock.length} produk tanpa transaksi keluar</p>
           </div>
         </div>
         {totalValue > 0 && (
-          <p className="text-sm font-extrabold text-red-400 bg-red-500/10 border border-red-500/20 px-4 py-1.5 rounded-xl">
+          <p className="text-sm font-semibold text-red-400">
             Nilai tertahan: {formatRp(totalValue)}
           </p>
         )}
