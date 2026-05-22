@@ -294,30 +294,62 @@ function WhatsAppSettings() {
           />
         </div>
 
-        {/* Targets */}
+        {/* Personal Target */}
         <div className="space-y-2">
           <label className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider flex items-center gap-2">
-            <svg className="w-3 h-3 text-zinc-500" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" /></svg>
-            Target (Personal + Grup)
+            <span className="text-sm">👤</span>
+            Nomor Personal
           </label>
-          <textarea
-            value={targets}
-            onChange={e => { setTargets(e.target.value); markChanged() }}
-            rows={3}
-            className={`${inputClass} resize-none`}
-            placeholder={"628xxxxxxxxxx,120363xxxxx@g.us"}
+          <input
+            type="text"
+            value={targets.split(',').filter(t => t.trim() && !t.trim().includes('@g.us')).join(', ')}
+            onChange={e => {
+              const grupPart = targets.split(',').filter(t => t.trim().includes('@g.us')).join(',')
+              const newPersonal = e.target.value
+              const combined = [newPersonal, grupPart].filter(Boolean).join(',')
+              setTargets(combined)
+              markChanged()
+            }}
+            className={inputClass}
+            placeholder="628xxxxxxxxxx"
           />
-          <div className="flex flex-wrap gap-1.5 mt-1">
+          <p className="text-[10px] text-zinc-600">Format: 628xxx (tanpa + atau 0). Pisahkan dengan koma jika lebih dari satu.</p>
+        </div>
+
+        {/* Group Target */}
+        <div className="space-y-2">
+          <label className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider flex items-center gap-2">
+            <span className="text-sm">👥</span>
+            ID Grup WhatsApp
+          </label>
+          <input
+            type="text"
+            value={targets.split(',').filter(t => t.trim().includes('@g.us')).join(', ')}
+            onChange={e => {
+              const personalPart = targets.split(',').filter(t => t.trim() && !t.trim().includes('@g.us')).join(',')
+              const newGroup = e.target.value
+              const combined = [personalPart, newGroup].filter(Boolean).join(',')
+              setTargets(combined)
+              markChanged()
+            }}
+            className={inputClass}
+            placeholder="120363xxxxx@g.us"
+          />
+          <p className="text-[10px] text-zinc-600">Ambil dari Fonnte Dashboard → Device → Group. Format: <code className="text-blue-400/70">120363xxx@g.us</code></p>
+        </div>
+
+        {/* Target preview badges */}
+        {targets.split(',').filter(t => t.trim()).length > 0 && (
+          <div className="flex flex-wrap gap-1.5">
             {targets.split(',').filter(t => t.trim()).map((t, i) => (
-              <span key={i} className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[9px] font-semibold ${
+              <span key={i} className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-semibold ${
                 t.trim().includes('@g.us') ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20' : 'bg-green-500/10 text-green-400 border border-green-500/20'
               }`}>
-                {t.trim().includes('@g.us') ? '👥' : '👤'} {t.trim().length > 20 ? t.trim().slice(0, 20) + '...' : t.trim()}
+                {t.trim().includes('@g.us') ? '👥 Grup' : '👤 Personal'}: {t.trim().length > 18 ? t.trim().slice(0, 18) + '...' : t.trim()}
               </span>
             ))}
           </div>
-          <p className="text-[10px] text-zinc-600">Pisahkan dengan koma. Personal: <code className="text-green-400/70">628xxx</code> · Grup: <code className="text-blue-400/70">120363xxx@g.us</code></p>
-        </div>
+        )}
 
         {/* Schedule */}
         <div className="space-y-2">
