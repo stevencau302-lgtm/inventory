@@ -40,12 +40,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                     style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
                     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" /></svg>
                   </button>
-                  <div className="hidden sm:block">
-                    <div className="relative">
-                      <svg className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" /></svg>
-                      <input type="text" placeholder="Cari produk..." className="form-input w-56 pl-9 py-2 text-[13px]" />
-                    </div>
-                  </div>
                 </div>
                 <div className="flex items-center gap-2">
                   {/* Notification */}

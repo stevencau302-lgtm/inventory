@@ -104,8 +104,8 @@ export default function ProductsPage() {
             <button className="px-4 py-2 rounded-lg border border-white/20 text-zinc-300 text-sm font-medium hover:bg-white/5 transition">Bulk Entry</button>
             <button className="px-4 py-2 rounded-lg border border-white/20 text-zinc-300 text-sm font-medium hover:bg-white/5 transition">Match SKU</button>
             <button className="px-4 py-2 rounded-lg border border-white/20 text-zinc-300 text-sm font-medium hover:bg-white/5 transition">Import Excel</button>
-            <Link href="/products/new" className="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium transition flex items-center gap-2">
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+            <Link href="/products/new" className="px-4 py-2 rounded-lg bg-[#FDC800] hover:bg-[#FDC800]/90 text-[#000000] text-sm font-bold transition flex items-center gap-2 shadow-lg shadow-[#FDC800]/20">
+              <svg className="w-4 h-4 text-[#000000]" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
               Tambah Produk
             </Link>
           </div>

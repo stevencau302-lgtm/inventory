@@ -61,8 +61,8 @@ export default function CategoriesPage() {
           <h1 className="text-2xl md:text-3xl font-bold text-cozy-text dark:text-[#fafafa]">Kategori</h1>
           <p className="text-cozy-muted text-sm mt-1">{categories.length} kategori tersedia</p>
         </div>
-        <button onClick={() => setModalOpen(true)} className="btn-primary">
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+        <button onClick={() => setModalOpen(true)} className="px-4 py-2 rounded-lg bg-[#FDC800] hover:bg-[#FDC800]/90 text-[#000000] text-sm font-bold transition flex items-center gap-2 shadow-lg shadow-[#FDC800]/20">
+          <svg className="w-4 h-4 text-[#000000]" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
           </svg>
           Tambah Kategori
