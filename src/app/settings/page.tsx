@@ -69,7 +69,7 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="space-y-6 max-w-2xl">
+    <div className="space-y-6 max-w-4xl mx-auto">
       {/* Header */}
       <div className="flex items-center gap-4">
         <div className="w-12 h-12 rounded-xl bg-violet-500/20 flex items-center justify-center shrink-0">
