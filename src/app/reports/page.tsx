@@ -228,8 +228,8 @@ export default function ReportsPage() {
           })}
           {topCategory.length === 0 && (
             <div className="text-center py-10">
-              <p className="text-sm text-zinc-400">Belum ada kategori produk</p>
-              <p className="text-xs text-zinc-600 mt-1">Tambahkan kategori dan produk untuk melihat distribusi nilai</p>
+              <p className="text-sm text-zinc-300">Belum ada kategori produk</p>
+              <p className="text-xs text-zinc-500 mt-1">Tambahkan kategori dan produk untuk melihat distribusi nilai</p>
             </div>
           )}
         </div>
@@ -331,8 +331,8 @@ export default function ReportsPage() {
                 </div>
               )) : (
                 <div className="text-center py-6">
-                  <p className="text-sm text-zinc-400">Belum ada transaksi keluar</p>
-                  <p className="text-xs text-zinc-600 mt-1">Mulai input penjualan pertama untuk melihat produk terlaris</p>
+                  <p className="text-sm text-zinc-300">Belum ada transaksi keluar</p>
+                  <p className="text-xs text-zinc-500 mt-1">Mulai input penjualan pertama untuk melihat produk terlaris</p>
                 </div>
               )}
             </div>
@@ -357,8 +357,8 @@ export default function ReportsPage() {
                 </div>
               )) : (
                 <div className="text-center py-6">
-                  <p className="text-sm text-zinc-400">Semua produk masih aktif bergerak</p>
-                  <p className="text-xs text-zinc-600 mt-1">Tidak ada produk yang diam tanpa transaksi</p>
+                  <p className="text-sm text-zinc-300">Semua produk masih aktif bergerak</p>
+                  <p className="text-xs text-zinc-500 mt-1">Tidak ada produk yang diam tanpa transaksi</p>
                 </div>
               )}
             </div>
@@ -412,8 +412,8 @@ export default function ReportsPage() {
             })}
             {lowStock.length === 0 && (
               <div className="px-5 py-8 text-center">
-                <p className="text-sm text-emerald-400/80">Semua stok aman</p>
-                <p className="text-xs text-zinc-600 mt-1">Tidak ada produk yang mendekati batas minimum</p>
+                <p className="text-sm text-emerald-400">Semua stok aman</p>
+                <p className="text-xs text-zinc-400 mt-1">Tidak ada produk yang mendekati batas minimum</p>
               </div>
             )}
           </div>
@@ -448,8 +448,8 @@ export default function ReportsPage() {
             ))}
             {outStock.length === 0 && (
               <div className="px-5 py-8 text-center">
-                <p className="text-sm text-emerald-400/80">Semua produk tersedia</p>
-                <p className="text-xs text-zinc-600 mt-1">Tidak ada produk dengan stok kosong saat ini</p>
+                <p className="text-sm text-emerald-400">Semua produk tersedia</p>
+                <p className="text-xs text-zinc-400 mt-1">Tidak ada produk dengan stok kosong saat ini</p>
               </div>
             )}
           </div>
@@ -473,7 +473,7 @@ function StatCard({ label, value, icon, iconBg, iconColor, valueColor, subtitle 
         <div className="min-w-0">
           <p className={`text-lg font-bold truncate ${valueColor || 'text-[#fafafa]'}`}>{value}</p>
           <p className="text-[11px] text-zinc-500 font-medium">{label}</p>
-          {subtitle && <p className="text-[10px] text-zinc-600 mt-0.5">{subtitle}</p>}
+          {subtitle && <p className="text-[10px] text-zinc-400 mt-0.5">{subtitle}</p>}
         </div>
       </div>
     </div>
@@ -605,8 +605,8 @@ function DeadStockTable({ deadStock, transactions, formatRp }: { deadStock: Prod
         </div>
       ) : (
         <div className="p-10 text-center">
-          <p className="text-sm text-emerald-400/80">Tidak ada dead stock</p>
-          <p className="text-xs text-zinc-600 mt-1">Semua produk memiliki transaksi keluar — inventory bergerak sehat</p>
+          <p className="text-sm text-emerald-400">Tidak ada dead stock</p>
+          <p className="text-xs text-zinc-400 mt-1">Semua produk memiliki transaksi keluar — inventory bergerak sehat</p>
         </div>
       )}
     </div>
