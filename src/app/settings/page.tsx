@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { getProducts, getCategories, getTransactions, saveProducts, saveCategories, saveTransactions, loadSampleData, fetchProducts, fetchCategories, fetchTransactions } from '@/lib/store'
+import { getProducts, getCategories, getTransactions, saveProducts, saveCategories, saveTransactions, loadSampleData, fetchProducts, fetchCategories, fetchTransactions, deleteProduct, deleteCategory, deleteTransaction } from '@/lib/store'
 import { useToast } from '@/components/Toast'
 import DeleteModal from '@/components/DeleteModal'
 
@@ -32,15 +32,36 @@ export default function SettingsPage() {
     setResetModal(true)
   }
 
-  const confirmReset = () => {
+  const confirmReset = async () => {
+    setResetModal(false)
+    
+    // Delete all products from Supabase
+    const products = await fetchProducts()
+    for (const p of products) {
+      await deleteProduct(p.id)
+    }
+
+    // Delete all categories from Supabase
+    const categories = await fetchCategories()
+    for (const c of categories) {
+      await deleteCategory(c.id)
+    }
+
+    // Delete all transactions from Supabase
+    const transactions = await fetchTransactions()
+    for (const t of transactions) {
+      await deleteTransaction(t.id)
+    }
+
+    // Also clear localStorage
     localStorage.removeItem('inv_products')
     localStorage.removeItem('inv_categories')
     localStorage.removeItem('inv_transactions')
+
     setProductCount(0)
     setCatCount(0)
     setTxCount(0)
-    toast('Semua data lokal berhasil direset!', 'warning')
-    setResetModal(false)
+    toast('Semua data berhasil direset!', 'warning')
   }
 
   const handleLoadSample = () => {
@@ -118,11 +139,11 @@ export default function SettingsPage() {
           </div>
           <div className="px-5 py-4 flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-zinc-200">Reset Data Lokal</p>
-              <p className="text-[11px] text-zinc-500 mt-0.5">Hapus semua data dari localStorage browser ini</p>
+              <p className="text-sm font-medium text-zinc-200">Reset Semua Data</p>
+              <p className="text-[11px] text-zinc-500 mt-0.5">Hapus semua produk, kategori & transaksi dari database</p>
             </div>
             <button onClick={handleReset} className="px-4 py-2 rounded-lg bg-red-500/15 text-red-400 text-xs font-bold hover:bg-red-500 hover:text-white transition-all active:scale-95">
-              Reset
+              Reset All
             </button>
           </div>
         </div>
@@ -151,7 +172,7 @@ export default function SettingsPage() {
       <DeleteModal
         isOpen={resetModal}
         title="Reset Semua Data?"
-        message="Hapus semua data lokal (produk, kategori, transaksi)? Data di Supabase tidak terpengaruh."
+        message="Hapus SEMUA data (produk, kategori, transaksi) dari database? Aksi ini tidak bisa dibatalkan."
         confirmLabel="Reset"
         icon="warning"
         onConfirm={confirmReset}
