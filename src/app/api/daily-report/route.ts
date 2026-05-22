@@ -91,7 +91,7 @@ async function buildMessage(supabase: any, txList: Transaction[], nowWIB: Date):
   }
 
   // Get product SKUs
-  const productIds = [...new Set(txList.map(t => t.product_id))]
+  const productIds = Array.from(new Set(txList.map(t => t.product_id)))
   const { data: products } = await supabase.from('products').select('id, name, sku, stock').in('id', productIds)
   const productMap = new Map<string, Product>()
   ;(products || []).forEach((p: Product) => productMap.set(p.id, p))

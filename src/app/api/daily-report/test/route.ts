@@ -49,7 +49,7 @@ export async function POST(request: Request) {
     const txList = (transactions || []) as Transaction[]
 
     // Get product SKUs
-    const productIds = [...new Set(txList.map((t: Transaction) => t.product_id))]
+    const productIds = Array.from(new Set(txList.map((t: Transaction) => t.product_id)))
     const productMap = new Map<string, Product>()
     if (productIds.length > 0) {
       const { data: products } = await supabase.from('products').select('id, name, sku, stock').in('id', productIds)
