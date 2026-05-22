@@ -7,6 +7,7 @@ import { useToast } from '@/components/Toast'
 import ProductModal from '@/components/ProductModal'
 import DeleteModal from '@/components/DeleteModal'
 import CsvImportModal from '@/components/CsvImportModal'
+import { TableSkeleton } from '@/components/PageSkeleton'
 
 export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([])
@@ -33,7 +34,7 @@ export default function ProductsPage() {
     loadData()
   }, [])
 
-  if (!mounted) return null
+  if (!mounted) return <TableSkeleton />
 
   const filtered = products.filter(p => {
     const matchSearch = p.name.toLowerCase().includes(search.toLowerCase()) || p.sku.toLowerCase().includes(search.toLowerCase())

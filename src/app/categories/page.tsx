@@ -4,6 +4,7 @@ import { useEffect, useState, useRef } from 'react'
 import { Category, getCategories, getProducts, saveCategories, uid, Product, formatRp, fetchCategories, fetchProducts, deleteCategory, saveCategory } from '@/lib/store'
 import { useToast } from '@/components/Toast'
 import DeleteModal from '@/components/DeleteModal'
+import { GridSkeleton } from '@/components/PageSkeleton'
 
 export default function CategoriesPage() {
   const [categories, setCategories] = useState<Category[]>([])
@@ -24,7 +25,7 @@ export default function CategoriesPage() {
     loadData()
   }, [])
 
-  if (!mounted) return null
+  if (!mounted) return <GridSkeleton />
 
   const handleAdd = (name: string, icon: string, color: string) => {
     const newCat: Category = { id: uid(), name, icon, color, createdAt: new Date().toISOString() }
