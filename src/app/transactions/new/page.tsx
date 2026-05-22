@@ -150,7 +150,7 @@ export default function NewTransactionPage() {
       type,
       quantity,
       note,
-      createdAt: new Date(date).toISOString()
+      createdAt: (() => { const now = new Date(); const [y, m, d] = date.split('-').map(Number); now.setFullYear(y, m - 1, d); return now.toISOString() })()
     }
 
     await saveProduct(updatedProduct)
@@ -596,7 +596,8 @@ function BulkEntryForm({ products, router, toast }: { products: Product[]; route
       const product = products.find(p => p.id === row.productId)
       if (!product) continue
       const updatedProduct = { ...product, stock: type === 'in' ? product.stock + row.quantity : product.stock - row.quantity, updatedAt: new Date().toISOString() }
-      const newTx: Transaction = { id: uid(), productId: product.id, productName: product.name, type, quantity: row.quantity, note: row.note, createdAt: new Date(row.date).toISOString() }
+      const txDate = (() => { const now = new Date(); const [y, m, d] = row.date.split('-').map(Number); now.setFullYear(y, m - 1, d); return now.toISOString() })()
+      const newTx: Transaction = { id: uid(), productId: product.id, productName: product.name, type, quantity: row.quantity, note: row.note, createdAt: txDate }
       await saveProduct(updatedProduct)
       await saveTransaction(newTx)
     }
