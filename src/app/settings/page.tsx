@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { getProducts, getCategories, getTransactions, saveProducts, saveCategories, saveTransactions, fetchProducts, fetchCategories, fetchTransactions, deleteProduct, deleteCategory, deleteTransaction } from '@/lib/store'
+import { fetchProducts, fetchCategories, fetchTransactions, deleteProduct, deleteCategory, deleteTransaction } from '@/lib/store'
 import { useToast } from '@/components/Toast'
 import DeleteModal from '@/components/DeleteModal'
 
@@ -53,10 +53,6 @@ export default function SettingsPage() {
       await deleteTransaction(t.id)
     }
 
-    // Also clear localStorage
-    localStorage.removeItem('inv_products')
-    localStorage.removeItem('inv_categories')
-    localStorage.removeItem('inv_transactions')
 
     setProductCount(0)
     setCatCount(0)
@@ -166,7 +162,7 @@ export default function SettingsPage() {
             <span className="px-1.5 py-0.5 rounded bg-indigo-500/15 text-indigo-400 text-[10px] font-bold">v1.0.0</span>
           </div>
           <p>Next.js 14 &middot; Tailwind CSS &middot; TypeScript &middot; Supabase</p>
-          <p className="text-zinc-500 text-xs">Data tersinkronisasi via Supabase dengan fallback localStorage</p>
+          <p className="text-zinc-500 text-xs">Data tersimpan di Supabase (cloud PostgreSQL)</p>
         </div>
       </div>
 

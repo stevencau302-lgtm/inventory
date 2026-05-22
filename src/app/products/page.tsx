@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { Product, Category, getProducts, getCategories, saveProducts, formatRp, getStatus, getStatusLabel, loadSampleData, fetchProducts, fetchCategories, deleteProduct, saveProduct } from '@/lib/store'
+import { Product, Category, formatRp, getStatus, getStatusLabel, fetchProducts, fetchCategories, deleteProduct, saveProduct } from '@/lib/store'
 import { useToast } from '@/components/Toast'
 import ProductModal from '@/components/ProductModal'
 import DeleteModal from '@/components/DeleteModal'
@@ -69,7 +69,6 @@ export default function ProductsPage() {
       saveProduct(product)
     }
     setProducts(updated)
-    localStorage.setItem('inv_products', JSON.stringify(updated))
     setModalOpen(false)
     setEditProduct(null)
   }
@@ -82,7 +81,6 @@ export default function ProductsPage() {
     await deleteProduct(deleteModal.id)
     const updated = products.filter(p => p.id !== deleteModal.id)
     setProducts(updated)
-    localStorage.setItem('inv_products', JSON.stringify(updated))
     toast('Produk dihapus!', 'success')
     setDeleteModal({ open: false, id: '', name: '' })
   }
@@ -95,7 +93,6 @@ export default function ProductsPage() {
   const handleCsvImport = (imported: Product[]) => {
     const updated = [...imported, ...products]
     setProducts(updated)
-    localStorage.setItem('inv_products', JSON.stringify(updated))
   }
 
   return (

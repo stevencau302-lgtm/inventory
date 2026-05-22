@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Product, Transaction, getProducts, getTransactions, formatRp, loadSampleData, fetchProducts, fetchTransactions, deleteTransaction, saveTransaction, saveProduct } from '@/lib/store'
+import { Product, Transaction, getProducts, getTransactions, formatRp, fetchProducts, fetchTransactions, deleteTransaction, saveTransaction, saveProduct } from '@/lib/store'
 import { useToast } from '@/components/Toast'
 import DeleteModal from '@/components/DeleteModal'
 import Link from 'next/link'
@@ -57,12 +57,7 @@ export default function TransactionsPage() {
 
   useEffect(() => {
     async function loadData() {
-      let p = await fetchProducts()
-      if (p.length === 0 && !localStorage.getItem('inv_seeded')) {
-        const data = loadSampleData()
-        p = data.products
-        localStorage.setItem('inv_seeded', '1')
-      }
+      const p = await fetchProducts()
       setProducts(p)
       const tx = await fetchTransactions()
       setTransactions(tx)
@@ -70,7 +65,6 @@ export default function TransactionsPage() {
     }
     loadData()
   }, [])
-
   if (!mounted) return <CardListSkeleton />
 
   const { from: periodFrom, to: periodTo } = getDateRange(periodFilter, customFrom, customTo)

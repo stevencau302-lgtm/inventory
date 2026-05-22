@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Product, Category, getProducts, getCategories, saveProducts, uid, loadSampleData, saveProduct, fetchCategories } from '@/lib/store'
+import { Product, Category, uid, saveProduct, fetchCategories } from '@/lib/store'
 import { useToast } from '@/components/Toast'
 import { Package, DollarSign, ArrowLeft, Save, ScanBarcode } from 'lucide-react'
 import BarcodeScanner from '@/components/BarcodeScanner'

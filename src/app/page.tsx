@@ -1,6 +1,6 @@
 'use client'
 import { useEffect, useState } from 'react'
-import { Product, Transaction, getProducts, getCategories, getTransactions, saveTransactions, formatRp, getStatus, getStatusLabel, loadSampleData, uid, fetchProducts, fetchTransactions } from '@/lib/store'
+import { Product, Transaction, formatRp, getStatus, getStatusLabel, uid, fetchProducts, fetchTransactions } from '@/lib/store'
 import dynamic from 'next/dynamic'
 
 const DashboardCharts = dynamic(() => import('@/components/DashboardCharts'), { ssr: false })
@@ -308,23 +308,3 @@ function StatCard({ icon, label, value, subtitle, border }: { icon: string; labe
   )
 }
 
-function generateSampleTransactions(products: Product[]): Transaction[] {
-  const txs: Transaction[] = []
-  const now = new Date()
-  for (let i = 0; i < 15; i++) {
-    const p = products[Math.floor(Math.random() * Math.min(products.length, 8))]
-    if (!p) continue
-    const d = new Date(now)
-    d.setDate(d.getDate() - Math.floor(Math.random() * 14))
-    txs.push({
-      id: uid(),
-      productId: p.id,
-      productName: p.name,
-      type: Math.random() > 0.4 ? 'in' : 'out',
-      quantity: Math.floor(Math.random() * 20) + 1,
-      note: '',
-      createdAt: d.toISOString(),
-    })
-  }
-  return txs.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-}

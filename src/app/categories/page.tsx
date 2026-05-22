@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState, useRef } from 'react'
-import { Category, getCategories, getProducts, saveCategories, uid, Product, formatRp, fetchCategories, fetchProducts, deleteCategory, saveCategory } from '@/lib/store'
+import { Category, uid, Product, formatRp, fetchCategories, fetchProducts, deleteCategory, saveCategory } from '@/lib/store'
 import { useToast } from '@/components/Toast'
 import DeleteModal from '@/components/DeleteModal'
 import { GridSkeleton } from '@/components/PageSkeleton'
@@ -32,7 +32,6 @@ export default function CategoriesPage() {
     const updated = [...categories, newCat]
     setCategories(updated)
     saveCategory(newCat)
-    localStorage.setItem('inv_categories', JSON.stringify(updated))
     setModalOpen(false)
     toast('Kategori berhasil ditambahkan!', 'success')
   }
@@ -44,7 +43,6 @@ export default function CategoriesPage() {
   const confirmDeleteCat = () => {
     const updated = categories.filter(c => c.id !== deleteCatModal.id)
     setCategories(updated)
-    saveCategories(updated)
     deleteCategory(deleteCatModal.id)
     toast('Kategori dihapus!', 'success')
     setDeleteCatModal({ open: false, id: '', name: '' })
