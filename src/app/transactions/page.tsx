@@ -210,14 +210,7 @@ export default function TransactionsPage() {
         {filteredTx.length === 0 && (
           <div className="text-center py-12 text-zinc-500 text-sm">Belum ada transaksi</div>
         )}
-        {filteredTx.length > 0 && (
-          <div className="rounded-xl bg-[#1a1a1a] border border-white/[0.06] p-4 flex items-center justify-between">
-            <p className="text-xs text-zinc-400">{filteredTx.length} transaksi</p>
-            <p className={`text-sm font-bold ${filteredTx.reduce((s, t) => s + (t.type === 'in' ? t.quantity : -t.quantity), 0) >= 0 ? 'text-[#16A34A]' : 'text-[#DC2626]'}`}>
-              Net: {filteredTx.reduce((s, t) => s + (t.type === 'in' ? t.quantity : -t.quantity), 0) >= 0 ? '+' : ''}{filteredTx.reduce((s, t) => s + (t.type === 'in' ? t.quantity : -t.quantity), 0)}
-            </p>
-          </div>
-        )}
+
       </div>
 
       {/* Desktop Table */}
@@ -301,13 +294,7 @@ export default function TransactionsPage() {
                 <tr><td colSpan={7} className="text-center py-12 text-zinc-500">Belum ada transaksi</td></tr>
               )}
             </tbody>
-            <tfoot>
-              <tr className="bg-[#0f0f0f]">
-                <td colSpan={3} className="border-t border-white/[0.06] px-3 py-3 text-xs font-semibold text-zinc-300">Total: {filteredTx.length} transaksi</td>
-                <td className={`border-t border-white/[0.06] px-2 py-3 text-center font-mono text-sm font-bold ${filteredTx.reduce((s, t) => s + (t.type === 'in' ? t.quantity : -t.quantity), 0) >= 0 ? 'text-[#16A34A]' : 'text-[#DC2626]'}`}>{filteredTx.reduce((s, t) => s + (t.type === 'in' ? t.quantity : -t.quantity), 0)}</td>
-                <td colSpan={3} className="border-t border-white/[0.06] px-3 py-3 text-xs text-zinc-500">Net movement</td>
-              </tr>
-            </tfoot>
+
           </table>
         </div>
       </div>
