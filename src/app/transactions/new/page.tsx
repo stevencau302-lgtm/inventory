@@ -649,7 +649,7 @@ function BulkEntryForm({ products, router, toast }: { products: Product[]; route
       </div>
 
       {/* Item Transaksi Section */}
-      <div className="rounded-xl bg-[#1a1a1a] border border-[#2a2a2a] overflow-hidden">
+      <div className="rounded-xl bg-[#1a1a1a] border border-[#2a2a2a]">
         <div className="flex items-center justify-between px-4 py-3 border-b border-[#2a2a2a]">
           <p className="text-xs font-bold uppercase tracking-wider text-zinc-400">Item Transaksi</p>
           <button type="button" onClick={addRow} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#FDC800] text-[#000000] text-[11px] font-bold active:scale-95 transition-all">
