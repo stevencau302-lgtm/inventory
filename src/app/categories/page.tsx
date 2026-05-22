@@ -3,12 +3,14 @@
 import { useEffect, useState, useRef } from 'react'
 import { Category, getCategories, getProducts, saveCategories, uid, Product, formatRp, fetchCategories, fetchProducts, deleteCategory, saveCategory } from '@/lib/store'
 import { useToast } from '@/components/Toast'
+import DeleteModal from '@/components/DeleteModal'
 
 export default function CategoriesPage() {
   const [categories, setCategories] = useState<Category[]>([])
   const [products, setProducts] = useState<Product[]>([])
   const [modalOpen, setModalOpen] = useState(false)
   const [mounted, setMounted] = useState(false)
+  const [deleteCatModal, setDeleteCatModal] = useState<{ open: boolean; id: string; name: string }>({ open: false, id: '', name: '' })
   const { toast } = useToast()
 
   useEffect(() => {
@@ -34,13 +36,17 @@ export default function CategoriesPage() {
     toast('Kategori berhasil ditambahkan!', 'success')
   }
 
-  const handleDelete = (id: string) => {
-    if (!confirm('Hapus kategori ini?')) return
-    const updated = categories.filter(c => c.id !== id)
+  const handleDelete = (id: string, name: string) => {
+    setDeleteCatModal({ open: true, id, name })
+  }
+
+  const confirmDeleteCat = () => {
+    const updated = categories.filter(c => c.id !== deleteCatModal.id)
     setCategories(updated)
     saveCategories(updated)
-    deleteCategory(id)
+    deleteCategory(deleteCatModal.id)
     toast('Kategori dihapus!', 'success')
+    setDeleteCatModal({ open: false, id: '', name: '' })
   }
 
   const iconMap: Record<string, React.ReactNode> = {
@@ -87,7 +93,7 @@ export default function CategoriesPage() {
                   {iconMap[cat.icon] || <TagIcon />}
                 </div>
                 <button 
-                  onClick={() => handleDelete(cat.id)}
+                  onClick={() => handleDelete(cat.id, cat.name)}
                   className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-500 hover:text-red-400 hover:bg-red-500/10 opacity-0 group-hover:opacity-100 transition-all"
                 >
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
@@ -135,6 +141,14 @@ export default function CategoriesPage() {
 
       {/* Add Category Modal */}
       {modalOpen && <CategoryModal onClose={() => setModalOpen(false)} onSave={handleAdd} />}
+
+      <DeleteModal
+        isOpen={deleteCatModal.open}
+        title="Hapus Kategori?"
+        productName={deleteCatModal.name}
+        onConfirm={confirmDeleteCat}
+        onCancel={() => setDeleteCatModal({ open: false, id: '', name: '' })}
+      />
     </div>
   )
 }

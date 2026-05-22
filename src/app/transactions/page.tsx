@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { Product, Transaction, getProducts, getTransactions, formatRp, loadSampleData, fetchProducts, fetchTransactions, deleteTransaction, saveTransaction } from '@/lib/store'
 import { useToast } from '@/components/Toast'
+import DeleteModal from '@/components/DeleteModal'
 import Link from 'next/link'
 
 type TabFilter = 'all' | 'in' | 'out'
@@ -16,6 +17,7 @@ export default function TransactionsPage() {
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editQuantity, setEditQuantity] = useState<number>(0)
   const [editNote, setEditNote] = useState<string>('')
+  const [deleteModal, setDeleteModal] = useState<{ open: boolean; id: string; name: string }>({ open: false, id: '', name: '' })
   const { toast } = useToast()
 
   useEffect(() => {
@@ -47,11 +49,15 @@ export default function TransactionsPage() {
     return matchTab && matchSearch
   })
 
-  const handleDelete = async (id: string, productName: string) => {
-    if (!confirm(`Hapus transaksi untuk "${productName}"?`)) return
-    await deleteTransaction(id)
-    setTransactions(prev => prev.filter(t => t.id !== id))
+  const handleDelete = (id: string, productName: string) => {
+    setDeleteModal({ open: true, id, name: productName })
+  }
+
+  const confirmDelete = async () => {
+    await deleteTransaction(deleteModal.id)
+    setTransactions(prev => prev.filter(t => t.id !== deleteModal.id))
     toast('Transaksi berhasil dihapus!', 'success')
+    setDeleteModal({ open: false, id: '', name: '' })
   }
 
   const handleEditStart = (tx: Transaction) => {
@@ -299,6 +305,14 @@ export default function TransactionsPage() {
           </table>
         </div>
       </div>
+
+      <DeleteModal
+        isOpen={deleteModal.open}
+        title="Hapus Transaksi?"
+        productName={deleteModal.name}
+        onConfirm={confirmDelete}
+        onCancel={() => setDeleteModal({ open: false, id: '', name: '' })}
+      />
     </div>
   )
 }

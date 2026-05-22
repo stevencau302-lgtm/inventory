@@ -1,16 +1,20 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Trash2 } from 'lucide-react'
+import { Trash2, AlertTriangle } from 'lucide-react'
 
 interface DeleteModalProps {
   isOpen: boolean
-  productName: string
+  productName?: string
+  title?: string
+  message?: string
+  confirmLabel?: string
+  icon?: 'trash' | 'warning'
   onConfirm: () => void
   onCancel: () => void
 }
 
-export default function DeleteModal({ isOpen, productName, onConfirm, onCancel }: DeleteModalProps) {
+export default function DeleteModal({ isOpen, productName, title, message, confirmLabel, icon = 'trash', onConfirm, onCancel }: DeleteModalProps) {
   const [show, setShow] = useState(false)
   const [animating, setAnimating] = useState(false)
 
@@ -26,6 +30,9 @@ export default function DeleteModal({ isOpen, productName, onConfirm, onCancel }
   }, [isOpen])
 
   if (!show) return null
+
+  const displayTitle = title || 'Hapus?'
+  const displayMessage = message || (productName ? `${productName} akan dihapus secara permanen.` : 'Data ini akan dihapus secara permanen.')
 
   return (
     <div
@@ -45,17 +52,19 @@ export default function DeleteModal({ isOpen, productName, onConfirm, onCancel }
       >
         {/* Icon */}
         <div className="flex justify-center mb-4">
-          <div className="w-14 h-14 rounded-full bg-[#DC2626]/10 flex items-center justify-center">
-            <Trash2 size={28} className="text-[#DC2626]" />
+          <div className={`w-14 h-14 rounded-full flex items-center justify-center ${icon === 'warning' ? 'bg-amber-500/10' : 'bg-[#DC2626]/10'}`}>
+            {icon === 'warning' ? (
+              <AlertTriangle size={28} className="text-amber-500" />
+            ) : (
+              <Trash2 size={28} className="text-[#DC2626]" />
+            )}
           </div>
         </div>
 
         {/* Content */}
         <div className="text-center mb-6">
-          <h3 className="text-lg font-bold text-white mb-1">Hapus Produk?</h3>
-          <p className="text-sm text-white/50">
-            <span className="text-white/80 font-medium">{productName}</span> akan dihapus secara permanen.
-          </p>
+          <h3 className="text-lg font-bold text-white mb-1">{displayTitle}</h3>
+          <p className="text-sm text-white/50">{displayMessage}</p>
         </div>
 
         {/* Actions */}
@@ -68,9 +77,9 @@ export default function DeleteModal({ isOpen, productName, onConfirm, onCancel }
           </button>
           <button
             onClick={onConfirm}
-            className="flex-1 px-4 py-2.5 rounded-lg text-sm font-bold text-white bg-[#DC2626] hover:bg-[#DC2626]/90 transition cursor-pointer"
+            className={`flex-1 px-4 py-2.5 rounded-lg text-sm font-bold text-white transition cursor-pointer ${icon === 'warning' ? 'bg-amber-500 hover:bg-amber-500/90' : 'bg-[#DC2626] hover:bg-[#DC2626]/90'}`}
           >
-            Hapus
+            {confirmLabel || 'Hapus'}
           </button>
         </div>
       </div>

@@ -3,12 +3,14 @@
 import { useEffect, useState } from 'react'
 import { getProducts, getCategories, saveProducts, saveCategories, loadSampleData } from '@/lib/store'
 import { useToast } from '@/components/Toast'
+import DeleteModal from '@/components/DeleteModal'
 
 export default function SettingsPage() {
   const [isDark, setIsDark] = useState(true)
   const [productCount, setProductCount] = useState(0)
   const [catCount, setCatCount] = useState(0)
   const [mounted, setMounted] = useState(false)
+  const [resetModal, setResetModal] = useState(false)
   const { toast } = useToast()
 
   useEffect(() => {
@@ -31,12 +33,16 @@ export default function SettingsPage() {
   }
 
   const handleReset = () => {
-    if (!confirm('Hapus semua data produk dan kategori? Aksi ini tidak bisa dibatalkan.')) return
+    setResetModal(true)
+  }
+
+  const confirmReset = () => {
     saveProducts([])
     saveCategories([])
     setProductCount(0)
     setCatCount(0)
     toast('Semua data berhasil direset!', 'warning')
+    setResetModal(false)
   }
 
   const handleLoadSample = () => {
@@ -127,6 +133,16 @@ export default function SettingsPage() {
           <p>Data disimpan di localStorage browser</p>
         </div>
       </div>
+
+      <DeleteModal
+        isOpen={resetModal}
+        title="Reset Semua Data?"
+        message="Hapus semua data produk dan kategori? Aksi ini tidak bisa dibatalkan."
+        confirmLabel="Reset"
+        icon="warning"
+        onConfirm={confirmReset}
+        onCancel={() => setResetModal(false)}
+      />
     </div>
   )
 }
