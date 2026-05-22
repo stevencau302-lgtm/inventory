@@ -693,9 +693,11 @@ function BulkEntryForm({ products, router, toast }: { products: Product[]; route
                     className="w-full rounded-lg text-xs px-3 py-2 bg-[#0f0f0f] text-[#fafafa] border-none focus:outline-none focus:ring-1 focus:ring-[#FDC800]/50 placeholder:text-zinc-600"
                     placeholder="Pilih produk..."
                   />
-                  {row.showDropdown && row.search && (
+                  {row.showDropdown && !row.productId && (
                     <div className="absolute z-50 left-0 right-0 top-full mt-1 rounded-lg bg-[#0f0f0f] border border-[#2a2a2a] max-h-36 overflow-y-auto shadow-xl">
-                      {filteredForRow.slice(0, 5).map(p => (
+                      {filteredForRow.length === 0 ? (
+                        <p className="px-3 py-2 text-xs text-zinc-500 text-center">Tidak ditemukan</p>
+                      ) : filteredForRow.slice(0, 5).map(p => (
                         <button key={p.id} type="button" onMouseDown={() => selectProduct(index, p.id)}
                           className="w-full px-3 py-2 text-left hover:bg-[#FDC800]/5 border-b border-[#2a2a2a] last:border-b-0">
                           <p className="text-xs text-[#fafafa]">{p.name}</p>
