@@ -547,8 +547,8 @@ export default function NewTransactionPage() {
 // Bulk Entry Form Component
 function BulkEntryForm({ products, router, toast }: { products: Product[]; router: any; toast: any }) {
   const [type, setType] = useState<TransactionType>('in')
-  const [rows, setRows] = useState<{ id: string; productId: string; quantity: number; date: string; note: string; search: string; showDropdown: boolean }[]>([
-    { id: uid(), productId: '', quantity: 1, date: new Date().toISOString().split('T')[0], note: '', search: '', showDropdown: false }
+  const [rows, setRows] = useState<{ id: string; productId: string; quantity: number; date: string; note: string; search: string; showDropdown: boolean }[]>(() => [
+    { id: 'row-init', productId: '', quantity: 1, date: new Date().toISOString().split('T')[0], note: '', search: '', showDropdown: false }
   ])
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
