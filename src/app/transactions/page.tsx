@@ -7,12 +7,44 @@ import DeleteModal from '@/components/DeleteModal'
 import Link from 'next/link'
 
 type TabFilter = 'all' | 'in' | 'out'
+type PeriodFilter = 'today' | '7days' | 'this-month' | 'last-month' | 'custom'
+
+function getDateRange(period: PeriodFilter, customFrom: string, customTo: string): { from: Date; to: Date } {
+  const now = new Date()
+  const startOfDay = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate(), 0, 0, 0)
+  const endOfDay = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate(), 23, 59, 59, 999)
+
+  switch (period) {
+    case 'today':
+      return { from: startOfDay(now), to: endOfDay(now) }
+    case '7days':
+      const sevenAgo = new Date(now)
+      sevenAgo.setDate(sevenAgo.getDate() - 6)
+      return { from: startOfDay(sevenAgo), to: endOfDay(now) }
+    case 'this-month':
+      return { from: new Date(now.getFullYear(), now.getMonth(), 1), to: endOfDay(now) }
+    case 'last-month':
+      const firstLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1)
+      const lastDayLastMonth = new Date(now.getFullYear(), now.getMonth(), 0)
+      return { from: firstLastMonth, to: endOfDay(lastDayLastMonth) }
+    case 'custom':
+      return {
+        from: customFrom ? startOfDay(new Date(customFrom)) : startOfDay(new Date(now.getFullYear(), now.getMonth(), 1)),
+        to: customTo ? endOfDay(new Date(customTo)) : endOfDay(now),
+      }
+    default:
+      return { from: new Date(now.getFullYear(), now.getMonth(), 1), to: endOfDay(now) }
+  }
+}
 
 export default function TransactionsPage() {
   const [products, setProducts] = useState<Product[]>([])
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [mounted, setMounted] = useState(false)
   const [tabFilter, setTabFilter] = useState<TabFilter>('all')
+  const [periodFilter, setPeriodFilter] = useState<PeriodFilter>('this-month')
+  const [customFrom, setCustomFrom] = useState('')
+  const [customTo, setCustomTo] = useState('')
   const [search, setSearch] = useState('')
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editQuantity, setEditQuantity] = useState<number>(0)
@@ -38,12 +70,19 @@ export default function TransactionsPage() {
 
   if (!mounted) return null
 
-  const totalIn = transactions.filter(t => t.type === 'in').reduce((s, t) => s + t.quantity, 0)
-  const totalOut = transactions.filter(t => t.type === 'out').reduce((s, t) => s + t.quantity, 0)
-  const inCount = transactions.filter(t => t.type === 'in').length
-  const outCount = transactions.filter(t => t.type === 'out').length
+  const { from: periodFrom, to: periodTo } = getDateRange(periodFilter, customFrom, customTo)
 
-  const filteredTx = transactions.filter(tx => {
+  const periodTransactions = transactions.filter(tx => {
+    const txDate = new Date(tx.createdAt)
+    return txDate >= periodFrom && txDate <= periodTo
+  })
+
+  const totalIn = periodTransactions.filter(t => t.type === 'in').reduce((s, t) => s + t.quantity, 0)
+  const totalOut = periodTransactions.filter(t => t.type === 'out').reduce((s, t) => s + t.quantity, 0)
+  const inCount = periodTransactions.filter(t => t.type === 'in').length
+  const outCount = periodTransactions.filter(t => t.type === 'out').length
+
+  const filteredTx = periodTransactions.filter(tx => {
     const matchTab = tabFilter === 'all' || tx.type === tabFilter
     const matchSearch = !search || tx.productName.toLowerCase().includes(search.toLowerCase())
     return matchTab && matchSearch
@@ -137,12 +176,12 @@ export default function TransactionsPage() {
             </div>
             <p className="text-[11px] text-zinc-500 font-medium">Total Transaksi</p>
           </div>
-          <p className="text-2xl font-bold text-[#fafafa]">{transactions.length}</p>
+          <p className="text-2xl font-bold text-[#fafafa]">{periodTransactions.length}</p>
         </div>
       </div>
 
       {/* Filter Bar */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
         <div className="relative">
           <svg className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" /></svg>
           <input type="text" placeholder="Cari produk / SKU..." value={search} onChange={e => setSearch(e.target.value)} className="form-input pl-10" />
@@ -152,7 +191,49 @@ export default function TransactionsPage() {
           <option value="in">Barang Masuk</option>
           <option value="out">Barang Keluar</option>
         </select>
+        {/* Period Filter */}
+        <div className="relative">
+          <svg className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 pointer-events-none" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" /></svg>
+          <select
+            value={periodFilter}
+            onChange={e => setPeriodFilter(e.target.value as PeriodFilter)}
+            className="w-full pl-9 pr-4 py-2.5 rounded-lg bg-[#1a1a1a] border border-white/[0.08] text-sm text-white focus:outline-none focus:border-[#FDC800]/50 transition cursor-pointer appearance-none"
+            style={{ background: '#18181b', border: '1px solid rgba(255,255,255,0.1)' }}
+          >
+            <option value="today">Hari Ini</option>
+            <option value="7days">7 Hari Terakhir</option>
+            <option value="this-month">Bulan Ini</option>
+            <option value="last-month">Bulan Lalu</option>
+            <option value="custom">Custom</option>
+          </select>
+        </div>
       </div>
+
+      {/* Custom Date Range */}
+      {periodFilter === 'custom' && (
+        <div className="flex flex-col sm:flex-row gap-3">
+          <div className="flex-1">
+            <label className="text-[11px] text-zinc-500 font-medium uppercase tracking-wider mb-1 block">Dari Tanggal</label>
+            <input
+              type="date"
+              value={customFrom}
+              onChange={e => setCustomFrom(e.target.value)}
+              className="w-full px-3 py-2.5 rounded-lg text-sm text-white focus:outline-none focus:border-[#FDC800]/50 transition"
+              style={{ background: '#18181b', border: '1px solid rgba(255,255,255,0.1)' }}
+            />
+          </div>
+          <div className="flex-1">
+            <label className="text-[11px] text-zinc-500 font-medium uppercase tracking-wider mb-1 block">Sampai Tanggal</label>
+            <input
+              type="date"
+              value={customTo}
+              onChange={e => setCustomTo(e.target.value)}
+              className="w-full px-3 py-2.5 rounded-lg text-sm text-white focus:outline-none focus:border-[#FDC800]/50 transition"
+              style={{ background: '#18181b', border: '1px solid rgba(255,255,255,0.1)' }}
+            />
+          </div>
+        </div>
+      )}
 
       {/* Tab Pills */}
       <div className="flex gap-2">
