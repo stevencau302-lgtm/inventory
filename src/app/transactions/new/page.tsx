@@ -7,14 +7,16 @@ import { useToast } from '@/components/Toast'
 import {
   ArrowLeft, ArrowDownCircle, ArrowUpCircle, Search, Package,
   CalendarDays, FileText, Save, Loader2, AlertTriangle,
-  X, Minus, Plus, Sparkles, ScanBarcode, Zap
+  X, Minus, Plus, Sparkles, ScanBarcode, Zap, ClipboardList, Layers
 } from 'lucide-react'
 
 type TransactionType = 'in' | 'out'
+type Mode = null | 'single' | 'bulk'
 
 export default function NewTransactionPage() {
   const router = useRouter()
   const { toast } = useToast()
+  const [mode, setMode] = useState<Mode>(null)
   const [products, setProducts] = useState<Product[]>([])
   const [type, setType] = useState<TransactionType>('in')
   const [selectedProduct, setSelectedProduct] = useState('')
@@ -55,6 +57,57 @@ export default function NewTransactionPage() {
       </div>
     </div>
   )
+
+  // Mode Selection Screen
+  if (mode === null) {
+    return (
+      <div className="max-w-2xl mx-auto pb-24 lg:pb-8">
+        <button
+          onClick={() => router.push('/transactions')}
+          className="group flex items-center gap-2 text-sm font-semibold text-zinc-400 hover:text-[#fafafa] mb-6 transition-all active:scale-95"
+        >
+          <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+          Kembali
+        </button>
+
+        <div className="flex items-center gap-3 mb-8">
+          <div className="w-12 h-12 rounded-xl bg-[#FDC800]/10 flex items-center justify-center">
+            <Package className="w-6 h-6 text-[#FDC800]" />
+          </div>
+          <div>
+            <h1 className="text-xl sm:text-2xl font-bold text-[#fafafa]">Transaksi Baru</h1>
+            <p className="text-sm text-zinc-500">Pilih mode input transaksi</p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {/* Transaksi Biasa */}
+          <button
+            onClick={() => setMode('single')}
+            className="group relative p-6 rounded-2xl bg-[#1a1a1a] border border-[#2a2a2a] text-left transition-all duration-200 hover:border-[#FDC800]/50 hover:shadow-lg hover:shadow-[#FDC800]/5 active:scale-[0.98]"
+          >
+            <div className="w-12 h-12 rounded-xl bg-[#FDC800]/10 flex items-center justify-center mb-4 group-hover:bg-[#FDC800]/20 transition-colors">
+              <ClipboardList className="w-6 h-6 text-[#FDC800]" />
+            </div>
+            <h3 className="text-base font-bold text-[#fafafa] mb-1">Transaksi Biasa</h3>
+            <p className="text-sm text-zinc-500">Catat 1 produk per transaksi</p>
+          </button>
+
+          {/* Bulk Entry */}
+          <button
+            onClick={() => setMode('bulk')}
+            className="group relative p-6 rounded-2xl bg-[#1a1a1a] border border-[#2a2a2a] text-left transition-all duration-200 hover:border-[#FDC800]/50 hover:shadow-lg hover:shadow-[#FDC800]/5 active:scale-[0.98]"
+          >
+            <div className="w-12 h-12 rounded-xl bg-[#FDC800]/10 flex items-center justify-center mb-4 group-hover:bg-[#FDC800]/20 transition-colors">
+              <Layers className="w-6 h-6 text-[#FDC800]" />
+            </div>
+            <h3 className="text-base font-bold text-[#fafafa] mb-1">Bulk Entry</h3>
+            <p className="text-sm text-zinc-500">Catat banyak produk sekaligus</p>
+          </button>
+        </div>
+      </div>
+    )
+  }
 
   const filteredProducts = products.filter(p =>
     p.name.toLowerCase().includes(productSearch.toLowerCase()) ||
@@ -112,6 +165,11 @@ export default function NewTransactionPage() {
     )
 
     setTimeout(() => router.push('/transactions'), 1200)
+  }
+
+  // Bulk Entry Mode
+  if (mode === 'bulk') {
+    return <BulkEntryForm products={products} router={router} toast={toast} />
   }
 
   // Success animation
@@ -480,6 +538,209 @@ export default function NewTransactionPage() {
           from { opacity: 0; transform: translateY(-8px); }
           to { opacity: 1; transform: translateY(0); }
         }
+      `}</style>
+    </div>
+  )
+}
+
+
+// Bulk Entry Form Component
+function BulkEntryForm({ products, router, toast }: { products: Product[]; router: any; toast: any }) {
+  const [type, setType] = useState<TransactionType>('in')
+  const [items, setItems] = useState<{ productId: string; productName: string; quantity: number }[]>([])
+  const [selectedProduct, setSelectedProduct] = useState('')
+  const [quantity, setQuantity] = useState(1)
+  const [productSearch, setProductSearch] = useState('')
+  const [showDropdown, setShowDropdown] = useState(false)
+  const [note, setNote] = useState('')
+  const [date, setDate] = useState(new Date().toISOString().split('T')[0])
+  const [loading, setLoading] = useState(false)
+  const [success, setSuccess] = useState(false)
+  const dropdownRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) setShowDropdown(false)
+    }
+    document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
+  }, [])
+
+  const filteredProducts = products.filter(p =>
+    p.name.toLowerCase().includes(productSearch.toLowerCase()) ||
+    p.sku.toLowerCase().includes(productSearch.toLowerCase())
+  )
+
+  const handleAddItem = () => {
+    if (!selectedProduct) { toast('Pilih produk dulu!', 'error'); return }
+    const product = products.find(p => p.id === selectedProduct)
+    if (!product) return
+    if (items.find(i => i.productId === selectedProduct)) { toast('Produk sudah ada di list', 'error'); return }
+    if (type === 'out' && product.stock < quantity) { toast(`Stok tidak cukup! Sisa: ${product.stock}`, 'error'); return }
+    setItems([...items, { productId: product.id, productName: product.name, quantity }])
+    setSelectedProduct('')
+    setProductSearch('')
+    setQuantity(1)
+  }
+
+  const handleRemoveItem = (index: number) => setItems(items.filter((_, i) => i !== index))
+
+  const handleSubmit = async () => {
+    if (items.length === 0) { toast('Tambah minimal 1 produk!', 'error'); return }
+    setLoading(true)
+    await new Promise(r => setTimeout(r, 600))
+
+    for (const item of items) {
+      const product = products.find(p => p.id === item.productId)
+      if (!product) continue
+      if (type === 'out' && product.stock < item.quantity) {
+        toast(`Stok ${product.name} tidak cukup!`, 'error')
+        setLoading(false)
+        return
+      }
+      const updatedProduct = { ...product, stock: type === 'in' ? product.stock + item.quantity : product.stock - item.quantity, updatedAt: new Date().toISOString() }
+      const newTx: Transaction = { id: uid(), productId: product.id, productName: product.name, type, quantity: item.quantity, note, createdAt: new Date(date).toISOString() }
+      await saveProduct(updatedProduct)
+      await saveTransaction(newTx)
+    }
+
+    setSuccess(true)
+    const totalQty = items.reduce((s, i) => s + i.quantity, 0)
+    toast(`${totalQty} item dari ${items.length} produk berhasil dicatat`, 'success')
+    setTimeout(() => router.push('/transactions'), 1200)
+  }
+
+  if (success) {
+    return (
+      <div className="flex items-center justify-center min-h-[80vh]">
+        <div className="flex flex-col items-center gap-4 animate-[fadeInUp_0.5s_ease-out]">
+          <div className="w-20 h-20 rounded-full bg-[#16A34A]/10 flex items-center justify-center"><Sparkles className="w-10 h-10 text-[#16A34A]" /></div>
+          <p className="text-xl font-bold text-[#fafafa]">Transaksi Tersimpan!</p>
+          <p className="text-sm text-zinc-500">Mengalihkan...</p>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="max-w-3xl mx-auto pb-24 lg:pb-8">
+      <button onClick={() => router.push('/transactions')} className="group flex items-center gap-2 text-sm font-semibold text-zinc-400 hover:text-[#fafafa] mb-6 transition-all active:scale-95">
+        <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+        Kembali
+      </button>
+
+      <div className="flex items-center gap-3 mb-8">
+        <div className="w-12 h-12 rounded-xl bg-[#FDC800]/10 flex items-center justify-center">
+          <Layers className="w-6 h-6 text-[#FDC800]" />
+        </div>
+        <div>
+          <h1 className="text-xl sm:text-2xl font-bold text-[#fafafa]">Bulk Entry</h1>
+          <p className="text-sm text-zinc-500">Catat banyak produk sekaligus</p>
+        </div>
+      </div>
+
+      <div className="space-y-6">
+        {/* Tipe */}
+        <div>
+          <label className="text-xs font-bold uppercase tracking-wider text-zinc-400 mb-3 block">Tipe Transaksi</label>
+          <div className="grid grid-cols-2 gap-3">
+            <button type="button" onClick={() => setType('in')} className={`p-4 rounded-xl text-left transition-all active:scale-[0.97] ${type === 'in' ? 'bg-[#16A34A] text-white ring-2 ring-[#16A34A]/50' : 'bg-[#1a1a1a] text-zinc-300 border border-[#2a2a2a]'}`}>
+              <ArrowDownCircle className={`w-5 h-5 mb-2 ${type === 'in' ? 'text-white' : 'text-[#16A34A]'}`} />
+              <p className="text-sm font-bold">Barang Masuk</p>
+            </button>
+            <button type="button" onClick={() => setType('out')} className={`p-4 rounded-xl text-left transition-all active:scale-[0.97] ${type === 'out' ? 'bg-[#DC2626] text-white ring-2 ring-[#DC2626]/50' : 'bg-[#1a1a1a] text-zinc-300 border border-[#2a2a2a]'}`}>
+              <ArrowUpCircle className={`w-5 h-5 mb-2 ${type === 'out' ? 'text-white' : 'text-[#DC2626]'}`} />
+              <p className="text-sm font-bold">Barang Keluar</p>
+            </button>
+          </div>
+        </div>
+
+        {/* Add product */}
+        <div className="rounded-xl bg-[#1a1a1a] border border-[#2a2a2a] p-4 space-y-3">
+          <label className="text-xs font-bold uppercase tracking-wider text-zinc-400 block">Tambah Produk</label>
+          <div className="relative" ref={dropdownRef}>
+            <div className="relative">
+              <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" />
+              <input
+                type="text"
+                value={productSearch}
+                onChange={e => { setProductSearch(e.target.value); setShowDropdown(true); setSelectedProduct('') }}
+                onFocus={() => setShowDropdown(true)}
+                className="w-full rounded-lg text-sm pl-10 pr-4 py-3 bg-[#0f0f0f] text-[#fafafa] border-none focus:outline-none focus:ring-2 focus:ring-[#FDC800]/50 placeholder:text-zinc-600"
+                placeholder="Cari produk..."
+              />
+            </div>
+            {showDropdown && (
+              <div className="absolute z-50 left-0 right-0 top-full mt-1 rounded-lg bg-[#0f0f0f] border border-[#2a2a2a] max-h-48 overflow-y-auto shadow-xl">
+                {filteredProducts.length === 0 ? (
+                  <p className="px-4 py-3 text-sm text-zinc-500 text-center">Tidak ditemukan</p>
+                ) : filteredProducts.slice(0, 8).map(p => (
+                  <button key={p.id} type="button" onClick={() => { setSelectedProduct(p.id); setProductSearch(p.name); setShowDropdown(false) }}
+                    className={`w-full flex items-center justify-between px-4 py-2.5 text-left hover:bg-[#FDC800]/5 border-b border-[#2a2a2a] last:border-b-0 ${selectedProduct === p.id ? 'bg-[#FDC800]/5' : ''}`}>
+                    <div>
+                      <p className="text-sm text-[#fafafa]">{p.name}</p>
+                      <p className="text-[11px] text-zinc-500">{p.sku} · Stok: {p.stock}</p>
+                    </div>
+                    <span className="text-[11px] text-zinc-500">{formatRp(p.price)}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+          <div className="flex gap-2">
+            <div className="flex items-center gap-1.5 flex-1">
+              <button type="button" onClick={() => setQuantity(Math.max(1, quantity - 1))} className="w-9 h-9 rounded-lg bg-[#0f0f0f] border border-[#2a2a2a] flex items-center justify-center text-[#fafafa] active:scale-90 transition-all shrink-0"><Minus className="w-3.5 h-3.5" /></button>
+              <input type="number" min={1} value={quantity} onChange={e => setQuantity(Math.max(1, +e.target.value))} className="flex-1 rounded-lg text-center text-sm font-bold py-2 bg-[#0f0f0f] text-[#fafafa] border-none focus:outline-none focus:ring-2 focus:ring-[#FDC800]/50" />
+              <button type="button" onClick={() => setQuantity(quantity + 1)} className="w-9 h-9 rounded-lg bg-[#0f0f0f] border border-[#2a2a2a] flex items-center justify-center text-[#fafafa] active:scale-90 transition-all shrink-0"><Plus className="w-3.5 h-3.5" /></button>
+            </div>
+            <button type="button" onClick={handleAddItem} disabled={!selectedProduct} className="px-4 py-2 rounded-lg bg-[#FDC800] text-[#000000] text-sm font-bold disabled:opacity-40 active:scale-95 transition-all">
+              <Plus className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+
+        {/* Items list */}
+        {items.length > 0 && (
+          <div className="space-y-2">
+            <label className="text-xs font-bold uppercase tracking-wider text-zinc-400 block">Produk ({items.length})</label>
+            {items.map((item, index) => (
+              <div key={`${item.productId}-${index}`} className="flex items-center gap-3 px-4 py-3 rounded-xl bg-[#1a1a1a] border border-[#2a2a2a]">
+                <div className="w-8 h-8 rounded-lg bg-[#FDC800]/10 flex items-center justify-center text-[9px] font-black text-[#FDC800] shrink-0">{item.productName.substring(0, 2).toUpperCase()}</div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-[#fafafa] truncate">{item.productName}</p>
+                  <p className="text-[11px] text-zinc-500">Qty: {item.quantity}</p>
+                </div>
+                <button type="button" onClick={() => handleRemoveItem(index)} className="w-8 h-8 rounded-lg bg-[#2a2a2a] flex items-center justify-center text-[#DC2626] active:scale-90 transition-all shrink-0">
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Tanggal & Catatan */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label className="text-[11px] font-semibold text-zinc-500 uppercase tracking-wider mb-2 block">Tanggal</label>
+            <input type="date" value={date} onChange={e => setDate(e.target.value)} className="w-full rounded-lg text-sm px-4 py-3 bg-[#0f0f0f] text-[#fafafa] border-none focus:outline-none focus:ring-2 focus:ring-[#FDC800]/50" style={{ colorScheme: 'dark' }} />
+          </div>
+          <div>
+            <label className="text-[11px] font-semibold text-zinc-500 uppercase tracking-wider mb-2 block">Catatan (opsional)</label>
+            <input type="text" value={note} onChange={e => setNote(e.target.value)} className="w-full rounded-lg text-sm px-4 py-3 bg-[#0f0f0f] text-[#fafafa] border-none focus:outline-none focus:ring-2 focus:ring-[#FDC800]/50 placeholder:text-zinc-600" placeholder="Catatan..." />
+          </div>
+        </div>
+
+        {/* Submit */}
+        <div className="flex justify-end gap-3 pt-2">
+          <button type="button" onClick={() => router.push('/transactions')} className="px-5 py-3 rounded-xl text-sm font-bold bg-[#1a1a1a] border border-[#2a2a2a] text-zinc-300 active:scale-95 transition-all">Batal</button>
+          <button type="button" onClick={handleSubmit} disabled={loading || items.length === 0} className="px-6 py-3 rounded-xl text-sm font-bold bg-[#FDC800] text-[#000000] disabled:opacity-40 flex items-center gap-2 active:scale-[0.97] transition-all shadow-lg shadow-[#FDC800]/20">
+            {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Save className="w-4 h-4" />Catat {items.length} Transaksi</>}
+          </button>
+        </div>
+      </div>
+
+      <style jsx global>{`
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
       `}</style>
     </div>
   )
