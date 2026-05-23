@@ -161,7 +161,7 @@ export default function SettingsPage() {
         </div>
         <div className="space-y-2.5 text-sm text-zinc-400">
           <div className="flex items-center gap-2">
-            <span className="text-white font-semibold">InventoryPro</span>
+            <span className="text-white font-semibold">Nexo Inventory</span>
             <span className="px-1.5 py-0.5 rounded bg-indigo-500/15 text-indigo-400 text-[10px] font-bold">v1.0.0</span>
           </div>
           <p>Next.js 14 &middot; Tailwind CSS &middot; TypeScript &middot; Supabase</p>

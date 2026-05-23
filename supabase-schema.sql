@@ -1,5 +1,5 @@
 -- ============================================
--- InventoryPro — Supabase Database Schema
+-- Nexo Inventory — Supabase Database Schema
 -- ============================================
 -- Run this SQL in Supabase Dashboard → SQL Editor
 -- This creates all required tables for the app.
