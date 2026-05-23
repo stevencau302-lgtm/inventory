@@ -122,7 +122,7 @@ export default function SettingsPage() {
           <h2 className="font-semibold text-cozy-text dark:text-[#fafafa]">Tentang</h2>
         </div>
         <div className="space-y-2 text-sm text-cozy-subtle dark:text-[#9ca3af]">
-          <p><span className="text-cozy-text dark:text-[#fafafa] font-medium">InventoryPro</span> v1.0.0</p>
+          <p><span className="text-cozy-text dark:text-[#fafafa] font-medium">Nexo Inventory</span> v1.0.0</p>
           <p>Built with Next.js 14, Tailwind CSS, dan TypeScript</p>
           <p>Data disimpan di localStorage browser</p>
         </div>
