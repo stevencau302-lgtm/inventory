@@ -1,4 +1,4 @@
-# InventoryPro
+# Nexo Inventory
 
 Aplikasi manajemen inventory modern dengan dark mode UI, real-time analytics, dan notifikasi WhatsApp otomatis.
 
