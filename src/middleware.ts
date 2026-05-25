@@ -1,39 +1,36 @@
-import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
-export async function middleware(req: NextRequest) {
-  const res = NextResponse.next()
-  const supabase = createMiddlewareClient({ req, res })
-  const { data: { session } } = await supabase.auth.getSession()
-
+export function middleware(req: NextRequest) {
   const isAuthPage = req.nextUrl.pathname.startsWith('/login') || req.nextUrl.pathname.startsWith('/register')
 
+  // Check for Supabase auth token in cookies
+  let hasSession = false
+  const allCookies = req.cookies.getAll()
+  
+  // Supabase stores auth in cookie like: sb-<ref>-auth-token
+  const sbCookie = allCookies.find(c => c.name.startsWith('sb-') && c.name.includes('auth-token'))
+  if (sbCookie && sbCookie.value && sbCookie.value.length > 10) {
+    hasSession = true
+  }
+
   // If not logged in and trying to access protected page → redirect to login
-  if (!session && !isAuthPage) {
+  if (!hasSession && !isAuthPage) {
     const redirectUrl = new URL('/login', req.url)
     return NextResponse.redirect(redirectUrl)
   }
 
   // If logged in and trying to access auth pages → redirect to dashboard
-  if (session && isAuthPage) {
+  if (hasSession && isAuthPage) {
     const redirectUrl = new URL('/', req.url)
     return NextResponse.redirect(redirectUrl)
   }
 
-  return res
+  return NextResponse.next()
 }
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico, favicon.svg (favicon)
-     * - public files (images, etc)
-     * - api routes
-     */
-    '/((?!_next/static|_next/image|favicon\\.ico|favicon\\.svg|public|api).*)',
+    '/((?!_next/static|_next/image|favicon\\.ico|favicon\\.svg|api).*)',
   ],
 }
