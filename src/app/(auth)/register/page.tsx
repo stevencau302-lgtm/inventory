@@ -1,11 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, Suspense } from 'react'
 import { AnimatePresence } from 'framer-motion'
 import LoginForm from '@/components/auth/LoginForm'
 import RegisterForm from '@/components/auth/RegisterForm'
 
-export default function RegisterPage() {
+function RegisterContent() {
   const [mode, setMode] = useState<'login' | 'register'>('register')
 
   return (
@@ -16,5 +16,13 @@ export default function RegisterPage() {
         <RegisterForm key="register" onSwitchToLogin={() => setMode('login')} />
       )}
     </AnimatePresence>
+  )
+}
+
+export default function RegisterPage() {
+  return (
+    <Suspense fallback={null}>
+      <RegisterContent />
+    </Suspense>
   )
 }
