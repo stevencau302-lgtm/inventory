@@ -144,10 +144,10 @@ function transactionToRow(t: Transaction, userId: string | null) {
 // ─── Products ───
 
 export async function fetchProducts(): Promise<Product[]> {
-  const { data, error } = await supabase
-    .from('products')
-    .select('*')
-    .order('created_at', { ascending: false })
+  const userId = await getUserId()
+  const query = supabase.from('products').select('*')
+  if (userId) query.eq('user_id', userId)
+  const { data, error } = await query.order('created_at', { ascending: false })
   if (error) {
     console.error('fetchProducts error:', error)
     return []
@@ -182,10 +182,10 @@ export async function saveProductsBatch(products: Product[]): Promise<void> {
 // ─── Categories ───
 
 export async function fetchCategories(): Promise<Category[]> {
-  const { data, error } = await supabase
-    .from('categories')
-    .select('*')
-    .order('created_at', { ascending: true })
+  const userId = await getUserId()
+  const query = supabase.from('categories').select('*')
+  if (userId) query.eq('user_id', userId)
+  const { data, error } = await query.order('created_at', { ascending: true })
   if (error) {
     console.error('fetchCategories error:', error)
     return []
@@ -216,10 +216,10 @@ export async function saveCategoriesBatch(categories: Category[]): Promise<void>
 // ─── Transactions ───
 
 export async function fetchTransactions(): Promise<Transaction[]> {
-  const { data, error } = await supabase
-    .from('transactions')
-    .select('*')
-    .order('created_at', { ascending: false })
+  const userId = await getUserId()
+  const query = supabase.from('transactions').select('*')
+  if (userId) query.eq('user_id', userId)
+  const { data, error } = await query.order('created_at', { ascending: false })
   if (error) {
     console.error('fetchTransactions error:', error)
     return []
