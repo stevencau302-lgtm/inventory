@@ -9,7 +9,66 @@ import {
   CalendarDays, FileText, Save, Loader2, AlertTriangle,
   X, Minus, Plus, Sparkles, ScanBarcode, Zap, ClipboardList, Layers
 } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
 import BarcodeInput from '@/components/BarcodeScanner'
+
+// ─── Collapsible Scanner Section ───
+function ScannerSection({ products, onProductFound }: { products: Product[]; onProductFound: (p: Product) => void }) {
+  const [open, setOpen] = useState(false)
+
+  const handleFound = (product: Product) => {
+    onProductFound(product)
+    // Auto-collapse after successful scan
+    setTimeout(() => setOpen(false), 600)
+  }
+
+  return (
+    <div>
+      {/* Toggle button */}
+      <button
+        type="button"
+        onClick={() => setOpen(!open)}
+        className={`w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold transition-all duration-200 border ${
+          open
+            ? 'border-[#FDC800]/30 bg-[#FDC800]/5 text-[#FDC800]'
+            : 'border-white/[0.08] bg-transparent text-zinc-400 hover:text-[#FDC800] hover:border-[#FDC800]/20 hover:bg-[#FDC800]/5'
+        }`}
+      >
+        {open ? (
+          <>
+            <X className="w-3.5 h-3.5" />
+            Nonaktifkan Scanner
+          </>
+        ) : (
+          <>
+            <ScanBarcode className="w-3.5 h-3.5" />
+            Aktifkan Scanner
+          </>
+        )}
+      </button>
+
+      {/* Expandable scanner area */}
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.3, ease: 'easeInOut' }}
+            className="overflow-hidden"
+          >
+            <div className="pt-3">
+              <div className="rounded-xl bg-[#1a1a1a] border border-white/[0.06] p-4">
+                <p className="text-[11px] text-zinc-500 mb-3">Scan barcode atau ketik SKU produk untuk mengisi form otomatis</p>
+                <BarcodeInput products={products} onProductFound={handleFound} />
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  )
+}
 
 type TransactionType = 'in' | 'out'
 type Mode = null | 'single' | 'bulk'
@@ -273,28 +332,20 @@ export default function NewTransactionPage() {
           </div>
         </div>
 
-        {/* === BARCODE SCANNER === */}
-        <div className="rounded-xl bg-[#1a1a1a] border border-white/[0.06] p-5 space-y-3">
-          <label className="text-xs font-bold uppercase tracking-wider text-zinc-400 flex items-center gap-2 mb-1">
-            <ScanBarcode className="w-3.5 h-3.5 text-[#FDC800]" />
-            Scan Barcode
-            <span className="normal-case font-normal text-zinc-600">(opsional — cepat pilih produk)</span>
-          </label>
-          <BarcodeInput
-            products={products}
-            onProductFound={(product) => {
-              setSelectedProduct(product.id)
-              setProductSearch(product.name)
-              setShowProductDropdown(false)
-              // Auto focus ke jumlah setelah scan
-              setTimeout(() => {
-                const qtyInput = document.querySelector('input[type="number"]') as HTMLInputElement
-                qtyInput?.focus()
-                qtyInput?.select()
-              }, 400)
-            }}
-          />
-        </div>
+        {/* === BARCODE SCANNER (collapsible) === */}
+        <ScannerSection
+          products={products}
+          onProductFound={(product) => {
+            setSelectedProduct(product.id)
+            setProductSearch(product.name)
+            setShowProductDropdown(false)
+            setTimeout(() => {
+              const qtyInput = document.querySelector('input[type="number"]') as HTMLInputElement
+              qtyInput?.focus()
+              qtyInput?.select()
+            }, 400)
+          }}
+        />
 
         {/* === DETAIL PRODUK === */}
         <div className="rounded-xl bg-[#1a1a1a] border border-white/[0.06] p-5 space-y-4">
