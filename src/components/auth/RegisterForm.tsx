@@ -66,11 +66,18 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
     setLoading(false)
     setSuccess(true)
 
-    // Wait 1.5s showing success, then exit animation, then redirect
+    // Wait 1.5s showing success, then exit animation, then switch to login
     setTimeout(() => {
       setExiting(true)
       setTimeout(() => {
-        router.push('/login?registered=true')
+        // Try router.push first, fallback to onSwitchToLogin for same-page mode
+        try {
+          router.push('/login?registered=true')
+        } catch {
+          onSwitchToLogin()
+        }
+        // Also call onSwitchToLogin as backup (for same-page AnimatePresence mode)
+        onSwitchToLogin()
       }, 400)
     }, 1500)
   }
