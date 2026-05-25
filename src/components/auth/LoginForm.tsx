@@ -1,13 +1,13 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Eye, EyeOff, Mail, Lock, Loader2, CheckCircle2 } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 
 const loginSchema = z.object({
   email: z.string().email('Email tidak valid'),
@@ -26,7 +26,17 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
   const [success, setSuccess] = useState(false)
   const [errorMsg, setErrorMsg] = useState('')
   const [shake, setShake] = useState(false)
+  const [registeredBanner, setRegisteredBanner] = useState(false)
   const router = useRouter()
+  const searchParams = useSearchParams()
+
+  useEffect(() => {
+    if (searchParams.get('registered') === 'true') {
+      setRegisteredBanner(true)
+      // Auto-hide after 5 seconds
+      setTimeout(() => setRegisteredBanner(false), 5000)
+    }
+  }, [searchParams])
 
   const {
     register,
@@ -71,6 +81,21 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
         <h1 className="text-2xl font-bold text-white mb-1">Selamat Datang</h1>
         <p className="text-sm text-zinc-400">Masuk ke akun Nexo Inventory</p>
       </div>
+
+      {/* Registered success banner */}
+      <AnimatePresence>
+        {registeredBanner && (
+          <motion.div
+            initial={{ opacity: 0, y: -10, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -10, scale: 0.95 }}
+            className="mb-6 px-4 py-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center gap-2.5"
+          >
+            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+            <p className="text-xs font-medium text-emerald-400">Akun berhasil dibuat! Silakan masuk.</p>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Form */}
       <motion.form

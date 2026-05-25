@@ -41,6 +41,8 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
     resolver: zodResolver(registerSchema),
   })
 
+  const [exiting, setExiting] = useState(false)
+
   const onSubmit = async (data: RegisterFormData) => {
     setLoading(true)
     setErrorMsg('')
@@ -63,13 +65,20 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
 
     setLoading(false)
     setSuccess(true)
-    setTimeout(() => router.push('/'), 1200)
+
+    // Wait 1.5s showing success, then exit animation, then redirect
+    setTimeout(() => {
+      setExiting(true)
+      setTimeout(() => {
+        router.push('/login?registered=true')
+      }, 400)
+    }, 1500)
   }
 
   return (
     <motion.div
       initial={{ opacity: 0, x: 30 }}
-      animate={{ opacity: 1, x: 0 }}
+      animate={exiting ? { opacity: 0, y: -20, scale: 0.95 } : { opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -30 }}
       transition={{ duration: 0.4, ease: 'easeInOut' }}
       className="w-full max-w-sm mx-auto"
