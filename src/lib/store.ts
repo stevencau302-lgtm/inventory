@@ -2,6 +2,11 @@
 
 import { supabase } from './supabase'
 
+async function getUserId(): Promise<string | null> {
+  const { data: { user } } = await supabase.auth.getUser()
+  return user?.id ?? null
+}
+
 export interface Product {
   id: string
   name: string
@@ -74,7 +79,7 @@ function rowToProduct(row: any): Product {
   }
 }
 
-function productToRow(p: Product) {
+function productToRow(p: Product, userId: string | null) {
   return {
     id: p.id,
     name: p.name,
@@ -86,6 +91,7 @@ function productToRow(p: Product) {
     description: p.description,
     created_at: p.createdAt,
     updated_at: p.updatedAt,
+    user_id: userId,
   }
 }
 
@@ -99,13 +105,14 @@ function rowToCategory(row: any): Category {
   }
 }
 
-function categoryToRow(c: Category) {
+function categoryToRow(c: Category, userId: string | null) {
   return {
     id: c.id,
     name: c.name,
     icon: c.icon,
     color: c.color,
     created_at: c.createdAt,
+    user_id: userId,
   }
 }
 
@@ -121,7 +128,7 @@ function rowToTransaction(row: any): Transaction {
   }
 }
 
-function transactionToRow(t: Transaction) {
+function transactionToRow(t: Transaction, userId: string | null) {
   return {
     id: t.id,
     product_id: t.productId,
@@ -130,6 +137,7 @@ function transactionToRow(t: Transaction) {
     quantity: t.quantity,
     note: t.note,
     created_at: t.createdAt,
+    user_id: userId,
   }
 }
 
@@ -148,9 +156,10 @@ export async function fetchProducts(): Promise<Product[]> {
 }
 
 export async function saveProduct(product: Product): Promise<void> {
+  const userId = await getUserId()
   const { error } = await supabase
     .from('products')
-    .upsert(productToRow(product), { onConflict: 'id' })
+    .upsert(productToRow(product, userId), { onConflict: 'id' })
   if (error) console.error('saveProduct error:', error)
 }
 
@@ -164,7 +173,8 @@ export async function deleteProduct(id: string): Promise<void> {
 }
 
 export async function saveProductsBatch(products: Product[]): Promise<void> {
-  const rows = products.map(productToRow)
+  const userId = await getUserId()
+  const rows = products.map(p => productToRow(p, userId))
   const { error } = await supabase.from('products').upsert(rows, { onConflict: 'id' })
   if (error) console.error('saveProductsBatch error:', error)
 }
@@ -184,9 +194,10 @@ export async function fetchCategories(): Promise<Category[]> {
 }
 
 export async function saveCategory(category: Category): Promise<void> {
+  const userId = await getUserId()
   const { error } = await supabase
     .from('categories')
-    .upsert(categoryToRow(category), { onConflict: 'id' })
+    .upsert(categoryToRow(category, userId), { onConflict: 'id' })
   if (error) console.error('saveCategory error:', error)
 }
 
@@ -196,7 +207,8 @@ export async function deleteCategory(id: string): Promise<void> {
 }
 
 export async function saveCategoriesBatch(categories: Category[]): Promise<void> {
-  const rows = categories.map(categoryToRow)
+  const userId = await getUserId()
+  const rows = categories.map(c => categoryToRow(c, userId))
   const { error } = await supabase.from('categories').upsert(rows, { onConflict: 'id' })
   if (error) console.error('saveCategoriesBatch error:', error)
 }
@@ -216,9 +228,10 @@ export async function fetchTransactions(): Promise<Transaction[]> {
 }
 
 export async function saveTransaction(transaction: Transaction): Promise<void> {
+  const userId = await getUserId()
   const { error } = await supabase
     .from('transactions')
-    .upsert(transactionToRow(transaction), { onConflict: 'id' })
+    .upsert(transactionToRow(transaction, userId), { onConflict: 'id' })
   if (error) console.error('saveTransaction error:', error)
 }
 
@@ -228,7 +241,8 @@ export async function deleteTransaction(id: string): Promise<void> {
 }
 
 export async function saveTransactionsBatch(transactions: Transaction[]): Promise<void> {
-  const rows = transactions.map(transactionToRow)
+  const userId = await getUserId()
+  const rows = transactions.map(t => transactionToRow(t, userId))
   const { error } = await supabase.from('transactions').upsert(rows, { onConflict: 'id' })
   if (error) console.error('saveTransactionsBatch error:', error)
 }
@@ -236,21 +250,23 @@ export async function saveTransactionsBatch(transactions: Transaction[]): Promis
 
 // ─── Settings (key-value) ───
 
+export async function saveSetting(key: string, value: string): Promise<void> {
+  const userId = await getUserId()
+  const { error } = await supabase
+    .from('settings')
+    .upsert({ key: `${userId}_${key}`, value, user_id: userId }, { onConflict: 'key' })
+  if (error) console.error('saveSetting error:', error)
+}
+
 export async function getSetting(key: string): Promise<string | null> {
+  const userId = await getUserId()
   const { data, error } = await supabase
     .from('settings')
     .select('value')
-    .eq('key', key)
+    .eq('key', `${userId}_${key}`)
     .single()
   if (error || !data) return null
   return data.value
-}
-
-export async function saveSetting(key: string, value: string): Promise<void> {
-  const { error } = await supabase
-    .from('settings')
-    .upsert({ key, value }, { onConflict: 'key' })
-  if (error) console.error('saveSetting error:', error)
 }
 
 // ─── Sample Data Seeding (Supabase) ───
