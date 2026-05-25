@@ -1,6 +1,5 @@
 'use client'
 
-import '../globals.css'
 import CurtainAnimation from '@/components/auth/CurtainAnimation'
 import { motion } from 'framer-motion'
 import { Box } from 'lucide-react'
