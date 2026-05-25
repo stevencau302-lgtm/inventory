@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react'
 import { Product, Category, uid } from '@/lib/store'
-import BarcodeScanner from './BarcodeScanner'
 
 interface ProductModalProps {
   isOpen: boolean
@@ -196,10 +195,27 @@ export default function ProductModal({ isOpen, onClose, onSave, product, categor
 
       {/* Barcode Scanner */}
       {showScanner && (
-        <BarcodeScanner
-          onScan={handleScanResult}
-          onClose={() => setShowScanner(false)}
-        />
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/90 backdrop-blur-sm">
+          <div className="relative w-full max-w-sm mx-4">
+            <button onClick={() => setShowScanner(false)} className="absolute -top-12 right-0 w-10 h-10 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-white hover:bg-white/20 transition-all z-10">
+              <span className="text-lg">&times;</span>
+            </button>
+            <p className="text-center text-sm font-medium text-white/80 mb-4">Arahkan kamera ke barcode produk</p>
+            <div className="rounded-2xl overflow-hidden border-2 border-[#FDC800]/30" id="barcode-scanner-modal" ref={(el) => {
+              if (!el || (el as any).__started) return;
+              (el as any).__started = true;
+              import('html5-qrcode').then(({ Html5Qrcode }) => {
+                const scanner = new Html5Qrcode('barcode-scanner-modal');
+                scanner.start(
+                  { facingMode: 'environment' },
+                  { fps: 10, qrbox: { width: 280, height: 120 } },
+                  (text: string) => { handleScanResult(text); scanner.stop().catch(() => {}); },
+                  () => {}
+                ).catch(() => {});
+              });
+            }} />
+          </div>
+        </div>
       )}
     </>
   )
