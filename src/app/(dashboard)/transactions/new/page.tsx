@@ -9,6 +9,7 @@ import {
   CalendarDays, FileText, Save, Loader2, AlertTriangle,
   X, Minus, Plus, Sparkles, ScanBarcode, Zap, ClipboardList, Layers
 } from 'lucide-react'
+import BarcodeInput from '@/components/BarcodeScanner'
 
 type TransactionType = 'in' | 'out'
 type Mode = null | 'single' | 'bulk'
@@ -270,6 +271,29 @@ export default function NewTransactionPage() {
               </div>
             </button>
           </div>
+        </div>
+
+        {/* === BARCODE SCANNER === */}
+        <div className="rounded-xl bg-[#1a1a1a] border border-white/[0.06] p-5 space-y-3">
+          <label className="text-xs font-bold uppercase tracking-wider text-zinc-400 flex items-center gap-2 mb-1">
+            <ScanBarcode className="w-3.5 h-3.5 text-[#FDC800]" />
+            Scan Barcode
+            <span className="normal-case font-normal text-zinc-600">(opsional — cepat pilih produk)</span>
+          </label>
+          <BarcodeInput
+            products={products}
+            onProductFound={(product) => {
+              setSelectedProduct(product.id)
+              setProductSearch(product.name)
+              setShowProductDropdown(false)
+              // Auto focus ke jumlah setelah scan
+              setTimeout(() => {
+                const qtyInput = document.querySelector('input[type="number"]') as HTMLInputElement
+                qtyInput?.focus()
+                qtyInput?.select()
+              }, 400)
+            }}
+          />
         </div>
 
         {/* === DETAIL PRODUK === */}
