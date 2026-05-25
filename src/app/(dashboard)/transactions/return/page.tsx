@@ -7,7 +7,7 @@ import { useToast } from '@/components/Toast'
 import {
   ArrowLeft, Search, Package, Save, Loader2,
   X, Minus, Plus, Sparkles, RotateCcw, CheckCircle2,
-  XCircle, AlertTriangle, MessageSquare, FileText
+  XCircle, AlertTriangle, MessageSquare, FileText, Camera
 } from 'lucide-react'
 
 type Condition = 'good' | 'damaged'
@@ -19,6 +19,23 @@ const reasons: { value: Reason; label: string; icon: React.ReactNode }[] = [
   { value: 'not_match', label: 'Tidak Sesuai', icon: <AlertTriangle className="w-3.5 h-3.5" /> },
   { value: 'other', label: 'Lainnya', icon: <MessageSquare className="w-3.5 h-3.5" /> },
 ]
+
+// Beep sound
+function playBeep() {
+  try {
+    const ctx = new (window.AudioContext || (window as any).webkitAudioContext)()
+    const osc = ctx.createOscillator()
+    const gain = ctx.createGain()
+    osc.connect(gain)
+    gain.connect(ctx.destination)
+    osc.type = 'sine'
+    osc.frequency.value = 1200
+    gain.gain.value = 0.3
+    osc.start()
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15)
+    osc.stop(ctx.currentTime + 0.15)
+  } catch {}
+}
 
 export default function ReturnPage() {
   const router = useRouter()
@@ -36,6 +53,10 @@ export default function ReturnPage() {
   const [condition, setCondition] = useState<Condition>('good')
   const [reason, setReason] = useState<Reason>('wrong_product')
   const [note, setNote] = useState('')
+
+  // Scanner state
+  const [scanStatus, setScanStatus] = useState<'idle' | 'found' | 'not-found'>('idle')
+  const [showCamera, setShowCamera] = useState(false)
 
   // Success state
   const [stockBefore, setStockBefore] = useState(0)
@@ -209,24 +230,66 @@ export default function ReturnPage() {
               <input
                 type="text"
                 value={productSearch}
-                onChange={e => { setProductSearch(e.target.value); setShowDropdown(true); setSelectedProduct('') }}
+                onChange={e => { setProductSearch(e.target.value); setShowDropdown(true); setSelectedProduct(''); setScanStatus('idle') }}
                 onFocus={() => setShowDropdown(true)}
-                className="w-full rounded-xl text-sm pl-11 pr-10 py-3.5 font-medium bg-[#0f0f0f] text-[#fafafa] border-none focus:outline-none focus:ring-2 focus:ring-[#FDC800]/50 transition-all placeholder:text-zinc-600"
-                placeholder="Cari produk yang dikembalikan..."
+                onKeyDown={e => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault()
+                    const val = (e.target as HTMLInputElement).value.trim()
+                    if (!val) return
+                    const found = products.find(p =>
+                      p.sku.toLowerCase() === val.toLowerCase() ||
+                      p.sku.replace(/[-\s]/g, '').toLowerCase() === val.replace(/[-\s]/g, '').toLowerCase()
+                    )
+                    if (found) {
+                      playBeep()
+                      handleSelectProduct(found.id)
+                      setScanStatus('found')
+                      setTimeout(() => setScanStatus('idle'), 2000)
+                    } else {
+                      setScanStatus('not-found')
+                      setTimeout(() => setScanStatus('idle'), 2000)
+                    }
+                  }
+                }}
+                className={`w-full rounded-xl text-sm pl-11 pr-20 py-3.5 font-medium bg-[#0f0f0f] text-[#fafafa] border-2 focus:outline-none transition-all duration-300 placeholder:text-zinc-600 ${
+                  scanStatus === 'found' ? 'border-emerald-500/50 ring-2 ring-emerald-500/20' :
+                  scanStatus === 'not-found' ? 'border-red-500/50 ring-2 ring-red-500/20' :
+                  'border-transparent focus:border-[#FDC800]/50 focus:ring-2 focus:ring-[#FDC800]/20'
+                }`}
+                placeholder="Cari atau scan barcode produk..."
                 autoComplete="off"
               />
-              {productSearch && (
+              <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
+                {/* Camera button — mobile only */}
                 <button
                   type="button"
-                  onClick={() => { setProductSearch(''); setSelectedProduct(''); setShowDropdown(true) }}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300 transition-colors"
+                  onClick={() => setShowCamera(true)}
+                  className="sm:hidden w-8 h-8 rounded-lg bg-[#FDC800]/10 border border-[#FDC800]/20 flex items-center justify-center text-[#FDC800] hover:bg-[#FDC800]/20 transition-all active:scale-90"
                 >
-                  <X className="w-4 h-4" />
+                  <Camera className="w-3.5 h-3.5" />
                 </button>
-              )}
+                {productSearch && (
+                  <button
+                    type="button"
+                    onClick={() => { setProductSearch(''); setSelectedProduct(''); setShowDropdown(true); setScanStatus('idle') }}
+                    className="text-zinc-500 hover:text-zinc-300 transition-colors"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                )}
+              </div>
             </div>
 
-            {showDropdown && (
+            {/* Scan status message */}
+            {scanStatus === 'not-found' && (
+              <p className="text-[11px] text-red-400 mt-1.5 flex items-center gap-1 animate-[fadeInUp_0.2s_ease-out]">
+                <AlertTriangle className="w-3 h-3" />
+                Barcode tidak cocok dengan produk manapun
+              </p>
+            )}
+
+            {showDropdown && scanStatus === 'idle' && (
               <div className="absolute z-50 left-0 right-0 top-full mt-2 rounded-xl bg-[#0f0f0f] border border-white/[0.06] max-h-56 overflow-y-auto shadow-2xl shadow-black/50">
                 {filteredProducts.length === 0 ? (
                   <div className="px-4 py-6 text-center text-sm text-zinc-500">Produk tidak ditemukan</div>
@@ -433,6 +496,60 @@ export default function ReturnPage() {
           </button>
         </div>
       </form>
+
+      {/* Camera Scanner Modal */}
+      {showCamera && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/90 backdrop-blur-sm">
+          <button
+            onClick={() => setShowCamera(false)}
+            className="absolute top-4 right-4 z-10 w-10 h-10 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-white hover:bg-white/20 transition-all"
+          >
+            <X className="w-5 h-5" />
+          </button>
+          <div className="relative w-full max-w-sm mx-4">
+            <p className="text-center text-sm font-medium text-white/80 mb-4">Arahkan kamera ke barcode produk</p>
+            <div className="relative rounded-2xl overflow-hidden border-2 border-[#FDC800]/30 shadow-2xl shadow-[#FDC800]/10">
+              <div id="return-barcode-scanner" ref={(el) => {
+                if (!el || (el as any).__started) return;
+                (el as any).__started = true;
+                import('html5-qrcode').then(({ Html5Qrcode }) => {
+                  const scanner = new Html5Qrcode('return-barcode-scanner');
+                  scanner.start(
+                    { facingMode: 'environment' },
+                    { fps: 10, qrbox: { width: 280, height: 120 } },
+                    (text: string) => {
+                      playBeep()
+                      setProductSearch(text)
+                      const found = products.find(p =>
+                        p.sku.toLowerCase() === text.toLowerCase() ||
+                        p.sku.replace(/[-\s]/g, '').toLowerCase() === text.replace(/[-\s]/g, '').toLowerCase()
+                      )
+                      if (found) {
+                        handleSelectProduct(found.id)
+                        setScanStatus('found')
+                        setTimeout(() => setScanStatus('idle'), 2000)
+                      } else {
+                        setScanStatus('not-found')
+                        setTimeout(() => setScanStatus('idle'), 2000)
+                      }
+                      scanner.stop().catch(() => {})
+                      setShowCamera(false)
+                    },
+                    () => {}
+                  ).catch(() => {});
+                });
+              }} className="w-full" />
+              {/* Gold guide overlay */}
+              <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
+                <div className="w-[70%] h-24 border-2 border-[#FDC800] rounded-lg shadow-[0_0_20px_rgba(253,200,0,0.3)]">
+                  <div className="absolute top-1/2 left-2 right-2 h-[2px] bg-gradient-to-r from-transparent via-[#FDC800] to-transparent animate-pulse" />
+                </div>
+              </div>
+            </div>
+            <p className="text-center text-xs text-zinc-500 mt-3">Pastikan barcode terlihat jelas dalam kotak panduan</p>
+          </div>
+        </div>
+      )}
 
       {/* Keyframes */}
       <style jsx global>{`
