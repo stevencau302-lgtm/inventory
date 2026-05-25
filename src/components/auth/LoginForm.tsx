@@ -65,7 +65,10 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
 
     setLoading(false)
     setSuccess(true)
-    setTimeout(() => router.push('/'), 1200)
+    setTimeout(() => {
+      router.refresh()
+      router.push('/')
+    }, 1000)
   }
 
   return (

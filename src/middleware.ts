@@ -1,32 +1,48 @@
+import { createServerClient } from '@supabase/ssr'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
-export function middleware(req: NextRequest) {
+export async function middleware(req: NextRequest) {
+  let res = NextResponse.next({ request: req })
+
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://zhbsqpoxmzzeomdxqvoo.supabase.co',
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpoYnNxcG94bXp6ZW9tZHhxdm9vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg5NTE3MDIsImV4cCI6MjA5NDUyNzcwMn0.j66I_l-hHt0krVvra0SorjEFZjTXTRtcRPpoUkLvOfM',
+    {
+      cookies: {
+        getAll() {
+          return req.cookies.getAll()
+        },
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value, options }) => {
+            req.cookies.set(name, value)
+          })
+          res = NextResponse.next({ request: req })
+          cookiesToSet.forEach(({ name, value, options }) => {
+            res.cookies.set(name, value, options)
+          })
+        },
+      },
+    }
+  )
+
+  const { data: { session } } = await supabase.auth.getSession()
+
   const isAuthPage = req.nextUrl.pathname.startsWith('/login') || req.nextUrl.pathname.startsWith('/register')
 
-  // Check for Supabase auth token in cookies
-  let hasSession = false
-  const allCookies = req.cookies.getAll()
-  
-  // Supabase stores auth in cookie like: sb-<ref>-auth-token
-  const sbCookie = allCookies.find(c => c.name.startsWith('sb-') && c.name.includes('auth-token'))
-  if (sbCookie && sbCookie.value && sbCookie.value.length > 10) {
-    hasSession = true
-  }
-
-  // If not logged in and trying to access protected page → redirect to login
-  if (!hasSession && !isAuthPage) {
+  // Not logged in → redirect to login
+  if (!session && !isAuthPage) {
     const redirectUrl = new URL('/login', req.url)
     return NextResponse.redirect(redirectUrl)
   }
 
-  // If logged in and trying to access auth pages → redirect to dashboard
-  if (hasSession && isAuthPage) {
+  // Logged in → redirect away from auth pages
+  if (session && isAuthPage) {
     const redirectUrl = new URL('/', req.url)
     return NextResponse.redirect(redirectUrl)
   }
 
-  return NextResponse.next()
+  return res
 }
 
 export const config = {
