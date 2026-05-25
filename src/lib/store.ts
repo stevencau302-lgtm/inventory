@@ -234,6 +234,25 @@ export async function saveTransactionsBatch(transactions: Transaction[]): Promis
 }
 
 
+// ─── Settings (key-value) ───
+
+export async function getSetting(key: string): Promise<string | null> {
+  const { data, error } = await supabase
+    .from('settings')
+    .select('value')
+    .eq('key', key)
+    .single()
+  if (error || !data) return null
+  return data.value
+}
+
+export async function saveSetting(key: string, value: string): Promise<void> {
+  const { error } = await supabase
+    .from('settings')
+    .upsert({ key, value }, { onConflict: 'key' })
+  if (error) console.error('saveSetting error:', error)
+}
+
 // ─── Sample Data Seeding (Supabase) ───
 
 export async function loadSampleDataAsync(): Promise<{ products: Product[]; categories: Category[] }> {
