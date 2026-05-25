@@ -18,6 +18,7 @@ import {
   X,
 } from 'lucide-react'
 import { getSetting, saveSetting } from '@/lib/store'
+import { useAuth } from '@/components/AuthProvider'
 
 const navItems = [
   { href: '/', label: 'Dashboard', icon: LayoutDashboard },
@@ -47,6 +48,12 @@ export default function Sidebar() {
   const [collapsed, setCollapsed] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
   const [loaded, setLoaded] = useState(false)
+  const { user } = useAuth()
+
+  // Get user info from auth
+  const userEmail = user?.email || ''
+  const userName = user?.user_metadata?.full_name || userEmail.split('@')[0] || 'User'
+  const userInitial = userName.charAt(0).toUpperCase()
 
   // Load sidebar state from Supabase
   useEffect(() => {
@@ -179,18 +186,18 @@ export default function Sidebar() {
 
         {/* User info (pinned bottom) */}
         <div className="p-3 overflow-hidden">
-          <Tooltip label="Admin" show={collapsed && !mobileOpen}>
+          <Tooltip label={userName} show={collapsed && !mobileOpen}>
             <div className={`flex items-center gap-3 px-2 py-2 rounded-xl hover:bg-white/[0.03] transition-all ${collapsed && !mobileOpen ? 'justify-center px-0' : ''}`}>
               <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#FDC800] to-[#f59e0b] flex items-center justify-center text-[11px] font-bold text-black shrink-0">
-                A
+                {userInitial}
               </div>
               <div
                 className={`min-w-0 transition-all duration-300 ${
                   collapsed && !mobileOpen ? 'opacity-0 w-0 overflow-hidden' : 'opacity-100'
                 }`}
               >
-                <p className="text-xs font-semibold text-white truncate">Admin</p>
-                <p className="text-[10px] text-zinc-500 truncate">admin@nexoinventory.id</p>
+                <p className="text-xs font-semibold text-white truncate">{userName}</p>
+                <p className="text-[10px] text-zinc-500 truncate">{userEmail}</p>
               </div>
             </div>
           </Tooltip>
