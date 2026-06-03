@@ -150,6 +150,11 @@ export default function StockOpnamePage() {
     setItems(prev => {
       const updated = prev.map(item => {
         if (item.product.id !== productId) return item
+        // If user already entered an actual stock, just confirm it
+        if (item.actualStock !== null) {
+          return { ...item, checked: true }
+        }
+        // If no input yet, mark as "sesuai" (actual = system)
         return { ...item, actualStock: item.systemStock, difference: 0, checked: true }
       })
       persistProgress(updated)
