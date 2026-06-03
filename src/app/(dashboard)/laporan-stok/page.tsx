@@ -242,40 +242,40 @@ export default function LaporanStok() {
         </div>
       </div>
 
-      {/* Desktop Table */}
-      <div className="hidden md:block rounded-xl overflow-hidden border border-white/[0.06] bg-[#1a1a1a]">
-        <div className="overflow-x-auto max-h-[600px] overflow-y-auto">
-          <table className="w-full text-sm">
+      {/* Desktop Table - Spreadsheet Style */}
+      <div className="hidden md:block overflow-hidden border border-white/10">
+        <div className="overflow-x-auto max-h-[600px]">
+          <table className="w-full border-collapse">
             <thead className="sticky top-0 z-10">
-              <tr className="bg-[#111111] border-b border-white/[0.06]">
-                <th className="px-4 py-3 text-left text-[11px] font-semibold text-[#9CA3AF] uppercase tracking-wider">Kode</th>
-                <th className="px-4 py-3 text-left text-[11px] font-semibold text-[#9CA3AF] uppercase tracking-wider">Nama Barang</th>
-                <th className="px-4 py-3 text-center text-[11px] font-semibold text-[#9CA3AF] uppercase tracking-wider">Unit</th>
-                <th className="px-4 py-3 text-right text-[11px] font-semibold text-[#9CA3AF] uppercase tracking-wider">Stok Awal</th>
-                <th className="px-4 py-3 text-right text-[11px] font-semibold text-[#9CA3AF] uppercase tracking-wider">Barang Masuk</th>
-                <th className="px-4 py-3 text-right text-[11px] font-semibold text-[#9CA3AF] uppercase tracking-wider">Barang Keluar</th>
-                <th className="px-4 py-3 text-right text-[11px] font-semibold text-[#9CA3AF] uppercase tracking-wider">Stok Akhir</th>
-                <th className="px-4 py-3 text-center text-[11px] font-semibold text-[#9CA3AF] uppercase tracking-wider">Status</th>
+              <tr className="bg-zinc-800">
+                <th className="border border-white/10 w-[48px] px-2 py-2.5 text-center text-[11px] font-bold text-zinc-400 uppercase tracking-wide">No</th>
+                <th className="border border-white/10 w-[110px] px-2 py-2.5 text-center text-[11px] font-bold text-zinc-400 uppercase tracking-wide">Kode</th>
+                <th className="border border-white/10 px-3 py-2.5 text-left text-[11px] font-bold text-zinc-400 uppercase tracking-wide">Nama Barang</th>
+                <th className="border border-white/10 w-[70px] px-2 py-2.5 text-center text-[11px] font-bold text-zinc-400 uppercase tracking-wide">Unit</th>
+                <th className="border border-white/10 w-[90px] px-2 py-2.5 text-center text-[11px] font-bold text-zinc-400 uppercase tracking-wide">Stok Awal</th>
+                <th className="border border-white/10 w-[90px] px-2 py-2.5 text-center text-[11px] font-bold text-zinc-400 uppercase tracking-wide">Masuk</th>
+                <th className="border border-white/10 w-[90px] px-2 py-2.5 text-center text-[11px] font-bold text-zinc-400 uppercase tracking-wide">Keluar</th>
+                <th className="border border-white/10 w-[90px] px-2 py-2.5 text-center text-[11px] font-bold text-zinc-400 uppercase tracking-wide">Stok Akhir</th>
+                <th className="border border-white/10 w-[100px] px-2 py-2.5 text-center text-[11px] font-bold text-zinc-400 uppercase tracking-wide">Status</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/[0.04]">
+            <tbody>
               {filtered.length === 0 ? (
-                <tr><td colSpan={8} className="px-4 py-12 text-center text-zinc-500">Tidak ada data ditemukan</td></tr>
+                <tr><td colSpan={9} className="border border-white/10 text-center py-12 text-zinc-500">Tidak ada data ditemukan</td></tr>
               ) : (
-                filtered.map(r => (
-                  <tr key={r.product.id} className="hover:bg-white/[0.02] transition">
-                    <td className="px-4 py-3 font-mono text-[12px] text-zinc-400">{r.product.sku}</td>
-                    <td className="px-4 py-3 text-[13px] font-medium text-white">{r.product.name}</td>
-                    <td className="px-4 py-3 text-center text-[12px] text-zinc-500">pcs</td>
-                    <td className="px-4 py-3 text-right text-[13px] text-zinc-300">{r.stockAwal}</td>
-                    <td className="px-4 py-3 text-right text-[13px] text-emerald-400 font-medium">{r.masuk > 0 ? `+${r.masuk}` : '0'}</td>
-                    <td className="px-4 py-3 text-right text-[13px] text-red-400 font-medium">{r.keluar > 0 ? `-${r.keluar}` : '0'}</td>
-                    <td className={`px-4 py-3 text-right text-[13px] font-bold ${
+                filtered.map((r, idx) => (
+                  <tr key={r.product.id} className={`hover:bg-indigo-900/20 transition ${idx % 2 === 1 ? 'bg-zinc-900/40' : 'bg-zinc-950'}`}>
+                    <td className="border border-white/10 px-2 py-2 text-center text-xs text-zinc-500">{idx + 1}</td>
+                    <td className="border border-white/10 px-2 py-2 text-center text-sm text-zinc-300 font-mono">{r.product.sku}</td>
+                    <td className="border border-white/10 px-3 py-2 text-left text-sm font-medium text-white">{r.product.name}</td>
+                    <td className="border border-white/10 px-2 py-2 text-center text-xs text-zinc-500">pcs</td>
+                    <td className="border border-white/10 px-2 py-2 text-center text-sm text-zinc-300">{r.stockAwal}</td>
+                    <td className="border border-white/10 px-2 py-2 text-center text-sm font-medium text-emerald-400">{r.masuk > 0 ? `+${r.masuk}` : '0'}</td>
+                    <td className="border border-white/10 px-2 py-2 text-center text-sm font-medium text-red-400">{r.keluar > 0 ? `-${r.keluar}` : '0'}</td>
+                    <td className={`border border-white/10 px-2 py-2 text-center text-sm font-bold ${
                       r.status === 'habis' ? 'text-red-400' : r.status === 'menipis' ? 'text-amber-400' : 'text-emerald-400'
                     }`}>{r.stockAkhir}</td>
-                    <td className="px-4 py-3 text-center">
-                      <StatusBadge status={r.status} />
-                    </td>
+                    <td className="border border-white/10 px-2 py-2 text-center"><StatusBadge status={r.status} /></td>
                   </tr>
                 ))
               )}
