@@ -69,6 +69,7 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
             <div className="w-10 lg:hidden" />
           </div>
           <div className="flex items-center gap-3">
+            <ConnectionStatus />
             <p className="text-[11px] text-zinc-500 font-medium hidden sm:block">
               {new Date().toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'short', year: 'numeric' })}
             </p>
