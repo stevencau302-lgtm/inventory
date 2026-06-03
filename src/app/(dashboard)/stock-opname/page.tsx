@@ -1,14 +1,22 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { Product, fetchProducts, saveProduct, uid, formatRp } from '@/lib/store'
 import { useToast } from '@/components/Toast'
 import { CardListSkeleton } from '@/components/PageSkeleton'
 import {
   ClipboardCheck, Search, Package, CheckCircle2,
   AlertTriangle, Save, Loader2, RotateCcw, Download,
-  ChevronDown, ChevronUp, Filter
+  Trash2
 } from 'lucide-react'
+
+interface OpnameProgress {
+  [productId: string]: {
+    actualStock: number | null
+    note: string
+    checked: boolean
+  }
+}
 
 interface OpnameItem {
   product: Product
@@ -21,6 +29,34 @@ interface OpnameItem {
 
 type FilterStatus = 'all' | 'unchecked' | 'match' | 'mismatch'
 
+const STORAGE_KEY = 'nexo_opname_progress'
+const DATE_KEY = 'nexo_opname_date'
+
+function loadProgress(): OpnameProgress {
+  if (typeof window === 'undefined') return {}
+  try {
+    return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}')
+  } catch { return {} }
+}
+
+function saveProgress(progress: OpnameProgress) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(progress))
+}
+
+function clearProgress() {
+  localStorage.removeItem(STORAGE_KEY)
+  localStorage.removeItem(DATE_KEY)
+}
+
+function loadDate(): string {
+  if (typeof window === 'undefined') return new Date().toISOString().split('T')[0]
+  return localStorage.getItem(DATE_KEY) || new Date().toISOString().split('T')[0]
+}
+
+function saveDate(date: string) {
+  localStorage.setItem(DATE_KEY, date)
+}
+
 export default function StockOpnamePage() {
   const [products, setProducts] = useState<Product[]>([])
   const [items, setItems] = useState<OpnameItem[]>([])
@@ -28,55 +64,119 @@ export default function StockOpnamePage() {
   const [search, setSearch] = useState('')
   const [filterStatus, setFilterStatus] = useState<FilterStatus>('all')
   const [saving, setSaving] = useState(false)
-  const [opnameDate, setOpnameDate] = useState(new Date().toISOString().split('T')[0])
-  const [showSummary, setShowSummary] = useState(false)
+  const [opnameDate, setOpnameDate] = useState('')
   const { toast } = useToast()
 
+  // Load data + restore progress from localStorage
   useEffect(() => {
     async function loadData() {
       const p = await fetchProducts()
       setProducts(p)
-      setItems(p.map(product => ({
-        product,
-        systemStock: product.stock,
-        actualStock: null,
-        difference: 0,
-        note: '',
-        checked: false,
-      })))
+
+      const savedProgress = loadProgress()
+      const savedDate = loadDate()
+      setOpnameDate(savedDate)
+
+      setItems(p.map(product => {
+        const saved = savedProgress[product.id]
+        if (saved) {
+          const actual = saved.actualStock
+          return {
+            product,
+            systemStock: product.stock,
+            actualStock: actual,
+            difference: actual !== null ? actual - product.stock : 0,
+            note: saved.note || '',
+            checked: saved.checked,
+          }
+        }
+        return {
+          product,
+          systemStock: product.stock,
+          actualStock: null,
+          difference: 0,
+          note: '',
+          checked: false,
+        }
+      }))
       setMounted(true)
     }
     loadData()
   }, [])
 
+  // Auto-save progress to localStorage whenever items change
+  const persistProgress = useCallback((updatedItems: OpnameItem[]) => {
+    const progress: OpnameProgress = {}
+    updatedItems.forEach(item => {
+      if (item.checked || item.actualStock !== null || item.note) {
+        progress[item.product.id] = {
+          actualStock: item.actualStock,
+          note: item.note,
+          checked: item.checked,
+        }
+      }
+    })
+    saveProgress(progress)
+  }, [])
+
   if (!mounted) return <CardListSkeleton />
 
   const updateItem = (productId: string, field: 'actualStock' | 'note', value: any) => {
-    setItems(prev => prev.map(item => {
-      if (item.product.id !== productId) return item
-      const updated = { ...item, [field]: value }
-      if (field === 'actualStock') {
-        const actual = value === null || value === '' ? null : Number(value)
-        updated.actualStock = actual
-        updated.difference = actual !== null ? actual - item.systemStock : 0
-        updated.checked = actual !== null
-      }
+    setItems(prev => {
+      const updated = prev.map(item => {
+        if (item.product.id !== productId) return item
+        const newItem = { ...item, [field]: value }
+        if (field === 'actualStock') {
+          const actual = value === null || value === '' ? null : Number(value)
+          newItem.actualStock = actual
+          newItem.difference = actual !== null ? actual - item.systemStock : 0
+          newItem.checked = actual !== null
+        }
+        return newItem
+      })
+      persistProgress(updated)
       return updated
-    }))
+    })
   }
 
   const markAsMatch = (productId: string) => {
-    setItems(prev => prev.map(item => {
-      if (item.product.id !== productId) return item
-      return { ...item, actualStock: item.systemStock, difference: 0, checked: true }
-    }))
+    setItems(prev => {
+      const updated = prev.map(item => {
+        if (item.product.id !== productId) return item
+        return { ...item, actualStock: item.systemStock, difference: 0, checked: true }
+      })
+      persistProgress(updated)
+      return updated
+    })
   }
 
   const resetItem = (productId: string) => {
-    setItems(prev => prev.map(item => {
-      if (item.product.id !== productId) return item
-      return { ...item, actualStock: null, difference: 0, note: '', checked: false }
-    }))
+    setItems(prev => {
+      const updated = prev.map(item => {
+        if (item.product.id !== productId) return item
+        return { ...item, actualStock: null, difference: 0, note: '', checked: false }
+      })
+      persistProgress(updated)
+      return updated
+    })
+  }
+
+  const handleResetAll = () => {
+    if (!confirm('Reset semua progress opname? Data yang belum disimpan akan hilang.')) return
+    clearProgress()
+    setItems(prev => prev.map(item => ({
+      ...item,
+      actualStock: null,
+      difference: 0,
+      note: '',
+      checked: false,
+    })))
+    toast('Progress opname direset!', 'warning')
+  }
+
+  const handleDateChange = (date: string) => {
+    setOpnameDate(date)
+    saveDate(date)
   }
 
   const handleSaveOpname = async () => {
@@ -101,6 +201,9 @@ export default function StockOpnamePage() {
           await saveProduct(updatedProduct)
         }
       }
+
+      // Clear progress after successful save
+      clearProgress()
 
       toast(
         mismatchItems.length > 0
@@ -190,18 +293,25 @@ export default function StockOpnamePage() {
             <div>
               <h1 className="text-2xl lg:text-3xl font-bold text-[#fafafa]">Stok Opname</h1>
               <p className="text-zinc-500 text-sm mt-0.5">Verifikasi stok fisik dengan data sistem</p>
+              {checkedCount > 0 && (
+                <p className="text-[11px] text-[#FDC800] mt-1 font-medium">💾 Progress otomatis tersimpan</p>
+              )}
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-2">
             <input
               type="date"
               value={opnameDate}
-              onChange={e => setOpnameDate(e.target.value)}
+              onChange={e => handleDateChange(e.target.value)}
               className="px-3 py-2 rounded-lg bg-[#0f0f0f] border border-white/[0.08] text-sm text-white focus:outline-none focus:border-[#FDC800]/50 transition"
             />
-            <button onClick={handleExportCSV} className="px-4 py-2 rounded-lg bg-[#1a1a1a] border border-white/[0.08] text-sm font-medium text-zinc-400 hover:text-white hover:border-white/[0.15] transition flex items-center gap-2">
-              <Download className="w-4 h-4" />
-              Export CSV
+            <button onClick={handleResetAll} className="px-3 py-2 rounded-lg bg-[#1a1a1a] border border-white/[0.08] text-sm font-medium text-zinc-500 hover:text-red-400 hover:border-red-500/30 transition flex items-center gap-1.5" title="Reset semua progress">
+              <Trash2 className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Reset</span>
+            </button>
+            <button onClick={handleExportCSV} className="px-3 py-2 rounded-lg bg-[#1a1a1a] border border-white/[0.08] text-sm font-medium text-zinc-400 hover:text-white hover:border-white/[0.15] transition flex items-center gap-1.5">
+              <Download className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Export</span>
             </button>
             <button
               onClick={handleSaveOpname}
