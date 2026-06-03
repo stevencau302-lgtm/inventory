@@ -4,7 +4,46 @@ import Sidebar from '@/components/Sidebar'
 import BottomNav from '@/components/BottomNav'
 import { ToastProvider } from '@/components/Toast'
 import AuthProvider, { useAuth } from '@/components/AuthProvider'
-import { LogOut, Loader2 } from 'lucide-react'
+import { LogOut, Loader2, Wifi, WifiOff, Cloud } from 'lucide-react'
+import { useRealtimeSync } from '@/lib/useRealtimeSync'
+import { useToast } from '@/components/Toast'
+
+function ConnectionStatus() {
+  const { toast } = useToast()
+  const { online, pendingCount } = useRealtimeSync({
+    onOfflineSync: (result) => {
+      if (result.synced > 0) {
+        toast(`${result.synced} data offline berhasil disinkronkan!`, 'success')
+      }
+      if (result.failed > 0) {
+        toast(`${result.failed} data gagal sync, akan dicoba lagi`, 'warning')
+      }
+    },
+  })
+
+  if (!online) {
+    return (
+      <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-500/10 border border-amber-500/20">
+        <WifiOff className="w-3 h-3 text-amber-400" />
+        <span className="text-[10px] font-semibold text-amber-400">OFFLINE</span>
+        {pendingCount > 0 && (
+          <span className="text-[10px] text-amber-400/70">({pendingCount})</span>
+        )}
+      </div>
+    )
+  }
+
+  if (pendingCount > 0) {
+    return (
+      <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-blue-500/10 border border-blue-500/20">
+        <Cloud className="w-3 h-3 text-blue-400 animate-pulse" />
+        <span className="text-[10px] font-semibold text-blue-400">Syncing {pendingCount}</span>
+      </div>
+    )
+  }
+
+  return null
+}
 
 function DashboardShell({ children }: { children: React.ReactNode }) {
   const { user, loading, signOut } = useAuth()
