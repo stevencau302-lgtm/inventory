@@ -73,8 +73,8 @@ export default function ProductsPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold text-cozy-text dark:text-[#fafafa]">Produk</h1>
-          <p className="text-cozy-muted text-sm mt-1">{filtered.length} produk ditemukan</p>
+          <h1 className="text-2xl md:text-3xl font-bold" style={{ color: 'var(--color-text)' }}>Produk</h1>
+          <p className="text-sm mt-1" style={{ color: 'var(--color-text-muted)' }}>{filtered.length} produk ditemukan</p>
         </div>
         <button onClick={() => { setEditProduct(null); setModalOpen(true) }} className="btn-primary">
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
@@ -87,16 +87,10 @@ export default function ProductsPage() {
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
-          <svg className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+          <svg className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--color-text-muted)' }} fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
           </svg>
-          <input
-            type="text"
-            placeholder="Cari nama atau SKU..."
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            className="form-input pl-10"
-          />
+          <input type="text" placeholder="Cari nama atau SKU..." value={search} onChange={e => setSearch(e.target.value)} className="form-input pl-10" />
         </div>
         <select value={filterCat} onChange={e => setFilterCat(e.target.value)} className="form-input w-full sm:w-auto">
           <option value="">Semua Kategori</option>
@@ -115,45 +109,45 @@ export default function ProductsPage() {
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-white/5">
-                <th className="text-left px-5 py-3 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Produk</th>
-                <th className="text-left px-5 py-3 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">SKU</th>
-                <th className="text-left px-5 py-3 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Kategori</th>
-                <th className="text-left px-5 py-3 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Stok</th>
-                <th className="text-left px-5 py-3 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Harga</th>
-                <th className="text-left px-5 py-3 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Status</th>
-                <th className="text-right px-5 py-3 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Aksi</th>
+              <tr style={{ borderBottom: '1px solid var(--color-border)' }}>
+                <th className="text-left px-5 py-3 text-[11px] font-semibold uppercase tracking-wider" style={{ color: 'var(--color-text-muted)' }}>Produk</th>
+                <th className="text-left px-5 py-3 text-[11px] font-semibold uppercase tracking-wider" style={{ color: 'var(--color-text-muted)' }}>SKU</th>
+                <th className="text-left px-5 py-3 text-[11px] font-semibold uppercase tracking-wider" style={{ color: 'var(--color-text-muted)' }}>Kategori</th>
+                <th className="text-left px-5 py-3 text-[11px] font-semibold uppercase tracking-wider" style={{ color: 'var(--color-text-muted)' }}>Stok</th>
+                <th className="text-left px-5 py-3 text-[11px] font-semibold uppercase tracking-wider" style={{ color: 'var(--color-text-muted)' }}>Harga</th>
+                <th className="text-left px-5 py-3 text-[11px] font-semibold uppercase tracking-wider" style={{ color: 'var(--color-text-muted)' }}>Status</th>
+                <th className="text-right px-5 py-3 text-[11px] font-semibold uppercase tracking-wider" style={{ color: 'var(--color-text-muted)' }}>Aksi</th>
               </tr>
             </thead>
             <tbody>
               {filtered.map(p => (
-                <tr key={p.id} className="border-b border-white/[0.03] hover:bg-brand-500/5 transition">
+                <tr key={p.id} className="hover:opacity-80 transition" style={{ borderBottom: '1px solid var(--color-border-subtle)' }}>
                   <td className="px-5 py-3.5">
                     <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center text-white text-xs font-bold shrink-0">
+                      <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-orange-500 to-orange-700 flex items-center justify-center text-white text-xs font-bold shrink-0">
                         {p.name.substring(0, 2).toUpperCase()}
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-white">{p.name}</p>
-                        <p className="text-xs text-slate-500 truncate max-w-[200px]">{p.description}</p>
+                        <p className="text-sm font-medium" style={{ color: 'var(--color-text)' }}>{p.name}</p>
+                        <p className="text-xs truncate max-w-[200px]" style={{ color: 'var(--color-text-muted)' }}>{p.description}</p>
                       </div>
                     </div>
                   </td>
                   <td className="px-5 py-3.5">
-                    <code className="text-xs bg-slate-800 px-2 py-0.5 rounded text-slate-400">{p.sku}</code>
+                    <code className="text-xs px-2 py-0.5 rounded" style={{ background: 'var(--color-input-bg)', color: 'var(--color-text-secondary)' }}>{p.sku}</code>
                   </td>
-                  <td className="px-5 py-3.5 text-sm text-slate-400">{p.category}</td>
-                  <td className="px-5 py-3.5 text-sm font-medium text-slate-300">{p.stock}</td>
-                  <td className="px-5 py-3.5 text-sm text-slate-400">{formatRp(p.price)}</td>
+                  <td className="px-5 py-3.5 text-sm" style={{ color: 'var(--color-text-secondary)' }}>{p.category}</td>
+                  <td className="px-5 py-3.5 text-sm font-medium" style={{ color: 'var(--color-text)' }}>{p.stock}</td>
+                  <td className="px-5 py-3.5 text-sm" style={{ color: 'var(--color-text-secondary)' }}>{formatRp(p.price)}</td>
                   <td className="px-5 py-3.5"><StatusBadge product={p} /></td>
                   <td className="px-5 py-3.5 text-right">
                     <div className="flex justify-end gap-1">
-                      <button onClick={() => handleEdit(p)} className="w-8 h-8 rounded-lg bg-brand-500/10 text-brand-400 hover:bg-brand-500 hover:text-white flex items-center justify-center transition">
+                      <button onClick={() => handleEdit(p)} className="w-8 h-8 rounded-lg flex items-center justify-center transition" style={{ background: 'rgba(255, 95, 3, 0.1)', color: '#FF5F03' }}>
                         <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
                         </svg>
                       </button>
-                      <button onClick={() => handleDelete(p.id)} className="w-8 h-8 rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white flex items-center justify-center transition">
+                      <button onClick={() => handleDelete(p.id)} className="w-8 h-8 rounded-lg flex items-center justify-center transition" style={{ background: 'rgba(220, 38, 38, 0.1)', color: '#DC2626' }}>
                         <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
                         </svg>
@@ -163,7 +157,7 @@ export default function ProductsPage() {
                 </tr>
               ))}
               {filtered.length === 0 && (
-                <tr><td colSpan={7} className="text-center py-12 text-slate-500">Tidak ada produk ditemukan</td></tr>
+                <tr><td colSpan={7} className="text-center py-12" style={{ color: 'var(--color-text-muted)' }}>Tidak ada produk ditemukan</td></tr>
               )}
             </tbody>
           </table>
@@ -175,35 +169,35 @@ export default function ProductsPage() {
         {filtered.map(p => (
           <div key={p.id} className="glass-card p-4">
             <div className="flex items-start gap-3">
-              <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center text-white text-sm font-bold shrink-0">
+              <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-orange-500 to-orange-700 flex items-center justify-center text-white text-sm font-bold shrink-0">
                 {p.name.substring(0, 2).toUpperCase()}
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
-                    <p className="text-sm font-semibold text-white truncate">{p.name}</p>
-                    <p className="text-xs text-slate-500 mt-0.5">{p.category} &middot; <code className="text-slate-400">{p.sku}</code></p>
+                    <p className="text-sm font-semibold truncate" style={{ color: 'var(--color-text)' }}>{p.name}</p>
+                    <p className="text-xs mt-0.5" style={{ color: 'var(--color-text-muted)' }}>{p.category} &middot; <code style={{ color: 'var(--color-text-secondary)' }}>{p.sku}</code></p>
                   </div>
                   <StatusBadge product={p} />
                 </div>
                 <div className="flex items-center justify-between mt-3">
                   <div className="flex gap-4">
                     <div>
-                      <p className="text-[10px] text-slate-500 uppercase">Stok</p>
-                      <p className="text-sm font-semibold text-white">{p.stock}</p>
+                      <p className="text-[10px] uppercase" style={{ color: 'var(--color-text-muted)' }}>Stok</p>
+                      <p className="text-sm font-semibold" style={{ color: 'var(--color-text)' }}>{p.stock}</p>
                     </div>
                     <div>
-                      <p className="text-[10px] text-slate-500 uppercase">Harga</p>
-                      <p className="text-sm font-semibold text-white">{formatRp(p.price)}</p>
+                      <p className="text-[10px] uppercase" style={{ color: 'var(--color-text-muted)' }}>Harga</p>
+                      <p className="text-sm font-semibold" style={{ color: 'var(--color-text)' }}>{formatRp(p.price)}</p>
                     </div>
                   </div>
                   <div className="flex gap-1">
-                    <button onClick={() => handleEdit(p)} className="w-8 h-8 rounded-lg bg-brand-500/10 text-brand-400 hover:bg-brand-500 hover:text-white flex items-center justify-center transition">
+                    <button onClick={() => handleEdit(p)} className="w-8 h-8 rounded-lg flex items-center justify-center transition" style={{ background: 'rgba(255, 95, 3, 0.1)', color: '#FF5F03' }}>
                       <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
                       </svg>
                     </button>
-                    <button onClick={() => handleDelete(p.id)} className="w-8 h-8 rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white flex items-center justify-center transition">
+                    <button onClick={() => handleDelete(p.id)} className="w-8 h-8 rounded-lg flex items-center justify-center transition" style={{ background: 'rgba(220, 38, 38, 0.1)', color: '#DC2626' }}>
                       <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
                       </svg>
@@ -215,8 +209,8 @@ export default function ProductsPage() {
           </div>
         ))}
         {filtered.length === 0 && (
-          <div className="text-center py-16 text-slate-500">
-            <svg className="w-12 h-12 mx-auto mb-3 text-slate-600" fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor">
+          <div className="text-center py-16" style={{ color: 'var(--color-text-muted)' }}>
+            <svg className="w-12 h-12 mx-auto mb-3" style={{ color: 'var(--color-text-muted)' }} fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5m8.25 3v6.75m0 0l-3-3m3 3l3-3M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
             </svg>
             <p>Tidak ada produk ditemukan</p>
