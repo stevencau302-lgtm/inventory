@@ -285,25 +285,26 @@ function AnimatedValue({ value, formatFn }: { value: string; formatFn?: (n: numb
 }
 
 function StatCard({ icon, label, value, subtitle, border }: { icon: string; label: string; value: string; subtitle: string; border: string }) {
-  // Determine if value is a number or currency
   const isRupiah = value.includes('Rp')
   const isPureNumber = /^\d+$/.test(value)
 
   return (
-    <div className={`rounded-xl p-4 bg-[#161616] border border-white/[0.08] border-l-2 ${border}`}>
-      <div className="flex items-center gap-3 mb-2">
-        <div className="w-8 h-8 rounded-lg bg-white/[0.04] flex items-center justify-center text-zinc-400">
+    <div className={`rounded-lg p-3 bg-[#161616] border border-white/[0.06] border-l-2 ${border}`}>
+      <div className="flex items-center justify-between">
+        <div className="min-w-0">
+          <p className="text-[11px] text-zinc-500 font-medium truncate">{label}</p>
+          <p className="text-lg font-bold text-white mt-0.5 truncate">
+            {isRupiah ? <AnimatedValue value={value} formatFn={formatRp} /> : isPureNumber ? <AnimatedValue value={value} /> : value}
+          </p>
+        </div>
+        <div className="w-8 h-8 rounded-lg bg-white/[0.04] flex items-center justify-center text-zinc-500 shrink-0 ml-2">
           {icon === 'box' && <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" /></svg>}
           {icon === 'coins' && <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z" /></svg>}
           {icon === 'alert' && <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" /></svg>}
           {icon === 'x-circle' && <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" /></svg>}
         </div>
-        <p className="text-xs text-zinc-400 font-normal">{label}</p>
       </div>
-      <p className="text-lg font-semibold text-white whitespace-nowrap">
-        {isRupiah ? <AnimatedValue value={value} formatFn={formatRp} /> : isPureNumber ? <AnimatedValue value={value} /> : value}
-      </p>
-      <p className="text-xs text-zinc-500 mt-1">{subtitle}</p>
+      <p className="text-[10px] text-zinc-600 mt-1.5 truncate">{subtitle}</p>
     </div>
   )
 }
