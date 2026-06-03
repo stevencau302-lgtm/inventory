@@ -1,7 +1,8 @@
 'use client'
 import { useEffect, useState, useMemo } from 'react'
-import { Product, Transaction, fetchProducts, fetchTransactions, formatRp, getStatus } from '@/lib/store'
+import { Product, Transaction, fetchProducts, fetchTransactions, formatRp, getStatus, getSetting } from '@/lib/store'
 import { TableSkeleton } from '@/components/PageSkeleton'
+import Link from 'next/link'
 
 type StatusFilter = 'all' | 'aman' | 'menipis' | 'habis'
 
@@ -20,12 +21,20 @@ export default function LaporanStok() {
   const [mounted, setMounted] = useState(false)
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all')
+  const [lastOpname, setLastOpname] = useState<{ date: string; totalChecked: number; matchCount: number; mismatchCount: number; savedAt: string } | null>(null)
 
   useEffect(() => {
     async function load() {
       const [p, tx] = await Promise.all([fetchProducts(), fetchTransactions()])
       setProducts(p)
       setTransactions(tx)
+
+      // Load last opname info
+      try {
+        const raw = await getSetting('last_opname')
+        if (raw) setLastOpname(JSON.parse(raw))
+      } catch {}
+
       setMounted(true)
     }
     load()
@@ -170,6 +179,29 @@ export default function LaporanStok() {
           </div>
         </div>
       </div>
+
+      {/* Last Opname Info */}
+      {lastOpname && (
+        <div className="rounded-2xl p-4 border border-[#FDC800]/20 bg-[#FDC800]/[0.03]">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-lg bg-[#FDC800]/15 flex items-center justify-center shrink-0">
+                <svg className="w-4 h-4 text-[#FDC800]" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-[#fafafa]">Opname Terakhir: {lastOpname.date}</p>
+                <p className="text-[11px] text-zinc-500 mt-0.5">
+                  {lastOpname.totalChecked} diperiksa · {lastOpname.matchCount} sesuai · {lastOpname.mismatchCount} selisih
+                  {lastOpname.savedAt && ` · ${new Date(lastOpname.savedAt).toLocaleString('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}`}
+                </p>
+              </div>
+            </div>
+            <Link href="/stock-opname" className="px-3 py-1.5 rounded-lg bg-[#FDC800]/10 text-[#FDC800] text-xs font-semibold hover:bg-[#FDC800]/20 transition">
+              Opname Baru
+            </Link>
+          </div>
+        </div>
+      )}
 
       {/* Controls: Search, Filter, Export */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">

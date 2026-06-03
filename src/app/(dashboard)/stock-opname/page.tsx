@@ -155,6 +155,21 @@ export default function StockOpnamePage() {
       }
 
       clearProgress()
+
+      // Save last opname summary to settings
+      const summaryData = {
+        date: opnameDate,
+        totalChecked: checked.length,
+        matchCount: checked.filter(i => i.difference === 0).length,
+        mismatchCount: mismatched.length,
+        mismatchItems: mismatched.map(i => ({ name: i.product.name, sku: i.product.sku, from: i.systemStock, to: i.actualStock!, diff: i.difference })),
+        savedAt: new Date().toISOString(),
+      }
+      try {
+        const { saveSetting } = await import('@/lib/store')
+        await saveSetting('last_opname', JSON.stringify(summaryData))
+      } catch {}
+
       setSavedSummary({
         date: opnameDate,
         totalChecked: checked.length,
