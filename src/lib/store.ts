@@ -82,6 +82,42 @@ export function saveTransactions(transactions: Transaction[]) {
   localStorage.setItem('inv_transactions', JSON.stringify(transactions))
 }
 
+// Async wrappers (compatible with original supabase-based API)
+export async function fetchProducts(): Promise<Product[]> {
+  return getProducts()
+}
+
+export async function fetchTransactions(): Promise<Transaction[]> {
+  return getTransactions()
+}
+
+export async function saveProduct(product: Product): Promise<void> {
+  const products = getProducts()
+  const idx = products.findIndex(p => p.id === product.id)
+  if (idx > -1) {
+    products[idx] = product
+  } else {
+    products.unshift(product)
+  }
+  saveProducts(products)
+}
+
+export async function saveTransaction(tx: Transaction): Promise<void> {
+  const transactions = getTransactions()
+  const idx = transactions.findIndex(t => t.id === tx.id)
+  if (idx > -1) {
+    transactions[idx] = tx
+  } else {
+    transactions.unshift(tx)
+  }
+  saveTransactions(transactions)
+}
+
+export async function deleteTransaction(id: string): Promise<void> {
+  const transactions = getTransactions().filter(t => t.id !== id)
+  saveTransactions(transactions)
+}
+
 export function loadSampleData() {
   const now = new Date().toISOString()
   const categories: Category[] = [
