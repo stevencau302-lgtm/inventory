@@ -65,6 +65,13 @@ export default function StockOpnamePage() {
   const [filterStatus, setFilterStatus] = useState<FilterStatus>('all')
   const [saving, setSaving] = useState(false)
   const [opnameDate, setOpnameDate] = useState('')
+  const [savedSummary, setSavedSummary] = useState<{
+    date: string
+    totalChecked: number
+    matchCount: number
+    mismatchCount: number
+    mismatchItems: { name: string; sku: string; systemStock: number; actualStock: number; difference: number }[]
+  } | null>(null)
   const { toast } = useToast()
 
   // Load data + restore progress from localStorage
@@ -202,8 +209,23 @@ export default function StockOpnamePage() {
         }
       }
 
-      // Clear progress after successful save
+      // Clear localStorage progress after successful save
       clearProgress()
+
+      // Show summary instead of resetting view
+      setSavedSummary({
+        date: opnameDate,
+        totalChecked: checkedItems.length,
+        matchCount: checkedItems.filter(i => i.difference === 0).length,
+        mismatchCount: mismatchItems.length,
+        mismatchItems: mismatchItems.map(i => ({
+          name: i.product.name,
+          sku: i.product.sku,
+          systemStock: i.systemStock,
+          actualStock: i.actualStock!,
+          difference: i.difference,
+        })),
+      })
 
       toast(
         mismatchItems.length > 0
@@ -211,18 +233,6 @@ export default function StockOpnamePage() {
           : `Stok opname selesai! Semua stok sesuai.`,
         'success'
       )
-
-      // Refresh data
-      const p = await fetchProducts()
-      setProducts(p)
-      setItems(p.map(product => ({
-        product,
-        systemStock: product.stock,
-        actualStock: null,
-        difference: 0,
-        note: '',
-        checked: false,
-      })))
     } catch (err) {
       console.error('Save opname error:', err)
       toast('Gagal menyimpan stok opname!', 'error')
