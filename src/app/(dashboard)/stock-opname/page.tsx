@@ -198,6 +198,7 @@ export default function StockOpnamePage() {
     setSaving(true)
     try {
       // Update stock for mismatched items
+      let failCount = 0
       for (const item of mismatchItems) {
         if (item.actualStock !== null) {
           const updatedProduct: Product = {
@@ -205,8 +206,15 @@ export default function StockOpnamePage() {
             stock: item.actualStock,
             updatedAt: new Date().toISOString(),
           }
-          await saveProduct(updatedProduct)
+          const success = await saveProduct(updatedProduct)
+          if (!success) failCount++
         }
+      }
+
+      if (failCount > 0) {
+        toast(`${failCount} produk gagal disimpan! Cek koneksi atau permission.`, 'error')
+        setSaving(false)
+        return
       }
 
       // Clear localStorage progress after successful save
