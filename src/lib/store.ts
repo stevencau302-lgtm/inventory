@@ -2,10 +2,32 @@
 
 import { supabase } from './supabase'
 
+// Cache userId to avoid repeated auth calls
+let cachedUserId: string | null = null
+let userIdPromise: Promise<string | null> | null = null
+
 async function getUserId(): Promise<string | null> {
-  const { data: { user } } = await supabase.auth.getUser()
-  return user?.id ?? null
+  if (cachedUserId !== null) return cachedUserId
+  if (userIdPromise) return userIdPromise
+  
+  userIdPromise = supabase.auth.getUser().then(({ data: { user } }) => {
+    cachedUserId = user?.id ?? null
+    userIdPromise = null
+    return cachedUserId
+  })
+  return userIdPromise
 }
+
+// Call this on auth state change to reset cache
+export function resetUserCache() {
+  cachedUserId = null
+  userIdPromise = null
+}
+
+// Listen for auth changes
+supabase.auth.onAuthStateChange(() => {
+  resetUserCache()
+})
 
 export interface Product {
   id: string
@@ -145,8 +167,8 @@ function transactionToRow(t: Transaction, userId: string | null) {
 
 export async function fetchProducts(): Promise<Product[]> {
   const userId = await getUserId()
-  const query = supabase.from('products').select('*')
-  if (userId) query.eq('user_id', userId)
+  let query = supabase.from('products').select('*')
+  if (userId) query = query.eq('user_id', userId)
   const { data, error } = await query.order('created_at', { ascending: false })
   if (error) {
     console.error('fetchProducts error:', error)
@@ -183,8 +205,8 @@ export async function saveProductsBatch(products: Product[]): Promise<void> {
 
 export async function fetchCategories(): Promise<Category[]> {
   const userId = await getUserId()
-  const query = supabase.from('categories').select('*')
-  if (userId) query.eq('user_id', userId)
+  let query = supabase.from('categories').select('*')
+  if (userId) query = query.eq('user_id', userId)
   const { data, error } = await query.order('created_at', { ascending: true })
   if (error) {
     console.error('fetchCategories error:', error)
@@ -217,8 +239,8 @@ export async function saveCategoriesBatch(categories: Category[]): Promise<void>
 
 export async function fetchTransactions(): Promise<Transaction[]> {
   const userId = await getUserId()
-  const query = supabase.from('transactions').select('*')
-  if (userId) query.eq('user_id', userId)
+  let query = supabase.from('transactions').select('*')
+  if (userId) query = query.eq('user_id', userId)
   const { data, error } = await query.order('created_at', { ascending: false })
   if (error) {
     console.error('fetchTransactions error:', error)
