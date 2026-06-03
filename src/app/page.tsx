@@ -34,7 +34,6 @@ export default function Dashboard() {
   const outOfStock = products.filter(p => p.stock === 0).length
   const alertProducts = products.filter(p => p.stock > 0 && p.stock <= p.minStock)
 
-  // Calculate dynamic subtexts
   const now = new Date()
   const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
   const newProductsThisWeek = products.filter(p => new Date(p.createdAt) >= oneWeekAgo).length
@@ -43,14 +42,8 @@ export default function Dashboard() {
     : 'Tidak ada produk baru minggu ini'
 
   const inventoryValueDesc = 'Total nilai stok saat ini'
-
-  const lowStockDesc = lowStock === 0
-    ? 'Semua stok aman'
-    : 'Perlu restock segera'
-
-  const outOfStockDesc = outOfStock === 0
-    ? 'Semua stok tersedia'
-    : 'Produk tidak tersedia'
+  const lowStockDesc = lowStock === 0 ? 'Semua stok aman' : 'Perlu restock segera'
+  const outOfStockDesc = outOfStock === 0 ? 'Semua stok tersedia' : 'Produk tidak tersedia'
 
   const bestSellers = [...products]
     .map(p => ({ ...p, sold: Math.max(0, (p.minStock * 5) - p.stock + 15) }))
@@ -63,9 +56,10 @@ export default function Dashboard() {
   return (
     <div className="space-y-6">
       {/* Gradient Header */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#4f46e5] via-[#312e81] to-[#0f0a2e] px-6 pt-8 pb-20">
-        <div className="absolute top-[-40%] right-[-8%] w-[400px] h-[400px] rounded-full bg-violet-500/[0.12] pointer-events-none" />
-        <div className="absolute bottom-[-30%] left-[10%] w-[250px] h-[250px] rounded-full bg-indigo-500/[0.08] pointer-events-none" />
+      <div className="relative overflow-hidden rounded-2xl px-6 pt-8 pb-20"
+        style={{ background: 'linear-gradient(135deg, var(--color-primary), #0f4c4c, #072C2C)' }}>
+        <div className="absolute top-[-40%] right-[-8%] w-[400px] h-[400px] rounded-full bg-white/[0.05] pointer-events-none" />
+        <div className="absolute bottom-[-30%] left-[10%] w-[250px] h-[250px] rounded-full bg-white/[0.03] pointer-events-none" />
         <div className="relative z-10 mb-6">
           <h1 className="text-2xl font-bold text-white">Dashboard Overview</h1>
           <p className="text-white/60 text-sm mt-1">Pantau performa inventory Anda secara real-time</p>
@@ -86,50 +80,54 @@ export default function Dashboard() {
       {/* Bottom: Transactions + Best Sellers */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
         {/* Recent Transactions */}
-        <div className="rounded-2xl overflow-hidden border border-orange-500/20 bg-gradient-to-br from-[#1a1a1a] to-[#1f1510]">
-          <div className="px-5 py-4 border-b border-white/[0.06] flex items-center gap-2">
-            <svg className="w-4 h-4 text-orange-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" /></svg>
-            <h3 className="text-sm font-semibold text-white">Transaksi Terbaru</h3>
+        <div className="neo-card overflow-hidden" style={{ borderColor: 'rgba(255, 95, 3, 0.2)' }}>
+          <div className="px-5 py-4 flex items-center gap-2" style={{ borderBottom: '1px solid var(--color-border)' }}>
+            <svg className="w-4 h-4" style={{ color: 'var(--color-secondary)' }} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" /></svg>
+            <h3 className="text-sm font-semibold" style={{ color: 'var(--color-text)' }}>Transaksi Terbaru</h3>
           </div>
           <div className="p-4 space-y-2">
             {paginatedTx.map(tx => (
-              <div key={tx.id} className="flex items-center justify-between px-3 py-2.5 rounded-xl bg-white/[0.03] border border-white/[0.05]">
+              <div key={tx.id} className="flex items-center justify-between px-3 py-2.5 rounded-xl" style={{ background: 'var(--color-hover-bg)', border: '1px solid var(--color-border-subtle)' }}>
                 <div>
-                  <p className="text-[13px] font-semibold text-zinc-200">{tx.productName}</p>
-                  <p className="text-[11px] text-zinc-500 mt-0.5">{new Date(tx.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
+                  <p className="text-[13px] font-semibold" style={{ color: 'var(--color-text)' }}>{tx.productName}</p>
+                  <p className="text-[11px] mt-0.5" style={{ color: 'var(--color-text-muted)' }}>{new Date(tx.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${tx.type === 'in' ? 'bg-emerald-500/15 text-emerald-400' : 'bg-red-500/15 text-red-400'}`}>
+                  <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${tx.type === 'in' ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}
+                    style={{ background: tx.type === 'in' ? 'var(--color-badge-success-bg)' : 'var(--color-badge-danger-bg)' }}>
                     {tx.type === 'in' ? 'Masuk' : 'Keluar'}
                   </span>
-                  <span className="text-[13px] font-semibold text-zinc-200">{tx.quantity} unit</span>
+                  <span className="text-[13px] font-semibold" style={{ color: 'var(--color-text)' }}>{tx.quantity} unit</span>
                 </div>
               </div>
             ))}
-            <div className="flex items-center justify-center gap-4 pt-3 border-t border-white/[0.06]">
-              <button onClick={() => setTxPage(p => Math.max(1, p - 1))} className="px-3 py-1.5 rounded-lg border border-white/[0.12] text-xs font-medium text-zinc-400 hover:bg-orange-600 hover:text-white hover:border-orange-600 transition">Prev</button>
-              <span className="text-xs text-zinc-500">{txPage} / {totalTxPages}</span>
-              <button onClick={() => setTxPage(p => Math.min(totalTxPages, p + 1))} className="px-3 py-1.5 rounded-lg border border-white/[0.12] text-xs font-medium text-zinc-400 hover:bg-orange-600 hover:text-white hover:border-orange-600 transition">Next</button>
+            <div className="flex items-center justify-center gap-4 pt-3" style={{ borderTop: '1px solid var(--color-border)' }}>
+              <button onClick={() => setTxPage(p => Math.max(1, p - 1))} className="px-3 py-1.5 rounded-lg text-xs font-medium transition"
+                style={{ border: '1px solid var(--color-border)', color: 'var(--color-text-muted)' }}>Prev</button>
+              <span className="text-xs" style={{ color: 'var(--color-text-muted)' }}>{txPage} / {totalTxPages}</span>
+              <button onClick={() => setTxPage(p => Math.min(totalTxPages, p + 1))} className="px-3 py-1.5 rounded-lg text-xs font-medium transition"
+                style={{ border: '1px solid var(--color-border)', color: 'var(--color-text-muted)' }}>Next</button>
             </div>
           </div>
         </div>
 
         {/* Best Sellers */}
-        <div className="rounded-2xl overflow-hidden border border-emerald-500/20 bg-gradient-to-br from-[#1a1a1a] to-[#101f1a]">
-          <div className="px-5 py-4 border-b border-white/[0.06] flex items-center gap-2">
-            <svg className="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 013 3h-15a3 3 0 013-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497m5.007 0a7.454 7.454 0 01-.982-3.172M9.497 14.25a7.454 7.454 0 00.981-3.172M5.25 4.236c-.996.178-1.768.535-2.251 1.084m13.004 0a15.522 15.522 0 00-12.003 0m12.003 0c.996.178 1.768.535 2.251 1.084" /></svg>
-            <h3 className="text-sm font-semibold text-white">Produk Terlaris</h3>
+        <div className="neo-card overflow-hidden" style={{ borderColor: 'rgba(22, 163, 74, 0.2)' }}>
+          <div className="px-5 py-4 flex items-center gap-2" style={{ borderBottom: '1px solid var(--color-border)' }}>
+            <svg className="w-4 h-4 text-emerald-500" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 013 3h-15a3 3 0 013-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497m5.007 0a7.454 7.454 0 01-.982-3.172M9.497 14.25a7.454 7.454 0 00.981-3.172M5.25 4.236c-.996.178-1.768.535-2.251 1.084m13.004 0a15.522 15.522 0 00-12.003 0m12.003 0c.996.178 1.768.535 2.251 1.084" /></svg>
+            <h3 className="text-sm font-semibold" style={{ color: 'var(--color-text)' }}>Produk Terlaris</h3>
           </div>
           <div className="p-4 space-y-2">
             {bestSellers.map((p, i) => (
-              <div key={p.id} className="flex items-center justify-between px-3 py-2.5 rounded-xl bg-white/[0.03] border border-white/[0.05]">
+              <div key={p.id} className="flex items-center justify-between px-3 py-2.5 rounded-xl" style={{ background: 'var(--color-hover-bg)', border: '1px solid var(--color-border-subtle)' }}>
                 <div className="flex items-center gap-3">
-                  <div className="w-7 h-7 rounded-full bg-orange-500/15 text-orange-400 flex items-center justify-center text-[11px] font-bold">{i + 1}</div>
-                  <span className="text-[13px] font-medium text-zinc-200">{p.name}</span>
+                  <div className="w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold"
+                    style={{ background: 'var(--color-badge-warning-bg)', color: 'var(--color-secondary)' }}>{i + 1}</div>
+                  <span className="text-[13px] font-medium" style={{ color: 'var(--color-text)' }}>{p.name}</span>
                 </div>
                 <div className="flex items-center gap-2.5">
-                  {i < 3 && <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-orange-500/15 text-orange-300">Best Seller</span>}
-                  <span className="text-[12px] text-zinc-500">{p.sold} terjual</span>
+                  {i < 3 && <span className="px-2 py-0.5 rounded-full text-[9px] font-bold" style={{ background: 'var(--color-badge-warning-bg)', color: 'var(--color-secondary)' }}>Best Seller</span>}
+                  <span className="text-[12px]" style={{ color: 'var(--color-text-muted)' }}>{p.sold} terjual</span>
                 </div>
               </div>
             ))}
@@ -139,27 +137,27 @@ export default function Dashboard() {
 
       {/* Stock Alert Section */}
       <div className="glass-card overflow-hidden">
-        <div className="px-5 py-4 border-b border-white/[0.06] flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-amber-500/15 flex items-center justify-center">
-            <svg className="w-5 h-5 text-amber-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" /></svg>
+        <div className="px-5 py-4 flex items-center gap-3" style={{ borderBottom: '1px solid var(--color-border)' }}>
+          <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: 'var(--color-badge-warning-bg)' }}>
+            <svg className="w-5 h-5 text-amber-500" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" /></svg>
           </div>
-          <h3 className="text-sm font-semibold text-white">Alert Stok Menipis</h3>
+          <h3 className="text-sm font-semibold" style={{ color: 'var(--color-text)' }}>Alert Stok Menipis</h3>
         </div>
         <div className="p-5">
           {alertProducts.length === 0 ? (
             <div className="text-center py-10">
               <svg className="w-16 h-16 mx-auto text-emerald-400 mb-3" fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-              <p className="text-zinc-400 text-sm">Semua produk stok aman</p>
+              <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>Semua produk stok aman</p>
             </div>
           ) : (
             <div className="space-y-2.5">
               {alertProducts.map(p => (
-                <div key={p.id} className="flex items-center justify-between px-4 py-3 rounded-xl bg-amber-500/[0.04] border border-amber-500/[0.12]">
+                <div key={p.id} className="flex items-center justify-between px-4 py-3 rounded-xl" style={{ background: 'var(--color-badge-warning-bg)', border: '1px solid rgba(217, 119, 6, 0.15)' }}>
                   <div>
-                    <p className="text-[13px] font-medium text-zinc-200">{p.name}</p>
-                    <p className="text-[11px] text-zinc-500 mt-0.5">{p.sku} — Min: {p.minStock}</p>
+                    <p className="text-[13px] font-medium" style={{ color: 'var(--color-text)' }}>{p.name}</p>
+                    <p className="text-[11px] mt-0.5" style={{ color: 'var(--color-text-muted)' }}>{p.sku} — Min: {p.minStock}</p>
                   </div>
-                  <span className="text-[13px] font-bold text-amber-400">Stok: {p.stock}</span>
+                  <span className="text-[13px] font-bold text-amber-500">Stok: {p.stock}</span>
                 </div>
               ))}
             </div>

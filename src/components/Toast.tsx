@@ -31,17 +31,17 @@ export function ToastProvider({ children }: { children: ReactNode }) {
 
   const icons = {
     success: (
-      <svg className="w-5 h-5 text-emerald-400" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+      <svg className="w-5 h-5 text-emerald-500" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
       </svg>
     ),
     error: (
-      <svg className="w-5 h-5 text-red-400" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+      <svg className="w-5 h-5 text-red-500" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
       </svg>
     ),
     warning: (
-      <svg className="w-5 h-5 text-amber-400" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+      <svg className="w-5 h-5 text-amber-500" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
       </svg>
     ),
@@ -58,9 +58,12 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       {children}
       <div className="fixed top-4 right-4 z-[9999] space-y-3">
         {toasts.map(t => (
-          <div key={t.id} className={`toast-enter flex items-center gap-3 px-4 py-3 rounded-xl bg-slate-800 border border-white/10 border-l-[3px] ${borderColors[t.type]} shadow-2xl min-w-[280px]`}>
+          <div key={t.id}
+            className={`toast-enter flex items-center gap-3 px-4 py-3 rounded-xl border-l-[3px] ${borderColors[t.type]} shadow-2xl min-w-[280px]`}
+            style={{ background: 'var(--color-card)', border: '1px solid var(--color-border)', borderLeftWidth: '3px' }}
+          >
             {icons[t.type]}
-            <span className="text-sm text-white font-medium">{t.message}</span>
+            <span className="text-sm font-medium" style={{ color: 'var(--color-text)' }}>{t.message}</span>
           </div>
         ))}
       </div>
