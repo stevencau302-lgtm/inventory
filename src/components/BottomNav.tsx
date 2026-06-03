@@ -14,8 +14,10 @@ export default function BottomNav() {
   const pathname = usePathname()
   return (
     <nav className="lg:hidden fixed bottom-4 left-4 right-4 z-50 safe-area-bottom">
-      <div className="flex items-center justify-around h-16 px-2 max-w-[390px] mx-auto rounded-2xl border border-white/[0.06]"
-        style={{ background: 'rgba(10, 10, 15, 0.85)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)' }}>
+      <div
+        className="flex items-center justify-around h-16 px-2 max-w-[390px] mx-auto rounded-2xl transition-colors duration-200"
+        style={{ background: 'var(--color-header-bg)', border: '1px solid var(--color-border)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)' }}
+      >
         {navItems.map(item => {
           if (item.label === 'add') return (
             <Link key={item.href} href={item.href} className="relative -top-5">
@@ -27,10 +29,11 @@ export default function BottomNav() {
           )
           const isActive = pathname === item.href
           return (
-            <Link key={item.href} href={item.href} className={`flex flex-col items-center gap-1 py-1 px-3 transition relative ${isActive ? 'text-orange-400' : 'text-zinc-500'}`}>
+            <Link key={item.href} href={item.href} className="flex flex-col items-center gap-1 py-1 px-3 transition relative"
+              style={{ color: isActive ? 'var(--color-secondary)' : 'var(--color-text-muted)' }}>
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={isActive ? 2 : 1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d={item.icon} /></svg>
               <span className="text-[10px] font-medium">{item.label}</span>
-              {isActive && <span className="absolute -bottom-1 w-5 h-[3px] rounded-full bg-orange-400 shadow-[0_0_8px_rgba(251,146,60,0.5)]" />}
+              {isActive && <span className="absolute -bottom-1 w-5 h-[3px] rounded-full" style={{ background: 'var(--color-secondary)', boxShadow: '0 0 8px rgba(255, 95, 3, 0.5)' }} />}
             </Link>
           )
         })}
