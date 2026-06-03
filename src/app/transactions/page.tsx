@@ -29,7 +29,6 @@ export default function TransactionsPage() {
     setMounted(true)
   }, [])
 
-  // Close dropdown on outside click
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
@@ -104,34 +103,32 @@ export default function TransactionsPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-black text-neo-black">Transaksi</h1>
-          <p className="text-sm font-medium text-cozy-muted mt-0.5">{transactions.length} riwayat tercatat</p>
+          <h1 className="text-2xl font-bold" style={{ color: 'var(--color-text)' }}>Transaksi</h1>
+          <p className="text-sm font-medium mt-0.5" style={{ color: 'var(--color-text-muted)' }}>{transactions.length} riwayat tercatat</p>
         </div>
-        <div className="px-3 py-1.5 bg-neo-yellow border-2 border-neo-black rounded-md shadow-neo-sm font-bold text-xs">
+        <div className="px-3 py-1.5 rounded-md text-xs font-bold" style={{ background: 'var(--color-badge-warning-bg)', color: 'var(--color-secondary)' }}>
           {transactions.length} LOG
         </div>
       </div>
 
       {/* Tabs */}
       <div className="flex gap-2">
-        <button
-          onClick={() => setTab('form')}
-          className={`flex-1 py-3 text-sm font-bold rounded-lg border-2 border-neo-black transition-all duration-100 ${
-            tab === 'form'
-              ? 'bg-neo-orange text-white shadow-neo-sm'
-              : 'bg-white text-neo-black hover:bg-gray-50'
-          }`}
-        >
+        <button onClick={() => setTab('form')}
+          className="flex-1 py-3 text-sm font-bold rounded-lg transition-all duration-100"
+          style={{
+            background: tab === 'form' ? 'var(--color-secondary)' : 'var(--color-card)',
+            color: tab === 'form' ? '#ffffff' : 'var(--color-text)',
+            border: '1px solid var(--color-border)'
+          }}>
           Buat Baru
         </button>
-        <button
-          onClick={() => setTab('history')}
-          className={`flex-1 py-3 text-sm font-bold rounded-lg border-2 border-neo-black transition-all duration-100 ${
-            tab === 'history'
-              ? 'bg-neo-indigo text-white shadow-neo-sm'
-              : 'bg-white text-neo-black hover:bg-gray-50'
-          }`}
-        >
+        <button onClick={() => setTab('history')}
+          className="flex-1 py-3 text-sm font-bold rounded-lg transition-all duration-100"
+          style={{
+            background: tab === 'history' ? 'var(--color-primary)' : 'var(--color-card)',
+            color: tab === 'history' ? '#ffffff' : 'var(--color-text)',
+            border: '1px solid var(--color-border)'
+          }}>
           Riwayat
         </button>
       </div>
@@ -141,87 +138,75 @@ export default function TransactionsPage() {
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Type selector */}
           <div className="grid grid-cols-2 gap-3">
-            <button
-              type="button"
-              onClick={() => setType('in')}
-              className={`p-4 rounded-lg border-3 text-left transition-all duration-100 ${
-                type === 'in'
-                  ? 'bg-emerald-100 border-neo-black shadow-neo-sm'
-                  : 'bg-white border-2 border-gray-200 hover:border-neo-black'
-              }`}
-              style={{ borderWidth: type === 'in' ? '3px' : undefined }}
-            >
+            <button type="button" onClick={() => setType('in')}
+              className="p-4 rounded-lg text-left transition-all duration-100"
+              style={{
+                background: type === 'in' ? 'var(--color-badge-success-bg)' : 'var(--color-card)',
+                border: type === 'in' ? '2px solid var(--color-success)' : '1px solid var(--color-border)'
+              }}>
               <div className="flex items-center gap-3">
-                <div className={`w-10 h-10 rounded-lg flex items-center justify-center border-2 border-neo-black ${type === 'in' ? 'bg-neo-emerald text-white' : 'bg-gray-100 text-gray-500'}`}>
+                <div className="w-10 h-10 rounded-lg flex items-center justify-center"
+                  style={{ background: type === 'in' ? 'var(--color-success)' : 'var(--color-input-bg)', color: type === 'in' ? '#fff' : 'var(--color-text-muted)' }}>
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m0 0l6.75-6.75M12 19.5l-6.75-6.75" /></svg>
                 </div>
                 <div>
-                  <p className={`text-sm font-black ${type === 'in' ? 'text-emerald-800' : 'text-gray-500'}`}>MASUK</p>
-                  <p className="text-xs font-medium text-gray-500">Stok bertambah +</p>
+                  <p className="text-sm font-bold" style={{ color: type === 'in' ? 'var(--color-success)' : 'var(--color-text-muted)' }}>MASUK</p>
+                  <p className="text-xs font-medium" style={{ color: 'var(--color-text-muted)' }}>Stok bertambah +</p>
                 </div>
               </div>
             </button>
-            <button
-              type="button"
-              onClick={() => setType('out')}
-              className={`p-4 rounded-lg border-3 text-left transition-all duration-100 ${
-                type === 'out'
-                  ? 'bg-red-100 border-neo-black shadow-neo-sm'
-                  : 'bg-white border-2 border-gray-200 hover:border-neo-black'
-              }`}
-              style={{ borderWidth: type === 'out' ? '3px' : undefined }}
-            >
+            <button type="button" onClick={() => setType('out')}
+              className="p-4 rounded-lg text-left transition-all duration-100"
+              style={{
+                background: type === 'out' ? 'var(--color-badge-danger-bg)' : 'var(--color-card)',
+                border: type === 'out' ? '2px solid var(--color-danger)' : '1px solid var(--color-border)'
+              }}>
               <div className="flex items-center gap-3">
-                <div className={`w-10 h-10 rounded-lg flex items-center justify-center border-2 border-neo-black ${type === 'out' ? 'bg-neo-red text-white' : 'bg-gray-100 text-gray-500'}`}>
+                <div className="w-10 h-10 rounded-lg flex items-center justify-center"
+                  style={{ background: type === 'out' ? 'var(--color-danger)' : 'var(--color-input-bg)', color: type === 'out' ? '#fff' : 'var(--color-text-muted)' }}>
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 19.5v-15m0 0l-6.75 6.75M12 4.5l6.75 6.75" /></svg>
                 </div>
                 <div>
-                  <p className={`text-sm font-black ${type === 'out' ? 'text-red-800' : 'text-gray-500'}`}>KELUAR</p>
-                  <p className="text-xs font-medium text-gray-500">Stok berkurang -</p>
+                  <p className="text-sm font-bold" style={{ color: type === 'out' ? 'var(--color-danger)' : 'var(--color-text-muted)' }}>KELUAR</p>
+                  <p className="text-xs font-medium" style={{ color: 'var(--color-text-muted)' }}>Stok berkurang -</p>
                 </div>
               </div>
             </button>
           </div>
 
-          {/* Product search & select */}
+          {/* Product search */}
           <div className="space-y-2 relative" ref={dropdownRef}>
-            <label className="text-xs font-black text-neo-black uppercase tracking-wider">Produk</label>
+            <label className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--color-text)' }}>Produk</label>
             <div className="relative">
-              <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" /></svg>
-              <input
-                type="text"
-                value={productSearch}
+              <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style={{ color: 'var(--color-text-muted)' }} fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" /></svg>
+              <input type="text" value={productSearch}
                 onChange={e => { setProductSearch(e.target.value); setShowDropdown(true); setSelectedProduct('') }}
                 onFocus={() => setShowDropdown(true)}
                 className="form-input pl-10"
                 placeholder="Cari nama produk..."
-                autoComplete="off"
-              />
+                autoComplete="off" />
               {productSearch && (
-                <button type="button" onClick={() => { setProductSearch(''); setSelectedProduct(''); setShowDropdown(true) }} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-neo-black">
+                <button type="button" onClick={() => { setProductSearch(''); setSelectedProduct(''); setShowDropdown(true) }} className="absolute right-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--color-text-muted)' }}>
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
                 </button>
               )}
             </div>
-            {/* Dropdown */}
             {showDropdown && (
-              <div className="absolute z-50 left-0 right-0 top-full mt-1 bg-white border-3 border-neo-black rounded-lg shadow-neo-sm max-h-52 overflow-y-auto">
+              <div className="absolute z-50 left-0 right-0 top-full mt-1 rounded-lg shadow-xl max-h-52 overflow-y-auto"
+                style={{ background: 'var(--color-card)', border: '1px solid var(--color-border)' }}>
                 {filteredProducts.length === 0 ? (
-                  <div className="px-4 py-6 text-center text-sm font-bold text-gray-400">Produk tidak ditemukan</div>
+                  <div className="px-4 py-6 text-center text-sm font-bold" style={{ color: 'var(--color-text-muted)' }}>Produk tidak ditemukan</div>
                 ) : (
                   filteredProducts.map(p => (
-                    <button
-                      key={p.id}
-                      type="button"
-                      onClick={() => handleSelectProduct(p.id)}
-                      className={`w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-neo-yellow/30 transition-colors border-b-2 border-gray-100 last:border-b-0 ${selectedProduct === p.id ? 'bg-neo-yellow/30' : ''}`}
-                    >
-                      <div className="w-9 h-9 rounded-md bg-neo-indigo border-2 border-neo-black flex items-center justify-center text-[10px] font-black text-white shrink-0">{p.name.substring(0,2).toUpperCase()}</div>
+                    <button key={p.id} type="button" onClick={() => handleSelectProduct(p.id)}
+                      className="w-full flex items-center gap-3 px-4 py-3 text-left transition-colors"
+                      style={{ borderBottom: '1px solid var(--color-border-subtle)', background: selectedProduct === p.id ? 'var(--color-hover-bg)' : 'transparent' }}>
+                      <div className="w-9 h-9 rounded-md bg-gradient-to-br from-orange-500 to-orange-700 flex items-center justify-center text-[10px] font-bold text-white shrink-0">{p.name.substring(0,2).toUpperCase()}</div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-bold text-neo-black truncate">{p.name}</p>
-                        <p className="text-xs text-gray-500 font-medium">{p.category} · Stok: {p.stock}</p>
+                        <p className="text-sm font-bold truncate" style={{ color: 'var(--color-text)' }}>{p.name}</p>
+                        <p className="text-xs font-medium" style={{ color: 'var(--color-text-muted)' }}>{p.category} · Stok: {p.stock}</p>
                       </div>
-                      <span className="text-xs font-bold text-gray-600 shrink-0">{formatRp(p.price)}</span>
+                      <span className="text-xs font-bold shrink-0" style={{ color: 'var(--color-text-secondary)' }}>{formatRp(p.price)}</span>
                     </button>
                   ))
                 )}
@@ -231,42 +216,32 @@ export default function TransactionsPage() {
 
           {/* Selected info */}
           {selectedProductData && (
-            <div className="flex items-center gap-3 p-4 rounded-lg bg-amber-50 border-3 border-neo-black shadow-neo-sm">
-              <div className="w-11 h-11 rounded-md bg-neo-indigo border-2 border-neo-black flex items-center justify-center text-xs font-black text-white shrink-0">{selectedProductData.name.substring(0,2).toUpperCase()}</div>
+            <div className="flex items-center gap-3 p-4 rounded-lg" style={{ background: 'var(--color-badge-warning-bg)', border: '1px solid var(--color-border)' }}>
+              <div className="w-11 h-11 rounded-md bg-gradient-to-br from-orange-500 to-orange-700 flex items-center justify-center text-xs font-bold text-white shrink-0">{selectedProductData.name.substring(0,2).toUpperCase()}</div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-bold text-neo-black truncate">{selectedProductData.name}</p>
-                <p className="text-xs text-gray-600 font-medium">{selectedProductData.category} · {formatRp(selectedProductData.price)}</p>
+                <p className="text-sm font-bold truncate" style={{ color: 'var(--color-text)' }}>{selectedProductData.name}</p>
+                <p className="text-xs font-medium" style={{ color: 'var(--color-text-muted)' }}>{selectedProductData.category} · {formatRp(selectedProductData.price)}</p>
               </div>
               <div className="text-right shrink-0">
-                <p className="text-lg font-black text-neo-black">{selectedProductData.stock}</p>
-                <p className="text-[10px] font-bold text-gray-500 uppercase">stok</p>
+                <p className="text-lg font-bold" style={{ color: 'var(--color-text)' }}>{selectedProductData.stock}</p>
+                <p className="text-[10px] font-bold uppercase" style={{ color: 'var(--color-text-muted)' }}>stok</p>
               </div>
             </div>
           )}
 
           {/* Quantity */}
           <div className="space-y-2">
-            <label className="text-xs font-black text-neo-black uppercase tracking-wider">Jumlah</label>
+            <label className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--color-text)' }}>Jumlah</label>
             <div className="flex items-center gap-3">
-              <button
-                type="button"
-                onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                className="w-12 h-12 rounded-lg bg-white border-3 border-neo-black flex items-center justify-center font-black text-neo-black shadow-neo-sm hover:shadow-neo-hover hover:translate-x-[2px] hover:translate-y-[2px] transition-all duration-100 shrink-0"
-              >
+              <button type="button" onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                className="w-12 h-12 rounded-lg flex items-center justify-center font-bold shrink-0 transition"
+                style={{ background: 'var(--color-card)', border: '1px solid var(--color-border)', color: 'var(--color-text)' }}>
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 12h-15" /></svg>
               </button>
-              <input
-                type="number"
-                min={1}
-                value={quantity}
-                onChange={e => setQuantity(Math.max(1, +e.target.value))}
-                className="form-input text-center text-xl font-black flex-1 min-w-0"
-              />
-              <button
-                type="button"
-                onClick={() => setQuantity(quantity + 1)}
-                className="w-12 h-12 rounded-lg bg-white border-3 border-neo-black flex items-center justify-center font-black text-neo-black shadow-neo-sm hover:shadow-neo-hover hover:translate-x-[2px] hover:translate-y-[2px] transition-all duration-100 shrink-0"
-              >
+              <input type="number" min={1} value={quantity} onChange={e => setQuantity(Math.max(1, +e.target.value))} className="form-input text-center text-xl font-bold flex-1 min-w-0" />
+              <button type="button" onClick={() => setQuantity(quantity + 1)}
+                className="w-12 h-12 rounded-lg flex items-center justify-center font-bold shrink-0 transition"
+                style={{ background: 'var(--color-card)', border: '1px solid var(--color-border)', color: 'var(--color-text)' }}>
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
               </button>
             </div>
@@ -274,19 +249,14 @@ export default function TransactionsPage() {
 
           {/* Note */}
           <div className="space-y-2">
-            <label className="text-xs font-black text-neo-black uppercase tracking-wider">Catatan (opsional)</label>
+            <label className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--color-text)' }}>Catatan (opsional)</label>
             <input type="text" value={note} onChange={e => setNote(e.target.value)} className="form-input" placeholder="Catatan singkat..." />
           </div>
 
           {/* Submit */}
-          <button
-            type="submit"
-            className={`w-full py-4 rounded-lg text-white font-black text-sm transition-all duration-100 flex items-center justify-center gap-2 border-3 border-neo-black ${
-              type === 'in'
-                ? 'bg-neo-emerald shadow-neo-sm hover:shadow-neo-hover hover:translate-x-[2px] hover:translate-y-[2px]'
-                : 'bg-neo-red shadow-neo-sm hover:shadow-neo-hover hover:translate-x-[2px] hover:translate-y-[2px]'
-            }`}
-          >
+          <button type="submit"
+            className="w-full py-4 rounded-lg text-white font-bold text-sm transition-all duration-100 flex items-center justify-center gap-2"
+            style={{ background: type === 'in' ? 'var(--color-success)' : 'var(--color-danger)' }}>
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
             </svg>
@@ -300,27 +270,29 @@ export default function TransactionsPage() {
         <div className="space-y-3">
           {transactions.length === 0 ? (
             <div className="text-center py-14 neo-card p-8">
-              <svg className="w-12 h-12 mx-auto text-gray-300 mb-3" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg>
-              <p className="text-sm font-bold text-gray-400">Belum ada riwayat transaksi</p>
+              <svg className="w-12 h-12 mx-auto mb-3" style={{ color: 'var(--color-text-muted)' }} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg>
+              <p className="text-sm font-bold" style={{ color: 'var(--color-text-muted)' }}>Belum ada riwayat transaksi</p>
             </div>
           ) : (
             transactions.map(tx => (
               <div key={tx.id} className="neo-card p-4 flex items-center gap-3">
-                <div className={`w-10 h-10 rounded-md flex items-center justify-center shrink-0 border-2 border-neo-black ${tx.type === 'in' ? 'bg-emerald-200' : 'bg-red-200'}`}>
+                <div className="w-10 h-10 rounded-md flex items-center justify-center shrink-0"
+                  style={{ background: tx.type === 'in' ? 'var(--color-badge-success-bg)' : 'var(--color-badge-danger-bg)' }}>
                   {tx.type === 'in' ? (
-                    <svg className="w-5 h-5 text-emerald-700" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m0 0l6.75-6.75M12 19.5l-6.75-6.75" /></svg>
+                    <svg className="w-5 h-5 text-emerald-600" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m0 0l6.75-6.75M12 19.5l-6.75-6.75" /></svg>
                   ) : (
-                    <svg className="w-5 h-5 text-red-700" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 19.5v-15m0 0l-6.75 6.75M12 4.5l6.75 6.75" /></svg>
+                    <svg className="w-5 h-5 text-red-600" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 19.5v-15m0 0l-6.75 6.75M12 4.5l6.75 6.75" /></svg>
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-bold text-neo-black truncate">{tx.productName}</p>
-                  <p className="text-xs text-gray-500 font-medium">
+                  <p className="text-sm font-bold truncate" style={{ color: 'var(--color-text)' }}>{tx.productName}</p>
+                  <p className="text-xs font-medium" style={{ color: 'var(--color-text-muted)' }}>
                     {new Date(tx.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
                     {tx.note && ` · ${tx.note}`}
                   </p>
                 </div>
-                <span className={`text-sm font-black px-2.5 py-1 rounded-md border-2 border-neo-black shrink-0 ${tx.type === 'in' ? 'bg-emerald-200 text-emerald-800' : 'bg-red-200 text-red-800'}`}>
+                <span className="text-sm font-bold px-2.5 py-1 rounded-md shrink-0"
+                  style={{ background: tx.type === 'in' ? 'var(--color-badge-success-bg)' : 'var(--color-badge-danger-bg)', color: tx.type === 'in' ? 'var(--color-success)' : 'var(--color-danger)' }}>
                   {tx.type === 'in' ? '+' : '-'}{tx.quantity}
                 </span>
               </div>
