@@ -270,6 +270,92 @@ export default function StockOpnamePage() {
     toast('CSV berhasil di-export!', 'success')
   }
 
+  const handleStartNewOpname = async () => {
+    setSavedSummary(null)
+    const p = await fetchProducts()
+    setProducts(p)
+    setItems(p.map(product => ({
+      product,
+      systemStock: product.stock,
+      actualStock: null,
+      difference: 0,
+      note: '',
+      checked: false,
+    })))
+  }
+
+  // If we just saved, show summary
+  if (savedSummary) {
+    return (
+      <div className="space-y-6">
+        <div className="rounded-2xl bg-[#1a1a1a] border border-[#16A34A]/30 p-6 lg:p-8">
+          <div className="flex items-center gap-4 mb-6">
+            <div className="w-12 h-12 rounded-xl bg-[#16A34A]/15 flex items-center justify-center">
+              <CheckCircle2 className="w-6 h-6 text-[#16A34A]" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-[#fafafa]">Opname Selesai!</h1>
+              <p className="text-zinc-500 text-sm mt-0.5">Tanggal: {savedSummary.date}</p>
+            </div>
+          </div>
+
+          {/* Summary stats */}
+          <div className="grid grid-cols-3 gap-3 mb-6">
+            <div className="rounded-xl p-4 bg-[#0f0f0f] border border-white/[0.06] text-center">
+              <p className="text-2xl font-bold text-[#fafafa]">{savedSummary.totalChecked}</p>
+              <p className="text-[11px] text-zinc-500 mt-1">Diperiksa</p>
+            </div>
+            <div className="rounded-xl p-4 bg-[#0f0f0f] border border-white/[0.06] text-center">
+              <p className="text-2xl font-bold text-[#16A34A]">{savedSummary.matchCount}</p>
+              <p className="text-[11px] text-zinc-500 mt-1">Sesuai</p>
+            </div>
+            <div className="rounded-xl p-4 bg-[#0f0f0f] border border-white/[0.06] text-center">
+              <p className="text-2xl font-bold text-[#DC2626]">{savedSummary.mismatchCount}</p>
+              <p className="text-[11px] text-zinc-500 mt-1">Selisih (diperbarui)</p>
+            </div>
+          </div>
+
+          {/* Mismatch details */}
+          {savedSummary.mismatchItems.length > 0 && (
+            <div className="mb-6">
+              <h3 className="text-sm font-semibold text-zinc-300 mb-3">Produk yang stoknya diperbarui:</h3>
+              <div className="space-y-2">
+                {savedSummary.mismatchItems.map((item, i) => (
+                  <div key={i} className="flex items-center justify-between px-4 py-3 rounded-xl bg-[#0f0f0f] border border-white/[0.06]">
+                    <div>
+                      <p className="text-sm font-medium text-[#fafafa]">{item.name}</p>
+                      <p className="text-[11px] text-zinc-500">{item.sku}</p>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span className="text-xs text-zinc-500">{item.systemStock} → {item.actualStock}</span>
+                      <span className={`text-sm font-bold px-2 py-0.5 rounded ${item.difference > 0 ? 'text-[#16A34A] bg-[#16A34A]/10' : 'text-[#DC2626] bg-[#DC2626]/10'}`}>
+                        {item.difference > 0 ? `+${item.difference}` : item.difference}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {savedSummary.mismatchItems.length === 0 && (
+            <div className="mb-6 text-center py-6">
+              <p className="text-sm text-zinc-400">✅ Semua stok sesuai! Tidak ada perubahan.</p>
+            </div>
+          )}
+
+          <button
+            onClick={handleStartNewOpname}
+            className="w-full py-3 rounded-xl bg-[#FDC800] hover:bg-[#FDC800]/90 text-[#1a1a1a] text-sm font-bold transition flex items-center justify-center gap-2 active:scale-[0.98]"
+          >
+            <ClipboardCheck className="w-4 h-4" />
+            Mulai Opname Baru
+          </button>
+        </div>
+      </div>
+    )
+  }
+
   // Filter & search
   const filtered = items.filter(item => {
     const matchSearch = !search ||
