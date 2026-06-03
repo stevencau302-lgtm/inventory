@@ -16,7 +16,6 @@ import {
   Loader2,
   PieChart,
   Activity,
-  Zap,
   Sparkles,
 } from 'lucide-react'
 
@@ -50,11 +49,8 @@ export default function ReportsPage() {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="flex flex-col items-center gap-4">
-          <div className="relative">
-            <div className="absolute inset-0 rounded-full bg-purple-500/20 blur-xl animate-pulse" />
-            <Loader2 className="w-10 h-10 text-purple-400 animate-spin relative" />
-          </div>
-          <p className="text-zinc-400 text-sm font-medium tracking-wide">Memuat analisa...</p>
+          <Loader2 className="w-8 h-8 animate-spin" style={{ color: 'var(--color-secondary)' }} />
+          <p className="text-sm font-medium" style={{ color: 'var(--color-text-muted)' }}>Memuat analisa...</p>
         </div>
       </div>
     )
@@ -78,381 +74,245 @@ export default function ReportsPage() {
   const recentTx = transactions.slice(0, 10)
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-6">
       {/* Page Header */}
-      <div className="relative">
-        <div className="absolute -top-10 -left-10 w-72 h-72 bg-purple-500/5 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute -top-5 right-20 w-48 h-48 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none" />
-        <div className="relative flex items-center gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-500/20 to-purple-600/10 border border-purple-500/20 flex items-center justify-center shadow-[0_0_20px_rgba(168,85,247,0.15)]">
-            <BarChart3 className="w-6 h-6 text-purple-400" />
-          </div>
-          <div>
-            <h1 className="text-3xl md:text-4xl font-extrabold bg-gradient-to-r from-white via-white to-zinc-400 bg-clip-text text-transparent tracking-tight">
-              Analisa Inventory
-            </h1>
-            <p className="text-zinc-500 text-sm mt-0.5">Insight real-time performa & status inventory</p>
-          </div>
+      <div className="flex items-center gap-4">
+        <div className="w-11 h-11 rounded-2xl flex items-center justify-center" style={{ background: 'rgba(139, 92, 246, 0.15)' }}>
+          <BarChart3 className="w-5 h-5 text-purple-500" />
+        </div>
+        <div>
+          <h1 className="text-2xl md:text-3xl font-bold" style={{ color: 'var(--color-text)' }}>Analisa Inventory</h1>
+          <p className="text-sm mt-0.5" style={{ color: 'var(--color-text-muted)' }}>Insight real-time performa & status inventory</p>
         </div>
       </div>
 
       {/* Primary Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-        <GlassStatCard
-          label="Total Unit"
-          value={totalItems.toLocaleString('id-ID')}
-          icon={<Package className="w-5 h-5" />}
-          glowColor="purple"
-          valueColor="text-white"
-        />
-        <GlassStatCard
-          label="Total Nilai Stok"
-          value={formatRp(totalValue)}
-          icon={<DollarSign className="w-5 h-5" />}
-          glowColor="emerald"
-          valueColor="text-emerald-400"
-        />
-        <GlassStatCard
-          label="Rata-rata Harga"
-          value={formatRp(avgPrice)}
-          icon={<PieChart className="w-5 h-5" />}
-          glowColor="purple"
-          valueColor="text-purple-400"
-        />
-        <GlassStatCard
-          label="Total Kategori"
-          value={categories.length.toString()}
-          icon={<Tag className="w-5 h-5" />}
-          glowColor="emerald"
-          valueColor="text-white"
-        />
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <StatCard label="Total Unit" value={totalItems.toLocaleString('id-ID')} icon={<Package className="w-4 h-4" />} color="purple" />
+        <StatCard label="Total Nilai Stok" value={formatRp(totalValue)} icon={<DollarSign className="w-4 h-4" />} color="emerald" />
+        <StatCard label="Rata-rata Harga" value={formatRp(avgPrice)} icon={<PieChart className="w-4 h-4" />} color="purple" />
+        <StatCard label="Total Kategori" value={categories.length.toString()} icon={<Tag className="w-4 h-4" />} color="emerald" />
       </div>
 
       {/* Transaction Flow */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-        <GlassStatCard
-          label="Total Masuk"
-          value={`+${totalIn.toLocaleString('id-ID')}`}
-          icon={<ArrowDownCircle className="w-5 h-5" />}
-          glowColor="emerald"
-          valueColor="text-emerald-400"
-        />
-        <GlassStatCard
-          label="Total Keluar"
-          value={`-${totalOut.toLocaleString('id-ID')}`}
-          icon={<ArrowUpCircle className="w-5 h-5" />}
-          glowColor="red"
-          valueColor="text-red-400"
-        />
-        <GlassStatCard
-          label="Stok Rendah"
-          value={lowStock.length.toString()}
-          icon={<AlertTriangle className="w-5 h-5" />}
-          glowColor="red"
-          valueColor="text-amber-400"
-        />
-        <GlassStatCard
-          label="Stok Habis"
-          value={outStock.length.toString()}
-          icon={<XCircle className="w-5 h-5" />}
-          glowColor="red"
-          valueColor="text-red-400"
-        />
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <StatCard label="Total Masuk" value={`+${totalIn.toLocaleString('id-ID')}`} icon={<ArrowDownCircle className="w-4 h-4" />} color="emerald" />
+        <StatCard label="Total Keluar" value={`-${totalOut.toLocaleString('id-ID')}`} icon={<ArrowUpCircle className="w-4 h-4" />} color="red" />
+        <StatCard label="Stok Rendah" value={lowStock.length.toString()} icon={<AlertTriangle className="w-4 h-4" />} color="amber" />
+        <StatCard label="Stok Habis" value={outStock.length.toString()} icon={<XCircle className="w-4 h-4" />} color="red" />
       </div>
 
       {/* Category Breakdown */}
-      <GlassPanel>
-        <div className="p-7 border-b border-white/[0.06]">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-purple-500/20 to-purple-600/10 border border-purple-500/20 flex items-center justify-center shadow-[0_0_12px_rgba(168,85,247,0.1)]">
-              <PieChart className="w-4 h-4 text-purple-400" />
-            </div>
-            <div>
-              <h2 className="font-bold text-white tracking-tight">Distribusi Nilai Kategori</h2>
-              <p className="text-xs text-zinc-500 mt-0.5">Breakdown nilai inventory per kategori</p>
-            </div>
+      <div className="neo-card overflow-hidden">
+        <div className="px-5 py-4 flex items-center gap-3" style={{ borderBottom: '1px solid var(--color-border)' }}>
+          <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: 'rgba(139, 92, 246, 0.15)' }}>
+            <PieChart className="w-4 h-4 text-purple-500" />
+          </div>
+          <div>
+            <h2 className="font-bold text-sm" style={{ color: 'var(--color-text)' }}>Distribusi Nilai Kategori</h2>
+            <p className="text-[11px]" style={{ color: 'var(--color-text-muted)' }}>Breakdown nilai inventory per kategori</p>
           </div>
         </div>
-        <div className="p-7 space-y-6">
+        <div className="p-5 space-y-4">
           {topCategory.map((cat) => {
             const pct = totalValue > 0 ? (cat.value / totalValue) * 100 : 0
             return (
               <div key={cat.id}>
-                <div className="flex items-center justify-between mb-2.5">
-                  <div className="flex items-center gap-3">
-                    <div className="w-3 h-3 rounded-full shadow-[0_0_6px_currentColor]" style={{ background: cat.color || '#a855f7', color: cat.color || '#a855f7' }} />
-                    <span className="text-sm font-semibold text-white">{cat.name}</span>
-                    <span className="text-[11px] text-zinc-500 bg-white/[0.04] border border-white/[0.06] px-2.5 py-0.5 rounded-full">{cat.count} produk</span>
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 rounded-full" style={{ background: cat.color || '#a855f7' }} />
+                    <span className="text-sm font-semibold" style={{ color: 'var(--color-text)' }}>{cat.name}</span>
+                    <span className="text-[11px] px-2 py-0.5 rounded-full" style={{ background: 'var(--color-hover-bg)', color: 'var(--color-text-muted)' }}>{cat.count} produk</span>
                   </div>
-                  <div className="text-right flex items-center gap-3">
-                    <span className="text-sm font-bold text-white">{formatRp(cat.value)}</span>
-                    <span className="text-[11px] font-bold text-purple-400 bg-purple-500/10 border border-purple-500/20 px-2.5 py-0.5 rounded-full">{pct.toFixed(1)}%</span>
+                  <div className="text-right flex items-center gap-2">
+                    <span className="text-sm font-bold" style={{ color: 'var(--color-text)' }}>{formatRp(cat.value)}</span>
+                    <span className="text-[11px] font-bold text-purple-500 px-2 py-0.5 rounded-full" style={{ background: 'rgba(139, 92, 246, 0.1)' }}>{pct.toFixed(1)}%</span>
                   </div>
                 </div>
-                <div className="h-2.5 rounded-full bg-white/[0.04] border border-white/[0.04] overflow-hidden">
-                  <div
-                    className="h-full rounded-full transition-all duration-1000 ease-out relative"
-                    style={{ width: `${pct}%`, background: `linear-gradient(90deg, ${cat.color || '#a855f7'}88, ${cat.color || '#a855f7'})` }}
-                  >
-                    <div className="absolute inset-0 rounded-full opacity-50" style={{ boxShadow: `0 0 8px ${cat.color || '#a855f7'}` }} />
-                  </div>
+                <div className="h-2 rounded-full overflow-hidden" style={{ background: 'var(--color-input-bg)' }}>
+                  <div className="h-full rounded-full transition-all duration-1000 ease-out"
+                    style={{ width: `${pct}%`, background: cat.color || '#a855f7' }} />
                 </div>
               </div>
             )
           })}
           {topCategory.length === 0 && (
-            <p className="text-center text-zinc-500 py-10 text-sm">Belum ada data kategori</p>
+            <p className="text-center py-8 text-sm" style={{ color: 'var(--color-text-muted)' }}>Belum ada data kategori</p>
           )}
         </div>
-      </GlassPanel>
+      </div>
 
       {/* Alerts Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Low Stock Alert */}
-        <GlassPanel>
-          <div className="p-6 border-b border-white/[0.06] flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-500/20 to-amber-600/10 border border-amber-500/20 flex items-center justify-center shadow-[0_0_12px_rgba(245,158,11,0.1)]">
-              <AlertTriangle className="w-4 h-4 text-amber-400" />
+        <div className="neo-card overflow-hidden">
+          <div className="px-5 py-4 flex items-center gap-3" style={{ borderBottom: '1px solid var(--color-border)' }}>
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: 'var(--color-badge-warning-bg)' }}>
+              <AlertTriangle className="w-4 h-4 text-amber-500" />
             </div>
             <div>
-              <h3 className="font-bold text-white text-sm">Stok Rendah</h3>
-              <p className="text-xs text-zinc-500">{lowStock.length} produk perlu restock</p>
+              <h3 className="font-bold text-sm" style={{ color: 'var(--color-text)' }}>Stok Rendah</h3>
+              <p className="text-[11px]" style={{ color: 'var(--color-text-muted)' }}>{lowStock.length} produk perlu restock</p>
             </div>
           </div>
-          <div className="divide-y divide-white/[0.04]">
+          <div>
             {lowStock.slice(0, 5).map(p => (
-              <div key={p.id} className="px-6 py-4 flex items-center justify-between hover:bg-white/[0.02] transition-all duration-200">
+              <div key={p.id} className="px-5 py-3 flex items-center justify-between" style={{ borderBottom: '1px solid var(--color-border-subtle)' }}>
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/10 flex items-center justify-center text-amber-400 text-[11px] font-bold">
+                  <div className="w-9 h-9 rounded-lg flex items-center justify-center text-[11px] font-bold" style={{ background: 'var(--color-badge-warning-bg)', color: 'var(--color-warning)' }}>
                     {p.name.substring(0, 2).toUpperCase()}
                   </div>
                   <div>
-                    <p className="text-sm text-white font-medium">{p.name}</p>
-                    <p className="text-[11px] text-zinc-500">{p.category}</p>
+                    <p className="text-sm font-medium" style={{ color: 'var(--color-text)' }}>{p.name}</p>
+                    <p className="text-[11px]" style={{ color: 'var(--color-text-muted)' }}>{p.category}</p>
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="text-lg font-extrabold text-amber-400">{p.stock}</p>
-                  <p className="text-[10px] text-zinc-600">min: {p.min_stock}</p>
+                  <p className="text-lg font-bold text-amber-500">{p.stock}</p>
+                  <p className="text-[10px]" style={{ color: 'var(--color-text-muted)' }}>min: {p.min_stock}</p>
                 </div>
               </div>
             ))}
             {lowStock.length === 0 && (
-              <div className="px-6 py-10 text-center">
-                <p className="text-zinc-500 text-sm">Semua stok aman ✓</p>
+              <div className="px-5 py-8 text-center">
+                <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>Semua stok aman ✓</p>
               </div>
             )}
           </div>
-        </GlassPanel>
+        </div>
 
         {/* Out of Stock */}
-        <GlassPanel>
-          <div className="p-6 border-b border-white/[0.06] flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-red-500/20 to-red-600/10 border border-red-500/20 flex items-center justify-center shadow-[0_0_12px_rgba(239,68,68,0.1)]">
-              <XCircle className="w-4 h-4 text-red-400" />
+        <div className="neo-card overflow-hidden">
+          <div className="px-5 py-4 flex items-center gap-3" style={{ borderBottom: '1px solid var(--color-border)' }}>
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: 'var(--color-badge-danger-bg)' }}>
+              <XCircle className="w-4 h-4 text-red-500" />
             </div>
             <div>
-              <h3 className="font-bold text-white text-sm">Stok Habis</h3>
-              <p className="text-xs text-zinc-500">{outStock.length} produk habis total</p>
+              <h3 className="font-bold text-sm" style={{ color: 'var(--color-text)' }}>Stok Habis</h3>
+              <p className="text-[11px]" style={{ color: 'var(--color-text-muted)' }}>{outStock.length} produk habis total</p>
             </div>
           </div>
-          <div className="divide-y divide-white/[0.04]">
+          <div>
             {outStock.slice(0, 5).map(p => (
-              <div key={p.id} className="px-6 py-4 flex items-center justify-between hover:bg-white/[0.02] transition-all duration-200">
+              <div key={p.id} className="px-5 py-3 flex items-center justify-between" style={{ borderBottom: '1px solid var(--color-border-subtle)' }}>
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-red-500/10 border border-red-500/10 flex items-center justify-center text-red-400 text-[11px] font-bold">
+                  <div className="w-9 h-9 rounded-lg flex items-center justify-center text-[11px] font-bold" style={{ background: 'var(--color-badge-danger-bg)', color: 'var(--color-danger)' }}>
                     {p.name.substring(0, 2).toUpperCase()}
                   </div>
                   <div>
-                    <p className="text-sm text-white font-medium">{p.name}</p>
-                    <p className="text-[11px] text-zinc-500">{p.category}</p>
+                    <p className="text-sm font-medium" style={{ color: 'var(--color-text)' }}>{p.name}</p>
+                    <p className="text-[11px]" style={{ color: 'var(--color-text-muted)' }}>{p.category}</p>
                   </div>
                 </div>
-                <span className="text-xs font-bold text-red-400 bg-red-500/10 border border-red-500/20 px-3 py-1.5 rounded-xl">
+                <span className="text-xs font-bold px-2.5 py-1 rounded-lg" style={{ background: 'var(--color-badge-danger-bg)', color: 'var(--color-danger)' }}>
                   Habis
                 </span>
               </div>
             ))}
             {outStock.length === 0 && (
-              <div className="px-6 py-10 text-center">
-                <p className="text-zinc-500 text-sm">Tidak ada produk habis ✓</p>
+              <div className="px-5 py-8 text-center">
+                <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>Tidak ada produk habis ✓</p>
               </div>
             )}
           </div>
-        </GlassPanel>
+        </div>
       </div>
 
       {/* Recent Transactions */}
-      <GlassPanel>
-        <div className="p-7 border-b border-white/[0.06]">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500/20 to-emerald-600/10 border border-emerald-500/20 flex items-center justify-center shadow-[0_0_12px_rgba(16,185,129,0.1)]">
-              <Activity className="w-4 h-4 text-emerald-400" />
-            </div>
-            <div>
-              <h2 className="font-bold text-white tracking-tight">Aktivitas Terakhir</h2>
-              <p className="text-xs text-zinc-500 mt-0.5">10 transaksi terbaru</p>
-            </div>
+      <div className="neo-card overflow-hidden">
+        <div className="px-5 py-4 flex items-center gap-3" style={{ borderBottom: '1px solid var(--color-border)' }}>
+          <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: 'var(--color-badge-success-bg)' }}>
+            <Activity className="w-4 h-4 text-emerald-500" />
+          </div>
+          <div>
+            <h2 className="font-bold text-sm" style={{ color: 'var(--color-text)' }}>Aktivitas Terakhir</h2>
+            <p className="text-[11px]" style={{ color: 'var(--color-text-muted)' }}>10 transaksi terbaru</p>
           </div>
         </div>
-        <div className="divide-y divide-white/[0.04]">
+        <div>
           {recentTx.map(tx => (
-            <div key={tx.id} className="px-7 py-4 flex items-center gap-4 hover:bg-white/[0.02] transition-all duration-200">
-              <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border ${
-                tx.type === 'in'
-                  ? 'bg-emerald-500/10 border-emerald-500/20 shadow-[0_0_8px_rgba(16,185,129,0.08)]'
-                  : 'bg-red-500/10 border-red-500/20 shadow-[0_0_8px_rgba(239,68,68,0.08)]'
-              }`}>
-                {tx.type === 'in' ? (
-                  <TrendingUp className="w-4 h-4 text-emerald-400" />
-                ) : (
-                  <TrendingDown className="w-4 h-4 text-red-400" />
-                )}
+            <div key={tx.id} className="px-5 py-3 flex items-center gap-3" style={{ borderBottom: '1px solid var(--color-border-subtle)' }}>
+              <div className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0"
+                style={{ background: tx.type === 'in' ? 'var(--color-badge-success-bg)' : 'var(--color-badge-danger-bg)' }}>
+                {tx.type === 'in' ? <TrendingUp className="w-4 h-4 text-emerald-500" /> : <TrendingDown className="w-4 h-4 text-red-500" />}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-white truncate">{tx.product_name}</p>
-                <p className="text-[11px] text-zinc-500 mt-0.5">
-                  {new Date(tx.created_at).toLocaleDateString('id-ID', {
-                    day: 'numeric',
-                    month: 'short',
-                    year: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                  })}
+                <p className="text-sm font-semibold truncate" style={{ color: 'var(--color-text)' }}>{tx.product_name}</p>
+                <p className="text-[11px]" style={{ color: 'var(--color-text-muted)' }}>
+                  {new Date(tx.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
                   {tx.note && ` · ${tx.note}`}
                 </p>
               </div>
-              <span className={`text-base font-extrabold px-4 py-1.5 rounded-xl shrink-0 border ${
-                tx.type === 'in'
-                  ? 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20'
-                  : 'text-red-400 bg-red-500/10 border-red-500/20'
-              }`}>
+              <span className="text-sm font-bold px-3 py-1 rounded-lg shrink-0"
+                style={{ background: tx.type === 'in' ? 'var(--color-badge-success-bg)' : 'var(--color-badge-danger-bg)', color: tx.type === 'in' ? 'var(--color-success)' : 'var(--color-danger)' }}>
                 {tx.type === 'in' ? '+' : '-'}{tx.quantity}
               </span>
             </div>
           ))}
           {recentTx.length === 0 && (
-            <div className="px-7 py-12 text-center">
-              <p className="text-zinc-500 text-sm">Belum ada aktivitas transaksi</p>
+            <div className="px-5 py-10 text-center">
+              <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>Belum ada aktivitas transaksi</p>
             </div>
           )}
         </div>
-      </GlassPanel>
+      </div>
 
       {/* Top Products by Value */}
-      <GlassPanel>
-        <div className="p-7 border-b border-white/[0.06]">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-purple-500/20 to-purple-600/10 border border-purple-500/20 flex items-center justify-center shadow-[0_0_12px_rgba(168,85,247,0.1)]">
-              <Sparkles className="w-4 h-4 text-purple-400" />
-            </div>
-            <div>
-              <h2 className="font-bold text-white tracking-tight">Top Produk</h2>
-              <p className="text-xs text-zinc-500 mt-0.5">Produk dengan nilai inventory tertinggi</p>
-            </div>
+      <div className="neo-card overflow-hidden">
+        <div className="px-5 py-4 flex items-center gap-3" style={{ borderBottom: '1px solid var(--color-border)' }}>
+          <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: 'rgba(139, 92, 246, 0.15)' }}>
+            <Sparkles className="w-4 h-4 text-purple-500" />
+          </div>
+          <div>
+            <h2 className="font-bold text-sm" style={{ color: 'var(--color-text)' }}>Top Produk</h2>
+            <p className="text-[11px]" style={{ color: 'var(--color-text-muted)' }}>Produk dengan nilai inventory tertinggi</p>
           </div>
         </div>
-        <div className="divide-y divide-white/[0.04]">
+        <div>
           {products
             .map(p => ({ ...p, totalValue: p.price * p.stock }))
             .sort((a, b) => b.totalValue - a.totalValue)
             .slice(0, 5)
             .map((p, idx) => (
-              <div key={p.id} className="px-7 py-4 flex items-center gap-4 hover:bg-white/[0.02] transition-all duration-200">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500/15 to-purple-600/5 border border-purple-500/20 flex items-center justify-center shrink-0">
-                  <span className="text-xs font-extrabold text-purple-400">#{idx + 1}</span>
+              <div key={p.id} className="px-5 py-3 flex items-center gap-3" style={{ borderBottom: '1px solid var(--color-border-subtle)' }}>
+                <div className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0" style={{ background: 'rgba(139, 92, 246, 0.1)' }}>
+                  <span className="text-xs font-bold text-purple-500">#{idx + 1}</span>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-white truncate">{p.name}</p>
-                  <p className="text-[11px] text-zinc-500 mt-0.5">{p.category} · {p.stock} unit × {formatRp(p.price)}</p>
+                  <p className="text-sm font-semibold truncate" style={{ color: 'var(--color-text)' }}>{p.name}</p>
+                  <p className="text-[11px]" style={{ color: 'var(--color-text-muted)' }}>{p.category} · {p.stock} unit × {formatRp(p.price)}</p>
                 </div>
-                <span className="text-base font-extrabold text-emerald-400 shrink-0">
-                  {formatRp(p.totalValue)}
-                </span>
+                <span className="text-sm font-bold text-emerald-500 shrink-0">{formatRp(p.totalValue)}</span>
               </div>
             ))}
           {products.length === 0 && (
-            <div className="px-7 py-12 text-center">
-              <p className="text-zinc-500 text-sm">Belum ada data produk</p>
+            <div className="px-5 py-10 text-center">
+              <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>Belum ada data produk</p>
             </div>
           )}
         </div>
-      </GlassPanel>
-    </div>
-  )
-}
-
-/* ─── Glass Panel Component ─── */
-function GlassPanel({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="relative group">
-      {/* Subtle glow on hover */}
-      <div className="absolute -inset-[1px] rounded-3xl bg-gradient-to-r from-purple-500/10 via-transparent to-emerald-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-sm" />
-      <div className="relative rounded-3xl overflow-hidden border border-white/[0.08] bg-[#0f0f14]/80 backdrop-blur-xl shadow-[0_0_40px_rgba(0,0,0,0.4)]">
-        {children}
       </div>
     </div>
   )
 }
 
-/* ─── Glassmorphism Stat Card ─── */
-function GlassStatCard({
-  label,
-  value,
-  icon,
-  glowColor,
-  valueColor,
-}: {
-  label: string
-  value: string
-  icon: React.ReactNode
-  glowColor: 'purple' | 'emerald' | 'red'
-  valueColor?: string
-}) {
-  const glowStyles = {
-    purple: {
-      iconBg: 'from-purple-500/20 to-purple-600/10',
-      iconBorder: 'border-purple-500/25',
-      iconText: 'text-purple-400',
-      glow: 'shadow-[0_0_20px_rgba(168,85,247,0.08)]',
-      hoverBorder: 'group-hover:border-purple-500/30',
-      hoverGlow: 'group-hover:shadow-[0_0_30px_rgba(168,85,247,0.12)]',
-    },
-    emerald: {
-      iconBg: 'from-emerald-500/20 to-emerald-600/10',
-      iconBorder: 'border-emerald-500/25',
-      iconText: 'text-emerald-400',
-      glow: 'shadow-[0_0_20px_rgba(16,185,129,0.08)]',
-      hoverBorder: 'group-hover:border-emerald-500/30',
-      hoverGlow: 'group-hover:shadow-[0_0_30px_rgba(16,185,129,0.12)]',
-    },
-    red: {
-      iconBg: 'from-red-500/20 to-red-600/10',
-      iconBorder: 'border-red-500/25',
-      iconText: 'text-red-400',
-      glow: 'shadow-[0_0_20px_rgba(239,68,68,0.08)]',
-      hoverBorder: 'group-hover:border-red-500/30',
-      hoverGlow: 'group-hover:shadow-[0_0_30px_rgba(239,68,68,0.12)]',
-    },
+/* ─── Compact Stat Card ─── */
+function StatCard({ label, value, icon, color }: { label: string; value: string; icon: React.ReactNode; color: 'purple' | 'emerald' | 'red' | 'amber' }) {
+  const colorMap = {
+    purple: { bg: 'rgba(139, 92, 246, 0.15)', text: 'text-purple-500' },
+    emerald: { bg: 'var(--color-badge-success-bg)', text: 'text-emerald-500' },
+    red: { bg: 'var(--color-badge-danger-bg)', text: 'text-red-500' },
+    amber: { bg: 'var(--color-badge-warning-bg)', text: 'text-amber-500' },
   }
-
-  const s = glowStyles[glowColor]
+  const c = colorMap[color]
 
   return (
-    <div className={`group relative rounded-3xl p-6 border border-white/[0.08] bg-[#0f0f14]/80 backdrop-blur-xl transition-all duration-300 ${s.glow} ${s.hoverBorder} ${s.hoverGlow} hover:translate-y-[-2px]`}>
-      {/* Background glow */}
-      <div className={`absolute top-0 right-0 w-24 h-24 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 ${
-        glowColor === 'purple' ? 'bg-purple-500/5' : glowColor === 'emerald' ? 'bg-emerald-500/5' : 'bg-red-500/5'
-      }`} />
-      <div className="relative">
-        <div className={`w-11 h-11 rounded-2xl bg-gradient-to-br ${s.iconBg} border ${s.iconBorder} flex items-center justify-center mb-4 ${s.iconText}`}>
-          {icon}
-        </div>
-        <p className={`text-2xl md:text-3xl font-extrabold tracking-tight ${valueColor || 'text-white'}`}>
-          {value}
-        </p>
-        <p className="text-[12px] text-zinc-500 font-medium mt-1 tracking-wide uppercase">{label}</p>
+    <div className="neo-card p-4 hover:translate-y-[-1px] transition-all duration-200">
+      <div className={`w-9 h-9 rounded-lg flex items-center justify-center mb-3 ${c.text}`} style={{ background: c.bg }}>
+        {icon}
       </div>
+      <p className="text-xl md:text-2xl font-bold" style={{ color: 'var(--color-text)' }}>{value}</p>
+      <p className="text-[11px] font-medium mt-1 uppercase tracking-wider" style={{ color: 'var(--color-text-muted)' }}>{label}</p>
     </div>
   )
 }
