@@ -177,12 +177,17 @@ export async function fetchProducts(): Promise<Product[]> {
   return (data || []).map(rowToProduct)
 }
 
-export async function saveProduct(product: Product): Promise<void> {
+export async function saveProduct(product: Product): Promise<boolean> {
   const userId = await getUserId()
-  const { error } = await supabase
+  const row = productToRow(product, userId)
+  const { error, status } = await supabase
     .from('products')
-    .upsert(productToRow(product, userId), { onConflict: 'id' })
-  if (error) console.error('saveProduct error:', error)
+    .upsert(row, { onConflict: 'id' })
+  if (error) {
+    console.error('saveProduct error:', error.message, error.code, error.details)
+    return false
+  }
+  return true
 }
 
 export async function deleteProduct(id: string): Promise<void> {
