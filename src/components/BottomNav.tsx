@@ -13,14 +13,14 @@ const navItems = [
 export default function BottomNav() {
   const pathname = usePathname()
   return (
-    <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-[9999]" style={{ background: '#0f0f0f', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+    <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-[9999]" style={{ background: '#ffffff', borderTop: '1px solid #e5e7eb' }}>
       <div className="flex items-center justify-around h-16 px-2 max-w-[500px] mx-auto">
         {navItems.map(item => {
           if (item.label === 'add') return (
             <Link key={item.href} href={item.href} className="relative -top-4">
               <div className="w-[52px] h-[52px] rounded-2xl flex items-center justify-center active:scale-95 transition-all"
-                style={{ background: '#FDC800', boxShadow: '0 4px 16px rgba(253, 200, 0, 0.35)' }}>
-                <svg className="w-6 h-6 text-[#000000]" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+                style={{ background: '#FF5F03', boxShadow: '0 4px 16px rgba(255, 95, 3, 0.35)' }}>
+                <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
               </div>
             </Link>
           )
@@ -29,12 +29,12 @@ export default function BottomNav() {
             <Link key={item.href} href={item.href} className="relative flex flex-col items-center gap-0.5 py-2 px-3 transition-all active:scale-95">
               {/* Active indicator dot */}
               {isActive && (
-                <div className="absolute -top-0.5 w-5 h-[3px] rounded-full bg-[#FDC800]" />
+                <div className="absolute -top-0.5 w-5 h-[3px] rounded-full bg-[#FF5F03]" />
               )}
-              <div className={`p-1.5 rounded-lg transition-all ${isActive ? 'bg-[#FDC800]/10' : ''}`}>
-                <svg className="w-5 h-5 transition-all" fill={isActive ? 'none' : 'none'} viewBox="0 0 24 24" strokeWidth={isActive ? 2.2 : 1.5} stroke="currentColor" style={{ color: isActive ? '#FDC800' : '#6B7280' }}><path strokeLinecap="round" strokeLinejoin="round" d={item.icon} /></svg>
+              <div className={`p-1.5 rounded-lg transition-all ${isActive ? 'bg-[#FF5F03]/10' : ''}`}>
+                <svg className="w-5 h-5 transition-all" fill={isActive ? 'none' : 'none'} viewBox="0 0 24 24" strokeWidth={isActive ? 2.2 : 1.5} stroke="currentColor" style={{ color: isActive ? '#FF5F03' : '#6B7280' }}><path strokeLinecap="round" strokeLinejoin="round" d={item.icon} /></svg>
               </div>
-              <span className="text-[9px] font-semibold transition-all" style={{ color: isActive ? '#FDC800' : '#6B7280' }}>{item.label}</span>
+              <span className="text-[9px] font-semibold transition-all" style={{ color: isActive ? '#FF5F03' : '#6B7280' }}>{item.label}</span>
             </Link>
           )
         })}
