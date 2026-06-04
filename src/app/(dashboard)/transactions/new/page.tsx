@@ -263,23 +263,23 @@ export default function NewTransactionPage() {
 
         {/* === TIPE TRANSAKSI === */}
         <div>
-          <div className="rounded-t-xl px-6 py-4 bg-[#072C2C]">
+          <div className={`rounded-t-xl px-6 py-4 ${type === 'in' ? 'bg-[#16A34A]' : 'bg-[#DC2626]'}`}>
             <div className="flex items-center gap-3">
-              <Package size={18} className="text-white" />
+              {type === 'in' ? <ArrowDownCircle size={18} className="text-white" /> : <ArrowUpCircle size={18} className="text-white" />}
               <div>
-                <p className="text-base font-bold text-white">Tipe Transaksi</p>
-                <p className="text-xs text-white/80">Pilih jenis transaksi barang</p>
+                <p className="text-base font-bold text-white">{type === 'in' ? 'Informasi Barang Masuk' : 'Informasi Barang Keluar'}</p>
+                <p className="text-xs text-white/80">{type === 'in' ? 'Data transaksi barang masuk' : 'Data transaksi barang keluar'}</p>
               </div>
             </div>
           </div>
           <div className="rounded-b-xl border border-t-0 border-gray-200 bg-white p-6 lg:p-8">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
             <button
               type="button"
               onClick={() => setType('in')}
-              className={`relative w-full p-4 sm:p-5 rounded-2xl text-left transition-all duration-300 active:scale-[0.97] overflow-hidden ${
+              className={`relative w-full p-4 rounded-xl text-left transition-all duration-300 active:scale-[0.97] ${
                 type === 'in'
-                  ? 'bg-[#16A34A] text-white ring-2 ring-[#16A34A]/30 shadow-lg shadow-[#16A34A]/20'
+                  ? 'bg-[#16A34A] text-white ring-2 ring-[#16A34A]/30 shadow-md shadow-[#16A34A]/20'
                   : 'bg-white text-gray-700 border border-gray-200 hover:border-[#16A34A]/30'
               }`}
             >
