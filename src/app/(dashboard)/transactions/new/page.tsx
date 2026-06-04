@@ -248,24 +248,16 @@ export default function NewTransactionPage() {
   }
 
   return (
-    <div className="max-w-5xl mx-auto pb-24 lg:pb-8">
-      {/* Back Button */}
-      <button
-        onClick={() => router.push('/transactions')}
-        className="group flex items-center gap-2 text-sm font-semibold text-zinc-400 hover:text-[#fafafa] mb-6 transition-all active:scale-95"
-      >
-        <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-        Kembali
-      </button>
-
-      {/* Header */}
-      <div className="flex items-center gap-3 mb-8">
-        <div className="w-12 h-12 rounded-xl bg-[#FDC800]/10 flex items-center justify-center">
-          <Package className="w-6 h-6 text-[#FDC800]" />
-        </div>
+    <div className="max-w-5xl mx-auto py-2 px-4 lg:px-8 pb-24 lg:pb-8">
+      {/* Back + Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-[#fafafa]">Transaksi Baru</h1>
-          <p className="text-sm text-zinc-500">Catat barang masuk atau keluar</p>
+          <button onClick={() => router.push('/products')} className="group flex items-center gap-2 text-sm font-medium text-zinc-400 hover:text-white mb-2 transition">
+            <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
+            Kembali
+          </button>
+          <h1 className="text-2xl font-bold text-white">Transaksi Baru</h1>
+          <p className="text-zinc-500 text-sm mt-0.5">Catat barang masuk atau keluar</p>
         </div>
       </div>
 
