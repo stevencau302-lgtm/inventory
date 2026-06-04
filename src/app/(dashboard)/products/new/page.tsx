@@ -4,7 +4,7 @@ import { useEffect, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { Product, Category, uid, saveProduct, fetchCategories, fetchProducts } from '@/lib/store'
 import { useToast } from '@/components/Toast'
-import { Package, DollarSign, ArrowLeft, Save, ScanBarcode, Loader2, CheckCircle2, XCircle } from 'lucide-react'
+import { ArrowLeft, Hash, Tag, DollarSign, Package, Save, Loader2, CheckCircle2, XCircle, ScanBarcode, RotateCcw } from 'lucide-react'
 
 function formatRupiah(value: number): string {
   if (value === 0) return 'Rp 0'
@@ -25,23 +25,22 @@ export default function NewProductPage() {
   const [loading, setLoading] = useState(false)
   const [showScanner, setShowScanner] = useState(false)
 
-  const [name, setName] = useState('')
+  // Form fields
   const [sku, setSku] = useState('')
+  const [name, setName] = useState('')
   const [category, setCategory] = useState('')
-  const [stock, setStock] = useState(0)
-  const [price, setPrice] = useState(0)
-  const [minStock, setMinStock] = useState(10)
   const [description, setDescription] = useState('')
+  const [price, setPrice] = useState(0)
+  const [priceDisplay, setPriceDisplay] = useState('')
+  const [stock, setStock] = useState(0)
+  const [stockDisplay, setStockDisplay] = useState('')
+  const [minStock, setMinStock] = useState(10)
+  const [minStockDisplay, setMinStockDisplay] = useState('10')
 
-  // SKU validation state
+  // SKU validation
   const [skuStatus, setSkuStatus] = useState<'idle' | 'checking' | 'available' | 'duplicate'>('idle')
   const [skuDuplicateName, setSkuDuplicateName] = useState('')
   const skuTimerRef = useRef<NodeJS.Timeout | null>(null)
-
-  // Display state for formatted fields
-  const [priceDisplay, setPriceDisplay] = useState('Rp 0')
-  const [stockDisplay, setStockDisplay] = useState('0')
-  const [minStockDisplay, setMinStockDisplay] = useState('10')
 
   useEffect(() => {
     async function loadData() {
@@ -53,343 +52,259 @@ export default function NewProductPage() {
     loadData()
   }, [])
 
-  // Real-time SKU validation with debounce
   const handleSkuChange = (value: string) => {
     setSku(value)
     setSkuStatus('idle')
     setSkuDuplicateName('')
-
     if (skuTimerRef.current) clearTimeout(skuTimerRef.current)
-
-    if (!value.trim()) {
-      setSkuStatus('idle')
-      return
-    }
-
+    if (!value.trim()) { setSkuStatus('idle'); return }
     setSkuStatus('checking')
     skuTimerRef.current = setTimeout(() => {
-      const duplicate = existingProducts.find(p => p.sku.toLowerCase() === value.toLowerCase())
-      if (duplicate) {
-        setSkuStatus('duplicate')
-        setSkuDuplicateName(duplicate.name)
-      } else {
-        setSkuStatus('available')
-      }
-    }, 500)
+      const dup = existingProducts.find(p => p.sku.toLowerCase() === value.toLowerCase())
+      if (dup) { setSkuStatus('duplicate'); setSkuDuplicateName(dup.name) }
+      else { setSkuStatus('available') }
+    }, 600)
   }
 
-  if (!mounted) return null
+  const handleScanResult = (code: string) => {
+    handleSkuChange(code)
+    setShowScanner(false)
+  }
+
+  const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const num = parseRupiah(e.target.value)
+    setPrice(num)
+    setPriceDisplay(num === 0 && e.target.value === '' ? '' : formatRupiah(num))
+  }
+
+  const handleReset = () => {
+    setSku(''); setName(''); setCategory(''); setDescription('')
+    setPrice(0); setPriceDisplay(''); setStock(0); setStockDisplay('')
+    setMinStock(10); setMinStockDisplay('10')
+    setSkuStatus('idle'); setSkuDuplicateName('')
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!name || !sku || !category) { toast('Lengkapi semua field wajib!', 'error'); return }
+    if (!sku || !name || !category) { toast('Lengkapi semua field wajib!', 'error'); return }
+    if (skuStatus === 'duplicate') { toast(`SKU "${sku}" sudah dipakai!`, 'error'); return }
 
-    if (skuStatus === 'duplicate') {
-      toast(`SKU "${sku}" sudah dipakai oleh "${skuDuplicateName}"`, 'error')
-      return
-    }
-
-    // Double-check from DB
     setLoading(true)
-    const freshProducts = await fetchProducts()
-    const duplicate = freshProducts.find(p => p.sku.toLowerCase() === sku.toLowerCase())
-    if (duplicate) {
-      toast(`SKU "${sku}" sudah dipakai oleh "${duplicate.name}"`, 'error')
-      setLoading(false)
-      return
-    }
+    const fresh = await fetchProducts()
+    const dup = fresh.find(p => p.sku.toLowerCase() === sku.toLowerCase())
+    if (dup) { toast(`SKU "${sku}" sudah dipakai oleh "${dup.name}"`, 'error'); setLoading(false); return }
 
     const now = new Date().toISOString()
-    const newProduct: Product = { id: uid(), name, sku, category, stock, price, minStock, description, createdAt: now, updatedAt: now }
-    await saveProduct(newProduct)
+    await saveProduct({ id: uid(), name, sku, category, stock, price, minStock, description, createdAt: now, updatedAt: now })
     toast(`${name} berhasil ditambahkan!`, 'success')
     router.push('/products')
   }
 
-  const handleScanResult = (code: string) => {
-    setSku(code)
-    setShowScanner(false)
-  }
+  if (!mounted) return null
 
-  // Clear-on-focus handlers
-  const handlePriceFocus = () => {
-    if (price === 0) setPriceDisplay('')
-  }
-  const handlePriceBlur = () => {
-    if (priceDisplay === '' || parseRupiah(priceDisplay) === 0) {
-      setPrice(0)
-      setPriceDisplay(formatRupiah(0))
-    }
-  }
-  const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const raw = e.target.value
-    const num = parseRupiah(raw)
-    setPrice(num)
-    setPriceDisplay(num === 0 && raw === '' ? '' : formatRupiah(num))
-  }
-
-  const handleStockFocus = () => {
-    if (stock === 0) setStockDisplay('')
-  }
-  const handleStockBlur = () => {
-    if (stockDisplay === '') {
-      setStock(0)
-      setStockDisplay('0')
-    }
-  }
-  const handleStockChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const raw = e.target.value.replace(/[^0-9]/g, '')
-    const num = raw === '' ? 0 : parseInt(raw, 10)
-    setStock(num)
-    setStockDisplay(raw)
-  }
-
-  const handleMinStockFocus = () => {
-    if (minStock === 0) setMinStockDisplay('')
-  }
-  const handleMinStockBlur = () => {
-    if (minStockDisplay === '') {
-      setMinStock(0)
-      setMinStockDisplay('0')
-    }
-  }
-  const handleMinStockChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const raw = e.target.value.replace(/[^0-9]/g, '')
-    const num = raw === '' ? 0 : parseInt(raw, 10)
-    setMinStock(num)
-    setMinStockDisplay(raw)
-  }
-
-  const inputClass = 'w-full rounded-xl text-sm px-3 py-2.5 sm:px-4 sm:py-3 font-medium focus:outline-none focus:ring-2 focus:ring-[#FDC800]/40 transition-all'
-  const inputStyle = { background: '#0f0f0f', color: '#fafafa' }
-  const labelClass = 'text-xs font-bold uppercase tracking-wider mb-2 block'
-  const labelStyle = { color: '#a1a1aa' }
+  const stockStatus = stock === 0 ? 'Habis' : stock <= minStock ? 'Menipis' : 'Tersedia'
+  const stockColor = stock === 0 ? 'text-red-400' : stock <= minStock ? 'text-amber-400' : 'text-emerald-400'
 
   return (
-    <div className="min-h-screen" style={{ background: '#0f0f0f', fontFamily: 'Inter, system-ui, sans-serif' }}>
-      <div className="flex items-start justify-center min-h-screen py-6 sm:py-10 px-3 sm:px-6">
-        <div className="w-full max-w-5xl">
+    <div className="max-w-2xl mx-auto py-4 sm:py-8 px-2">
+      {/* Back */}
+      <button onClick={() => router.push('/products')} className="group flex items-center gap-2 text-sm font-medium text-zinc-400 hover:text-white mb-6 transition">
+        <ArrowLeft size={16} className="group-hover:-translate-x-0.5 transition-transform" />
+        Kembali
+      </button>
 
-          {/* Back */}
-          <button onClick={() => router.push('/products')} className="group flex items-center gap-2 text-sm font-semibold mb-4 sm:mb-6 transition-colors" style={{ color: '#e4e4e7' }}>
-            <ArrowLeft size={16} className="group-hover:-translate-x-0.5 transition-transform" />
-            Kembali
-          </button>
+      {/* Title */}
+      <div className="mb-8">
+        <h1 className="text-2xl font-bold text-white">Tambah Produk Baru</h1>
+        <p className="text-zinc-500 text-sm mt-1">Lengkapi data produk yang akan ditambahkan</p>
+      </div>
 
-          {/* Two Column */}
-          <div className="flex flex-col lg:flex-row gap-4 sm:gap-6">
-
-            {/* LEFT — Form */}
-            <div className="flex-1 min-w-0">
-              <div className="rounded-xl p-4 sm:p-6 lg:p-8" style={{ background: '#1a1a1a' }}>
-                {/* Header */}
-                <div className="flex items-center gap-3 sm:gap-4 mb-6 sm:mb-8">
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center shrink-0" style={{ background: '#FDC800' }}>
-                    <Package size={20} className="sm:hidden" color="#1C293C" />
-                    <Package size={24} className="hidden sm:block" color="#1C293C" />
-                  </div>
-                  <div>
-                    <h1 className="text-xl sm:text-2xl font-black" style={{ color: '#fafafa' }}>Produk Baru</h1>
-                    <p className="text-xs sm:text-sm" style={{ color: '#71717a' }}>Tambahkan produk ke inventory</p>
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Section 1: Informasi Dasar */}
+        <div>
+          <div className="rounded-t-xl px-5 py-3 bg-gradient-to-r from-indigo-600 to-blue-600">
+            <div className="flex items-center gap-2">
+              <Package size={16} className="text-white" />
+              <div>
+                <p className="text-sm font-bold text-white">Informasi Dasar Produk</p>
+                <p className="text-[11px] text-white/70">Data utama dan identitas produk</p>
+              </div>
+            </div>
+          </div>
+          <div className="rounded-b-xl border border-t-0 border-white/[0.08] bg-[#0f1219] p-5 space-y-4">
+            {/* SKU */}
+            <div>
+              <label className="text-[11px] font-bold text-zinc-300 uppercase tracking-wider mb-2 block">Kode SKU <span className="text-red-400">*</span></label>
+              <div className="relative flex gap-2">
+                <div className="relative flex-1">
+                  <Hash size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" />
+                  <input
+                    type="text" required value={sku}
+                    onChange={e => handleSkuChange(e.target.value)}
+                    className={`w-full pl-9 pr-10 py-3 rounded-lg bg-[#1a1f2e] border text-sm text-white placeholder-zinc-600 focus:outline-none transition ${
+                      skuStatus === 'duplicate' ? 'border-red-500/50 focus:border-red-500' :
+                      skuStatus === 'available' ? 'border-emerald-500/50 focus:border-emerald-500' :
+                      'border-white/[0.1] focus:border-indigo-500'
+                    }`}
+                    placeholder="CONTOH: PRD-001"
+                  />
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                    {skuStatus === 'checking' && <Loader2 className="w-4 h-4 text-indigo-400 animate-spin" />}
+                    {skuStatus === 'available' && <CheckCircle2 className="w-4 h-4 text-emerald-400" />}
+                    {skuStatus === 'duplicate' && <XCircle className="w-4 h-4 text-red-400" />}
                   </div>
                 </div>
+                <button type="button" onClick={() => setShowScanner(true)}
+                  className="shrink-0 w-11 h-11 rounded-lg bg-[#1a1f2e] border border-white/[0.1] flex items-center justify-center text-indigo-400 hover:bg-indigo-500/10 transition" title="Scan Barcode">
+                  <ScanBarcode size={18} />
+                </button>
+              </div>
+              {skuStatus === 'duplicate' && <p className="text-[11px] text-red-400 mt-1.5">⚠ Sudah dipakai oleh &ldquo;{skuDuplicateName}&rdquo;</p>}
+              {skuStatus === 'available' && <p className="text-[11px] text-emerald-400 mt-1.5">✓ SKU tersedia</p>}
+            </div>
 
-                <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
-
-                  {/* Section: Informasi Dasar */}
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-2 pb-2" style={{ borderBottom: '1px solid rgba(253, 200, 0, 0.2)' }}>
-                      <Package size={16} className="text-[#FDC800]" />
-                      <h3 className="text-xs font-bold uppercase tracking-wider" style={{ color: '#FDC800' }}>Informasi Dasar</h3>
-                    </div>
-
-                    <div className="space-y-4">
-                      {/* Nama Produk */}
-                      <div>
-                        <label className={labelClass} style={labelStyle}>Nama Produk</label>
-                        <input type="text" required value={name} onChange={e => setName(e.target.value)} className={inputClass} style={inputStyle} placeholder="Masukkan nama produk" />
-                      </div>
-
-                      {/* SKU & Kategori */}
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div>
-                          <label className={labelClass} style={labelStyle}>Kode Produk / SKU</label>
-                          <div className="flex gap-2">
-                            <div className="relative flex-1">
-                              <input type="text" required value={sku} onChange={e => handleSkuChange(e.target.value)} className={`${inputClass} ${skuStatus === 'duplicate' ? 'ring-2 ring-red-500/50' : skuStatus === 'available' ? 'ring-2 ring-emerald-500/50' : ''}`} style={inputStyle} placeholder="SKU-001" />
-                              {/* Status indicator */}
-                              <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                                {skuStatus === 'checking' && <Loader2 className="w-4 h-4 text-[#FDC800] animate-spin" />}
-                                {skuStatus === 'available' && <CheckCircle2 className="w-4 h-4 text-emerald-400" />}
-                                {skuStatus === 'duplicate' && <XCircle className="w-4 h-4 text-red-400" />}
-                              </div>
-                            </div>
-                            <button
-                              type="button"
-                              onClick={() => setShowScanner(true)}
-                              className="shrink-0 w-10 h-10 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center transition hover:opacity-80"
-                              style={{ background: 'rgba(253,200,0,0.1)' }}
-                              title="Scan Barcode"
-                            >
-                              <ScanBarcode size={18} color="#FDC800" />
-                            </button>
-                          </div>
-                          {/* Validation message */}
-                          {skuStatus === 'duplicate' && (
-                            <p className="text-[11px] text-red-400 mt-1.5 font-medium">⚠ SKU sudah dipakai oleh "{skuDuplicateName}"</p>
-                          )}
-                          {skuStatus === 'available' && (
-                            <p className="text-[11px] text-emerald-400 mt-1.5 font-medium">✓ SKU tersedia</p>
-                          )}
-                        </div>
-                        <div>
-                          <label className={labelClass} style={labelStyle}>Kategori</label>
-                          <select required value={category} onChange={e => setCategory(e.target.value)} className={`${inputClass} appearance-none`} style={{ ...inputStyle, backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 12px center', paddingRight: '40px' }}>
-                            <option value="">Pilih Kategori</option>
-                            {categories.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
-                          </select>
-                        </div>
-                      </div>
-
-                      {/* Deskripsi */}
-                      <div>
-                        <label className={labelClass} style={labelStyle}>Deskripsi <span className="normal-case font-normal" style={{ color: '#71717a' }}>(opsional)</span></label>
-                        <textarea value={description} onChange={e => setDescription(e.target.value)} rows={3} className={`${inputClass} resize-none`} style={inputStyle} placeholder="Deskripsi produk..." />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Section: Harga & Stok */}
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-2 pb-2" style={{ borderBottom: '1px solid rgba(253, 200, 0, 0.2)' }}>
-                      <DollarSign size={16} className="text-[#FDC800]" />
-                      <h3 className="text-xs font-bold uppercase tracking-wider" style={{ color: '#FDC800' }}>Harga & Stok</h3>
-                    </div>
-
-                    <div className="space-y-4">
-                      {/* Harga per Unit */}
-                      <div>
-                        <label className={labelClass} style={labelStyle}>Harga per Unit</label>
-                        <input
-                          type="text"
-                          inputMode="numeric"
-                          required
-                          value={priceDisplay}
-                          onChange={handlePriceChange}
-                          onFocus={handlePriceFocus}
-                          onBlur={handlePriceBlur}
-                          className={inputClass}
-                          style={inputStyle}
-                          placeholder="Rp 0"
-                        />
-                      </div>
-
-                      {/* Stok Awal & Minimum Stok */}
-                      <div className="grid grid-cols-2 gap-3 sm:gap-4">
-                        <div>
-                          <label className={labelClass} style={labelStyle}>Stok Awal</label>
-                          <input
-                            type="text"
-                            inputMode="numeric"
-                            required
-                            value={stockDisplay}
-                            onChange={handleStockChange}
-                            onFocus={handleStockFocus}
-                            onBlur={handleStockBlur}
-                            className={inputClass}
-                            style={inputStyle}
-                            placeholder="0"
-                          />
-                        </div>
-                        <div>
-                          <label className={labelClass} style={labelStyle}>Minimum Stok</label>
-                          <input
-                            type="text"
-                            inputMode="numeric"
-                            required
-                            value={minStockDisplay}
-                            onChange={handleMinStockChange}
-                            onFocus={handleMinStockFocus}
-                            onBlur={handleMinStockBlur}
-                            className={inputClass}
-                            style={inputStyle}
-                            placeholder="0"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Submit */}
-                  <div className="flex flex-col-reverse sm:flex-row gap-2 sm:gap-3 pt-2">
-                    <button type="button" onClick={() => router.push('/products')} className="w-full sm:w-auto px-5 py-3 rounded-lg text-sm font-bold transition-all text-center" style={{ background: '#0f0f0f', color: '#e4e4e7' }}>Batal</button>
-                    <button type="submit" disabled={loading} className="w-full sm:flex-1 py-3 sm:py-3.5 rounded-lg text-sm font-bold transition-all disabled:opacity-50 flex items-center justify-center gap-2" style={{ background: '#FDC800', color: '#1C293C' }}>
-                      {loading ? 'Menyimpan...' : (<><Save size={16} />Simpan Produk</>)}
-                    </button>
-                  </div>
-                </form>
+            {/* Nama Produk */}
+            <div>
+              <label className="text-[11px] font-bold text-zinc-300 uppercase tracking-wider mb-2 block">Nama Produk <span className="text-red-400">*</span></label>
+              <div className="relative">
+                <Tag size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" />
+                <input type="text" required value={name} onChange={e => setName(e.target.value)}
+                  className="w-full pl-9 pr-4 py-3 rounded-lg bg-[#1a1f2e] border border-white/[0.1] text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-indigo-500 transition"
+                  placeholder="Masukkan nama produk" />
               </div>
             </div>
 
-            {/* RIGHT — Preview (hidden on small mobile, shown on sm+) */}
-            <div className="hidden sm:block lg:w-[300px] shrink-0">
-              <div className="lg:sticky lg:top-8 space-y-4">
-                <div className="rounded-xl overflow-hidden" style={{ background: '#1a1a1a' }}>
-                  <div className="px-5 py-3.5 flex items-center gap-2 font-bold text-sm" style={{ background: '#FDC800', color: '#1C293C' }}>
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" /><path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-                    Preview
-                  </div>
-                  {name ? (
-                    <div className="px-5 py-4 space-y-3">
-                      <div className="flex items-center gap-3 pb-3" style={{ borderBottom: '1px solid #27272a' }}>
-                        <div className="w-10 h-10 rounded-lg flex items-center justify-center text-xs font-black" style={{ background: '#432DD7', color: '#fff' }}>{name.substring(0, 2).toUpperCase()}</div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-bold truncate" style={{ color: '#fafafa' }}>{name}</p>
-                          <p className="text-[10px]" style={{ color: '#71717a' }}>{sku || 'SKU-000'} · {category || 'Kategori'}</p>
-                        </div>
-                      </div>
-                      <div className="space-y-2">
-                        <div className="flex justify-between"><span className="text-xs" style={{ color: '#71717a' }}>Stok</span><span className="text-sm font-bold" style={{ color: '#fafafa' }}>{stock}</span></div>
-                        <div className="flex justify-between"><span className="text-xs" style={{ color: '#71717a' }}>Harga</span><span className="text-sm font-bold" style={{ color: '#fafafa' }}>{formatRupiah(price)}</span></div>
-                        <div className="flex justify-between"><span className="text-xs" style={{ color: '#71717a' }}>Min. Stok</span><span className="text-sm font-bold" style={{ color: stock <= minStock ? '#D97706' : '#fafafa' }}>{minStock}</span></div>
-                      </div>
-                      {description && (
-                        <div className="rounded-lg p-3 mt-2" style={{ background: '#0f0f0f' }}>
-                          <p className="text-[11px]" style={{ color: '#a1a1aa' }}>{description}</p>
-                        </div>
-                      )}
-                      {stock <= minStock && stock > 0 && (
-                        <div className="flex items-center gap-1.5 mt-2 px-2 py-1.5 rounded-md" style={{ background: 'rgba(217, 119, 6, 0.15)' }}>
-                          <svg className="w-3 h-3 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="#D97706"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" /></svg>
-                          <span className="text-[10px] font-semibold" style={{ color: '#D97706' }}>Stok di bawah minimum</span>
-                        </div>
-                      )}
-                    </div>
-                  ) : (
-                    <div className="px-5 py-8 text-center">
-                      <div className="w-12 h-12 rounded-xl mx-auto mb-3 flex items-center justify-center" style={{ background: '#0f0f0f' }}>
-                        <Package size={20} color="#71717a" />
-                      </div>
-                      <p className="text-xs font-medium" style={{ color: '#71717a' }}>Isi form untuk melihat preview produk</p>
-                    </div>
-                  )}
-                </div>
-              </div>
+            {/* Kategori */}
+            <div>
+              <label className="text-[11px] font-bold text-zinc-300 uppercase tracking-wider mb-2 block">Kategori <span className="text-red-400">*</span></label>
+              <select required value={category} onChange={e => setCategory(e.target.value)}
+                className="w-full px-4 py-3 rounded-lg bg-[#1a1f2e] border border-white/[0.1] text-sm text-white focus:outline-none focus:border-indigo-500 transition appearance-none cursor-pointer"
+                style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 12px center' }}>
+                <option value="">Pilih Kategori</option>
+                {categories.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
+              </select>
             </div>
 
+            {/* Deskripsi */}
+            <div>
+              <label className="text-[11px] font-bold text-zinc-300 uppercase tracking-wider mb-2 block">Deskripsi <span className="text-zinc-600">(opsional)</span></label>
+              <textarea value={description} onChange={e => setDescription(e.target.value)} rows={3}
+                className="w-full px-4 py-3 rounded-lg bg-[#1a1f2e] border border-white/[0.1] text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-indigo-500 transition resize-none"
+                placeholder="Deskripsi singkat produk..." />
+            </div>
           </div>
         </div>
-      </div>
+
+        {/* Section 2: Harga */}
+        <div>
+          <div className="rounded-t-xl px-5 py-3 bg-gradient-to-r from-purple-600 to-violet-600">
+            <div className="flex items-center gap-2">
+              <DollarSign size={16} className="text-white" />
+              <div>
+                <p className="text-sm font-bold text-white">Harga</p>
+                <p className="text-[11px] text-white/70">Tentukan harga produk</p>
+              </div>
+            </div>
+          </div>
+          <div className="rounded-b-xl border border-t-0 border-white/[0.08] bg-[#0f1219] p-5 space-y-4">
+            <div>
+              <label className="text-[11px] font-bold text-zinc-300 uppercase tracking-wider mb-2 block">Harga Per Unit <span className="text-red-400">*</span></label>
+              <div className="relative">
+                <DollarSign size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" />
+                <input type="text" inputMode="numeric" required value={priceDisplay}
+                  onChange={handlePriceChange}
+                  onFocus={() => { if (price === 0) setPriceDisplay('') }}
+                  onBlur={() => { if (!priceDisplay) setPriceDisplay('') }}
+                  className="w-full pl-9 pr-4 py-3 rounded-lg bg-[#1a1f2e] border border-white/[0.1] text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-purple-500 transition"
+                  placeholder="Rp 0" />
+              </div>
+              <p className="text-[10px] text-zinc-600 mt-1">Harga jual per unit produk</p>
+            </div>
+
+            {/* Min stock */}
+            <div>
+              <label className="text-[11px] font-bold text-zinc-300 uppercase tracking-wider mb-2 block">Minimum Stok</label>
+              <input type="text" inputMode="numeric" value={minStockDisplay}
+                onChange={e => { const v = e.target.value.replace(/[^0-9]/g, ''); setMinStockDisplay(v); setMinStock(v ? parseInt(v) : 0) }}
+                onFocus={() => { if (minStock === 0) setMinStockDisplay('') }}
+                onBlur={() => { if (!minStockDisplay) setMinStockDisplay('0') }}
+                className="w-full px-4 py-3 rounded-lg bg-[#1a1f2e] border border-white/[0.1] text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-purple-500 transition"
+                placeholder="0" />
+              <p className="text-[10px] text-zinc-600 mt-1">Alert ketika stok di bawah angka ini</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Section 3: Stok Awal */}
+        <div>
+          <div className="rounded-t-xl px-5 py-3 bg-gradient-to-r from-emerald-600 to-green-600">
+            <div className="flex items-center gap-2">
+              <Package size={16} className="text-white" />
+              <div>
+                <p className="text-sm font-bold text-white">Stok Awal</p>
+                <p className="text-[11px] text-white/70">Jumlah stok saat produk ditambahkan</p>
+              </div>
+            </div>
+          </div>
+          <div className="rounded-b-xl border border-t-0 border-white/[0.08] bg-[#0f1219] p-5 space-y-4">
+            <div>
+              <label className="text-[11px] font-bold text-zinc-300 uppercase tracking-wider mb-2 block">Jumlah Stok Awal</label>
+              <div className="relative">
+                <Hash size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" />
+                <input type="text" inputMode="numeric" value={stockDisplay}
+                  onChange={e => { const v = e.target.value.replace(/[^0-9]/g, ''); setStockDisplay(v); setStock(v ? parseInt(v) : 0) }}
+                  onFocus={() => { if (stock === 0) setStockDisplay('') }}
+                  onBlur={() => { if (!stockDisplay) setStockDisplay('') }}
+                  className="w-full pl-9 pr-4 py-3 rounded-lg bg-[#1a1f2e] border border-white/[0.1] text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-emerald-500 transition"
+                  placeholder="0" />
+              </div>
+              <p className="text-[10px] text-zinc-600 mt-1">Kosongkan jika belum ada stok</p>
+            </div>
+
+            {/* Status preview */}
+            <div className="flex items-center justify-between px-4 py-3 rounded-lg bg-[#1a1f2e] border border-white/[0.06]">
+              <div>
+                <p className="text-[10px] text-zinc-500 uppercase">Status Stok:</p>
+                <p className={`text-sm font-bold ${stockColor}`}>{stockStatus}</p>
+              </div>
+              <span className={`text-sm font-bold px-3 py-1 rounded-lg ${
+                stock === 0 ? 'bg-red-500/10 text-red-400' :
+                stock <= minStock ? 'bg-amber-500/10 text-amber-400' :
+                'bg-emerald-500/10 text-emerald-400'
+              }`}>{stock} Unit</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Actions */}
+        <div className="flex items-center justify-center gap-3 pt-4">
+          <button type="button" onClick={() => router.push('/products')}
+            className="px-5 py-2.5 rounded-lg border border-white/[0.1] text-sm font-medium text-zinc-400 hover:text-white hover:border-white/[0.2] transition flex items-center gap-2">
+            <XCircle size={15} />
+            Batal
+          </button>
+          <button type="button" onClick={handleReset}
+            className="px-5 py-2.5 rounded-lg border border-white/[0.1] text-sm font-medium text-zinc-400 hover:text-white hover:border-white/[0.2] transition flex items-center gap-2">
+            <RotateCcw size={15} />
+            Reset
+          </button>
+          <button type="submit" disabled={loading || skuStatus === 'duplicate'}
+            className="px-6 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-bold transition flex items-center gap-2 shadow-lg shadow-emerald-600/20 disabled:opacity-50 disabled:cursor-not-allowed active:scale-95">
+            {loading ? <Loader2 size={15} className="animate-spin" /> : <Save size={15} />}
+            Simpan
+          </button>
+        </div>
+      </form>
 
       {/* Barcode Scanner */}
       {showScanner && (
         <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/90 backdrop-blur-sm">
           <div className="relative w-full max-w-sm mx-4">
-            <button onClick={() => setShowScanner(false)} className="absolute -top-12 right-0 w-10 h-10 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-white hover:bg-white/20 transition-all z-10">
-              <span className="text-lg">&times;</span>
+            <button onClick={() => setShowScanner(false)} className="absolute -top-12 right-0 w-10 h-10 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-white hover:bg-white/20 transition z-10">
+              <XCircle size={20} />
             </button>
             <p className="text-center text-sm font-medium text-white/80 mb-4">Arahkan kamera ke barcode produk</p>
-            <div className="rounded-2xl overflow-hidden border-2 border-[#FDC800]/30" id="barcode-scanner-products" ref={(el) => {
+            <div className="rounded-2xl overflow-hidden border-2 border-indigo-500/30" id="barcode-scanner-products" ref={(el) => {
               if (!el || (el as any).__started) return;
               (el as any).__started = true;
               import('html5-qrcode').then(({ Html5Qrcode }) => {
