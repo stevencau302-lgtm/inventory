@@ -12,11 +12,11 @@ import {
   ClipboardCheck,
   BarChart3,
   Settings,
-  ChevronsLeft,
-  ChevronsRight,
   Box,
   Menu,
   X,
+  PanelLeftClose,
+  PanelLeftOpen,
 } from 'lucide-react'
 import { getSetting, saveSetting } from '@/lib/store'
 import { useAuth } from '@/components/AuthProvider'
@@ -49,40 +49,34 @@ export default function Sidebar() {
   const pathname = usePathname()
   const [collapsed, setCollapsed] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
-  const [loaded, setLoaded] = useState(false)
   const { user } = useAuth()
 
-  // Get user info from auth
   const userEmail = user?.email || ''
   const userName = user?.user_metadata?.full_name || userEmail.split('@')[0] || 'User'
   const userInitial = userName.charAt(0).toUpperCase()
 
-  // Load sidebar state from Supabase
   useEffect(() => {
     getSetting('sidebar_collapsed').then(val => {
       if (val === 'true') setCollapsed(true)
-      setLoaded(true)
     })
   }, [])
 
-  // Persist sidebar state to Supabase
   const toggleCollapse = () => {
     const next = !collapsed
     setCollapsed(next)
     saveSetting('sidebar_collapsed', String(next))
   }
 
-  const sidebarWidth = collapsed ? 'w-[68px]' : 'w-[240px]'
+  const isCollapsedView = collapsed && !mobileOpen
 
   return (
     <>
-      {/* Mobile hamburger button - rendered via layout */}
       {/* Mobile overlay */}
       {mobileOpen && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 lg:hidden" onClick={() => setMobileOpen(false)} />
       )}
 
-      {/* Mobile toggle button */}
+      {/* Mobile hamburger */}
       <button
         onClick={() => setMobileOpen(true)}
         className="fixed top-3 left-3 z-30 lg:hidden w-10 h-10 rounded-xl flex items-center justify-center text-white bg-[#1a1a1a] border border-white/[0.08] hover:border-white/[0.15] transition-all"
@@ -93,50 +87,53 @@ export default function Sidebar() {
       {/* Sidebar */}
       <aside
         className={`
-          fixed lg:static inset-y-0 left-0 z-50
-          ${sidebarWidth}
-          shrink-0 flex flex-col
-          transition-all duration-300 ease-in-out
-          lg:translate-x-0
+          fixed lg:static inset-y-0 left-0 z-50 shrink-0 flex flex-col
+          transition-all duration-300 ease-in-out lg:translate-x-0
+          ${isCollapsedView ? 'w-[68px]' : 'w-[240px]'}
           ${mobileOpen ? 'translate-x-0 !w-[240px]' : '-translate-x-full lg:translate-x-0'}
         `}
-        style={{
-          background: '#111113',
-          borderRight: '1px solid rgba(255,255,255,0.06)',
-        }}
+        style={{ background: '#111113', borderRight: '1px solid rgba(255,255,255,0.06)' }}
       >
-        {/* Header / Logo */}
+        {/* Header */}
         <div className="h-14 flex items-center px-3 border-b border-white/[0.06]">
-          {collapsed && !mobileOpen ? (
-            /* Collapsed: just logo icon centered, click to expand */
-            <button onClick={toggleCollapse} className="w-9 h-9 rounded-xl bg-[#FDC800]/10 border border-[#FDC800]/20 flex items-center justify-center mx-auto hover:bg-[#FDC800]/20 transition" title="Expand sidebar">
+          <div className="flex items-center gap-2.5 min-w-0 flex-1">
+            <div className="w-9 h-9 rounded-xl bg-[#FDC800]/10 border border-[#FDC800]/20 flex items-center justify-center shrink-0">
               <Box className="w-4.5 h-4.5 text-[#FDC800]" />
-            </button>
-          ) : (
-            /* Expanded: logo + text + collapse button */
-            <div className="flex items-center justify-between w-full">
-              <div className="flex items-center gap-2.5 min-w-0">
-                <div className="w-9 h-9 rounded-xl bg-[#FDC800]/10 border border-[#FDC800]/20 flex items-center justify-center shrink-0">
-                  <Box className="w-4.5 h-4.5 text-[#FDC800]" />
-                </div>
-                <span className="text-sm font-bold text-white whitespace-nowrap">Nexo Inventory</span>
-              </div>
-              <button
-                onClick={() => mobileOpen ? setMobileOpen(false) : toggleCollapse()}
-                className="w-7 h-7 rounded-lg flex items-center justify-center text-zinc-500 hover:text-white hover:bg-white/[0.06] transition-all shrink-0"
-              >
-                {mobileOpen ? <X className="w-4 h-4" /> : <ChevronsLeft className="w-4 h-4" />}
-              </button>
             </div>
+            {!isCollapsedView && (
+              <span className="text-sm font-bold text-white whitespace-nowrap">Nexo Inventory</span>
+            )}
+          </div>
+          {/* Close button mobile / Collapse desktop */}
+          {!isCollapsedView && (
+            <button
+              onClick={() => mobileOpen ? setMobileOpen(false) : toggleCollapse()}
+              className="w-7 h-7 rounded-lg flex items-center justify-center text-zinc-500 hover:text-white hover:bg-white/[0.06] transition shrink-0"
+              title={mobileOpen ? 'Tutup' : 'Kecilkan sidebar'}
+            >
+              {mobileOpen ? <X className="w-4 h-4" /> : <PanelLeftClose className="w-4 h-4" />}
+            </button>
           )}
         </div>
+
+        {/* Expand button when collapsed */}
+        {isCollapsedView && (
+          <div className="px-2 pt-2">
+            <button
+              onClick={toggleCollapse}
+              className="w-full h-8 rounded-lg flex items-center justify-center text-zinc-500 hover:text-[#FDC800] hover:bg-[#FDC800]/10 transition"
+              title="Besarkan sidebar"
+            >
+              <PanelLeftOpen className="w-4 h-4" />
+            </button>
+          </div>
+        )}
 
         {/* Navigation */}
         <nav className="flex-1 py-3 px-2 space-y-1 overflow-y-auto overflow-x-hidden">
           {navItems.map(item => {
             const isActive = pathname === item.href
             const Icon = item.icon
-            const isCollapsedView = collapsed && !mobileOpen
 
             const linkContent = (
               <Link
@@ -153,13 +150,9 @@ export default function Sidebar() {
                 `}
               >
                 <Icon className={`w-5 h-5 shrink-0 ${isActive ? 'text-black' : ''}`} strokeWidth={1.8} />
-                <span
-                  className={`text-[13px] font-medium whitespace-nowrap transition-all duration-300 ${
-                    isCollapsedView ? 'opacity-0 w-0 overflow-hidden' : 'opacity-100'
-                  }`}
-                >
-                  {item.label}
-                </span>
+                {!isCollapsedView && (
+                  <span className="text-[13px] font-medium whitespace-nowrap">{item.label}</span>
+                )}
               </Link>
             )
 
@@ -174,21 +167,19 @@ export default function Sidebar() {
         {/* Separator */}
         <div className="mx-3 border-t border-white/[0.06]" />
 
-        {/* User info (pinned bottom) */}
-        <div className="p-3 overflow-hidden">
-          <Tooltip label={userName} show={collapsed && !mobileOpen}>
-            <div className={`flex items-center gap-3 px-2 py-2 rounded-xl hover:bg-white/[0.03] transition-all ${collapsed && !mobileOpen ? 'justify-center px-0' : ''}`}>
+        {/* User info */}
+        <div className="p-3">
+          <Tooltip label={userName} show={isCollapsedView}>
+            <div className={`flex items-center gap-3 px-2 py-2 rounded-xl hover:bg-white/[0.03] transition-all ${isCollapsedView ? 'justify-center px-0' : ''}`}>
               <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#FDC800] to-[#f59e0b] flex items-center justify-center text-[11px] font-bold text-black shrink-0">
                 {userInitial}
               </div>
-              <div
-                className={`min-w-0 transition-all duration-300 ${
-                  collapsed && !mobileOpen ? 'opacity-0 w-0 overflow-hidden' : 'opacity-100'
-                }`}
-              >
-                <p className="text-xs font-semibold text-white truncate">{userName}</p>
-                <p className="text-[10px] text-zinc-500 truncate">{userEmail}</p>
-              </div>
+              {!isCollapsedView && (
+                <div className="min-w-0">
+                  <p className="text-xs font-semibold text-white truncate">{userName}</p>
+                  <p className="text-[10px] text-zinc-500 truncate">{userEmail}</p>
+                </div>
+              )}
             </div>
           </Tooltip>
         </div>
