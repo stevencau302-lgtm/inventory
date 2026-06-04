@@ -48,17 +48,26 @@ export default function NewProductPage() {
 
   if (!mounted) return null
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!name || !sku || !category) { toast('Lengkapi semua field wajib!', 'error'); return }
+
+    // Validate duplicate SKU
     setLoading(true)
-    setTimeout(() => {
-      const now = new Date().toISOString()
-      const newProduct: Product = { id: uid(), name, sku, category, stock, price, minStock, description, createdAt: now, updatedAt: now }
-      saveProduct(newProduct)
-      toast(`${name} berhasil ditambahkan!`, 'success')
-      router.push('/products')
-    }, 400)
+    const { fetchProducts } = await import('@/lib/store')
+    const existingProducts = await fetchProducts()
+    const duplicate = existingProducts.find(p => p.sku.toLowerCase() === sku.toLowerCase())
+    if (duplicate) {
+      toast(`SKU "${sku}" sudah dipakai oleh "${duplicate.name}"`, 'error')
+      setLoading(false)
+      return
+    }
+
+    const now = new Date().toISOString()
+    const newProduct: Product = { id: uid(), name, sku, category, stock, price, minStock, description, createdAt: now, updatedAt: now }
+    await saveProduct(newProduct)
+    toast(`${name} berhasil ditambahkan!`, 'success')
+    router.push('/products')
   }
 
   const handleScanResult = (code: string) => {

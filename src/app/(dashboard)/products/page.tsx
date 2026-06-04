@@ -54,6 +54,13 @@ export default function ProductsPage() {
   })
 
   const handleSave = (product: Product) => {
+    // Validate duplicate SKU (exclude current product if editing)
+    const duplicate = products.find(p => p.sku.toLowerCase() === product.sku.toLowerCase() && p.id !== product.id)
+    if (duplicate) {
+      toast(`SKU "${product.sku}" sudah dipakai oleh "${duplicate.name}"`, 'error')
+      return
+    }
+
     let updated: Product[]
     const existing = products.findIndex(p => p.id === product.id)
     if (existing > -1) {
