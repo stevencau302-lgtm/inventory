@@ -205,7 +205,7 @@ export default function NewTransactionPage() {
     <div className="max-w-5xl mx-auto py-2 px-4 lg:px-8">
       {/* Back + Header */}
       <div className="mb-6">
-        <button onClick={() => setMode(null)} className="group flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-gray-900 mb-3 transition">
+        <button onClick={() => router.push('/transactions')} className="group flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-gray-900 mb-3 transition">
           <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
           Kembali
         </button>
