@@ -7,7 +7,6 @@ import {
   LayoutDashboard,
   Package,
   Tags,
-  ArrowLeftRight,
   ClipboardCheck,
   BarChart3,
   Settings,
