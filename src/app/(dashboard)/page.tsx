@@ -10,17 +10,17 @@ function DashboardSkeleton() {
   return (
     <div className="space-y-6 animate-pulse">
       {/* Header */}
-      <div className="rounded-2xl bg-gradient-to-br from-[#1a1a2e] to-[#0f0a2e] p-6 pt-8 pb-20">
-        <div className="h-7 w-52 rounded-lg bg-white/10 mb-2" />
-        <div className="h-4 w-72 rounded bg-white/5 mb-6" />
+      <div className="rounded-2xl bg-white p-6 pt-8 pb-20 border border-gray-200">
+        <div className="h-7 w-52 rounded-lg bg-gray-200 mb-2" />
+        <div className="h-4 w-72 rounded bg-gray-100 mb-6" />
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="rounded-2xl p-4 bg-black/30 border border-white/[0.08]">
+            <div key={i} className="rounded-2xl p-4 bg-gray-50 border border-gray-200">
               <div className="flex items-start gap-3">
-                <div className="w-10 h-10 rounded-xl bg-white/10" />
+                <div className="w-10 h-10 rounded-xl bg-gray-200" />
                 <div className="space-y-2 flex-1">
-                  <div className="h-3 w-16 rounded bg-white/10" />
-                  <div className="h-5 w-24 rounded bg-white/10" />
+                  <div className="h-3 w-16 rounded bg-gray-200" />
+                  <div className="h-5 w-24 rounded bg-gray-200" />
                 </div>
               </div>
             </div>
@@ -29,13 +29,13 @@ function DashboardSkeleton() {
       </div>
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-        <div className="rounded-2xl bg-[#1a1a1a] border border-white/[0.06] h-[340px]" />
-        <div className="rounded-2xl bg-[#1a1a1a] border border-white/[0.06] h-[340px]" />
+        <div className="rounded-2xl bg-white border border-gray-200 h-[340px]" />
+        <div className="rounded-2xl bg-white border border-gray-200 h-[340px]" />
       </div>
       {/* Bottom */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-        <div className="rounded-2xl bg-[#1a1a1a] border border-white/[0.06] h-[280px]" />
-        <div className="rounded-2xl bg-[#1a1a1a] border border-white/[0.06] h-[280px]" />
+        <div className="rounded-2xl bg-white border border-gray-200 h-[280px]" />
+        <div className="rounded-2xl bg-white border border-gray-200 h-[280px]" />
       </div>
     </div>
   )
