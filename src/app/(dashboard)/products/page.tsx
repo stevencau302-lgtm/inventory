@@ -1,17 +1,20 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import Link from 'next/link'
-import { Product, Category, formatRp, getStatus, getStatusLabel, fetchProducts, fetchCategories, deleteProduct, saveProduct } from '@/lib/store'
+import { Product, Category, Transaction, formatRp, getStatus, getStatusLabel, fetchProducts, fetchCategories, fetchTransactions, deleteProduct, saveProduct } from '@/lib/store'
 import { useToast } from '@/components/Toast'
 import ProductModal from '@/components/ProductModal'
 import DeleteModal from '@/components/DeleteModal'
 import CsvImportModal from '@/components/CsvImportModal'
 import { TableSkeleton } from '@/components/PageSkeleton'
 
+type TabKey = 'daftar-produk' | 'laporan-stok' | 'barang-masuk' | 'barang-keluar'
+
 export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([])
   const [categories, setCategories] = useState<Category[]>([])
+  const [transactions, setTransactions] = useState<Transaction[]>([])
   const [search, setSearch] = useState('')
   const [filterCat, setFilterCat] = useState('')
   const [filterStatus, setFilterStatus] = useState('')
@@ -21,21 +24,77 @@ export default function ProductsPage() {
   const [deleteModal, setDeleteModal] = useState<{ open: boolean; id: string; name: string }>({ open: false, id: '', name: '' })
   const [csvModal, setCsvModal] = useState(false)
   const [mounted, setMounted] = useState(false)
+  const [activeTab, setActiveTab] = useState<TabKey>('daftar-produk')
   const { toast } = useToast()
 
   useEffect(() => {
     async function loadData() {
-      const p = await fetchProducts()
-      const c = await fetchCategories()
+      const [p, c, tx] = await Promise.all([fetchProducts(), fetchCategories(), fetchTransactions()])
       setProducts(p)
       setCategories(c)
+      setTransactions(tx)
       setMounted(true)
     }
     loadData()
   }, [])
 
+  // === Summary calculations ===
+  const totalPenjualan = useMemo(() => {
+    return transactions
+      .filter(t => t.type === 'out')
+      .reduce((sum, t) => {
+        const product = products.find(p => p.id === t.productId)
+        return sum + (product ? product.price * t.quantity : 0)
+      }, 0)
+  }, [transactions, products])
+
+  const totalTransaksi = transactions.length
+
+  const totalBarangKeluar = useMemo(() => {
+    return transactions
+      .filter(t => t.type === 'out')
+      .reduce((sum, t) => sum + t.quantity, 0)
+  }, [transactions])
+
+  const produkTerjual = useMemo(() => {
+    const uniqueProductIds = new Set(
+      transactions.filter(t => t.type === 'out').map(t => t.productId)
+    )
+    return uniqueProductIds.size
+  }, [transactions])
+
+  // === Stock report ===
+  const stockReports = useMemo(() => {
+    return products.map(p => {
+      const masuk = transactions
+        .filter(t => t.productId === p.id && t.type === 'in')
+        .reduce((s, t) => s + t.quantity, 0)
+      const keluar = transactions
+        .filter(t => t.productId === p.id && t.type === 'out')
+        .reduce((s, t) => s + t.quantity, 0)
+      const stockAwal = p.stock - masuk + keluar
+      const stockAkhir = p.stock
+
+      let status: 'aman' | 'menipis' | 'habis' = 'aman'
+      if (stockAkhir === 0) status = 'habis'
+      else if (stockAkhir <= p.minStock) status = 'menipis'
+
+      return { product: p, stockAwal, masuk, keluar, stockAkhir, status }
+    })
+  }, [products, transactions])
+
+  // === Filtered transactions ===
+  const barangMasuk = useMemo(() => {
+    return transactions.filter(t => t.type === 'in')
+  }, [transactions])
+
+  const barangKeluar = useMemo(() => {
+    return transactions.filter(t => t.type === 'out')
+  }, [transactions])
+
   if (!mounted) return <TableSkeleton />
 
+  // === Product list filtering ===
   const filtered = products.filter(p => {
     const matchSearch = p.name.toLowerCase().includes(search.toLowerCase()) || p.sku.toLowerCase().includes(search.toLowerCase())
     const matchCat = !filterCat || p.category === filterCat
@@ -54,7 +113,6 @@ export default function ProductsPage() {
   })
 
   const handleSave = (product: Product) => {
-    // Validate duplicate SKU (exclude current product if editing)
     const duplicate = products.find(p => p.sku.toLowerCase() === product.sku.toLowerCase() && p.id !== product.id)
     if (duplicate) {
       toast(`SKU "${product.sku}" sudah dipakai oleh "${duplicate.name}"`, 'error')
@@ -64,7 +122,6 @@ export default function ProductsPage() {
     let updated: Product[]
     const existing = products.findIndex(p => p.id === product.id)
     if (existing > -1) {
-      // Editing: preserve current stock (stock changes only via transactions)
       const preservedProduct = { ...product, stock: products[existing].stock }
       updated = [...products]
       updated[existing] = preservedProduct
@@ -102,6 +159,13 @@ export default function ProductsPage() {
     setProducts(updated)
   }
 
+  const tabs: { key: TabKey; label: string }[] = [
+    { key: 'daftar-produk', label: 'Daftar Produk' },
+    { key: 'laporan-stok', label: 'Laporan Stok' },
+    { key: 'barang-masuk', label: 'Barang Masuk' },
+    { key: 'barang-keluar', label: 'Barang Keluar' },
+  ]
+
   return (
     <div className="space-y-6">
       {/* Hero Banner */}
@@ -129,142 +193,380 @@ export default function ProductsPage() {
         </div>
       </div>
 
-      {/* Filters */}
-      <div className="flex flex-col sm:flex-row gap-3">
-        <div className="relative flex-1">
-          <svg className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-          </svg>
-          <input
-            type="text"
-            placeholder="Cari nama atau SKU..."
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            className="form-input pl-10"
-          />
-        </div>
-        <select value={sortBy} onChange={e => setSortBy(e.target.value)} className="form-input w-full sm:w-auto" style={{ background: '#18181b', border: '1px solid rgba(255,255,255,0.1)' }}>
-          <option value="name-asc">Nama (A-Z)</option>
-          <option value="name-desc">Nama (Z-A)</option>
-          <option value="stock-asc">Stok (Rendah)</option>
-          <option value="stock-desc">Stok (Tinggi)</option>
-          <option value="price-asc">Harga (Murah)</option>
-          <option value="price-desc">Harga (Mahal)</option>
-        </select>
-        <select value={filterCat} onChange={e => setFilterCat(e.target.value)} className="form-input w-full sm:w-auto">
-          <option value="">Semua Kategori</option>
-          {categories.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
-        </select>
-        <select value={filterStatus} onChange={e => setFilterStatus(e.target.value)} className="form-input w-full sm:w-auto">
-          <option value="">Semua Status</option>
-          <option value="in-stock">Tersedia</option>
-          <option value="low-stock">Stok Rendah</option>
-          <option value="out-of-stock">Habis</option>
-        </select>
-      </div>
-
-      {/* Desktop Table - Spreadsheet Style */}
-      <div className="hidden md:block overflow-hidden border border-white/10">
-        <div className="overflow-x-auto max-h-[600px]">
-          <table className="w-full border-collapse">
-            <thead className="sticky top-0 z-10">
-              <tr className="bg-zinc-800">
-                <th className="border border-white/10 w-[48px] px-2 py-2.5 text-center text-[11px] font-bold text-zinc-400 uppercase tracking-wide">No</th>
-                <th className="border border-white/10 w-[110px] px-2 py-2.5 text-center text-[11px] font-bold text-zinc-400 uppercase tracking-wide">SKU</th>
-                <th className="border border-white/10 px-3 py-2.5 text-left text-[11px] font-bold text-zinc-400 uppercase tracking-wide">Nama Produk</th>
-                <th className="border border-white/10 w-[120px] px-2 py-2.5 text-center text-[11px] font-bold text-zinc-400 uppercase tracking-wide">Kategori</th>
-                <th className="border border-white/10 w-[80px] px-2 py-2.5 text-center text-[11px] font-bold text-zinc-400 uppercase tracking-wide">Stok</th>
-                <th className="border border-white/10 w-[140px] px-3 py-2.5 text-right text-[11px] font-bold text-zinc-400 uppercase tracking-wide">Harga</th>
-                <th className="border border-white/10 w-[110px] px-2 py-2.5 text-center text-[11px] font-bold text-zinc-400 uppercase tracking-wide">Status</th>
-                <th className="border border-white/10 w-[80px] px-2 py-2.5 text-center text-[11px] font-bold text-zinc-400 uppercase tracking-wide">Aksi</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.map((p, idx) => (
-                <tr key={p.id} className={`hover:bg-indigo-900/20 transition ${idx % 2 === 1 ? 'bg-zinc-900/40' : 'bg-zinc-950'}`}>
-                  <td className="border border-white/10 px-2 py-2 text-center text-xs text-zinc-500">{idx + 1}</td>
-                  <td className="border border-white/10 px-2 py-2 text-center text-sm text-zinc-300">{p.sku}</td>
-                  <td className="border border-white/10 px-3 py-2 text-left text-sm font-medium text-white align-middle">{p.name}</td>
-                  <td className="border border-white/10 px-2 py-2 text-center text-xs text-zinc-400">{p.category}</td>
-                  <td className="border border-white/10 px-2 py-2 text-center font-mono text-sm font-medium text-zinc-300">{p.stock}</td>
-                  <td className="border border-white/10 px-3 py-2 text-right font-mono text-sm text-zinc-300">{formatRp(p.price)}</td>
-                  <td className="border border-white/10 px-2 py-2 text-center"><StatusBadge product={p} /></td>
-                  <td className="border border-white/10 px-2 py-2 text-center">
-                    <div className="flex justify-center gap-1">
-                      <button onClick={() => handleEdit(p)} className="w-7 h-7 rounded bg-indigo-500/10 text-indigo-400 hover:bg-indigo-500 hover:text-white flex items-center justify-center transition">
-                        <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" /></svg>
-                      </button>
-                      <button onClick={() => handleDelete(p.id, p.name)} className="w-7 h-7 rounded bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white flex items-center justify-center transition">
-                        <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" /></svg>
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-              {filtered.length === 0 && (
-                <tr><td colSpan={8} className="border border-white/10 text-center py-12 text-slate-500">Tidak ada produk ditemukan</td></tr>
-              )}
-            </tbody>
-
-          </table>
-        </div>
-      </div>
-
-      {/* Mobile Cards */}
-      <div className="md:hidden space-y-3">
-        {filtered.map(p => (
-          <div key={p.id} className="glass-card p-4">
-            <div className="flex items-start gap-3">
-              <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center text-white text-sm font-bold shrink-0">
-                {p.name.substring(0, 2).toUpperCase()}
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-start justify-between gap-2">
-                  <div className="min-w-0">
-                    <p className="text-sm font-semibold text-white truncate">{p.name}</p>
-                    <p className="text-xs text-slate-500 mt-0.5">{p.category} &middot; <code className="text-slate-400">{p.sku}</code></p>
-                  </div>
-                  <StatusBadge product={p} />
-                </div>
-                <div className="flex items-center justify-between mt-3">
-                  <div className="flex gap-4">
-                    <div>
-                      <p className="text-[10px] text-slate-500 uppercase">Stok</p>
-                      <p className="text-sm font-semibold text-white">{p.stock}</p>
-                    </div>
-                    <div>
-                      <p className="text-[10px] text-slate-500 uppercase">Harga</p>
-                      <p className="text-sm font-semibold text-white">{formatRp(p.price)}</p>
-                    </div>
-                  </div>
-                  <div className="flex gap-1">
-                    <button onClick={() => handleEdit(p)} className="w-8 h-8 rounded-lg bg-brand-500/10 text-brand-400 hover:bg-brand-500 hover:text-white flex items-center justify-center transition">
-                      <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
-                      </svg>
-                    </button>
-                    <button onClick={() => handleDelete(p.id, p.name)} className="w-8 h-8 rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white flex items-center justify-center transition">
-                      <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
-                      </svg>
-                    </button>
-                  </div>
-                </div>
-              </div>
+      {/* Summary Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+        {/* Total Penjualan */}
+        <div className="bg-[#1a1a1a] border border-white/[0.06] rounded-xl p-4">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-lg bg-emerald-500/10 flex items-center justify-center shrink-0 text-emerald-400">
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z" /></svg>
+            </div>
+            <div className="min-w-0">
+              <p className="text-lg font-bold text-white truncate">{formatRp(totalPenjualan)}</p>
+              <p className="text-[11px] text-zinc-500 font-medium">Total Penjualan</p>
             </div>
           </div>
-        ))}
-        {filtered.length === 0 && (
-          <div className="text-center py-16 text-slate-500">
-            <svg className="w-12 h-12 mx-auto mb-3 text-slate-600" fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5m8.25 3v6.75m0 0l-3-3m3 3l3-3M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
-            </svg>
-            <p>Tidak ada produk ditemukan</p>
+        </div>
+
+        {/* Transaksi */}
+        <div className="bg-[#1a1a1a] border border-white/[0.06] rounded-xl p-4">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-lg bg-blue-500/10 flex items-center justify-center shrink-0 text-blue-400">
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" /></svg>
+            </div>
+            <div className="min-w-0">
+              <p className="text-lg font-bold text-white truncate">{totalTransaksi}</p>
+              <p className="text-[11px] text-zinc-500 font-medium">Transaksi</p>
+            </div>
           </div>
-        )}
+        </div>
+
+        {/* Barang Keluar */}
+        <div className="bg-[#1a1a1a] border border-white/[0.06] rounded-xl p-4">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-lg bg-red-500/10 flex items-center justify-center shrink-0 text-red-400">
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" /></svg>
+            </div>
+            <div className="min-w-0">
+              <p className="text-lg font-bold text-white truncate">{totalBarangKeluar} unit</p>
+              <p className="text-[11px] text-zinc-500 font-medium">Barang Keluar</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Produk Terjual */}
+        <div className="bg-[#1a1a1a] border border-white/[0.06] rounded-xl p-4">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-lg bg-amber-500/10 flex items-center justify-center shrink-0 text-amber-400">
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" /></svg>
+            </div>
+            <div className="min-w-0">
+              <p className="text-lg font-bold text-white truncate">{produkTerjual} produk</p>
+              <p className="text-[11px] text-zinc-500 font-medium">Produk Terjual</p>
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* Modal */}
+      {/* Tab Bar */}
+      <div className="flex gap-1 flex-wrap">
+        {tabs.map(tab => (
+          <button
+            key={tab.key}
+            onClick={() => setActiveTab(tab.key)}
+            className={`px-4 py-2 rounded-lg text-sm transition ${
+              activeTab === tab.key
+                ? 'bg-[#FDC800] text-black font-bold'
+                : 'bg-[#1a1a1a] border border-white/[0.06] text-zinc-400 hover:text-white hover:border-white/[0.12]'
+            }`}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Tab Content */}
+      {activeTab === 'daftar-produk' && (
+        <div className="space-y-6">
+          {/* Filters */}
+          <div className="flex flex-col sm:flex-row gap-3">
+            <div className="relative flex-1">
+              <svg className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+              </svg>
+              <input
+                type="text"
+                placeholder="Cari nama atau SKU..."
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                className="form-input pl-10"
+              />
+            </div>
+            <select value={sortBy} onChange={e => setSortBy(e.target.value)} className="form-input w-full sm:w-auto" style={{ background: '#18181b', border: '1px solid rgba(255,255,255,0.1)' }}>
+              <option value="name-asc">Nama (A-Z)</option>
+              <option value="name-desc">Nama (Z-A)</option>
+              <option value="stock-asc">Stok (Rendah)</option>
+              <option value="stock-desc">Stok (Tinggi)</option>
+              <option value="price-asc">Harga (Murah)</option>
+              <option value="price-desc">Harga (Mahal)</option>
+            </select>
+            <select value={filterCat} onChange={e => setFilterCat(e.target.value)} className="form-input w-full sm:w-auto">
+              <option value="">Semua Kategori</option>
+              {categories.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
+            </select>
+            <select value={filterStatus} onChange={e => setFilterStatus(e.target.value)} className="form-input w-full sm:w-auto">
+              <option value="">Semua Status</option>
+              <option value="in-stock">Tersedia</option>
+              <option value="low-stock">Stok Rendah</option>
+              <option value="out-of-stock">Habis</option>
+            </select>
+          </div>
+
+          {/* Desktop Table - Spreadsheet Style */}
+          <div className="hidden md:block overflow-hidden border border-white/10">
+            <div className="overflow-x-auto max-h-[600px]">
+              <table className="w-full border-collapse">
+                <thead className="sticky top-0 z-10">
+                  <tr className="bg-zinc-800">
+                    <th className="border border-white/10 w-[48px] px-2 py-2.5 text-center text-[11px] font-bold text-zinc-400 uppercase tracking-wide">No</th>
+                    <th className="border border-white/10 w-[110px] px-2 py-2.5 text-center text-[11px] font-bold text-zinc-400 uppercase tracking-wide">SKU</th>
+                    <th className="border border-white/10 px-3 py-2.5 text-left text-[11px] font-bold text-zinc-400 uppercase tracking-wide">Nama Produk</th>
+                    <th className="border border-white/10 w-[120px] px-2 py-2.5 text-center text-[11px] font-bold text-zinc-400 uppercase tracking-wide">Kategori</th>
+                    <th className="border border-white/10 w-[80px] px-2 py-2.5 text-center text-[11px] font-bold text-zinc-400 uppercase tracking-wide">Stok</th>
+                    <th className="border border-white/10 w-[140px] px-3 py-2.5 text-right text-[11px] font-bold text-zinc-400 uppercase tracking-wide">Harga</th>
+                    <th className="border border-white/10 w-[110px] px-2 py-2.5 text-center text-[11px] font-bold text-zinc-400 uppercase tracking-wide">Status</th>
+                    <th className="border border-white/10 w-[80px] px-2 py-2.5 text-center text-[11px] font-bold text-zinc-400 uppercase tracking-wide">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filtered.map((p, idx) => (
+                    <tr key={p.id} className={`hover:bg-indigo-900/20 transition ${idx % 2 === 1 ? 'bg-zinc-900/40' : 'bg-zinc-950'}`}>
+                      <td className="border border-white/10 px-2 py-2 text-center text-xs text-zinc-500">{idx + 1}</td>
+                      <td className="border border-white/10 px-2 py-2 text-center text-sm text-zinc-300">{p.sku}</td>
+                      <td className="border border-white/10 px-3 py-2 text-left text-sm font-medium text-white align-middle">{p.name}</td>
+                      <td className="border border-white/10 px-2 py-2 text-center text-xs text-zinc-400">{p.category}</td>
+                      <td className="border border-white/10 px-2 py-2 text-center font-mono text-sm font-medium text-zinc-300">{p.stock}</td>
+                      <td className="border border-white/10 px-3 py-2 text-right font-mono text-sm text-zinc-300">{formatRp(p.price)}</td>
+                      <td className="border border-white/10 px-2 py-2 text-center"><StatusBadge product={p} /></td>
+                      <td className="border border-white/10 px-2 py-2 text-center">
+                        <div className="flex justify-center gap-1">
+                          <button onClick={() => handleEdit(p)} className="w-7 h-7 rounded bg-indigo-500/10 text-indigo-400 hover:bg-indigo-500 hover:text-white flex items-center justify-center transition">
+                            <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" /></svg>
+                          </button>
+                          <button onClick={() => handleDelete(p.id, p.name)} className="w-7 h-7 rounded bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white flex items-center justify-center transition">
+                            <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" /></svg>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                  {filtered.length === 0 && (
+                    <tr><td colSpan={8} className="border border-white/10 text-center py-12 text-slate-500">Tidak ada produk ditemukan</td></tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* Mobile Cards */}
+          <div className="md:hidden space-y-3">
+            {filtered.map(p => (
+              <div key={p.id} className="glass-card p-4">
+                <div className="flex items-start gap-3">
+                  <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center text-white text-sm font-bold shrink-0">
+                    {p.name.substring(0, 2).toUpperCase()}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0">
+                        <p className="text-sm font-semibold text-white truncate">{p.name}</p>
+                        <p className="text-xs text-slate-500 mt-0.5">{p.category} &middot; <code className="text-slate-400">{p.sku}</code></p>
+                      </div>
+                      <StatusBadge product={p} />
+                    </div>
+                    <div className="flex items-center justify-between mt-3">
+                      <div className="flex gap-4">
+                        <div>
+                          <p className="text-[10px] text-slate-500 uppercase">Stok</p>
+                          <p className="text-sm font-semibold text-white">{p.stock}</p>
+                        </div>
+                        <div>
+                          <p className="text-[10px] text-slate-500 uppercase">Harga</p>
+                          <p className="text-sm font-semibold text-white">{formatRp(p.price)}</p>
+                        </div>
+                      </div>
+                      <div className="flex gap-1">
+                        <button onClick={() => handleEdit(p)} className="w-8 h-8 rounded-lg bg-brand-500/10 text-brand-400 hover:bg-brand-500 hover:text-white flex items-center justify-center transition">
+                          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+                          </svg>
+                        </button>
+                        <button onClick={() => handleDelete(p.id, p.name)} className="w-8 h-8 rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white flex items-center justify-center transition">
+                          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+            {filtered.length === 0 && (
+              <div className="text-center py-16 text-slate-500">
+                <svg className="w-12 h-12 mx-auto mb-3 text-slate-600" fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5m8.25 3v6.75m0 0l-3-3m3 3l3-3M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
+                </svg>
+                <p>Tidak ada produk ditemukan</p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {activeTab === 'laporan-stok' && (
+        <div className="space-y-4">
+          {/* Desktop Table - Stock Report */}
+          <div className="hidden md:block overflow-hidden border border-white/10">
+            <div className="overflow-x-auto max-h-[600px]">
+              <table className="w-full border-collapse">
+                <thead className="sticky top-0 z-10">
+                  <tr className="bg-zinc-800">
+                    <th className="border border-white/10 w-[48px] px-2 py-2.5 text-center text-[11px] font-bold text-zinc-400 uppercase tracking-wide">No</th>
+                    <th className="border border-white/10 w-[110px] px-2 py-2.5 text-center text-[11px] font-bold text-zinc-400 uppercase tracking-wide">SKU</th>
+                    <th className="border border-white/10 px-3 py-2.5 text-left text-[11px] font-bold text-zinc-400 uppercase tracking-wide">Nama Produk</th>
+                    <th className="border border-white/10 w-[90px] px-2 py-2.5 text-center text-[11px] font-bold text-zinc-400 uppercase tracking-wide">Stok Awal</th>
+                    <th className="border border-white/10 w-[90px] px-2 py-2.5 text-center text-[11px] font-bold text-zinc-400 uppercase tracking-wide">Masuk</th>
+                    <th className="border border-white/10 w-[90px] px-2 py-2.5 text-center text-[11px] font-bold text-zinc-400 uppercase tracking-wide">Keluar</th>
+                    <th className="border border-white/10 w-[90px] px-2 py-2.5 text-center text-[11px] font-bold text-zinc-400 uppercase tracking-wide">Stok Akhir</th>
+                    <th className="border border-white/10 w-[100px] px-2 py-2.5 text-center text-[11px] font-bold text-zinc-400 uppercase tracking-wide">Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {stockReports.length === 0 ? (
+                    <tr><td colSpan={8} className="border border-white/10 text-center py-12 text-zinc-500">Tidak ada data ditemukan</td></tr>
+                  ) : (
+                    stockReports.map((r, idx) => (
+                      <tr key={r.product.id} className={`hover:bg-indigo-900/20 transition ${idx % 2 === 1 ? 'bg-zinc-900/40' : 'bg-zinc-950'}`}>
+                        <td className="border border-white/10 px-2 py-2 text-center text-xs text-zinc-500">{idx + 1}</td>
+                        <td className="border border-white/10 px-2 py-2 text-center text-sm text-zinc-300 font-mono">{r.product.sku}</td>
+                        <td className="border border-white/10 px-3 py-2 text-left text-sm font-medium text-white">{r.product.name}</td>
+                        <td className="border border-white/10 px-2 py-2 text-center text-sm text-zinc-300">{r.stockAwal}</td>
+                        <td className="border border-white/10 px-2 py-2 text-center text-sm font-medium text-emerald-400">{r.masuk > 0 ? `+${r.masuk}` : '0'}</td>
+                        <td className="border border-white/10 px-2 py-2 text-center text-sm font-medium text-red-400">{r.keluar > 0 ? `-${r.keluar}` : '0'}</td>
+                        <td className={`border border-white/10 px-2 py-2 text-center text-sm font-bold ${
+                          r.status === 'habis' ? 'text-red-400' : r.status === 'menipis' ? 'text-amber-400' : 'text-emerald-400'
+                        }`}>{r.stockAkhir}</td>
+                        <td className="border border-white/10 px-2 py-2 text-center"><StockStatusBadge status={r.status} /></td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* Mobile Cards - Stock Report */}
+          <div className="md:hidden space-y-2.5">
+            {stockReports.length === 0 ? (
+              <div className="text-center py-16">
+                <p className="text-sm text-zinc-500">Tidak ada data ditemukan</p>
+              </div>
+            ) : (
+              stockReports.map(r => (
+                <div key={r.product.id} className={`rounded-xl overflow-hidden border transition-all ${
+                  r.status === 'habis' ? 'border-red-500/20 bg-red-500/[0.02]' :
+                  r.status === 'menipis' ? 'border-amber-500/20 bg-amber-500/[0.02]' :
+                  'border-white/[0.06] bg-[#1a1a1a]'
+                }`}>
+                  <div className="px-4 pt-3 pb-2 flex items-center justify-between">
+                    <div className="min-w-0">
+                      <p className="text-[13px] font-semibold text-white truncate">{r.product.name}</p>
+                      <p className="text-[10px] text-zinc-500 font-mono">{r.product.sku}</p>
+                    </div>
+                    <StockStatusBadge status={r.status} />
+                  </div>
+                  <div className="px-4 pb-3">
+                    <div className="flex items-center justify-between bg-[#0f0f0f] rounded-lg px-3 py-2">
+                      <div className="text-center">
+                        <p className="text-[10px] text-zinc-600">AWAL</p>
+                        <p className="text-sm font-semibold text-zinc-400">{r.stockAwal}</p>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-[11px] font-bold text-emerald-400">+{r.masuk}</span>
+                        <svg className="w-3 h-3 text-zinc-600" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" /></svg>
+                        <span className="text-[11px] font-bold text-red-400">-{r.keluar}</span>
+                      </div>
+                      <div className="text-center">
+                        <p className="text-[10px] text-zinc-600">AKHIR</p>
+                        <p className={`text-sm font-bold ${
+                          r.status === 'habis' ? 'text-red-400' : r.status === 'menipis' ? 'text-amber-400' : 'text-emerald-400'
+                        }`}>{r.stockAkhir}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      )}
+
+      {activeTab === 'barang-masuk' && (
+        <div className="space-y-4">
+          <div className="overflow-hidden border border-white/10">
+            <div className="overflow-x-auto max-h-[600px]">
+              <table className="w-full border-collapse">
+                <thead className="sticky top-0 z-10">
+                  <tr className="bg-zinc-800">
+                    <th className="border border-white/10 w-[48px] px-2 py-2.5 text-center text-[11px] font-bold text-zinc-400 uppercase tracking-wide">No</th>
+                    <th className="border border-white/10 px-3 py-2.5 text-left text-[11px] font-bold text-zinc-400 uppercase tracking-wide">Nama Produk</th>
+                    <th className="border border-white/10 w-[100px] px-2 py-2.5 text-center text-[11px] font-bold text-zinc-400 uppercase tracking-wide">Jumlah</th>
+                    <th className="border border-white/10 w-[140px] px-2 py-2.5 text-center text-[11px] font-bold text-zinc-400 uppercase tracking-wide">Tanggal</th>
+                    <th className="border border-white/10 px-3 py-2.5 text-left text-[11px] font-bold text-zinc-400 uppercase tracking-wide">Catatan</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {barangMasuk.length === 0 ? (
+                    <tr><td colSpan={5} className="border border-white/10 text-center py-12 text-zinc-500">Tidak ada barang masuk</td></tr>
+                  ) : (
+                    barangMasuk.map((t, idx) => (
+                      <tr key={t.id} className={`hover:bg-indigo-900/20 transition ${idx % 2 === 1 ? 'bg-zinc-900/40' : 'bg-zinc-950'}`}>
+                        <td className="border border-white/10 px-2 py-2 text-center text-xs text-zinc-500">{idx + 1}</td>
+                        <td className="border border-white/10 px-3 py-2 text-left text-sm font-medium text-white">{t.productName}</td>
+                        <td className="border border-white/10 px-2 py-2 text-center text-sm font-medium text-emerald-400">+{t.quantity}</td>
+                        <td className="border border-white/10 px-2 py-2 text-center text-sm text-zinc-400">
+                          {new Date(t.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
+                        </td>
+                        <td className="border border-white/10 px-3 py-2 text-left text-sm text-zinc-400">{t.note || '-'}</td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {activeTab === 'barang-keluar' && (
+        <div className="space-y-4">
+          <div className="overflow-hidden border border-white/10">
+            <div className="overflow-x-auto max-h-[600px]">
+              <table className="w-full border-collapse">
+                <thead className="sticky top-0 z-10">
+                  <tr className="bg-zinc-800">
+                    <th className="border border-white/10 w-[48px] px-2 py-2.5 text-center text-[11px] font-bold text-zinc-400 uppercase tracking-wide">No</th>
+                    <th className="border border-white/10 px-3 py-2.5 text-left text-[11px] font-bold text-zinc-400 uppercase tracking-wide">Nama Produk</th>
+                    <th className="border border-white/10 w-[100px] px-2 py-2.5 text-center text-[11px] font-bold text-zinc-400 uppercase tracking-wide">Jumlah</th>
+                    <th className="border border-white/10 w-[140px] px-2 py-2.5 text-center text-[11px] font-bold text-zinc-400 uppercase tracking-wide">Tanggal</th>
+                    <th className="border border-white/10 px-3 py-2.5 text-left text-[11px] font-bold text-zinc-400 uppercase tracking-wide">Catatan</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {barangKeluar.length === 0 ? (
+                    <tr><td colSpan={5} className="border border-white/10 text-center py-12 text-zinc-500">Tidak ada barang keluar</td></tr>
+                  ) : (
+                    barangKeluar.map((t, idx) => (
+                      <tr key={t.id} className={`hover:bg-indigo-900/20 transition ${idx % 2 === 1 ? 'bg-zinc-900/40' : 'bg-zinc-950'}`}>
+                        <td className="border border-white/10 px-2 py-2 text-center text-xs text-zinc-500">{idx + 1}</td>
+                        <td className="border border-white/10 px-3 py-2 text-left text-sm font-medium text-white">{t.productName}</td>
+                        <td className="border border-white/10 px-2 py-2 text-center text-sm font-medium text-red-400">-{t.quantity}</td>
+                        <td className="border border-white/10 px-2 py-2 text-center text-sm text-zinc-400">
+                          {new Date(t.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
+                        </td>
+                        <td className="border border-white/10 px-3 py-2 text-left text-sm text-zinc-400">{t.note || '-'}</td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modals */}
       <ProductModal
         isOpen={modalOpen}
         onClose={() => { setModalOpen(false); setEditProduct(null) }}
@@ -273,7 +575,6 @@ export default function ProductsPage() {
         categories={categories}
       />
 
-      {/* Delete Confirmation Modal */}
       <DeleteModal
         isOpen={deleteModal.open}
         productName={deleteModal.name}
@@ -281,7 +582,6 @@ export default function ProductsPage() {
         onCancel={() => setDeleteModal({ open: false, id: '', name: '' })}
       />
 
-      {/* CSV Import Modal */}
       <CsvImportModal
         isOpen={csvModal}
         onClose={() => setCsvModal(false)}
@@ -297,4 +597,14 @@ function StatusBadge({ product }: { product: Product }) {
   const label = getStatusLabel(product)
   const classes = status === 'in-stock' ? 'badge-success' : status === 'low-stock' ? 'badge-warning' : 'badge-danger'
   return <span className={`badge ${classes} whitespace-nowrap`}>{label}</span>
+}
+
+function StockStatusBadge({ status }: { status: 'aman' | 'menipis' | 'habis' }) {
+  const styles = {
+    aman: 'badge-success',
+    menipis: 'badge-warning',
+    habis: 'badge-danger',
+  }
+  const labels = { aman: 'Aman', menipis: 'Menipis', habis: 'Habis' }
+  return <span className={`badge ${styles[status]} whitespace-nowrap`}>{labels[status]}</span>
 }
