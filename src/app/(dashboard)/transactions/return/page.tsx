@@ -86,8 +86,8 @@ export default function ReturnPage() {
   if (!mounted) return (
     <div className="flex items-center justify-center min-h-[80vh]">
       <div className="flex flex-col items-center gap-3 animate-pulse">
-        <Loader2 className="w-8 h-8 text-[#FDC800] animate-spin" />
-        <p className="text-zinc-500 text-sm">Memuat...</p>
+        <Loader2 className="w-8 h-8 text-[#FF5F03] animate-spin" />
+        <p className="text-gray-500 text-sm">Memuat...</p>
       </div>
     </div>
   )
@@ -160,20 +160,20 @@ export default function ReturnPage() {
             <Sparkles className="w-10 h-10 text-[#16A34A]" />
           </div>
           <div>
-            <p className="text-xl font-bold text-[#fafafa]">Return Tercatat!</p>
-            <p className="text-sm text-zinc-500 mt-1">
+            <p className="text-xl font-bold text-gray-900">Return Tercatat!</p>
+            <p className="text-sm text-gray-500 mt-1">
               {condition === 'good' ? 'Stok telah diperbarui' : 'Dicatat sebagai barang rusak'}
             </p>
           </div>
-          <div className="flex items-center gap-4 px-6 py-3 rounded-xl bg-[#1a1a1a] border border-white/[0.06]">
+          <div className="flex items-center gap-4 px-6 py-3 rounded-xl bg-white border border-gray-200">
             <div className="text-center">
-              <p className="text-[10px] text-zinc-500 uppercase tracking-wider">Sebelum</p>
-              <p className="text-lg font-bold text-[#fafafa]">{stockBefore}</p>
+              <p className="text-[10px] text-gray-500 uppercase tracking-wider">Sebelum</p>
+              <p className="text-lg font-bold text-gray-900">{stockBefore}</p>
             </div>
-            <div className="text-[#FDC800] font-bold">→</div>
+            <div className="text-[#FF5F03] font-bold">→</div>
             <div className="text-center">
-              <p className="text-[10px] text-zinc-500 uppercase tracking-wider">Sesudah</p>
-              <p className={`text-lg font-bold ${stockAfter > stockBefore ? 'text-emerald-400' : 'text-[#fafafa]'}`}>{stockAfter}</p>
+              <p className="text-[10px] text-gray-500 uppercase tracking-wider">Sesudah</p>
+              <p className={`text-lg font-bold ${stockAfter > stockBefore ? 'text-emerald-400' : 'text-gray-900'}`}>{stockAfter}</p>
             </div>
             {condition === 'good' && (
               <span className="text-[10px] font-semibold px-2 py-1 rounded-full bg-emerald-500/10 text-emerald-400">+{quantity}</span>
@@ -184,7 +184,7 @@ export default function ReturnPage() {
           </div>
           <button
             onClick={() => router.push('/transactions')}
-            className="mt-2 px-6 py-2.5 rounded-xl text-sm font-bold bg-[#FDC800] text-black hover:bg-[#FDC800]/90 transition-all active:scale-95"
+            className="mt-2 px-6 py-2.5 rounded-xl text-sm font-bold bg-[#FF5F03] text-white hover:bg-[#FF5F03]/90 transition-all active:scale-95"
           >
             Kembali ke Transaksi
           </button>
@@ -198,7 +198,7 @@ export default function ReturnPage() {
       {/* Back */}
       <button
         onClick={() => router.push('/transactions')}
-        className="group flex items-center gap-2 text-sm font-semibold text-zinc-400 hover:text-[#fafafa] mb-6 transition-all active:scale-95"
+        className="group flex items-center gap-2 text-sm font-semibold text-gray-500 hover:text-gray-900 mb-6 transition-all active:scale-95"
       >
         <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
         Kembali
@@ -210,23 +210,23 @@ export default function ReturnPage() {
           <RotateCcw className="w-6 h-6 text-amber-400" />
         </div>
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-[#fafafa]">Return Masuk</h1>
-          <p className="text-sm text-zinc-500">Catat barang kembali dari customer</p>
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Return Masuk</h1>
+          <p className="text-sm text-gray-500">Catat barang kembali dari customer</p>
         </div>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
 
         {/* === PILIH PRODUK === */}
-        <div className="rounded-xl bg-[#1a1a1a] border border-white/[0.06] p-5 space-y-4">
-          <label className="text-xs font-bold uppercase tracking-wider text-zinc-400 block">
+        <div className="rounded-xl bg-white border border-gray-200 p-5 space-y-4">
+          <label className="text-xs font-bold uppercase tracking-wider text-gray-500 block">
             Produk yang Dikembalikan
           </label>
 
           {/* Search */}
           <div className="relative" ref={dropdownRef}>
             <div className="relative">
-              <Search className="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500 pointer-events-none" />
+              <Search className="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
               <input
                 type="text"
                 value={productSearch}
@@ -252,10 +252,10 @@ export default function ReturnPage() {
                     }
                   }
                 }}
-                className={`w-full rounded-xl text-sm pl-11 pr-20 py-3.5 font-medium bg-[#0f0f0f] text-[#fafafa] border-2 focus:outline-none transition-all duration-300 placeholder:text-zinc-600 ${
+                className={`w-full rounded-xl text-sm pl-11 pr-20 py-3.5 font-medium bg-white text-gray-900 border-2 focus:outline-none transition-all duration-300 placeholder:text-gray-400 ${
                   scanStatus === 'found' ? 'border-emerald-500/50 ring-2 ring-emerald-500/20' :
                   scanStatus === 'not-found' ? 'border-red-500/50 ring-2 ring-red-500/20' :
-                  'border-transparent focus:border-[#FDC800]/50 focus:ring-2 focus:ring-[#FDC800]/20'
+                  'border-gray-200 focus:border-[#072C2C]/50 focus:ring-2 focus:ring-[#072C2C]/20'
                 }`}
                 placeholder="Cari atau scan barcode produk..."
                 autoComplete="off"
@@ -265,7 +265,7 @@ export default function ReturnPage() {
                 <button
                   type="button"
                   onClick={() => setShowCamera(true)}
-                  className="sm:hidden w-8 h-8 rounded-lg bg-[#FDC800]/10 border border-[#FDC800]/20 flex items-center justify-center text-[#FDC800] hover:bg-[#FDC800]/20 transition-all active:scale-90"
+                  className="sm:hidden w-8 h-8 rounded-lg bg-[#FF5F03]/10 border border-[#FF5F03]/20 flex items-center justify-center text-[#FF5F03] hover:bg-[#FF5F03]/20 transition-all active:scale-90"
                 >
                   <Camera className="w-3.5 h-3.5" />
                 </button>
@@ -273,7 +273,7 @@ export default function ReturnPage() {
                   <button
                     type="button"
                     onClick={() => { setProductSearch(''); setSelectedProduct(''); setShowDropdown(true); setScanStatus('idle') }}
-                    className="text-zinc-500 hover:text-zinc-300 transition-colors"
+                    className="text-gray-500 hover:text-gray-700 transition-colors"
                   >
                     <X className="w-4 h-4" />
                   </button>
@@ -290,24 +290,24 @@ export default function ReturnPage() {
             )}
 
             {showDropdown && scanStatus === 'idle' && (
-              <div className="absolute z-50 left-0 right-0 top-full mt-2 rounded-xl bg-[#0f0f0f] border border-white/[0.06] max-h-56 overflow-y-auto shadow-2xl shadow-black/50">
+              <div className="absolute z-50 left-0 right-0 top-full mt-2 rounded-xl bg-white border border-gray-200 max-h-56 overflow-y-auto shadow-2xl shadow-black/10">
                 {filteredProducts.length === 0 ? (
-                  <div className="px-4 py-6 text-center text-sm text-zinc-500">Produk tidak ditemukan</div>
+                  <div className="px-4 py-6 text-center text-sm text-gray-500">Produk tidak ditemukan</div>
                 ) : filteredProducts.map(p => (
                   <button
                     key={p.id}
                     type="button"
                     onClick={() => handleSelectProduct(p.id)}
-                    className={`w-full flex items-center gap-3 px-4 py-3 text-left transition-all hover:bg-[#FDC800]/5 border-b border-white/[0.04] last:border-b-0 ${selectedProduct === p.id ? 'bg-[#FDC800]/5' : ''}`}
+                    className={`w-full flex items-center gap-3 px-4 py-3 text-left transition-all hover:bg-[#FF5F03]/5 border-b border-gray-100 last:border-b-0 ${selectedProduct === p.id ? 'bg-[#FF5F03]/5' : ''}`}
                   >
-                    <div className="w-9 h-9 rounded-lg bg-[#FDC800]/10 flex items-center justify-center text-[10px] font-black text-[#FDC800] shrink-0">
+                    <div className="w-9 h-9 rounded-lg bg-[#FF5F03]/10 flex items-center justify-center text-[10px] font-black text-[#FF5F03] shrink-0">
                       {p.name.substring(0, 2).toUpperCase()}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-[#fafafa] truncate">{p.name}</p>
-                      <p className="text-[11px] text-zinc-500">{p.sku} · Stok: {p.stock}</p>
+                      <p className="text-sm font-semibold text-gray-900 truncate">{p.name}</p>
+                      <p className="text-[11px] text-gray-500">{p.sku} · Stok: {p.stock}</p>
                     </div>
-                    <span className="text-[11px] font-medium text-zinc-500 shrink-0">{formatRp(p.price)}</span>
+                    <span className="text-[11px] font-medium text-gray-500 shrink-0">{formatRp(p.price)}</span>
                   </button>
                 ))}
               </div>
@@ -316,13 +316,13 @@ export default function ReturnPage() {
 
           {/* Selected product card */}
           {selected && (
-            <div className="flex items-center gap-3 p-3 rounded-xl bg-[#0f0f0f] border border-white/[0.04]">
-              <div className="w-11 h-11 rounded-xl bg-[#FDC800]/10 flex items-center justify-center text-xs font-black text-[#FDC800] shrink-0">
+            <div className="flex items-center gap-3 p-3 rounded-xl bg-white border border-gray-200">
+              <div className="w-11 h-11 rounded-xl bg-[#FF5F03]/10 flex items-center justify-center text-xs font-black text-[#FF5F03] shrink-0">
                 {selected.name.substring(0, 2).toUpperCase()}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-white truncate">{selected.name}</p>
-                <p className="text-[11px] text-zinc-500">{selected.sku} · Stok saat ini: <span className="text-white font-semibold">{selected.stock}</span></p>
+                <p className="text-sm font-semibold text-gray-900 truncate">{selected.name}</p>
+                <p className="text-[11px] text-gray-500">{selected.sku} · Stok saat ini: <span className="text-gray-900 font-semibold">{selected.stock}</span></p>
               </div>
             </div>
           )}
@@ -330,12 +330,12 @@ export default function ReturnPage() {
           {/* Quantity */}
           {selected && (
             <div>
-              <label className="text-[11px] font-semibold text-zinc-500 uppercase tracking-wider mb-2 block">Jumlah Return</label>
+              <label className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider mb-2 block">Jumlah Return</label>
               <div className="flex items-center gap-2">
                 <button
                   type="button"
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                  className="w-11 h-11 rounded-xl bg-[#0f0f0f] border border-white/[0.06] flex items-center justify-center text-[#fafafa] hover:bg-white/[0.04] active:scale-90 transition-all shrink-0"
+                  className="w-11 h-11 rounded-xl bg-white border border-gray-200 flex items-center justify-center text-gray-900 hover:bg-gray-50 active:scale-90 transition-all shrink-0"
                 >
                   <Minus className="w-4 h-4" />
                 </button>
@@ -344,12 +344,12 @@ export default function ReturnPage() {
                   min={1}
                   value={quantity}
                   onChange={e => setQuantity(Math.max(1, +e.target.value))}
-                  className="flex-1 min-w-0 rounded-xl text-center text-lg font-bold py-2.5 bg-[#0f0f0f] text-[#fafafa] border-none focus:outline-none focus:ring-2 focus:ring-[#FDC800]/50 transition-all"
+                  className="flex-1 min-w-0 rounded-xl text-center text-lg font-bold py-2.5 bg-white border border-gray-200 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#072C2C]/30 transition-all"
                 />
                 <button
                   type="button"
                   onClick={() => setQuantity(quantity + 1)}
-                  className="w-11 h-11 rounded-xl bg-[#0f0f0f] border border-white/[0.06] flex items-center justify-center text-[#fafafa] hover:bg-white/[0.04] active:scale-90 transition-all shrink-0"
+                  className="w-11 h-11 rounded-xl bg-white border border-gray-200 flex items-center justify-center text-gray-900 hover:bg-gray-50 active:scale-90 transition-all shrink-0"
                 >
                   <Plus className="w-4 h-4" />
                 </button>
@@ -360,8 +360,8 @@ export default function ReturnPage() {
 
         {/* === KONDISI BARANG === */}
         {selected && (
-          <div className="rounded-xl bg-[#1a1a1a] border border-white/[0.06] p-5 space-y-4">
-            <label className="text-xs font-bold uppercase tracking-wider text-zinc-400 block">
+          <div className="rounded-xl bg-white border border-gray-200 p-5 space-y-4">
+            <label className="text-xs font-bold uppercase tracking-wider text-gray-500 block">
               Kondisi Barang
             </label>
             <div className="grid grid-cols-2 gap-3">
@@ -371,12 +371,12 @@ export default function ReturnPage() {
                 className={`p-4 rounded-xl text-left transition-all duration-200 active:scale-[0.97] ${
                   condition === 'good'
                     ? 'bg-emerald-500/10 border-2 border-emerald-500/50 ring-1 ring-emerald-500/20'
-                    : 'bg-[#0f0f0f] border border-white/[0.06] hover:border-emerald-500/30'
+                    : 'bg-white border border-gray-200 hover:border-emerald-500/30'
                 }`}
               >
-                <CheckCircle2 className={`w-5 h-5 mb-2 ${condition === 'good' ? 'text-emerald-400' : 'text-zinc-500'}`} />
-                <p className={`text-sm font-bold ${condition === 'good' ? 'text-emerald-400' : 'text-zinc-300'}`}>Bagus</p>
-                <p className="text-[10px] text-zinc-500 mt-0.5">Stok bertambah +{quantity}</p>
+                <CheckCircle2 className={`w-5 h-5 mb-2 ${condition === 'good' ? 'text-emerald-400' : 'text-gray-500'}`} />
+                <p className={`text-sm font-bold ${condition === 'good' ? 'text-emerald-400' : 'text-gray-700'}`}>Bagus</p>
+                <p className="text-[10px] text-gray-500 mt-0.5">Stok bertambah +{quantity}</p>
               </button>
               <button
                 type="button"
@@ -384,12 +384,12 @@ export default function ReturnPage() {
                 className={`p-4 rounded-xl text-left transition-all duration-200 active:scale-[0.97] ${
                   condition === 'damaged'
                     ? 'bg-amber-500/10 border-2 border-amber-500/50 ring-1 ring-amber-500/20'
-                    : 'bg-[#0f0f0f] border border-white/[0.06] hover:border-amber-500/30'
+                    : 'bg-white border border-gray-200 hover:border-amber-500/30'
                 }`}
               >
-                <XCircle className={`w-5 h-5 mb-2 ${condition === 'damaged' ? 'text-amber-400' : 'text-zinc-500'}`} />
-                <p className={`text-sm font-bold ${condition === 'damaged' ? 'text-amber-400' : 'text-zinc-300'}`}>Rusak</p>
-                <p className="text-[10px] text-zinc-500 mt-0.5">Stok tidak berubah</p>
+                <XCircle className={`w-5 h-5 mb-2 ${condition === 'damaged' ? 'text-amber-400' : 'text-gray-500'}`} />
+                <p className={`text-sm font-bold ${condition === 'damaged' ? 'text-amber-400' : 'text-gray-700'}`}>Rusak</p>
+                <p className="text-[10px] text-gray-500 mt-0.5">Stok tidak berubah</p>
               </button>
             </div>
           </div>
@@ -397,8 +397,8 @@ export default function ReturnPage() {
 
         {/* === ALASAN RETURN === */}
         {selected && (
-          <div className="rounded-xl bg-[#1a1a1a] border border-white/[0.06] p-5 space-y-4">
-            <label className="text-xs font-bold uppercase tracking-wider text-zinc-400 block">
+          <div className="rounded-xl bg-white border border-gray-200 p-5 space-y-4">
+            <label className="text-xs font-bold uppercase tracking-wider text-gray-500 block">
               Alasan Return
             </label>
             <div className="grid grid-cols-2 gap-2">
@@ -409,8 +409,8 @@ export default function ReturnPage() {
                   onClick={() => setReason(r.value)}
                   className={`flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all active:scale-[0.97] ${
                     reason === r.value
-                      ? 'bg-[#FDC800]/10 border border-[#FDC800]/40 text-[#FDC800]'
-                      : 'bg-[#0f0f0f] border border-white/[0.06] text-zinc-400 hover:text-zinc-200 hover:border-white/[0.12]'
+                      ? 'bg-[#FF5F03]/10 border border-[#FF5F03]/40 text-[#FF5F03]'
+                      : 'bg-white border border-gray-200 text-gray-500 hover:text-gray-700 hover:border-gray-300'
                   }`}
                 >
                   {r.icon}
@@ -424,45 +424,45 @@ export default function ReturnPage() {
         {/* === CATATAN === */}
         {selected && (
           <div>
-            <label className="text-xs font-bold uppercase tracking-wider text-zinc-400 mb-3 flex items-center gap-2">
-              <FileText className="w-3.5 h-3.5 text-[#FDC800]" />
+            <label className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-3 flex items-center gap-2">
+              <FileText className="w-3.5 h-3.5 text-[#FF5F03]" />
               Catatan
-              <span className="normal-case font-normal text-zinc-600">(opsional)</span>
+              <span className="normal-case font-normal text-gray-400">(opsional)</span>
             </label>
             <textarea
               value={note}
               onChange={e => setNote(e.target.value.slice(0, 200))}
               maxLength={200}
               rows={3}
-              className="w-full rounded-xl text-sm px-4 py-3.5 resize-none font-medium bg-[#0f0f0f] text-[#fafafa] border-none focus:outline-none focus:ring-2 focus:ring-[#FDC800]/50 transition-all placeholder:text-zinc-600"
+              className="w-full rounded-xl text-sm px-4 py-3.5 resize-none font-medium bg-white border border-gray-200 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#072C2C]/30 transition-all placeholder:text-gray-400"
               placeholder="Catatan tambahan..."
             />
-            <p className="text-right text-[10px] mt-1.5 text-zinc-600">{note.length}/200</p>
+            <p className="text-right text-[10px] mt-1.5 text-gray-400">{note.length}/200</p>
           </div>
         )}
 
         {/* === RINGKASAN & SUBMIT === */}
         {selected && (
-          <div className="rounded-xl bg-[#0f0f0f] border border-white/[0.06] p-4 space-y-3">
-            <p className="text-[11px] font-bold uppercase tracking-wider text-zinc-500">Ringkasan</p>
+          <div className="rounded-xl bg-white border border-gray-200 p-4 space-y-3">
+            <p className="text-[11px] font-bold uppercase tracking-wider text-gray-500">Ringkasan</p>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
-                <span className="text-zinc-500">Produk</span>
-                <span className="text-[#fafafa] font-medium truncate ml-4">{selected.name}</span>
+                <span className="text-gray-500">Produk</span>
+                <span className="text-gray-900 font-medium truncate ml-4">{selected.name}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-zinc-500">Jumlah</span>
-                <span className="text-[#fafafa] font-bold">{quantity}</span>
+                <span className="text-gray-500">Jumlah</span>
+                <span className="text-gray-900 font-bold">{quantity}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-zinc-500">Kondisi</span>
+                <span className="text-gray-500">Kondisi</span>
                 <span className={`font-semibold ${condition === 'good' ? 'text-emerald-400' : 'text-amber-400'}`}>
                   {condition === 'good' ? 'Bagus' : 'Rusak'}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-zinc-500">Stok setelah</span>
-                <span className={`font-bold ${condition === 'good' ? 'text-emerald-400' : 'text-[#fafafa]'}`}>
+                <span className="text-gray-500">Stok setelah</span>
+                <span className={`font-bold ${condition === 'good' ? 'text-emerald-400' : 'text-gray-900'}`}>
                   {condition === 'good' ? selected.stock + quantity : selected.stock}
                   {condition === 'good' && <span className="text-[10px] ml-1 text-emerald-400/70">(+{quantity})</span>}
                 </span>
@@ -476,14 +476,14 @@ export default function ReturnPage() {
           <button
             type="button"
             onClick={() => router.push('/transactions')}
-            className="px-5 py-3 rounded-xl text-sm font-bold bg-[#1a1a1a] border border-white/[0.06] text-zinc-300 hover:bg-white/[0.04] transition-all active:scale-95"
+            className="px-5 py-3 rounded-xl text-sm font-bold bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 transition-all active:scale-95"
           >
             Batal
           </button>
           <button
             type="submit"
             disabled={loading || !selectedProduct}
-            className="px-6 py-3 rounded-xl text-sm font-bold bg-[#FDC800] text-[#000000] hover:bg-[#FDC800]/90 disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2 transition-all active:scale-[0.97] shadow-lg shadow-[#FDC800]/20"
+            className="px-6 py-3 rounded-xl text-sm font-bold bg-[#FF5F03] text-white hover:bg-[#FF5F03]/90 disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2 transition-all active:scale-[0.97] shadow-lg shadow-[#FF5F03]/20"
           >
             {loading ? (
               <Loader2 className="w-4 h-4 animate-spin" />
@@ -508,7 +508,7 @@ export default function ReturnPage() {
           </button>
           <div className="relative w-full max-w-sm mx-4">
             <p className="text-center text-sm font-medium text-white/80 mb-4">Arahkan kamera ke barcode produk</p>
-            <div className="relative rounded-2xl overflow-hidden border-2 border-[#FDC800]/30 shadow-2xl shadow-[#FDC800]/10">
+            <div className="relative rounded-2xl overflow-hidden border-2 border-[#FF5F03]/30 shadow-2xl shadow-[#FF5F03]/10">
               <div id="return-barcode-scanner" ref={(el) => {
                 if (!el || (el as any).__started) return;
                 (el as any).__started = true;
@@ -539,10 +539,10 @@ export default function ReturnPage() {
                   ).catch(() => {});
                 });
               }} className="w-full" />
-              {/* Gold guide overlay */}
+              {/* Guide overlay */}
               <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
-                <div className="w-[70%] h-24 border-2 border-[#FDC800] rounded-lg shadow-[0_0_20px_rgba(253,200,0,0.3)]">
-                  <div className="absolute top-1/2 left-2 right-2 h-[2px] bg-gradient-to-r from-transparent via-[#FDC800] to-transparent animate-pulse" />
+                <div className="w-[70%] h-24 border-2 border-[#FF5F03] rounded-lg shadow-[0_0_20px_rgba(255,95,3,0.3)]">
+                  <div className="absolute top-1/2 left-2 right-2 h-[2px] bg-gradient-to-r from-transparent via-[#FF5F03] to-transparent animate-pulse" />
                 </div>
               </div>
             </div>
