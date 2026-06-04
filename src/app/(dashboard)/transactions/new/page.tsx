@@ -248,7 +248,7 @@ export default function NewTransactionPage() {
   }
 
   return (
-    <div className="max-w-3xl mx-auto py-2 px-4 lg:px-8">
+    <div className="max-w-5xl mx-auto py-2 px-4 lg:px-8">
       {/* Back + Header */}
       <div className="mb-6">
         <button onClick={() => setMode(null)} className="group flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-gray-900 mb-3 transition">
@@ -263,7 +263,7 @@ export default function NewTransactionPage() {
 
         {/* === TIPE TRANSAKSI === */}
         <div>
-          <div className={`rounded-t-xl px-6 py-4 ${type === 'in' ? 'bg-[#16A34A]' : 'bg-[#DC2626]'}`}>
+          <div className={`rounded-t-xl px-6 py-4 ${type === 'in' ? 'bg-[#FF5F03]' : 'bg-[#DC2626]'}`}>
             <div className="flex items-center gap-3">
               {type === 'in' ? <ArrowDownCircle size={18} className="text-white" /> : <ArrowUpCircle size={18} className="text-white" />}
               <div>
