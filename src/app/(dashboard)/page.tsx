@@ -117,55 +117,55 @@ export default function Dashboard() {
       {/* Bottom: Transactions + Best Sellers */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Recent Transactions */}
-        <div className="rounded-xl overflow-hidden border border-white/[0.06] bg-[#1a1a1a]">
-          <div className="px-5 py-4 border-b border-white/[0.06] flex items-center gap-2">
-            <svg className="w-4 h-4 text-[#818cf8]" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" /></svg>
-            <h3 className="text-sm font-semibold text-white">Transaksi Terbaru</h3>
+        <div className="rounded-xl overflow-hidden border border-gray-200 bg-white">
+          <div className="px-5 py-4 border-b border-gray-200 flex items-center gap-2">
+            <svg className="w-4 h-4 text-[#072C2C]" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" /></svg>
+            <h3 className="text-sm font-semibold text-gray-900">Transaksi Terbaru</h3>
           </div>
           <div className="p-4 space-y-2">
             {paginatedTx.map(tx => (
-              <div key={tx.id} className="flex items-center justify-between px-3 py-2.5 rounded-lg bg-white/[0.02] border border-white/[0.05]">
+              <div key={tx.id} className="flex items-center justify-between px-3 py-2.5 rounded-lg bg-gray-50 border border-gray-100">
                 <div>
-                  <p className="text-[13px] font-semibold text-zinc-200">{tx.productName}</p>
-                  <p className="text-[11px] text-zinc-500 mt-0.5">{new Date(tx.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
+                  <p className="text-[13px] font-semibold text-gray-800">{tx.productName}</p>
+                  <p className="text-[11px] text-gray-500 mt-0.5">{new Date(tx.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${tx.type === 'in' ? 'bg-emerald-500/15 text-emerald-400' : 'bg-red-500/15 text-red-400'}`}>
+                  <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${tx.type === 'in' ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-600'}`}>
                     {tx.type === 'in' ? 'Masuk' : 'Keluar'}
                   </span>
-                  <span className="text-[13px] font-semibold text-zinc-200">{tx.quantity} unit</span>
+                  <span className="text-[13px] font-semibold text-gray-800">{tx.quantity} unit</span>
                 </div>
               </div>
             ))}
-            <div className="flex items-center justify-center gap-4 pt-3 border-t border-white/[0.06]">
-              <button onClick={() => setTxPage(p => Math.max(1, p - 1))} className="px-3 py-1.5 rounded-lg border border-white/[0.1] text-xs font-medium text-zinc-400 hover:bg-indigo-600 hover:text-white hover:border-indigo-600 transition">Prev</button>
-              <span className="text-xs text-zinc-500">{txPage} / {totalTxPages}</span>
-              <button onClick={() => setTxPage(p => Math.min(totalTxPages, p + 1))} className="px-3 py-1.5 rounded-lg border border-white/[0.1] text-xs font-medium text-zinc-400 hover:bg-indigo-600 hover:text-white hover:border-indigo-600 transition">Next</button>
+            <div className="flex items-center justify-center gap-4 pt-3 border-t border-gray-200">
+              <button onClick={() => setTxPage(p => Math.max(1, p - 1))} className="px-3 py-1.5 rounded-lg border border-gray-200 text-xs font-medium text-gray-500 hover:bg-[#072C2C] hover:text-white hover:border-[#072C2C] transition">Prev</button>
+              <span className="text-xs text-gray-500">{txPage} / {totalTxPages}</span>
+              <button onClick={() => setTxPage(p => Math.min(totalTxPages, p + 1))} className="px-3 py-1.5 rounded-lg border border-gray-200 text-xs font-medium text-gray-500 hover:bg-[#072C2C] hover:text-white hover:border-[#072C2C] transition">Next</button>
             </div>
           </div>
         </div>
 
         {/* Best Sellers */}
-        <div className="rounded-xl overflow-hidden border border-white/[0.06] bg-[#1a1a1a]">
-          <div className="px-5 py-4 border-b border-white/[0.06] flex items-center gap-2">
-            <svg className="w-4 h-4 text-[#FDC800]" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 013 3h-15a3 3 0 013-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497m5.007 0a7.454 7.454 0 01-.982-3.172M9.497 14.25a7.454 7.454 0 00.981-3.172M5.25 4.236c-.996.178-1.768.535-2.251 1.084m13.004 0a15.522 15.522 0 00-12.003 0m12.003 0c.996.178 1.768.535 2.251 1.084" /></svg>
-            <h3 className="text-sm font-semibold text-white">Produk Terlaris</h3>
+        <div className="rounded-xl overflow-hidden border border-gray-200 bg-white">
+          <div className="px-5 py-4 border-b border-gray-200 flex items-center gap-2">
+            <svg className="w-4 h-4 text-[#FF5F03]" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 013 3h-15a3 3 0 013-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497m5.007 0a7.454 7.454 0 01-.982-3.172M9.497 14.25a7.454 7.454 0 00.981-3.172M5.25 4.236c-.996.178-1.768.535-2.251 1.084m13.004 0a15.522 15.522 0 00-12.003 0m12.003 0c.996.178 1.768.535 2.251 1.084" /></svg>
+            <h3 className="text-sm font-semibold text-gray-900">Produk Terlaris</h3>
           </div>
           <div className="p-4 space-y-2">
             {bestSellers.length === 0 ? (
               <div className="text-center py-10">
-                <svg className="w-12 h-12 mx-auto text-zinc-600 mb-3" fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" /></svg>
-                <p className="text-zinc-500 text-sm">Belum ada data penjualan</p>
+                <svg className="w-12 h-12 mx-auto text-gray-300 mb-3" fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" /></svg>
+                <p className="text-gray-500 text-sm">Belum ada data penjualan</p>
               </div>
             ) : (
               bestSellers.map((p, i) => (
-                <div key={p.id} className="flex items-center gap-3 px-3 py-3 rounded-lg bg-white/[0.02] border border-white/[0.05]">
-                  <div className="w-8 h-8 rounded-lg bg-[#FDC800]/10 text-[#FDC800] flex items-center justify-center text-xs font-bold shrink-0">{i + 1}</div>
+                <div key={p.id} className="flex items-center gap-3 px-3 py-3 rounded-lg bg-gray-50 border border-gray-100">
+                  <div className="w-8 h-8 rounded-lg bg-[#FF5F03]/10 text-[#FF5F03] flex items-center justify-center text-xs font-bold shrink-0">{i + 1}</div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-[#fafafa] truncate">{p.name}</p>
-                    <p className="text-[11px] text-zinc-500 mt-0.5">{p.sold} terjual</p>
+                    <p className="text-sm font-semibold text-gray-800 truncate">{p.name}</p>
+                    <p className="text-[11px] text-gray-500 mt-0.5">{p.sold} terjual</p>
                   </div>
-                  {i < 3 && p.sold > 0 && <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-[#FDC800]/10 text-[#FDC800] shrink-0">Best Seller</span>}
+                  {i < 3 && p.sold > 0 && <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-[#FF5F03]/10 text-[#FF5F03] shrink-0">Best Seller</span>}
                 </div>
               ))
             )}
@@ -174,67 +174,65 @@ export default function Dashboard() {
       </div>
 
       {/* Peringatan Section */}
-      <div className="rounded-xl overflow-hidden border border-white/[0.06] bg-[#1a1a1a]">
-        <div className="px-5 py-4 border-b border-white/[0.06] flex items-center justify-between">
+      <div className="rounded-xl overflow-hidden border border-gray-200 bg-white">
+        <div className="px-5 py-4 border-b border-gray-200 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <svg className="w-5 h-5 text-amber-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" /></svg>
-            <h3 className="text-sm font-semibold text-white">Peringatan</h3>
+            <svg className="w-5 h-5 text-[#D97706]" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" /></svg>
+            <h3 className="text-sm font-semibold text-gray-900">Peringatan</h3>
           </div>
           {(outOfStock + alertProducts.length) > 0 && (
-            <span className="w-6 h-6 rounded-full bg-red-500 text-white text-[11px] font-bold flex items-center justify-center">{outOfStock + alertProducts.length}</span>
+            <span className="w-6 h-6 rounded-full bg-[#DC2626] text-white text-[11px] font-bold flex items-center justify-center">{outOfStock + alertProducts.length}</span>
           )}
         </div>
         {(outOfStock + alertProducts.length) === 0 ? (
           <div className="text-center py-10 px-5">
-            <svg className="w-12 h-12 mx-auto text-emerald-400/60 mb-3" fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-            <p className="text-zinc-500 text-sm">Semua produk stok aman</p>
+            <svg className="w-12 h-12 mx-auto text-[#16A34A]/60 mb-3" fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            <p className="text-gray-500 text-sm">Semua produk stok aman</p>
           </div>
         ) : (
           <div className="p-4 grid grid-cols-1 lg:grid-cols-2 gap-4">
             {/* Kolom Kiri: Stok Habis (merah) */}
             <div>
-              <p className="text-[11px] font-semibold text-red-400 uppercase tracking-wider mb-2 px-1">Stok Habis</p>
-              <div className="max-h-[280px] overflow-y-auto space-y-2" style={{ scrollbarWidth: 'thin', scrollbarColor: '#3f3f46 transparent' }}>
+              <p className="text-[11px] font-semibold text-[#DC2626] uppercase tracking-wider mb-2 px-1">Stok Habis</p>
+              <div className="max-h-[280px] overflow-y-auto space-y-2">
                 {products.filter(p => p.stock === 0).length > 0 ? products.filter(p => p.stock === 0).map(p => (
-                  <div key={p.id} className="relative flex items-center justify-between px-4 py-3 rounded-lg border-l-2 border-l-red-500 bg-zinc-900/60 hover:bg-zinc-800/60 transition">
+                  <div key={p.id} className="relative flex items-center justify-between px-4 py-3 rounded-lg border-l-2 border-l-[#DC2626] bg-red-50 hover:bg-red-100 transition">
                     <div className="flex items-center gap-3">
-                      <svg className="w-4 h-4 text-red-400 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" /></svg>
+                      <svg className="w-4 h-4 text-[#DC2626] shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" /></svg>
                       <div>
-                        <p className="text-[13px] font-medium text-white">{p.name}</p>
-                        <p className="text-[11px] text-zinc-500 font-mono mt-0.5">{p.sku} — Min: {p.minStock}</p>
+                        <p className="text-[13px] font-medium text-gray-800">{p.name}</p>
+                        <p className="text-[11px] text-gray-500 font-mono mt-0.5">{p.sku} — Min: {p.minStock}</p>
                       </div>
                     </div>
                     <div className="text-right shrink-0">
-                      <p className="text-[13px] font-semibold text-red-400">Stok: {p.stock}</p>
-                      <p className="text-[10px] text-zinc-500 font-mono mt-0.5">2 menit lalu</p>
+                      <p className="text-[13px] font-semibold text-[#DC2626]">Stok: {p.stock}</p>
                     </div>
                   </div>
                 )) : (
-                  <p className="text-xs text-zinc-600 px-1">Tidak ada produk habis</p>
+                  <p className="text-xs text-gray-400 px-1">Tidak ada produk habis</p>
                 )}
               </div>
             </div>
 
             {/* Kolom Kanan: Stok Menipis (amber) */}
             <div>
-              <p className="text-[11px] font-semibold text-amber-400 uppercase tracking-wider mb-2 px-1">Stok Menipis</p>
-              <div className="max-h-[280px] overflow-y-auto space-y-2" style={{ scrollbarWidth: 'thin', scrollbarColor: '#3f3f46 transparent' }}>
+              <p className="text-[11px] font-semibold text-[#D97706] uppercase tracking-wider mb-2 px-1">Stok Menipis</p>
+              <div className="max-h-[280px] overflow-y-auto space-y-2">
                 {alertProducts.length > 0 ? alertProducts.map(p => (
-                  <div key={p.id} className="relative flex items-center justify-between px-4 py-3 rounded-lg border-l-2 border-l-amber-400 bg-zinc-900/60 hover:bg-zinc-800/60 transition">
+                  <div key={p.id} className="relative flex items-center justify-between px-4 py-3 rounded-lg border-l-2 border-l-[#D97706] bg-amber-50 hover:bg-amber-100 transition">
                     <div className="flex items-center gap-3">
-                      <svg className="w-4 h-4 text-amber-400 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" /></svg>
+                      <svg className="w-4 h-4 text-[#D97706] shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" /></svg>
                       <div>
-                        <p className="text-[13px] font-medium text-white">{p.name}</p>
-                        <p className="text-[11px] text-zinc-500 font-mono mt-0.5">{p.sku} — Min: {p.minStock}</p>
+                        <p className="text-[13px] font-medium text-gray-800">{p.name}</p>
+                        <p className="text-[11px] text-gray-500 font-mono mt-0.5">{p.sku} — Min: {p.minStock}</p>
                       </div>
                     </div>
                     <div className="text-right shrink-0">
-                      <p className="text-[13px] font-semibold text-amber-400">Stok: {p.stock}</p>
-                      <p className="text-[10px] text-zinc-500 font-mono mt-0.5">5 menit lalu</p>
+                      <p className="text-[13px] font-semibold text-[#D97706]">Stok: {p.stock}</p>
                     </div>
                   </div>
                 )) : (
-                  <p className="text-xs text-zinc-600 px-1">Tidak ada produk menipis</p>
+                  <p className="text-xs text-gray-400 px-1">Tidak ada produk menipis</p>
                 )}
               </div>
             </div>
