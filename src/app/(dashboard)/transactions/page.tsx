@@ -204,7 +204,7 @@ export default function TransactionsPage() {
           <svg className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" /></svg>
           <input type="text" placeholder="Cari produk / SKU..." value={search} onChange={e => setSearch(e.target.value)} className="form-input pl-10" />
         </div>
-        <select value={tabFilter} onChange={e => setTabFilter(e.target.value as TabFilter)} className="form-input" style={{ background: '#18181b', border: '1px solid rgba(255,255,255,0.1)' }}>
+        <select value={tabFilter} onChange={e => setTabFilter(e.target.value as TabFilter)} className="form-input" style={{ background: '#ffffff', border: '1px solid #e5e7eb' }}>
           <option value="all">Semua Tipe</option>
           <option value="in">Barang Masuk</option>
           <option value="out">Barang Keluar</option>
@@ -215,8 +215,8 @@ export default function TransactionsPage() {
           <select
             value={periodFilter}
             onChange={e => setPeriodFilter(e.target.value as PeriodFilter)}
-            className="w-full pl-9 pr-4 py-2.5 rounded-lg bg-white border border-gray-200 text-sm text-white focus:outline-none focus:border-[#FF5F03]/50 transition cursor-pointer appearance-none"
-            style={{ background: '#18181b', border: '1px solid rgba(255,255,255,0.1)' }}
+            className="w-full pl-9 pr-4 py-2.5 rounded-lg bg-white border border-gray-200 text-sm text-gray-900 focus:outline-none focus:border-[#FF5F03]/50 transition cursor-pointer appearance-none"
+            style={{ background: '#ffffff', border: '1px solid #e5e7eb' }}
           >
             <option value="today">Hari Ini</option>
             <option value="7days">7 Hari Terakhir</option>
@@ -236,8 +236,8 @@ export default function TransactionsPage() {
               type="date"
               value={customFrom}
               onChange={e => setCustomFrom(e.target.value)}
-              className="w-full px-3 py-2.5 rounded-lg text-sm text-white focus:outline-none focus:border-[#FF5F03]/50 transition"
-              style={{ background: '#18181b', border: '1px solid rgba(255,255,255,0.1)' }}
+              className="w-full px-3 py-2.5 rounded-lg text-sm text-gray-900 focus:outline-none focus:border-[#FF5F03]/50 transition"
+              style={{ background: '#ffffff', border: '1px solid #e5e7eb' }}
             />
           </div>
           <div className="flex-1">
@@ -246,8 +246,8 @@ export default function TransactionsPage() {
               type="date"
               value={customTo}
               onChange={e => setCustomTo(e.target.value)}
-              className="w-full px-3 py-2.5 rounded-lg text-sm text-white focus:outline-none focus:border-[#FF5F03]/50 transition"
-              style={{ background: '#18181b', border: '1px solid rgba(255,255,255,0.1)' }}
+              className="w-full px-3 py-2.5 rounded-lg text-sm text-gray-900 focus:outline-none focus:border-[#FF5F03]/50 transition"
+              style={{ background: '#ffffff', border: '1px solid #e5e7eb' }}
             />
           </div>
         </div>
@@ -306,7 +306,7 @@ export default function TransactionsPage() {
                 <input type="number" value={editQuantity} onChange={e => setEditQuantity(Number(e.target.value))} className="w-full px-3 py-2 rounded-lg bg-gray-50 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#FDC800]/50" min={1} placeholder="Jumlah" />
                 <input type="text" value={editNote} onChange={e => setEditNote(e.target.value)} className="w-full px-3 py-2 rounded-lg bg-gray-50 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#FDC800]/50" placeholder="Catatan..." />
                 <div className="flex gap-2">
-                  <button onClick={() => handleEditSave(tx)} className="flex-1 py-2 rounded-lg bg-[#16A34A] text-white text-xs font-bold active:scale-95 transition-all">Simpan</button>
+                  <button onClick={() => handleEditSave(tx)} className="flex-1 py-2 rounded-lg bg-[#16A34A] text-gray-900 text-xs font-bold active:scale-95 transition-all">Simpan</button>
                   <button onClick={handleEditCancel} className="flex-1 py-2 rounded-lg bg-gray-100 text-gray-700 text-xs font-bold active:scale-95 transition-all">Batal</button>
                 </div>
               </div>
@@ -336,13 +336,13 @@ export default function TransactionsPage() {
           <table className="w-full border-collapse">
             <thead className="sticky top-0 z-10">
               <tr className="bg-gray-50">
-                <th className="border-b border-gray-200 w-[48px] px-2 py-3 text-center text-[11px] font-bold text-white uppercase tracking-wide">No</th>
-                <th className="border-b border-gray-200 px-3 py-3 text-left text-[11px] font-bold text-white uppercase tracking-wide">Produk</th>
-                <th className="border-b border-gray-200 w-[100px] px-2 py-3 text-center text-[11px] font-bold text-white uppercase tracking-wide">Tipe</th>
-                <th className="border-b border-gray-200 w-[80px] px-2 py-3 text-center text-[11px] font-bold text-white uppercase tracking-wide">Jumlah</th>
-                <th className="border-b border-gray-200 w-[180px] px-3 py-3 text-left text-[11px] font-bold text-white uppercase tracking-wide">Tanggal</th>
-                <th className="border-b border-gray-200 px-3 py-3 text-left text-[11px] font-bold text-white uppercase tracking-wide">Catatan</th>
-                <th className="border-b border-gray-200 w-[90px] px-2 py-3 text-center text-[11px] font-bold text-white uppercase tracking-wide">Aksi</th>
+                <th className="border-b border-gray-200 w-[48px] px-2 py-3 text-center text-[11px] font-bold text-gray-900 uppercase tracking-wide">No</th>
+                <th className="border-b border-gray-200 px-3 py-3 text-left text-[11px] font-bold text-gray-900 uppercase tracking-wide">Produk</th>
+                <th className="border-b border-gray-200 w-[100px] px-2 py-3 text-center text-[11px] font-bold text-gray-900 uppercase tracking-wide">Tipe</th>
+                <th className="border-b border-gray-200 w-[80px] px-2 py-3 text-center text-[11px] font-bold text-gray-900 uppercase tracking-wide">Jumlah</th>
+                <th className="border-b border-gray-200 w-[180px] px-3 py-3 text-left text-[11px] font-bold text-gray-900 uppercase tracking-wide">Tanggal</th>
+                <th className="border-b border-gray-200 px-3 py-3 text-left text-[11px] font-bold text-gray-900 uppercase tracking-wide">Catatan</th>
+                <th className="border-b border-gray-200 w-[90px] px-2 py-3 text-center text-[11px] font-bold text-gray-900 uppercase tracking-wide">Aksi</th>
               </tr>
             </thead>
             <tbody>
@@ -361,7 +361,7 @@ export default function TransactionsPage() {
                         type="number"
                         value={editQuantity}
                         onChange={e => setEditQuantity(Number(e.target.value))}
-                        className="w-16 px-1 py-0.5 rounded bg-gray-100 border border-gray-300 text-center text-sm text-white"
+                        className="w-16 px-1 py-0.5 rounded bg-gray-100 border border-gray-300 text-center text-sm text-gray-900"
                         min={1}
                       />
                     ) : (
@@ -375,7 +375,7 @@ export default function TransactionsPage() {
                         type="text"
                         value={editNote}
                         onChange={e => setEditNote(e.target.value)}
-                        className="w-full px-2 py-0.5 rounded bg-gray-100 border border-gray-300 text-sm text-white"
+                        className="w-full px-2 py-0.5 rounded bg-gray-100 border border-gray-300 text-sm text-gray-900"
                         placeholder="Catatan..."
                       />
                     ) : (

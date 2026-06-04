@@ -288,7 +288,7 @@ export default function StockOpnamePage() {
         </div>
         <div className="flex items-center gap-2">
           <input type="date" value={opnameDate} onChange={e => { setOpnameDate(e.target.value); saveDate(e.target.value) }}
-            className="px-3 py-2 rounded-lg bg-gray-50 border border-gray-200 text-xs text-white" />
+            className="px-3 py-2 rounded-lg bg-gray-50 border border-gray-200 text-xs text-gray-900" />
           <button onClick={handleResetAll} className="p-2 rounded-lg border border-gray-200 text-gray-500 hover:text-[#DC2626] hover:border-red-500/30 transition" title="Reset">
             <Trash2 className="w-4 h-4" />
           </button>
@@ -325,10 +325,10 @@ export default function StockOpnamePage() {
         <div className="relative flex-1">
           <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
           <input type="text" placeholder="Cari produk / SKU..." value={search} onChange={e => setSearch(e.target.value)}
-            className="w-full pl-9 pr-3 py-2.5 rounded-lg bg-gray-50 border border-gray-200 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-[#FF5F03]/40 transition" />
+            className="w-full pl-9 pr-3 py-2.5 rounded-lg bg-gray-50 border border-gray-200 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#FF5F03]/40 transition" />
         </div>
         <select value={filterStatus} onChange={e => setFilterStatus(e.target.value as FilterStatus)}
-          className="px-3 py-2.5 rounded-lg bg-gray-50 border border-gray-200 text-sm text-white appearance-none cursor-pointer pr-8"
+          className="px-3 py-2.5 rounded-lg bg-gray-50 border border-gray-200 text-sm text-gray-900 appearance-none cursor-pointer pr-8"
           style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 10px center' }}>
           <option value="all">Semua</option>
           <option value="unchecked">Belum</option>
@@ -383,7 +383,7 @@ export default function StockOpnamePage() {
                     onChange={e => setActual(item.product.id, e.target.value)}
                     placeholder={String(item.systemStock)}
                     className={`w-16 text-center text-sm font-bold rounded-lg px-2 py-2 border transition focus:outline-none focus:border-[#FF5F03]/50 ${
-                      hasInput ? 'bg-gray-50 border-white/[0.15] text-white' : 'bg-gray-50 border-gray-200 text-gray-500'
+                      hasInput ? 'bg-gray-50 border-white/[0.15] text-gray-900' : 'bg-gray-50 border-gray-200 text-gray-500'
                     }`}
                   />
                 </div>
@@ -422,7 +422,7 @@ export default function StockOpnamePage() {
                 <div className="px-3.5 pb-3.5">
                   <input type="text" value={item.note} onChange={e => setNote(item.product.id, e.target.value)}
                     placeholder="Catatan selisih..."
-                    className="w-full px-3 py-2 rounded-lg bg-gray-50 border border-gray-200 text-xs text-white placeholder-zinc-600 focus:outline-none focus:border-[#FF5F03]/40 transition" />
+                    className="w-full px-3 py-2 rounded-lg bg-gray-50 border border-gray-200 text-xs text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#FF5F03]/40 transition" />
                 </div>
               )}
             </div>

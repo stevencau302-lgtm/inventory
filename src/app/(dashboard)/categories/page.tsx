@@ -83,7 +83,7 @@ export default function CategoriesPage() {
           const totalValue = catProducts.reduce((s, p) => s + (p.stock * p.price), 0)
           const percentage = products.length > 0 ? Math.round((count / products.length) * 100) : 0
           return (
-            <div key={cat.id} className="glass-card p-5 group hover:scale-[1.02] hover:shadow-lg hover:shadow-black/20 transition-all duration-200">
+            <div key={cat.id} className="rounded-xl bg-white border border-gray-200 p-5 group hover:scale-[1.02] hover:shadow-lg hover:shadow-black/20 transition-all duration-200">
               <div className="flex items-start justify-between">
                 <div 
                   className="w-12 h-12 rounded-xl flex items-center justify-center text-xl shadow-lg"
@@ -191,7 +191,7 @@ function CategoryModal({ onClose, onSave }: { onClose: () => void, onSave: (name
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
       <div className="relative bg-gradient-to-b from-white to-gray-50 border border-gray-200 rounded-2xl w-full max-w-md shadow-2xl" onClick={e => e.stopPropagation()}>
         <div className="flex items-center justify-between p-5 border-b border-gray-100">
-          <h2 className="text-lg font-bold text-white">Tambah Kategori</h2>
+          <h2 className="text-lg font-bold text-gray-900">Tambah Kategori</h2>
           <button onClick={onClose} className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center text-gray-500 hover:text-[#DC2626] transition">
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -210,11 +210,11 @@ function CategoryModal({ onClose, onSave }: { onClose: () => void, onSave: (name
                 type="button"
                 onClick={() => setDropdownOpen(!dropdownOpen)}
                 className="form-input w-full flex items-center justify-between gap-2 text-left"
-                style={{ color: '#fafafa', background: '#18181b' }}
+                style={{ color: '#fafafa', background: '#ffffff' }}
               >
                 <div className="flex items-center gap-2.5">
                   <span className="text-[#072C2C]">{selectedOption.icon}</span>
-                  <span className="text-sm text-white">{selectedOption.label}</span>
+                  <span className="text-sm text-gray-900">{selectedOption.label}</span>
                 </div>
                 <svg className={`w-4 h-4 text-gray-500 transition-transform ${dropdownOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" /></svg>
               </button>
@@ -228,7 +228,7 @@ function CategoryModal({ onClose, onSave }: { onClose: () => void, onSave: (name
                       className={`w-full flex items-center gap-2.5 px-3 py-2.5 text-left hover:bg-gray-100 transition-colors ${icon === opt.value ? 'bg-gray-100' : ''}`}
                     >
                       <span className="text-[#072C2C]">{opt.icon}</span>
-                      <span className="text-sm text-white">{opt.label}</span>
+                      <span className="text-sm text-gray-900">{opt.label}</span>
                       {icon === opt.value && (
                         <svg className="w-4 h-4 ml-auto text-[#16A34A]" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>
                       )}

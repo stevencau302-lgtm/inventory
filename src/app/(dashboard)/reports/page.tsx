@@ -453,7 +453,7 @@ export default function ReportsPage() {
             <BarChart3 className="w-5 h-5 text-gray-500" />
           </div>
           <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-white">Analisa Inventory</h1>
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Analisa Inventory</h1>
             <p className="text-gray-500 text-sm mt-0.5">Ringkasan performa & status inventory</p>
           </div>
         </div>
@@ -558,7 +558,7 @@ export default function ReportsPage() {
               <PieChart className="w-4 h-4 text-violet-400" />
             </div>
             <div>
-              <h2 className="font-semibold text-white">Nilai Per Kategori</h2>
+              <h2 className="font-semibold text-gray-900">Nilai Per Kategori</h2>
               <p className="text-xs text-gray-500">Distribusi nilai inventory berdasarkan kategori</p>
             </div>
           </div>
@@ -571,11 +571,11 @@ export default function ReportsPage() {
                 <div className="flex items-center justify-between mb-2.5">
                   <div className="flex items-center gap-3">
                     <div className="w-3 h-3 rounded-full" style={{ background: cat.color || '#a855f7' }} />
-                    <span className="text-sm font-medium text-white">{cat.name}</span>
+                    <span className="text-sm font-medium text-gray-900">{cat.name}</span>
                     <span className="text-[11px] text-gray-500 bg-gray-50 px-2 py-0.5 rounded-full">{cat.count} produk</span>
                   </div>
                   <div className="text-right flex items-center gap-2">
-                    <span className="text-sm font-semibold text-white">{formatRp(cat.value)}</span>
+                    <span className="text-sm font-semibold text-gray-900">{formatRp(cat.value)}</span>
                     <span className="text-[11px] font-medium text-gray-500 bg-gray-50 px-2 py-0.5 rounded-full">{pct.toFixed(1)}%</span>
                   </div>
                 </div>
@@ -604,7 +604,7 @@ export default function ReportsPage() {
                 <Activity className="w-4 h-4 text-[#072C2C]" />
               </div>
               <div>
-                <h2 className="font-semibold text-white">Ringkasan Transaksi</h2>
+                <h2 className="font-semibold text-gray-900">Ringkasan Transaksi</h2>
                 <p className="text-xs text-gray-500">Performa {rangeLabel.toLowerCase()}</p>
               </div>
             </div>
@@ -627,7 +627,7 @@ export default function ReportsPage() {
                 <ArrowDownCircle className="w-3.5 h-3.5 text-[#16A34A]" />
                 <p className="text-[11px] text-gray-500 font-medium uppercase tracking-wider">Barang Masuk</p>
               </div>
-              <p className="text-2xl font-bold text-white">+{totalMasukRange.toLocaleString()}</p>
+              <p className="text-2xl font-bold text-gray-900">+{totalMasukRange.toLocaleString()}</p>
               <p className="text-[11px] text-gray-400 mt-0.5">unit · {rangeLabel.toLowerCase()}</p>
             </div>
             <div className="rounded-xl p-4 bg-gray-50 border border-gray-100">
@@ -635,7 +635,7 @@ export default function ReportsPage() {
                 <ArrowUpCircle className="w-3.5 h-3.5 text-[#DC2626]" />
                 <p className="text-[11px] text-gray-500 font-medium uppercase tracking-wider">Barang Keluar</p>
               </div>
-              <p className="text-2xl font-bold text-white">-{totalKeluarRange.toLocaleString()}</p>
+              <p className="text-2xl font-bold text-gray-900">-{totalKeluarRange.toLocaleString()}</p>
               <p className="text-[11px] text-gray-400 mt-0.5">unit · {rangeLabel.toLowerCase()}</p>
             </div>
             <div className="rounded-xl p-4 bg-gray-50 border border-gray-100">
@@ -664,7 +664,7 @@ export default function ReportsPage() {
               <TrendingUp className="w-4 h-4 text-[#D97706]" />
             </div>
             <div>
-              <h2 className="font-semibold text-white">Produk Aktif vs Stagnan</h2>
+              <h2 className="font-semibold text-gray-900">Produk Aktif vs Stagnan</h2>
               <p className="text-xs text-gray-500">Berdasarkan jumlah transaksi keluar</p>
             </div>
           </div>
@@ -683,10 +683,10 @@ export default function ReportsPage() {
                     {i + 1}
                   </span>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm text-white font-medium truncate">{item.name}</p>
+                    <p className="text-sm text-gray-900 font-medium truncate">{item.name}</p>
                     <span className="text-[10px] text-gray-500">{item.category || '-'}</span>
                   </div>
-                  <span className="text-sm font-bold text-white">{item.count}</span>
+                  <span className="text-sm font-bold text-gray-900">{item.count}</span>
                 </div>
               )) : (
                 <div className="text-center py-8">
@@ -709,10 +709,10 @@ export default function ReportsPage() {
                     {i + 1}
                   </span>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm text-white font-medium truncate">{item.name}</p>
+                    <p className="text-sm text-gray-900 font-medium truncate">{item.name}</p>
                     <span className="text-[10px] text-gray-500">{item.category}</span>
                   </div>
-                  <span className="text-sm font-bold text-white">{item.count}</span>
+                  <span className="text-sm font-bold text-gray-900">{item.count}</span>
                 </div>
               )) : (
                 <div className="text-center py-8">
@@ -738,7 +738,7 @@ export default function ReportsPage() {
               <AlertTriangle className="w-4 h-4 text-[#D97706]" />
             </div>
             <div>
-              <h3 className="font-semibold text-white text-sm">Stok Rendah</h3>
+              <h3 className="font-semibold text-gray-900 text-sm">Stok Rendah</h3>
               <p className="text-xs text-gray-500">{lowStock.length} produk perlu restock</p>
             </div>
           </div>
@@ -754,12 +754,12 @@ export default function ReportsPage() {
                         {p.name.substring(0, 2).toUpperCase()}
                       </div>
                       <div>
-                        <p className="text-sm text-white font-medium">{p.name}</p>
+                        <p className="text-sm text-gray-900 font-medium">{p.name}</p>
                         <p className="text-[11px] text-gray-500">{p.category}</p>
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="text-sm font-bold text-white">{p.stock}</p>
+                      <p className="text-sm font-bold text-gray-900">{p.stock}</p>
                       <p className="text-[10px] text-gray-400">min: {p.minStock}</p>
                     </div>
                   </div>
@@ -785,7 +785,7 @@ export default function ReportsPage() {
               <XCircle className="w-4 h-4 text-[#DC2626]" />
             </div>
             <div>
-              <h3 className="font-semibold text-white text-sm">Stok Habis</h3>
+              <h3 className="font-semibold text-gray-900 text-sm">Stok Habis</h3>
               <p className="text-xs text-gray-500">{outStock.length} produk habis</p>
             </div>
           </div>
@@ -797,7 +797,7 @@ export default function ReportsPage() {
                     {p.name.substring(0, 2).toUpperCase()}
                   </div>
                   <div>
-                    <p className="text-sm text-white font-medium">{p.name}</p>
+                    <p className="text-sm text-gray-900 font-medium">{p.name}</p>
                     <p className="text-[11px] text-gray-500">{p.category}</p>
                   </div>
                 </div>
@@ -838,7 +838,7 @@ function GlassStatCard({ label, value, icon, accent, accentBg, subtitle }: {
           {icon}
         </div>
         <div className="min-w-0">
-          <p className="text-lg font-bold text-white truncate">{value}</p>
+          <p className="text-lg font-bold text-gray-900 truncate">{value}</p>
           <p className="text-[11px] text-gray-500 font-medium">{label}</p>
           {subtitle && <p className="text-[9px] text-gray-400">{subtitle}</p>}
         </div>
@@ -907,7 +907,7 @@ function DeadStockTable({ deadStock, transactions, formatRp }: { deadStock: Prod
             <Skull className="w-4 h-4 text-[#DC2626]" />
           </div>
           <div>
-            <h2 className="font-semibold text-white">Dead Stock</h2>
+            <h2 className="font-semibold text-gray-900">Dead Stock</h2>
             <p className="text-xs text-gray-500">{deadStock.length} produk tanpa transaksi keluar</p>
           </div>
         </div>
@@ -938,7 +938,7 @@ function DeadStockTable({ deadStock, transactions, formatRp }: { deadStock: Prod
                 <tr key={p.id} className={`hover:bg-red-500/[0.03] transition-all duration-200 ${idx % 2 === 1 ? 'bg-gray-50/50' : ''}`}>
                   <td className="border-b border-gray-100 px-4 py-3.5 text-center text-xs text-gray-500">{idx + 1}</td>
                   <td className="border-b border-gray-100 px-4 py-3.5">
-                    <p className="text-sm font-medium text-white">{p.name}</p>
+                    <p className="text-sm font-medium text-gray-900">{p.name}</p>
                     <span className="text-[10px] px-2 py-0.5 rounded-full bg-gray-50 border border-gray-200 text-gray-500 mt-0.5 inline-block">{p.category}</span>
                   </td>
                   <td className="border-b border-gray-100 px-4 py-3.5 font-mono text-xs text-gray-500">{p.sku}</td>
