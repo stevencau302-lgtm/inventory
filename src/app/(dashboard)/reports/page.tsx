@@ -511,7 +511,7 @@ export default function ReportsPage() {
                     <button
                       onClick={() => { if (customFrom) { setDateRange('custom'); setShowDatePicker(false) } }}
                       disabled={!customFrom}
-                      className="w-full py-2 rounded-lg text-xs font-semibold bg-[#072C2C]/20 text-[#072C2C] hover:bg-indigo-500/30 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                      className="w-full py-2 rounded-lg text-xs font-semibold bg-[#072C2C]/20 text-[#072C2C] hover:bg-[#072C2C]/30 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
                     >
                       Terapkan
                     </button>
