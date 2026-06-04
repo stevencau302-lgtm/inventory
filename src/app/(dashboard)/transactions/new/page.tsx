@@ -348,10 +348,17 @@ export default function NewTransactionPage() {
         />
 
         {/* === DETAIL PRODUK === */}
-        <div className="rounded-xl bg-[#1a1a1a] border border-white/[0.06] p-5 space-y-4">
-          <label className="text-xs font-bold uppercase tracking-wider text-zinc-400 block">
-            Detail Produk
-          </label>
+        <div>
+          <div className="rounded-t-xl px-6 py-4 bg-gradient-to-r from-purple-600 to-violet-600">
+            <div className="flex items-center gap-3">
+              <Search size={18} className="text-white" />
+              <div>
+                <p className="text-base font-bold text-white">Detail Produk</p>
+                <p className="text-xs text-white/70">Pilih produk dan jumlah</p>
+              </div>
+            </div>
+          </div>
+          <div className="rounded-b-xl border border-t-0 border-white/[0.08] bg-[#0f1219] p-6 lg:p-8 space-y-4">
 
           {/* Search dropdown */}
           <div className="relative" ref={productDropdownRef}>
