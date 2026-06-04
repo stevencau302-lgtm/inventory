@@ -150,7 +150,7 @@ export default function TransactionsPage() {
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
               Catat Transaksi
             </Link>
-            <Link href="/transactions/return" className="px-4 py-2 rounded-lg bg-amber-50 hover:bg-amber-50 border border-amber-500/20 text-[#D97706] text-sm font-bold transition flex items-center gap-2 active:scale-95">
+            <Link href="/transactions/return" className="px-4 py-2 rounded-lg bg-amber-50 hover:bg-amber-100 border border-amber-200 text-[#D97706] text-sm font-bold transition flex items-center gap-2 active:scale-95">
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3" /></svg>
               Return Masuk
             </Link>
@@ -303,10 +303,10 @@ export default function TransactionsPage() {
             {/* Edit mode inline */}
             {editingId === tx.id && (
               <div className="mt-3 pt-3 border-t border-gray-200 space-y-2">
-                <input type="number" value={editQuantity} onChange={e => setEditQuantity(Number(e.target.value))} className="w-full px-3 py-2 rounded-lg bg-gray-50 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#FDC800]/50" min={1} placeholder="Jumlah" />
-                <input type="text" value={editNote} onChange={e => setEditNote(e.target.value)} className="w-full px-3 py-2 rounded-lg bg-gray-50 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#FDC800]/50" placeholder="Catatan..." />
+                <input type="number" value={editQuantity} onChange={e => setEditQuantity(Number(e.target.value))} className="w-full px-3 py-2 rounded-lg bg-gray-50 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#FF5F03]/50" min={1} placeholder="Jumlah" />
+                <input type="text" value={editNote} onChange={e => setEditNote(e.target.value)} className="w-full px-3 py-2 rounded-lg bg-gray-50 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#FF5F03]/50" placeholder="Catatan..." />
                 <div className="flex gap-2">
-                  <button onClick={() => handleEditSave(tx)} className="flex-1 py-2 rounded-lg bg-[#16A34A] text-gray-900 text-xs font-bold active:scale-95 transition-all">Simpan</button>
+                  <button onClick={() => handleEditSave(tx)} className="flex-1 py-2 rounded-lg bg-[#16A34A] text-white text-xs font-bold active:scale-95 transition-all">Simpan</button>
                   <button onClick={handleEditCancel} className="flex-1 py-2 rounded-lg bg-gray-100 text-gray-700 text-xs font-bold active:scale-95 transition-all">Batal</button>
                 </div>
               </div>
