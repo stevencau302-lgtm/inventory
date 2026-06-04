@@ -504,18 +504,19 @@ export default function NewTransactionPage() {
         </div>
 
         {/* === SUBMIT BUTTONS === */}
-        <div className="flex justify-end gap-3 pt-2">
+        <div className="flex items-center justify-end gap-3 pt-6 border-t border-white/[0.06]">
           <button
             type="button"
             onClick={() => router.push('/transactions')}
-            className="px-5 py-3 rounded-xl text-sm font-bold bg-[#1a1a1a] border border-white/[0.06] text-zinc-300 hover:bg-white/[0.04] transition-all active:scale-95"
+            className="px-6 py-3 rounded-lg border border-white/[0.1] text-sm font-medium text-zinc-400 hover:text-white hover:border-white/[0.2] transition flex items-center gap-2"
           >
+            <X className="w-4 h-4" />
             Batal
           </button>
           <button
             type="submit"
             disabled={loading || !selectedProduct}
-            className="px-6 py-3 rounded-xl text-sm font-bold bg-[#FDC800] text-[#000000] hover:bg-[#FDC800]/90 disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2 transition-all active:scale-[0.97] shadow-lg shadow-[#FDC800]/20"
+            className="px-8 py-3 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-bold transition flex items-center gap-2 shadow-lg shadow-emerald-600/20 disabled:opacity-50 disabled:cursor-not-allowed active:scale-95"
           >
             {loading ? (
               <Loader2 className="w-4 h-4 animate-spin" />
