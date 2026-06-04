@@ -457,7 +457,27 @@ export default function ProductsPage() {
 
       {activeTab === 'barang-masuk' && (
         <div className="space-y-4">
-          <div className="overflow-hidden border border-gray-200">
+          {/* Search + Action */}
+          <div className="flex flex-col sm:flex-row gap-3">
+            <div className="relative flex-1">
+              <svg className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+              </svg>
+              <input
+                type="text"
+                placeholder="Cari produk masuk..."
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                className="form-input pl-10"
+              />
+            </div>
+            <Link href="/transactions/new" className="px-4 py-2 rounded-lg bg-[#16A34A] hover:bg-[#16A34A]/90 text-white text-sm font-bold transition flex items-center gap-2 shadow-lg shadow-[#16A34A]/20 active:scale-95 shrink-0">
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+              Catat Barang Masuk
+            </Link>
+          </div>
+
+          <div className="overflow-hidden border border-gray-200 rounded-lg">
             <div className="overflow-x-auto max-h-[600px]">
               <table className="w-full border-collapse">
                 <thead className="sticky top-0 z-10">
@@ -470,10 +490,10 @@ export default function ProductsPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {barangMasuk.length === 0 ? (
+                  {barangMasuk.filter(t => !search || t.productName.toLowerCase().includes(search.toLowerCase())).length === 0 ? (
                     <tr><td colSpan={5} className="border border-gray-200 text-center py-12 text-gray-500">Tidak ada barang masuk</td></tr>
                   ) : (
-                    barangMasuk.map((t, idx) => (
+                    barangMasuk.filter(t => !search || t.productName.toLowerCase().includes(search.toLowerCase())).map((t, idx) => (
                       <tr key={t.id} className={`hover:bg-blue-50 transition ${idx % 2 === 1 ? 'bg-gray-50' : 'bg-white'}`}>
                         <td className="border border-gray-200 px-2 py-2 text-center text-xs text-gray-500">{idx + 1}</td>
                         <td className="border border-gray-200 px-3 py-2 text-left text-sm font-medium text-gray-900">{t.productName}</td>
@@ -494,15 +514,27 @@ export default function ProductsPage() {
 
       {activeTab === 'barang-keluar' && (
         <div className="space-y-4">
-          {/* Action button */}
-          <div className="flex justify-end">
-            <Link href="/transactions/new?type=out" className="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-500 text-white text-sm font-bold transition flex items-center gap-2 shadow-lg shadow-red-600/20 active:scale-95">
+          {/* Search + Action */}
+          <div className="flex flex-col sm:flex-row gap-3">
+            <div className="relative flex-1">
+              <svg className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+              </svg>
+              <input
+                type="text"
+                placeholder="Cari produk keluar..."
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                className="form-input pl-10"
+              />
+            </div>
+            <Link href="/transactions/new" className="px-4 py-2 rounded-lg bg-[#DC2626] hover:bg-[#DC2626]/90 text-white text-sm font-bold transition flex items-center gap-2 shadow-lg shadow-[#DC2626]/20 active:scale-95 shrink-0">
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" /></svg>
               Catat Barang Keluar
             </Link>
           </div>
 
-          <div className="overflow-hidden border border-gray-200">
+          <div className="overflow-hidden border border-gray-200 rounded-lg">
             <div className="overflow-x-auto max-h-[600px]">
               <table className="w-full border-collapse">
                 <thead className="sticky top-0 z-10">
@@ -515,10 +547,10 @@ export default function ProductsPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {barangKeluar.length === 0 ? (
+                  {barangKeluar.filter(t => !search || t.productName.toLowerCase().includes(search.toLowerCase())).length === 0 ? (
                     <tr><td colSpan={5} className="border border-gray-200 text-center py-12 text-gray-500">Tidak ada barang keluar</td></tr>
                   ) : (
-                    barangKeluar.map((t, idx) => (
+                    barangKeluar.filter(t => !search || t.productName.toLowerCase().includes(search.toLowerCase())).map((t, idx) => (
                       <tr key={t.id} className={`hover:bg-blue-50 transition ${idx % 2 === 1 ? 'bg-gray-50' : 'bg-white'}`}>
                         <td className="border border-gray-200 px-2 py-2 text-center text-xs text-gray-500">{idx + 1}</td>
                         <td className="border border-gray-200 px-3 py-2 text-left text-sm font-medium text-gray-900">{t.productName}</td>
