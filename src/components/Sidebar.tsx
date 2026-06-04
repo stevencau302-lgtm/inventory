@@ -106,47 +106,29 @@ export default function Sidebar() {
         }}
       >
         {/* Header / Logo */}
-        <div className="h-14 flex items-center justify-between px-3 border-b border-white/[0.06] relative">
-          {/* Logo */}
-          <div className={`flex items-center gap-2.5 min-w-0 transition-all duration-300 ${collapsed && !mobileOpen ? 'hidden' : ''}`}>
-            <div className="w-9 h-9 rounded-xl bg-[#FDC800]/10 border border-[#FDC800]/20 flex items-center justify-center shrink-0">
+        <div className="h-14 flex items-center px-3 border-b border-white/[0.06]">
+          {collapsed && !mobileOpen ? (
+            /* Collapsed: just logo icon centered, click to expand */
+            <button onClick={toggleCollapse} className="w-9 h-9 rounded-xl bg-[#FDC800]/10 border border-[#FDC800]/20 flex items-center justify-center mx-auto hover:bg-[#FDC800]/20 transition" title="Expand sidebar">
               <Box className="w-4.5 h-4.5 text-[#FDC800]" />
-            </div>
-            <span
-              className="text-sm font-bold text-white whitespace-nowrap"
-            >
-              Nexo Inventory
-            </span>
-          </div>
-
-          {/* Collapsed: show icon only */}
-          {collapsed && !mobileOpen && (
-            <div className="w-9 h-9 rounded-xl bg-[#FDC800]/10 border border-[#FDC800]/20 flex items-center justify-center mx-auto">
-              <Box className="w-4.5 h-4.5 text-[#FDC800]" />
+            </button>
+          ) : (
+            /* Expanded: logo + text + collapse button */
+            <div className="flex items-center justify-between w-full">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="w-9 h-9 rounded-xl bg-[#FDC800]/10 border border-[#FDC800]/20 flex items-center justify-center shrink-0">
+                  <Box className="w-4.5 h-4.5 text-[#FDC800]" />
+                </div>
+                <span className="text-sm font-bold text-white whitespace-nowrap">Nexo Inventory</span>
+              </div>
+              <button
+                onClick={() => mobileOpen ? setMobileOpen(false) : toggleCollapse()}
+                className="w-7 h-7 rounded-lg flex items-center justify-center text-zinc-500 hover:text-white hover:bg-white/[0.06] transition-all shrink-0"
+              >
+                {mobileOpen ? <X className="w-4 h-4" /> : <ChevronsLeft className="w-4 h-4" />}
+              </button>
             </div>
           )}
-
-          {/* Collapse toggle (desktop) / Close (mobile) */}
-          <button
-            onClick={() => {
-              if (mobileOpen) {
-                setMobileOpen(false)
-              } else {
-                toggleCollapse()
-              }
-            }}
-            className={`w-7 h-7 rounded-lg flex items-center justify-center text-zinc-500 hover:text-white hover:bg-white/[0.06] transition-all shrink-0 ${
-              collapsed && !mobileOpen ? 'absolute top-3.5 right-2' : ''
-            }`}
-          >
-            {mobileOpen ? (
-              <X className="w-4 h-4" />
-            ) : collapsed ? (
-              <ChevronsRight className="w-4 h-4" />
-            ) : (
-              <ChevronsLeft className="w-4 h-4" />
-            )}
-          </button>
         </div>
 
         {/* Navigation */}
