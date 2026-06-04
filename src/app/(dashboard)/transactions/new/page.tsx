@@ -76,7 +76,7 @@ type Mode = null | 'single' | 'bulk'
 export default function NewTransactionPage() {
   const router = useRouter()
   const { toast } = useToast()
-  const [mode, setMode] = useState<Mode>(null)
+  const [mode, setMode] = useState<Mode>('single')
   const [products, setProducts] = useState<Product[]>([])
   const [type, setType] = useState<TransactionType>('in')
   const [selectedProduct, setSelectedProduct] = useState('')
@@ -118,55 +118,9 @@ export default function NewTransactionPage() {
     </div>
   )
 
-  // Mode Selection Screen
+  // Mode Selection Screen removed - go directly to form
   if (mode === null) {
-    return (
-      <div className="max-w-2xl mx-auto pb-24 lg:pb-8">
-        <button
-          onClick={() => router.push('/transactions')}
-          className="group flex items-center gap-2 text-sm font-semibold text-gray-500 hover:text-gray-900 mb-6 transition-all active:scale-95"
-        >
-          <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-          Kembali
-        </button>
-
-        <div className="flex items-center gap-3 mb-8">
-          <div className="w-12 h-12 rounded-xl bg-[#FF5F03]/10 flex items-center justify-center">
-            <Package className="w-6 h-6 text-[#FF5F03]" />
-          </div>
-          <div>
-            <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Transaksi Baru</h1>
-            <p className="text-sm text-gray-500">Pilih mode input transaksi</p>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {/* Transaksi Biasa */}
-          <button
-            onClick={() => setMode('single')}
-            className="group relative p-6 rounded-2xl bg-white border border-gray-200 text-left transition-all duration-200 hover:border-[#FF5F03]/50 hover:shadow-lg hover:shadow-[#FF5F03]/5 active:scale-[0.98]"
-          >
-            <div className="w-12 h-12 rounded-xl bg-[#FF5F03]/10 flex items-center justify-center mb-4 group-hover:bg-[#FF5F03]/20 transition-colors">
-              <ClipboardList className="w-6 h-6 text-[#FF5F03]" />
-            </div>
-            <h3 className="text-base font-bold text-gray-900 mb-1">Transaksi Biasa</h3>
-            <p className="text-sm text-gray-500">Catat 1 produk per transaksi</p>
-          </button>
-
-          {/* Bulk Entry */}
-          <button
-            onClick={() => setMode('bulk')}
-            className="group relative p-6 rounded-2xl bg-white border border-gray-200 text-left transition-all duration-200 hover:border-[#FF5F03]/50 hover:shadow-lg hover:shadow-[#FF5F03]/5 active:scale-[0.98]"
-          >
-            <div className="w-12 h-12 rounded-xl bg-[#FF5F03]/10 flex items-center justify-center mb-4 group-hover:bg-[#FF5F03]/20 transition-colors">
-              <Layers className="w-6 h-6 text-[#FF5F03]" />
-            </div>
-            <h3 className="text-base font-bold text-gray-900 mb-1">Bulk Entry</h3>
-            <p className="text-sm text-gray-500">Catat banyak produk sekaligus</p>
-          </button>
-        </div>
-      </div>
-    )
+    setMode('single')
   }
 
   const filteredProducts = products.filter(p =>
