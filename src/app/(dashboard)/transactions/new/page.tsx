@@ -503,8 +503,8 @@ export default function NewTransactionPage() {
           </div>
         </div>
 
-        {/* === SUBMIT BUTTONS (mobile) === */}
-        <div className="flex justify-end gap-3 pt-2 lg:hidden">
+        {/* === SUBMIT BUTTONS === */}
+        <div className="flex justify-end gap-3 pt-2">
           <button
             type="button"
             onClick={() => router.push('/transactions')}
