@@ -92,21 +92,21 @@ export default function SettingsPage() {
         <div className="p-5">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-700">Dark Mode</p>
-              <p className="text-[11px] text-gray-500 mt-0.5">Aplikasi ini dioptimasi untuk mode gelap</p>
+              <p className="text-sm font-medium text-gray-700">Light Mode</p>
+              <p className="text-[11px] text-gray-500 mt-0.5">Aplikasi ini dioptimasi untuk mode terang</p>
             </div>
-            {/* Toggle - always on (dark only app) */}
+            {/* Toggle - always on (light only app) */}
             <div className="relative">
               <div className="w-11 h-6 rounded-full bg-[#072C2C] shadow-inner shadow-[#072C2C]/20">
                 <div className="absolute top-0.5 right-0.5 w-5 h-5 rounded-full bg-white shadow-md flex items-center justify-center">
-                  <svg className="w-3 h-3 text-[#072C2C]" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M21.752 15.002A9.72 9.72 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" /></svg>
+                  <svg className="w-3 h-3 text-[#072C2C]" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" /></svg>
                 </div>
               </div>
             </div>
           </div>
           <p className="text-[10px] text-gray-400 mt-3 flex items-center gap-1.5">
             <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" /></svg>
-            UI dirancang khusus untuk dark mode — tidak tersedia light mode
+            UI dirancang khusus untuk light mode dengan design system enterprise
           </p>
         </div>
       </div>
@@ -248,7 +248,7 @@ function WhatsAppSettings() {
     finally { setSending(false) }
   }
 
-  const inputClass = "w-full px-4 py-3 rounded-xl text-sm bg-gray-50 border border-gray-200 text-gray-900 placeholder-gray-400 outline-none focus:border-green-500/50 focus:bg-black/60 transition-all"
+  const inputClass = "w-full px-4 py-3 rounded-xl text-sm bg-gray-50 border border-gray-200 text-gray-900 placeholder-gray-400 outline-none focus:border-green-500/50 focus:bg-white transition-all"
 
   return (
     <div className="rounded-2xl overflow-hidden border border-gray-200 bg-white">
