@@ -413,37 +413,37 @@ export default function ProductsPage() {
           <div className="md:hidden space-y-2.5">
             {stockReports.length === 0 ? (
               <div className="text-center py-16">
-                <p className="text-sm text-zinc-500">Tidak ada data ditemukan</p>
+                <p className="text-sm text-gray-500">Tidak ada data ditemukan</p>
               </div>
             ) : (
               stockReports.map(r => (
                 <div key={r.product.id} className={`rounded-xl overflow-hidden border transition-all ${
-                  r.status === 'habis' ? 'border-red-500/20 bg-red-500/[0.02]' :
-                  r.status === 'menipis' ? 'border-amber-500/20 bg-amber-500/[0.02]' :
-                  'border-white/[0.06] bg-[#1a1a1a]'
+                  r.status === 'habis' ? 'border-red-200 bg-red-50/50' :
+                  r.status === 'menipis' ? 'border-amber-200 bg-amber-50/50' :
+                  'border-gray-200 bg-white'
                 }`}>
                   <div className="px-4 pt-3 pb-2 flex items-center justify-between">
                     <div className="min-w-0">
-                      <p className="text-[13px] font-semibold text-white truncate">{r.product.name}</p>
-                      <p className="text-[10px] text-zinc-500 font-mono">{r.product.sku}</p>
+                      <p className="text-[13px] font-semibold text-gray-900 truncate">{r.product.name}</p>
+                      <p className="text-[10px] text-gray-500 font-mono">{r.product.sku}</p>
                     </div>
                     <StockStatusBadge status={r.status} />
                   </div>
                   <div className="px-4 pb-3">
-                    <div className="flex items-center justify-between bg-[#0f0f0f] rounded-lg px-3 py-2">
+                    <div className="flex items-center justify-between bg-gray-50 rounded-lg px-3 py-2">
                       <div className="text-center">
-                        <p className="text-[10px] text-zinc-600">AWAL</p>
-                        <p className="text-sm font-semibold text-zinc-400">{r.stockAwal}</p>
+                        <p className="text-[10px] text-gray-400">AWAL</p>
+                        <p className="text-sm font-semibold text-gray-500">{r.stockAwal}</p>
                       </div>
                       <div className="flex items-center gap-1.5">
-                        <span className="text-[11px] font-bold text-emerald-400">+{r.masuk}</span>
-                        <svg className="w-3 h-3 text-zinc-600" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" /></svg>
-                        <span className="text-[11px] font-bold text-red-400">-{r.keluar}</span>
+                        <span className="text-[11px] font-bold text-[#16A34A]">+{r.masuk}</span>
+                        <svg className="w-3 h-3 text-gray-400" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" /></svg>
+                        <span className="text-[11px] font-bold text-[#DC2626]">-{r.keluar}</span>
                       </div>
                       <div className="text-center">
-                        <p className="text-[10px] text-zinc-600">AKHIR</p>
+                        <p className="text-[10px] text-gray-400">AKHIR</p>
                         <p className={`text-sm font-bold ${
-                          r.status === 'habis' ? 'text-red-400' : r.status === 'menipis' ? 'text-amber-400' : 'text-emerald-400'
+                          r.status === 'habis' ? 'text-[#DC2626]' : r.status === 'menipis' ? 'text-[#D97706]' : 'text-[#16A34A]'
                         }`}>{r.stockAkhir}</p>
                       </div>
                     </div>
