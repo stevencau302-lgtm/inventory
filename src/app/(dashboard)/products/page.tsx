@@ -233,13 +233,14 @@ export default function ProductsPage() {
           <button
             key={tab.key}
             onClick={() => setActiveTab(tab.key)}
-            className={`flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm transition ${
+            className={`flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm transition flex items-center justify-center gap-2 ${
               activeTab === tab.key
                 ? 'bg-[#FDC800] text-black font-bold shadow-lg shadow-[#FDC800]/20'
                 : 'text-zinc-400 hover:text-white'
             }`}
           >
-            {tab.label}
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d={tab.icon} /></svg>
+            <span className="hidden sm:inline">{tab.label}</span>
           </button>
         ))}
       </div>
