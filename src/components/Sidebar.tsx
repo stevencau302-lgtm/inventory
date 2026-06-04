@@ -106,20 +106,25 @@ export default function Sidebar() {
         }}
       >
         {/* Header / Logo */}
-        <div className="h-14 flex items-center justify-between px-3 border-b border-white/[0.06] overflow-hidden">
-          {/* Logo - hide when collapsed */}
-          <div className={`flex items-center gap-2.5 min-w-0 transition-all duration-300 ${collapsed && !mobileOpen ? 'w-0 opacity-0 overflow-hidden' : ''}`}>
+        <div className="h-14 flex items-center justify-between px-3 border-b border-white/[0.06]">
+          {/* Logo */}
+          <div className={`flex items-center gap-2.5 min-w-0 transition-all duration-300 ${collapsed && !mobileOpen ? 'hidden' : ''}`}>
             <div className="w-9 h-9 rounded-xl bg-[#FDC800]/10 border border-[#FDC800]/20 flex items-center justify-center shrink-0">
               <Box className="w-4.5 h-4.5 text-[#FDC800]" />
             </div>
             <span
-              className={`text-sm font-bold text-white whitespace-nowrap transition-all duration-300 ${
-                collapsed && !mobileOpen ? 'opacity-0 w-0 overflow-hidden' : 'opacity-100'
-              }`}
+              className="text-sm font-bold text-white whitespace-nowrap"
             >
               Nexo Inventory
             </span>
           </div>
+
+          {/* Collapsed: show icon only */}
+          {collapsed && !mobileOpen && (
+            <div className="w-9 h-9 rounded-xl bg-[#FDC800]/10 border border-[#FDC800]/20 flex items-center justify-center mx-auto">
+              <Box className="w-4.5 h-4.5 text-[#FDC800]" />
+            </div>
+          )}
 
           {/* Collapse toggle (desktop) / Close (mobile) */}
           <button
@@ -131,7 +136,7 @@ export default function Sidebar() {
               }
             }}
             className={`w-7 h-7 rounded-lg flex items-center justify-center text-zinc-500 hover:text-white hover:bg-white/[0.06] transition-all shrink-0 ${
-              collapsed && !mobileOpen ? 'mx-auto' : ''
+              collapsed && !mobileOpen ? 'absolute top-3.5 right-2' : ''
             }`}
           >
             {mobileOpen ? (
