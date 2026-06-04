@@ -1,6 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { Product, Transaction, formatRp, getStatus, getStatusLabel, uid, fetchProducts, fetchTransactions } from '@/lib/store'
+import { useAuth } from '@/components/AuthProvider'
 import dynamic from 'next/dynamic'
 
 const DashboardCharts = dynamic(() => import('@/components/DashboardCharts'), { ssr: false })
@@ -99,11 +100,8 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-6">
-      {/* Page Title */}
-      <div>
-        <h1 className="text-xl font-semibold text-white">Dashboard</h1>
-        <p className="text-zinc-500 text-sm mt-1">Ringkasan performa inventory Anda</p>
-      </div>
+      {/* Greeting */}
+      <Greeting products={products} transactions={transactions} lowStock={lowStock} outOfStock={outOfStock} />
 
       {/* Stat Cards - clean 4-column grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
@@ -243,6 +241,36 @@ export default function Dashboard() {
           </div>
         )}
       </div>
+    </div>
+  )
+}
+
+function Greeting({ products, transactions, lowStock, outOfStock }: { products: Product[]; transactions: Transaction[]; lowStock: number; outOfStock: number }) {
+  const { user } = useAuth()
+  const userName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User'
+
+  const hour = new Date().getHours()
+  const greeting = hour < 12 ? 'Selamat pagi' : hour < 17 ? 'Selamat siang' : hour < 20 ? 'Selamat sore' : 'Selamat malam'
+
+  // Today's transactions
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  const todayTx = transactions.filter(t => new Date(t.createdAt) >= today)
+  const todayIn = todayTx.filter(t => t.type === 'in').reduce((s, t) => s + t.quantity, 0)
+  const todayOut = todayTx.filter(t => t.type === 'out').reduce((s, t) => s + t.quantity, 0)
+
+  // Build subtitle parts
+  const parts: string[] = []
+  if (lowStock + outOfStock > 0) parts.push(`${lowStock + outOfStock} produk perlu perhatian`)
+  if (todayTx.length > 0) parts.push(`${todayTx.length} transaksi hari ini`)
+  if (parts.length === 0) parts.push('Semua stok aman, tidak ada aktivitas hari ini')
+
+  return (
+    <div>
+      <h1 className="text-xl font-semibold text-white">
+        {greeting}, {userName} <span className="inline-block animate-wave">👋</span>
+      </h1>
+      <p className="text-zinc-500 text-sm mt-1">{parts.join(' · ')}</p>
     </div>
   )
 }
