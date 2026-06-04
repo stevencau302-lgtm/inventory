@@ -292,7 +292,7 @@ export default function StockOpnamePage() {
           <button onClick={handleResetAll} className="p-2 rounded-lg border border-gray-200 text-gray-500 hover:text-[#DC2626] hover:border-red-500/30 transition" title="Reset">
             <Trash2 className="w-4 h-4" />
           </button>
-          <button onClick={handleExport} className="p-2 rounded-lg border border-gray-200 text-gray-500 hover:text-white transition" title="Export CSV">
+          <button onClick={handleExport} className="p-2 rounded-lg border border-gray-200 text-gray-500 hover:text-gray-900 transition" title="Export CSV">
             <Download className="w-4 h-4" />
           </button>
           <button onClick={handleSave} disabled={saving || checkedCount === 0}
@@ -383,7 +383,7 @@ export default function StockOpnamePage() {
                     onChange={e => setActual(item.product.id, e.target.value)}
                     placeholder={String(item.systemStock)}
                     className={`w-16 text-center text-sm font-bold rounded-lg px-2 py-2 border transition focus:outline-none focus:border-[#FF5F03]/50 ${
-                      hasInput ? 'bg-gray-50 border-white/[0.15] text-gray-900' : 'bg-gray-50 border-gray-200 text-gray-500'
+                      hasInput ? 'bg-gray-50 border-gray-300 text-gray-900' : 'bg-gray-50 border-gray-200 text-gray-500'
                     }`}
                   />
                 </div>
