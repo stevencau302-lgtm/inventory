@@ -264,14 +264,21 @@ export default function NewTransactionPage() {
       <div className="flex flex-col lg:flex-row gap-6">
       {/* LEFT - Form */}
       <div className="flex-1 min-w-0">
-      <form id="txForm" onSubmit={handleSubmit} className="space-y-6">
+      <form id="txForm" onSubmit={handleSubmit} className="space-y-8">
 
         {/* === TIPE TRANSAKSI === */}
         <div>
-          <label className="text-xs font-bold uppercase tracking-wider text-zinc-400 mb-3 block">
-            Tipe Transaksi
-          </label>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+          <div className="rounded-t-xl px-6 py-4 bg-gradient-to-r from-indigo-600 to-blue-600">
+            <div className="flex items-center gap-3">
+              <Package size={18} className="text-white" />
+              <div>
+                <p className="text-base font-bold text-white">Tipe Transaksi</p>
+                <p className="text-xs text-white/70">Pilih jenis transaksi barang</p>
+              </div>
+            </div>
+          </div>
+          <div className="rounded-b-xl border border-t-0 border-white/[0.08] bg-[#0f1219] p-6 lg:p-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <button
               type="button"
               onClick={() => setType('in')}
@@ -321,6 +328,7 @@ export default function NewTransactionPage() {
                 )}
               </div>
             </button>
+          </div>
           </div>
         </div>
 
