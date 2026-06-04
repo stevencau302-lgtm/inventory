@@ -164,74 +164,62 @@ export default function ProductsPage() {
   return (
     <div className="space-y-5">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4" style={{ borderBottom: '1px solid #e5e7eb' }}>
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-white/[0.04] border border-white/[0.08] flex items-center justify-center shrink-0">
-            <svg className="w-5 h-5 text-zinc-300" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" /></svg>
+          <div className="w-10 h-10 rounded-xl bg-[#072C2C]/10 border border-[#072C2C]/20 flex items-center justify-center shrink-0">
+            <svg className="w-5 h-5 text-gray-600" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" /></svg>
           </div>
           <div>
-            <h1 className="text-xl font-bold text-white">Produk & Stok</h1>
-            <p className="text-zinc-500 text-xs mt-0.5">Kelola produk dan stok barang</p>
+            <h1 className="text-xl font-bold text-gray-900">Produk & Stok</h1>
+            <p className="text-gray-500 text-xs mt-0.5">Kelola produk dan stok barang</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <button onClick={() => setCsvModal(true)} className="px-3.5 py-2 rounded-lg border border-white/[0.1] text-zinc-300 text-sm font-medium hover:bg-white/[0.04] transition flex items-center gap-1.5">
+          <button onClick={() => setCsvModal(true)} className="px-3.5 py-2 rounded-lg border border-gray-200 text-gray-600 text-sm font-medium hover:bg-gray-50 transition flex items-center gap-1.5">
             <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" /></svg>
             Import
           </button>
-          <Link href="/products/new" className="px-3.5 py-2 rounded-lg bg-[#FDC800] hover:bg-[#FDC800]/90 text-black text-sm font-bold transition flex items-center gap-1.5">
+          <Link href="/products/new" className="px-3.5 py-2 rounded-lg bg-[#FF5F03] hover:bg-[#e85503] text-white text-sm font-bold transition flex items-center gap-1.5">
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
             Tambah Produk
           </Link>
         </div>
       </div>
 
-      {/* Summary Cards — vertical layout like reference */}
+      {/* Summary Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        <div className="rounded-xl p-4 bg-[#343741] border border-white/[0.06]">
-          <div className="flex items-center gap-2 mb-3">
-            <svg className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-            <p className="text-[10px] text-zinc-300 font-bold uppercase tracking-wider">Total Nilai Stok</p>
-          </div>
-          <p className="text-xl font-bold text-white">{formatRp(totalNilaiStok)}</p>
-          <p className="text-[10px] text-zinc-400 mt-1">Nilai inventaris</p>
+        <div className="rounded-lg p-3 bg-white border border-gray-200 border-l-4 border-l-[#072C2C]">
+          <p className="text-[9px] text-gray-500 font-bold uppercase tracking-wider mb-1">Total Nilai Stok</p>
+          <p className="text-lg font-bold text-gray-900">{formatRp(totalNilaiStok)}</p>
+          <p className="text-[10px] text-gray-400 mt-0.5">Nilai inventaris</p>
         </div>
-        <div className="rounded-xl p-4 bg-[#343741] border border-white/[0.06]">
-          <div className="flex items-center gap-2 mb-3">
-            <svg className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" /></svg>
-            <p className="text-[10px] text-zinc-300 font-bold uppercase tracking-wider">Transaksi</p>
-          </div>
-          <p className="text-xl font-bold text-white">{totalTransaksi}</p>
-          <p className="text-[10px] text-zinc-400 mt-1">Total</p>
+        <div className="rounded-lg p-3 bg-white border border-gray-200 border-l-4 border-l-[#FF5F03]">
+          <p className="text-[9px] text-gray-500 font-bold uppercase tracking-wider mb-1">Transaksi</p>
+          <p className="text-lg font-bold text-gray-900">{totalTransaksi}</p>
+          <p className="text-[10px] text-gray-400 mt-0.5">Total</p>
         </div>
-        <div className="rounded-xl p-4 bg-[#343741] border border-white/[0.06]">
-          <div className="flex items-center gap-2 mb-3">
-            <svg className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" /></svg>
-            <p className="text-[10px] text-zinc-300 font-bold uppercase tracking-wider">Keluar</p>
-          </div>
-          <p className="text-xl font-bold text-white">{totalBarangKeluar}</p>
-          <p className="text-[10px] text-zinc-400 mt-1">Unit</p>
+        <div className="rounded-lg p-3 bg-white border border-gray-200 border-l-4 border-l-[#D97706]">
+          <p className="text-[9px] text-gray-500 font-bold uppercase tracking-wider mb-1">Keluar</p>
+          <p className="text-lg font-bold text-gray-900">{totalBarangKeluar}</p>
+          <p className="text-[10px] text-gray-400 mt-0.5">Unit</p>
         </div>
-        <div className="rounded-xl p-4 bg-[#343741] border border-white/[0.06]">
-          <div className="flex items-center gap-2 mb-3">
-            <svg className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" /></svg>
-            <p className="text-[10px] text-zinc-300 font-bold uppercase tracking-wider">Produk Terjual</p>
-          </div>
-          <p className="text-xl font-bold text-white">{produkTerjual}</p>
-          <p className="text-[10px] text-zinc-400 mt-1">Jenis produk</p>
+        <div className="rounded-lg p-3 bg-white border border-gray-200 border-l-4 border-l-[#DC2626]">
+          <p className="text-[9px] text-gray-500 font-bold uppercase tracking-wider mb-1">Produk Terjual</p>
+          <p className="text-lg font-bold text-gray-900">{produkTerjual}</p>
+          <p className="text-[10px] text-gray-400 mt-0.5">Jenis produk</p>
         </div>
       </div>
 
       {/* Tab Bar */}
-      <div className="flex gap-1 p-1 rounded-xl bg-[#141820] border border-white/[0.06]">
+      <div className="flex gap-1 p-1 rounded-xl bg-white border border-gray-200">
         {tabs.map(tab => (
           <button
             key={tab.key}
             onClick={() => setActiveTab(tab.key)}
             className={`flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm transition flex items-center justify-center gap-2 ${
               activeTab === tab.key
-                ? 'bg-[#FDC800] text-black font-bold shadow-lg shadow-[#FDC800]/20'
-                : 'text-zinc-400 hover:text-white'
+                ? 'bg-[#072C2C] text-white font-bold shadow-lg shadow-[#072C2C]/20'
+                : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'
             }`}
           >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d={tab.icon} /></svg>
@@ -257,7 +245,7 @@ export default function ProductsPage() {
                 className="form-input pl-10"
               />
             </div>
-            <select value={sortBy} onChange={e => setSortBy(e.target.value)} className="form-input w-full sm:w-auto" style={{ background: '#18181b', border: '1px solid rgba(255,255,255,0.1)' }}>
+            <select value={sortBy} onChange={e => setSortBy(e.target.value)} className="form-input w-full sm:w-auto">
               <option value="name-asc">Nama (A-Z)</option>
               <option value="name-desc">Nama (Z-A)</option>
               <option value="stock-asc">Stok (Rendah)</option>
