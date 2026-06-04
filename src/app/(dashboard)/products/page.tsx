@@ -39,14 +39,9 @@ export default function ProductsPage() {
   }, [])
 
   // === Summary calculations ===
-  const totalPenjualan = useMemo(() => {
-    return transactions
-      .filter(t => t.type === 'out')
-      .reduce((sum, t) => {
-        const product = products.find(p => p.id === t.productId)
-        return sum + (product ? product.price * t.quantity : 0)
-      }, 0)
-  }, [transactions, products])
+  const totalNilaiStok = useMemo(() => {
+    return products.reduce((sum, p) => sum + (p.price * p.stock), 0)
+  }, [products])
 
   const totalTransaksi = transactions.length
 
