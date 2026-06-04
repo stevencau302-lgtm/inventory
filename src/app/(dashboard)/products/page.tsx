@@ -464,24 +464,24 @@ export default function ProductsPage() {
                   <tr className="bg-zinc-800">
                     <th className="border border-white/10 w-[48px] px-2 py-2.5 text-center text-[11px] font-bold text-zinc-400 uppercase tracking-wide">No</th>
                     <th className="border border-white/10 px-3 py-2.5 text-left text-[11px] font-bold text-zinc-400 uppercase tracking-wide">Nama Produk</th>
-                    <th className="border border-white/10 w-[100px] px-2 py-2.5 text-center text-[11px] font-bold text-zinc-400 uppercase tracking-wide">Jumlah</th>
-                    <th className="border border-white/10 w-[140px] px-2 py-2.5 text-center text-[11px] font-bold text-zinc-400 uppercase tracking-wide">Tanggal</th>
-                    <th className="border border-white/10 px-3 py-2.5 text-left text-[11px] font-bold text-zinc-400 uppercase tracking-wide">Catatan</th>
+                    <th className="border border-gray-200 w-[100px] px-2 py-2.5 text-center text-[11px] font-bold text-gray-500 uppercase tracking-wide">Jumlah</th>
+                    <th className="border border-gray-200 w-[140px] px-2 py-2.5 text-center text-[11px] font-bold text-gray-500 uppercase tracking-wide">Tanggal</th>
+                    <th className="border border-gray-200 px-3 py-2.5 text-left text-[11px] font-bold text-gray-500 uppercase tracking-wide">Catatan</th>
                   </tr>
                 </thead>
                 <tbody>
                   {barangMasuk.length === 0 ? (
-                    <tr><td colSpan={5} className="border border-white/10 text-center py-12 text-zinc-500">Tidak ada barang masuk</td></tr>
+                    <tr><td colSpan={5} className="border border-gray-200 text-center py-12 text-gray-500">Tidak ada barang masuk</td></tr>
                   ) : (
                     barangMasuk.map((t, idx) => (
-                      <tr key={t.id} className={`hover:bg-indigo-900/20 transition ${idx % 2 === 1 ? 'bg-zinc-900/40' : 'bg-zinc-950'}`}>
-                        <td className="border border-white/10 px-2 py-2 text-center text-xs text-zinc-500">{idx + 1}</td>
-                        <td className="border border-white/10 px-3 py-2 text-left text-sm font-medium text-white">{t.productName}</td>
-                        <td className="border border-white/10 px-2 py-2 text-center text-sm font-medium text-emerald-400">+{t.quantity}</td>
-                        <td className="border border-white/10 px-2 py-2 text-center text-sm text-zinc-400">
+                      <tr key={t.id} className={`hover:bg-blue-50 transition ${idx % 2 === 1 ? 'bg-gray-50' : 'bg-white'}`}>
+                        <td className="border border-gray-200 px-2 py-2 text-center text-xs text-gray-500">{idx + 1}</td>
+                        <td className="border border-gray-200 px-3 py-2 text-left text-sm font-medium text-gray-900">{t.productName}</td>
+                        <td className="border border-gray-200 px-2 py-2 text-center text-sm font-medium text-[#16A34A]">+{t.quantity}</td>
+                        <td className="border border-gray-200 px-2 py-2 text-center text-sm text-gray-500">
                           {new Date(t.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
                         </td>
-                        <td className="border border-white/10 px-3 py-2 text-left text-sm text-zinc-400">{t.note || '-'}</td>
+                        <td className="border border-gray-200 px-3 py-2 text-left text-sm text-gray-500">{t.note || '-'}</td>
                       </tr>
                     ))
                   )}
@@ -502,31 +502,31 @@ export default function ProductsPage() {
             </Link>
           </div>
 
-          <div className="overflow-hidden border border-white/10">
+          <div className="overflow-hidden border border-gray-200">
             <div className="overflow-x-auto max-h-[600px]">
               <table className="w-full border-collapse">
                 <thead className="sticky top-0 z-10">
-                  <tr className="bg-zinc-800">
-                    <th className="border border-white/10 w-[48px] px-2 py-2.5 text-center text-[11px] font-bold text-zinc-400 uppercase tracking-wide">No</th>
-                    <th className="border border-white/10 px-3 py-2.5 text-left text-[11px] font-bold text-zinc-400 uppercase tracking-wide">Nama Produk</th>
-                    <th className="border border-white/10 w-[100px] px-2 py-2.5 text-center text-[11px] font-bold text-zinc-400 uppercase tracking-wide">Jumlah</th>
-                    <th className="border border-white/10 w-[140px] px-2 py-2.5 text-center text-[11px] font-bold text-zinc-400 uppercase tracking-wide">Tanggal</th>
-                    <th className="border border-white/10 px-3 py-2.5 text-left text-[11px] font-bold text-zinc-400 uppercase tracking-wide">Catatan</th>
+                  <tr className="bg-gray-100">
+                    <th className="border border-gray-200 w-[48px] px-2 py-2.5 text-center text-[11px] font-bold text-gray-500 uppercase tracking-wide">No</th>
+                    <th className="border border-gray-200 px-3 py-2.5 text-left text-[11px] font-bold text-gray-500 uppercase tracking-wide">Nama Produk</th>
+                    <th className="border border-gray-200 w-[100px] px-2 py-2.5 text-center text-[11px] font-bold text-gray-500 uppercase tracking-wide">Jumlah</th>
+                    <th className="border border-gray-200 w-[140px] px-2 py-2.5 text-center text-[11px] font-bold text-gray-500 uppercase tracking-wide">Tanggal</th>
+                    <th className="border border-gray-200 px-3 py-2.5 text-left text-[11px] font-bold text-gray-500 uppercase tracking-wide">Catatan</th>
                   </tr>
                 </thead>
                 <tbody>
                   {barangKeluar.length === 0 ? (
-                    <tr><td colSpan={5} className="border border-white/10 text-center py-12 text-zinc-500">Tidak ada barang keluar</td></tr>
+                    <tr><td colSpan={5} className="border border-gray-200 text-center py-12 text-gray-500">Tidak ada barang keluar</td></tr>
                   ) : (
                     barangKeluar.map((t, idx) => (
-                      <tr key={t.id} className={`hover:bg-indigo-900/20 transition ${idx % 2 === 1 ? 'bg-zinc-900/40' : 'bg-zinc-950'}`}>
-                        <td className="border border-white/10 px-2 py-2 text-center text-xs text-zinc-500">{idx + 1}</td>
-                        <td className="border border-white/10 px-3 py-2 text-left text-sm font-medium text-white">{t.productName}</td>
-                        <td className="border border-white/10 px-2 py-2 text-center text-sm font-medium text-red-400">-{t.quantity}</td>
-                        <td className="border border-white/10 px-2 py-2 text-center text-sm text-zinc-400">
+                      <tr key={t.id} className={`hover:bg-blue-50 transition ${idx % 2 === 1 ? 'bg-gray-50' : 'bg-white'}`}>
+                        <td className="border border-gray-200 px-2 py-2 text-center text-xs text-gray-500">{idx + 1}</td>
+                        <td className="border border-gray-200 px-3 py-2 text-left text-sm font-medium text-gray-900">{t.productName}</td>
+                        <td className="border border-gray-200 px-2 py-2 text-center text-sm font-medium text-[#DC2626]">-{t.quantity}</td>
+                        <td className="border border-gray-200 px-2 py-2 text-center text-sm text-gray-500">
                           {new Date(t.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
                         </td>
-                        <td className="border border-white/10 px-3 py-2 text-left text-sm text-zinc-400">{t.note || '-'}</td>
+                        <td className="border border-gray-200 px-3 py-2 text-left text-sm text-gray-500">{t.note || '-'}</td>
                       </tr>
                     ))
                   )}
