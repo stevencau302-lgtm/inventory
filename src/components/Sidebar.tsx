@@ -8,7 +8,6 @@ import {
   Package,
   Tags,
   ArrowLeftRight,
-  ClipboardList,
   ClipboardCheck,
   BarChart3,
   Settings,
@@ -27,7 +26,6 @@ const navItems = [
   { href: '/categories', label: 'Kategori', icon: Tags },
   { href: '/transactions', label: 'Transaksi', icon: ArrowLeftRight },
   { href: '/stock-opname', label: 'Stok Opname', icon: ClipboardCheck },
-  { href: '/laporan-stok', label: 'Laporan Stok', icon: ClipboardList },
   { href: '/reports', label: 'Analisa', icon: BarChart3 },
   { href: '/settings', label: 'Pengaturan', icon: Settings },
 ]
