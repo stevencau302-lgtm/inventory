@@ -100,17 +100,24 @@ export default function NewProductPage() {
   const inputClass = "w-full px-4 py-3 rounded-lg bg-[#1a1f2e] border border-white/[0.1] text-sm text-white placeholder-zinc-600 focus:outline-none transition"
 
   return (
-    <div className="max-w-5xl mx-auto py-6 lg:py-10 px-4 lg:px-8">
-      {/* Back */}
-      <button onClick={() => router.push('/products')} className="group flex items-center gap-2 text-sm font-medium text-zinc-400 hover:text-white mb-6 transition">
-        <ArrowLeft size={16} className="group-hover:-translate-x-0.5 transition-transform" />
-        Kembali
-      </button>
-
-      {/* Title */}
-      <div className="mb-10">
-        <h1 className="text-3xl font-bold text-white">Tambah Produk Baru</h1>
-        <p className="text-zinc-500 text-sm mt-1.5">Lengkapi data produk yang akan ditambahkan</p>
+    <div className="max-w-5xl mx-auto py-2 px-4 lg:px-8">
+      {/* Back + Title inline */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+        <div>
+          <button onClick={() => router.push('/products')} className="group flex items-center gap-2 text-sm font-medium text-zinc-400 hover:text-white mb-2 transition">
+            <ArrowLeft size={16} className="group-hover:-translate-x-0.5 transition-transform" />
+            Kembali
+          </button>
+          <h1 className="text-2xl font-bold text-white">Tambah Produk Baru</h1>
+          <p className="text-zinc-500 text-sm mt-0.5">Lengkapi data produk yang akan ditambahkan</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <button type="button" onClick={handleReset}
+            className="px-4 py-2.5 rounded-lg border border-white/[0.1] text-sm font-medium text-zinc-400 hover:text-white hover:border-white/[0.2] transition flex items-center gap-2">
+            <RotateCcw size={15} />
+            Reset
+          </button>
+        </div>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-8">
