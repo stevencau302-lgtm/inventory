@@ -30,8 +30,8 @@ function ScannerSection({ products, onProductFound }: { products: Product[]; onP
         onClick={() => setOpen(!open)}
         className={`w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold transition-all duration-200 border ${
           open
-            ? 'border-[#FDC800]/30 bg-[#FDC800]/5 text-[#FDC800]'
-            : 'border-white/[0.08] bg-transparent text-zinc-400 hover:text-[#FDC800] hover:border-[#FDC800]/20 hover:bg-[#FDC800]/5'
+            ? 'border-[#FF5F03]/30 bg-[#FF5F03]/5 text-[#FF5F03]'
+            : 'border-gray-200 bg-transparent text-gray-500 hover:text-[#FF5F03] hover:border-[#FF5F03]/20 hover:bg-[#FF5F03]/5'
         }`}
       >
         {open ? (
@@ -58,8 +58,8 @@ function ScannerSection({ products, onProductFound }: { products: Product[]; onP
             className="overflow-hidden"
           >
             <div className="pt-3">
-              <div className="rounded-xl bg-[#1a1a1a] border border-white/[0.06] p-4">
-                <p className="text-[11px] text-zinc-500 mb-3">Scan barcode atau ketik SKU produk untuk mengisi form otomatis</p>
+              <div className="rounded-xl bg-white border border-gray-200 p-4">
+                <p className="text-[11px] text-gray-500 mb-3">Scan barcode atau ketik SKU produk untuk mengisi form otomatis</p>
                 <BarcodeInput products={products} onProductFound={handleFound} />
               </div>
             </div>
@@ -112,8 +112,8 @@ export default function NewTransactionPage() {
   if (!mounted) return (
     <div className="flex items-center justify-center min-h-[80vh]">
       <div className="flex flex-col items-center gap-3 animate-pulse">
-        <Loader2 className="w-8 h-8 text-[#FDC800] animate-spin" />
-        <p className="text-zinc-500 text-sm">Memuat...</p>
+        <Loader2 className="w-8 h-8 text-[#FF5F03] animate-spin" />
+        <p className="text-gray-500 text-sm">Memuat...</p>
       </div>
     </div>
   )
@@ -124,19 +124,19 @@ export default function NewTransactionPage() {
       <div className="max-w-2xl mx-auto pb-24 lg:pb-8">
         <button
           onClick={() => router.push('/transactions')}
-          className="group flex items-center gap-2 text-sm font-semibold text-zinc-400 hover:text-[#fafafa] mb-6 transition-all active:scale-95"
+          className="group flex items-center gap-2 text-sm font-semibold text-gray-500 hover:text-gray-900 mb-6 transition-all active:scale-95"
         >
           <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
           Kembali
         </button>
 
         <div className="flex items-center gap-3 mb-8">
-          <div className="w-12 h-12 rounded-xl bg-[#FDC800]/10 flex items-center justify-center">
-            <Package className="w-6 h-6 text-[#FDC800]" />
+          <div className="w-12 h-12 rounded-xl bg-[#FF5F03]/10 flex items-center justify-center">
+            <Package className="w-6 h-6 text-[#FF5F03]" />
           </div>
           <div>
-            <h1 className="text-xl sm:text-2xl font-bold text-[#fafafa]">Transaksi Baru</h1>
-            <p className="text-sm text-zinc-500">Pilih mode input transaksi</p>
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Transaksi Baru</h1>
+            <p className="text-sm text-gray-500">Pilih mode input transaksi</p>
           </div>
         </div>
 
@@ -144,25 +144,25 @@ export default function NewTransactionPage() {
           {/* Transaksi Biasa */}
           <button
             onClick={() => setMode('single')}
-            className="group relative p-6 rounded-2xl bg-[#1a1a1a] border border-[#2a2a2a] text-left transition-all duration-200 hover:border-[#FDC800]/50 hover:shadow-lg hover:shadow-[#FDC800]/5 active:scale-[0.98]"
+            className="group relative p-6 rounded-2xl bg-white border border-gray-200 text-left transition-all duration-200 hover:border-[#FF5F03]/50 hover:shadow-lg hover:shadow-[#FF5F03]/5 active:scale-[0.98]"
           >
-            <div className="w-12 h-12 rounded-xl bg-[#FDC800]/10 flex items-center justify-center mb-4 group-hover:bg-[#FDC800]/20 transition-colors">
-              <ClipboardList className="w-6 h-6 text-[#FDC800]" />
+            <div className="w-12 h-12 rounded-xl bg-[#FF5F03]/10 flex items-center justify-center mb-4 group-hover:bg-[#FF5F03]/20 transition-colors">
+              <ClipboardList className="w-6 h-6 text-[#FF5F03]" />
             </div>
-            <h3 className="text-base font-bold text-[#fafafa] mb-1">Transaksi Biasa</h3>
-            <p className="text-sm text-zinc-500">Catat 1 produk per transaksi</p>
+            <h3 className="text-base font-bold text-gray-900 mb-1">Transaksi Biasa</h3>
+            <p className="text-sm text-gray-500">Catat 1 produk per transaksi</p>
           </button>
 
           {/* Bulk Entry */}
           <button
             onClick={() => setMode('bulk')}
-            className="group relative p-6 rounded-2xl bg-[#1a1a1a] border border-[#2a2a2a] text-left transition-all duration-200 hover:border-[#FDC800]/50 hover:shadow-lg hover:shadow-[#FDC800]/5 active:scale-[0.98]"
+            className="group relative p-6 rounded-2xl bg-white border border-gray-200 text-left transition-all duration-200 hover:border-[#FF5F03]/50 hover:shadow-lg hover:shadow-[#FF5F03]/5 active:scale-[0.98]"
           >
-            <div className="w-12 h-12 rounded-xl bg-[#FDC800]/10 flex items-center justify-center mb-4 group-hover:bg-[#FDC800]/20 transition-colors">
-              <Layers className="w-6 h-6 text-[#FDC800]" />
+            <div className="w-12 h-12 rounded-xl bg-[#FF5F03]/10 flex items-center justify-center mb-4 group-hover:bg-[#FF5F03]/20 transition-colors">
+              <Layers className="w-6 h-6 text-[#FF5F03]" />
             </div>
-            <h3 className="text-base font-bold text-[#fafafa] mb-1">Bulk Entry</h3>
-            <p className="text-sm text-zinc-500">Catat banyak produk sekaligus</p>
+            <h3 className="text-base font-bold text-gray-900 mb-1">Bulk Entry</h3>
+            <p className="text-sm text-gray-500">Catat banyak produk sekaligus</p>
           </button>
         </div>
       </div>
@@ -240,8 +240,8 @@ export default function NewTransactionPage() {
           <div className="w-20 h-20 rounded-full bg-[#16A34A]/10 flex items-center justify-center animate-[scaleIn_0.4s_ease-out]">
             <Sparkles className="w-10 h-10 text-[#16A34A]" />
           </div>
-          <p className="text-xl font-bold text-[#fafafa]">Transaksi Tersimpan!</p>
-          <p className="text-sm text-zinc-500">Mengalihkan...</p>
+          <p className="text-xl font-bold text-gray-900">Transaksi Tersimpan!</p>
+          <p className="text-sm text-gray-500">Mengalihkan...</p>
         </div>
       </div>
     )
@@ -252,12 +252,12 @@ export default function NewTransactionPage() {
       {/* Back + Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
-          <button onClick={() => router.push('/transactions')} className="group flex items-center gap-2 text-sm font-medium text-zinc-400 hover:text-white mb-2 transition">
+          <button onClick={() => router.push('/transactions')} className="group flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-gray-900 mb-2 transition">
             <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
             Kembali
           </button>
-          <h1 className="text-2xl font-bold text-white">Transaksi Baru</h1>
-          <p className="text-zinc-500 text-sm mt-0.5">Catat barang masuk atau keluar</p>
+          <h1 className="text-2xl font-bold text-gray-900">Transaksi Baru</h1>
+          <p className="text-gray-500 text-sm mt-0.5">Catat barang masuk atau keluar</p>
         </div>
       </div>
 
@@ -265,24 +265,24 @@ export default function NewTransactionPage() {
 
         {/* === TIPE TRANSAKSI === */}
         <div>
-          <div className="rounded-t-xl px-6 py-4 bg-gradient-to-r from-indigo-600 to-blue-600">
+          <div className="rounded-t-xl px-6 py-4 bg-[#072C2C]">
             <div className="flex items-center gap-3">
               <Package size={18} className="text-white" />
               <div>
                 <p className="text-base font-bold text-white">Tipe Transaksi</p>
-                <p className="text-xs text-white/70">Pilih jenis transaksi barang</p>
+                <p className="text-xs text-white/80">Pilih jenis transaksi barang</p>
               </div>
             </div>
           </div>
-          <div className="rounded-b-xl border border-t-0 border-white/[0.08] bg-[#0f1219] p-6 lg:p-8">
+          <div className="rounded-b-xl border border-t-0 border-gray-200 bg-white p-6 lg:p-8">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <button
               type="button"
               onClick={() => setType('in')}
               className={`relative w-full p-4 sm:p-5 rounded-2xl text-left transition-all duration-300 active:scale-[0.97] overflow-hidden ${
                 type === 'in'
-                  ? 'bg-[#16A34A] text-white ring-2 ring-[#16A34A]/50 shadow-lg shadow-[#16A34A]/20'
-                  : 'bg-[#1a1a1a] text-zinc-300 border border-white/[0.06] hover:border-[#16A34A]/30'
+                  ? 'bg-[#16A34A] text-white ring-2 ring-[#16A34A]/30 shadow-lg shadow-[#16A34A]/20'
+                  : 'bg-white text-gray-700 border border-gray-200 hover:border-[#16A34A]/30'
               }`}
             >
               <div className="flex items-center gap-4">
@@ -293,7 +293,7 @@ export default function NewTransactionPage() {
                 </div>
                 <div className="flex-1">
                   <p className="text-base font-bold">Barang Masuk</p>
-                  <p className={`text-sm mt-0.5 ${type === 'in' ? 'text-white/70' : 'text-zinc-500'}`}>Stok bertambah +</p>
+                  <p className={`text-sm mt-0.5 ${type === 'in' ? 'text-white/80' : 'text-gray-500'}`}>Stok bertambah +</p>
                 </div>
                 {type === 'in' && (
                   <div className="w-3 h-3 rounded-full bg-white animate-pulse shrink-0" />
@@ -306,8 +306,8 @@ export default function NewTransactionPage() {
               onClick={() => setType('out')}
               className={`relative w-full p-4 sm:p-5 rounded-2xl text-left transition-all duration-300 active:scale-[0.97] overflow-hidden ${
                 type === 'out'
-                  ? 'bg-[#DC2626] text-white ring-2 ring-[#DC2626]/50 shadow-lg shadow-[#DC2626]/20'
-                  : 'bg-[#1a1a1a] text-zinc-300 border border-white/[0.06] hover:border-[#DC2626]/30'
+                  ? 'bg-[#DC2626] text-white ring-2 ring-[#DC2626]/30 shadow-lg shadow-[#DC2626]/20'
+                  : 'bg-white text-gray-700 border border-gray-200 hover:border-[#DC2626]/30'
               }`}
             >
               <div className="flex items-center gap-4">
@@ -318,7 +318,7 @@ export default function NewTransactionPage() {
                 </div>
                 <div className="flex-1">
                   <p className="text-base font-bold">Barang Keluar</p>
-                  <p className={`text-sm mt-0.5 ${type === 'out' ? 'text-white/70' : 'text-zinc-500'}`}>Stok berkurang -</p>
+                  <p className={`text-sm mt-0.5 ${type === 'out' ? 'text-white/80' : 'text-gray-500'}`}>Stok berkurang -</p>
                 </div>
                 {type === 'out' && (
                   <div className="w-3 h-3 rounded-full bg-white animate-pulse shrink-0" />
@@ -346,27 +346,27 @@ export default function NewTransactionPage() {
 
         {/* === DETAIL PRODUK === */}
         <div>
-          <div className="rounded-t-xl px-6 py-4 bg-gradient-to-r from-purple-600 to-violet-600">
+          <div className="rounded-t-xl px-6 py-4 bg-[#072C2C]">
             <div className="flex items-center gap-3">
               <Search size={18} className="text-white" />
               <div>
                 <p className="text-base font-bold text-white">Detail Produk</p>
-                <p className="text-xs text-white/70">Pilih produk dan jumlah</p>
+                <p className="text-xs text-white/80">Pilih produk dan jumlah</p>
               </div>
             </div>
           </div>
-          <div className="rounded-b-xl border border-t-0 border-white/[0.08] bg-[#0f1219] p-6 lg:p-8 space-y-4">
+          <div className="rounded-b-xl border border-t-0 border-gray-200 bg-white p-6 lg:p-8 space-y-4">
 
           {/* Search dropdown */}
           <div className="relative" ref={productDropdownRef}>
             <div className="relative">
-              <Search className="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500 pointer-events-none" />
+              <Search className="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
               <input
                 type="text"
                 value={productSearch}
                 onChange={e => { setProductSearch(e.target.value); setShowProductDropdown(true); setSelectedProduct('') }}
                 onFocus={() => setShowProductDropdown(true)}
-                className="w-full rounded-xl text-sm pl-11 pr-10 py-3.5 font-medium bg-[#0f0f0f] text-[#fafafa] border-none focus:outline-none focus:ring-2 focus:ring-[#FDC800]/50 transition-all placeholder:text-zinc-600"
+                className="w-full rounded-xl text-sm pl-11 pr-10 py-3.5 font-medium bg-white border border-gray-200 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#072C2C]/30 transition-all placeholder:text-gray-400"
                 placeholder="Cari nama produk atau SKU..."
                 autoComplete="off"
               />
@@ -374,7 +374,7 @@ export default function NewTransactionPage() {
                 <button
                   type="button"
                   onClick={() => { setProductSearch(''); setSelectedProduct(''); setShowProductDropdown(true) }}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300 transition-colors active:scale-90"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 transition-colors active:scale-90"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -383,24 +383,24 @@ export default function NewTransactionPage() {
 
             {/* Dropdown */}
             {showProductDropdown && (
-              <div className="absolute z-50 left-0 right-0 top-full mt-2 rounded-xl bg-[#0f0f0f] border border-white/[0.06] max-h-64 overflow-y-auto shadow-2xl shadow-black/50 animate-[slideDown_0.2s_ease-out]">
+              <div className="absolute z-50 left-0 right-0 top-full mt-2 rounded-xl bg-white border border-gray-200 max-h-64 overflow-y-auto shadow-2xl shadow-black/10 animate-[slideDown_0.2s_ease-out]">
                 {filteredProducts.length === 0 ? (
-                  <div className="px-4 py-6 text-center text-sm text-zinc-500">Produk tidak ditemukan</div>
+                  <div className="px-4 py-6 text-center text-sm text-gray-500">Produk tidak ditemukan</div>
                 ) : filteredProducts.map(p => (
                   <button
                     key={p.id}
                     type="button"
                     onClick={() => handleSelectProduct(p.id)}
-                    className={`w-full flex items-center gap-3 px-4 py-3 text-left transition-all hover:bg-[#FDC800]/5 active:bg-[#FDC800]/10 border-b border-white/[0.04] last:border-b-0 ${selectedProduct === p.id ? 'bg-[#FDC800]/5' : ''}`}
+                    className={`w-full flex items-center gap-3 px-4 py-3 text-left transition-all hover:bg-[#FF5F03]/5 active:bg-[#FF5F03]/10 border-b border-gray-100 last:border-b-0 ${selectedProduct === p.id ? 'bg-[#FF5F03]/5' : ''}`}
                   >
-                    <div className="w-9 h-9 rounded-lg bg-[#FDC800]/10 flex items-center justify-center text-[10px] font-black text-[#FDC800] shrink-0">
+                    <div className="w-9 h-9 rounded-lg bg-[#FF5F03]/10 flex items-center justify-center text-[10px] font-black text-[#FF5F03] shrink-0">
                       {p.name.substring(0, 2).toUpperCase()}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-[#fafafa] truncate">{p.name}</p>
-                      <p className="text-[11px] text-zinc-500">{p.sku} · Stok: {p.stock}</p>
+                      <p className="text-sm font-semibold text-gray-900 truncate">{p.name}</p>
+                      <p className="text-[11px] text-gray-500">{p.sku} · Stok: {p.stock}</p>
                     </div>
-                    <span className="text-[11px] font-medium text-zinc-500 shrink-0">{formatRp(p.price)}</span>
+                    <span className="text-[11px] font-medium text-gray-500 shrink-0">{formatRp(p.price)}</span>
                   </button>
                 ))}
               </div>
@@ -409,18 +409,18 @@ export default function NewTransactionPage() {
 
           {/* Product Info */}
           {selected && (
-            <div className="grid grid-cols-3 gap-3 rounded-lg bg-[#0f0f0f] p-3">
+            <div className="grid grid-cols-3 gap-3 rounded-lg bg-white border border-gray-200 p-3">
               <div>
-                <p className="text-[10px] text-zinc-500 uppercase tracking-wider">Stok Saat Ini</p>
-                <p className="text-sm font-bold text-[#fafafa] mt-0.5">{selected.stock}</p>
+                <p className="text-[10px] text-gray-500 uppercase tracking-wider">Stok Saat Ini</p>
+                <p className="text-sm font-bold text-gray-900 mt-0.5">{selected.stock}</p>
               </div>
               <div>
-                <p className="text-[10px] text-zinc-500 uppercase tracking-wider">Harga</p>
-                <p className="text-sm font-bold text-[#fafafa] mt-0.5">{formatRp(selected.price)}</p>
+                <p className="text-[10px] text-gray-500 uppercase tracking-wider">Harga</p>
+                <p className="text-sm font-bold text-gray-900 mt-0.5">{formatRp(selected.price)}</p>
               </div>
               <div>
-                <p className="text-[10px] text-zinc-500 uppercase tracking-wider">Min Stok</p>
-                <p className="text-sm font-bold text-[#fafafa] mt-0.5">{selected.minStock}</p>
+                <p className="text-[10px] text-gray-500 uppercase tracking-wider">Min Stok</p>
+                <p className="text-sm font-bold text-gray-900 mt-0.5">{selected.minStock}</p>
               </div>
             </div>
           )}
@@ -429,12 +429,12 @@ export default function NewTransactionPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {/* Jumlah */}
             <div>
-              <label className="text-[11px] font-semibold text-zinc-500 uppercase tracking-wider mb-2 block">Jumlah</label>
+              <label className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider mb-2 block">Jumlah</label>
               <div className="flex items-center gap-2">
                 <button
                   type="button"
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                  className="w-11 h-11 rounded-xl bg-[#0f0f0f] border border-white/[0.06] flex items-center justify-center text-[#fafafa] hover:bg-white/[0.04] active:scale-90 transition-all shrink-0"
+                  className="w-11 h-11 rounded-xl bg-white border border-gray-200 flex items-center justify-center text-gray-900 hover:bg-gray-50 active:scale-90 transition-all shrink-0"
                 >
                   <Minus className="w-4 h-4" />
                 </button>
@@ -443,12 +443,12 @@ export default function NewTransactionPage() {
                   min={1}
                   value={quantity}
                   onChange={e => setQuantity(Math.max(1, +e.target.value))}
-                  className="flex-1 min-w-0 rounded-xl text-center text-lg font-bold py-2.5 bg-[#0f0f0f] text-[#fafafa] border-none focus:outline-none focus:ring-2 focus:ring-[#FDC800]/50 transition-all"
+                  className="flex-1 min-w-0 rounded-xl text-center text-lg font-bold py-2.5 bg-white border border-gray-200 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#072C2C]/30 transition-all"
                 />
                 <button
                   type="button"
                   onClick={() => setQuantity(quantity + 1)}
-                  className="w-11 h-11 rounded-xl bg-[#0f0f0f] border border-white/[0.06] flex items-center justify-center text-[#fafafa] hover:bg-white/[0.04] active:scale-90 transition-all shrink-0"
+                  className="w-11 h-11 rounded-xl bg-white border border-gray-200 flex items-center justify-center text-gray-900 hover:bg-gray-50 active:scale-90 transition-all shrink-0"
                 >
                   <Plus className="w-4 h-4" />
                 </button>
@@ -463,13 +463,12 @@ export default function NewTransactionPage() {
 
             {/* Tanggal */}
             <div>
-              <label className="text-[11px] font-semibold text-zinc-500 uppercase tracking-wider mb-2 block">Tanggal</label>
+              <label className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider mb-2 block">Tanggal</label>
               <input
                 type="date"
                 value={date}
                 onChange={e => setDate(e.target.value)}
-                className="w-full rounded-xl text-sm px-4 py-3 font-medium bg-[#0f0f0f] text-[#fafafa] border-none focus:outline-none focus:ring-2 focus:ring-[#FDC800]/50 transition-all"
-                style={{ colorScheme: 'dark' }}
+                className="w-full rounded-xl text-sm px-4 py-3 font-medium bg-white border border-gray-200 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#072C2C]/30 transition-all"
               />
             </div>
           </div>
@@ -478,34 +477,34 @@ export default function NewTransactionPage() {
 
         {/* === KETERANGAN === */}
         <div>
-          <div className="rounded-t-xl px-6 py-4 bg-gradient-to-r from-emerald-600 to-green-600">
+          <div className="rounded-t-xl px-6 py-4 bg-[#16A34A]">
             <div className="flex items-center gap-3">
               <FileText size={18} className="text-white" />
               <div>
                 <p className="text-base font-bold text-white">Keterangan</p>
-                <p className="text-xs text-white/70">Catatan transaksi (opsional)</p>
+                <p className="text-xs text-white/80">Catatan transaksi (opsional)</p>
               </div>
             </div>
           </div>
-          <div className="rounded-b-xl border border-t-0 border-white/[0.08] bg-[#0f1219] p-6 lg:p-8">
+          <div className="rounded-b-xl border border-t-0 border-gray-200 bg-white p-6 lg:p-8">
           <textarea
             value={note}
             onChange={e => setNote(e.target.value.slice(0, 200))}
             maxLength={200}
             rows={3}
-            className="w-full rounded-xl text-sm px-4 py-3.5 resize-none font-medium bg-[#1a1f2e] text-[#fafafa] border border-white/[0.1] focus:outline-none focus:ring-2 focus:ring-emerald-500/40 transition-all placeholder:text-zinc-600"
+            className="w-full rounded-xl text-sm px-4 py-3.5 resize-none font-medium bg-white border border-gray-200 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#16A34A]/30 transition-all placeholder:text-gray-400"
             placeholder="Tambahkan catatan transaksi..."
           />
-          <p className="text-right text-[10px] mt-1.5 text-zinc-600">{note.length}/200</p>
+          <p className="text-right text-[10px] mt-1.5 text-gray-400">{note.length}/200</p>
           </div>
         </div>
 
         {/* === SUBMIT BUTTONS === */}
-        <div className="flex items-center justify-end gap-3 pt-6 border-t border-white/[0.06]">
+        <div className="flex items-center justify-end gap-3 pt-6 border-t border-gray-200">
           <button
             type="button"
             onClick={() => router.push('/transactions')}
-            className="px-6 py-3 rounded-lg border border-white/[0.1] text-sm font-medium text-zinc-400 hover:text-white hover:border-white/[0.2] transition flex items-center gap-2"
+            className="px-6 py-3 rounded-lg border border-gray-200 text-sm font-medium text-gray-500 hover:text-gray-900 hover:border-gray-300 transition flex items-center gap-2"
           >
             <X className="w-4 h-4" />
             Batal
@@ -513,7 +512,7 @@ export default function NewTransactionPage() {
           <button
             type="submit"
             disabled={loading || !selectedProduct}
-            className="px-8 py-3 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-bold transition flex items-center gap-2 shadow-lg shadow-emerald-600/20 disabled:opacity-50 disabled:cursor-not-allowed active:scale-95"
+            className="px-8 py-3 rounded-lg bg-[#16A34A] hover:bg-[#16A34A]/90 text-white text-sm font-bold transition flex items-center gap-2 shadow-lg shadow-[#16A34A]/20 disabled:opacity-50 disabled:cursor-not-allowed active:scale-95"
           >
             {loading ? (
               <Loader2 className="w-4 h-4 animate-spin" />
@@ -616,8 +615,8 @@ function BulkEntryForm({ products, router, toast }: { products: Product[]; route
       <div className="flex items-center justify-center min-h-[80vh]">
         <div className="flex flex-col items-center gap-4 animate-[fadeInUp_0.5s_ease-out]">
           <div className="w-20 h-20 rounded-full bg-[#16A34A]/10 flex items-center justify-center"><Sparkles className="w-10 h-10 text-[#16A34A]" /></div>
-          <p className="text-xl font-bold text-[#fafafa]">Transaksi Tersimpan!</p>
-          <p className="text-sm text-zinc-500">Mengalihkan...</p>
+          <p className="text-xl font-bold text-gray-900">Transaksi Tersimpan!</p>
+          <p className="text-sm text-gray-500">Mengalihkan...</p>
         </div>
       </div>
     )
@@ -625,55 +624,55 @@ function BulkEntryForm({ products, router, toast }: { products: Product[]; route
 
   return (
     <div className="max-w-5xl mx-auto pb-24 lg:pb-8">
-      <button onClick={() => router.push('/transactions')} className="group flex items-center gap-2 text-sm font-semibold text-zinc-400 hover:text-[#fafafa] mb-6 transition-all active:scale-95">
+      <button onClick={() => router.push('/transactions')} className="group flex items-center gap-2 text-sm font-semibold text-gray-500 hover:text-gray-900 mb-6 transition-all active:scale-95">
         <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
         Kembali
       </button>
 
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-[#FDC800]/10 flex items-center justify-center">
-            <Layers className="w-5 h-5 text-[#FDC800]" />
+          <div className="w-10 h-10 rounded-xl bg-[#FF5F03]/10 flex items-center justify-center">
+            <Layers className="w-5 h-5 text-[#FF5F03]" />
           </div>
           <div>
-            <h1 className="text-lg sm:text-xl font-bold text-[#fafafa]">Bulk Entry</h1>
-            <p className="text-xs text-zinc-500">Catat banyak produk sekaligus</p>
+            <h1 className="text-lg sm:text-xl font-bold text-gray-900">Bulk Entry</h1>
+            <p className="text-xs text-gray-500">Catat banyak produk sekaligus</p>
           </div>
         </div>
 
         {/* Pill toggle tipe */}
-        <div className="flex rounded-lg overflow-hidden border border-[#2a2a2a]">
-          <button type="button" onClick={() => setType('in')} className={`px-3 py-1.5 text-xs font-bold transition-all ${type === 'in' ? 'bg-[#16A34A] text-white' : 'bg-[#2a2a2a] text-zinc-400'}`}>
+        <div className="flex rounded-lg overflow-hidden border border-gray-200">
+          <button type="button" onClick={() => setType('in')} className={`px-3 py-1.5 text-xs font-bold transition-all ${type === 'in' ? 'bg-[#16A34A] text-white' : 'bg-gray-100 text-gray-500'}`}>
             Masuk
           </button>
-          <button type="button" onClick={() => setType('out')} className={`px-3 py-1.5 text-xs font-bold transition-all ${type === 'out' ? 'bg-[#DC2626] text-white' : 'bg-[#2a2a2a] text-zinc-400'}`}>
+          <button type="button" onClick={() => setType('out')} className={`px-3 py-1.5 text-xs font-bold transition-all ${type === 'out' ? 'bg-[#DC2626] text-white' : 'bg-gray-100 text-gray-500'}`}>
             Keluar
           </button>
         </div>
       </div>
 
       {/* Item Transaksi Section */}
-      <div className="rounded-xl bg-[#1a1a1a] border border-[#2a2a2a]">
-        <div className="flex items-center justify-between px-4 py-3 border-b border-[#2a2a2a]">
-          <p className="text-xs font-bold uppercase tracking-wider text-zinc-400">Item Transaksi</p>
-          <button type="button" onClick={addRow} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#FDC800] text-[#000000] text-[11px] font-bold active:scale-95 transition-all">
+      <div className="rounded-xl bg-white border border-gray-200">
+        <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200">
+          <p className="text-xs font-bold uppercase tracking-wider text-gray-500">Item Transaksi</p>
+          <button type="button" onClick={addRow} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#FF5F03] text-white text-[11px] font-bold active:scale-95 transition-all">
             <Plus className="w-3.5 h-3.5" />
             Tambah Baris
           </button>
         </div>
 
         {/* Table header - desktop */}
-        <div className="hidden md:grid grid-cols-[40px_1fr_80px_120px_1fr_40px] gap-2 px-4 py-2 bg-[#0f0f0f] border-b border-[#2a2a2a]">
-          <span className="text-[10px] font-bold text-zinc-500 uppercase">#</span>
-          <span className="text-[10px] font-bold text-zinc-500 uppercase">Produk</span>
-          <span className="text-[10px] font-bold text-zinc-500 uppercase">Jumlah</span>
-          <span className="text-[10px] font-bold text-zinc-500 uppercase">Tanggal</span>
-          <span className="text-[10px] font-bold text-zinc-500 uppercase">Keterangan</span>
-          <span className="text-[10px] font-bold text-zinc-500 uppercase text-center">Aksi</span>
+        <div className="hidden md:grid grid-cols-[40px_1fr_80px_120px_1fr_40px] gap-2 px-4 py-2 bg-gray-50 border-b border-gray-200">
+          <span className="text-[10px] font-bold text-gray-500 uppercase">#</span>
+          <span className="text-[10px] font-bold text-gray-500 uppercase">Produk</span>
+          <span className="text-[10px] font-bold text-gray-500 uppercase">Jumlah</span>
+          <span className="text-[10px] font-bold text-gray-500 uppercase">Tanggal</span>
+          <span className="text-[10px] font-bold text-gray-500 uppercase">Keterangan</span>
+          <span className="text-[10px] font-bold text-gray-500 uppercase text-center">Aksi</span>
         </div>
 
         {/* Rows */}
-        <div className="divide-y divide-[#2a2a2a]">
+        <div className="divide-y divide-gray-200">
           {rows.map((row, index) => {
             const filteredForRow = products.filter(p =>
               p.name.toLowerCase().includes(row.search.toLowerCase()) ||
@@ -682,7 +681,7 @@ function BulkEntryForm({ products, router, toast }: { products: Product[]; route
             return (
               <div key={row.id} className="md:grid md:grid-cols-[40px_1fr_80px_120px_1fr_40px] md:gap-2 md:items-center px-4 py-3 space-y-2 md:space-y-0">
                 {/* # */}
-                <span className="hidden md:block text-xs text-zinc-500 font-medium">{index + 1}</span>
+                <span className="hidden md:block text-xs text-gray-500 font-medium">{index + 1}</span>
 
                 {/* Produk */}
                 <div className="relative">
@@ -692,18 +691,18 @@ function BulkEntryForm({ products, router, toast }: { products: Product[]; route
                     onChange={e => { updateRow(index, { search: e.target.value, showDropdown: true, productId: '' }) }}
                     onFocus={() => updateRow(index, { showDropdown: true })}
                     onBlur={() => setTimeout(() => updateRow(index, { showDropdown: false }), 250)}
-                    className="w-full rounded-lg text-xs px-3 py-2 bg-[#0f0f0f] text-[#fafafa] border-none focus:outline-none focus:ring-1 focus:ring-[#FDC800]/50 placeholder:text-zinc-600"
+                    className="w-full rounded-lg text-xs px-3 py-2 bg-white border border-gray-200 text-gray-900 focus:outline-none focus:ring-1 focus:ring-[#072C2C]/30 placeholder:text-gray-400"
                     placeholder="Pilih produk..."
                   />
                   {row.showDropdown && !row.productId && (
-                    <div className="absolute z-50 left-0 right-0 top-full mt-1 rounded-lg bg-[#0f0f0f] border border-[#2a2a2a] max-h-36 overflow-y-auto shadow-xl">
+                    <div className="absolute z-50 left-0 right-0 top-full mt-1 rounded-lg bg-white border border-gray-200 max-h-36 overflow-y-auto shadow-xl">
                       {filteredForRow.length === 0 ? (
-                        <p className="px-3 py-2 text-xs text-zinc-500 text-center">Tidak ditemukan</p>
+                        <p className="px-3 py-2 text-xs text-gray-500 text-center">Tidak ditemukan</p>
                       ) : filteredForRow.slice(0, 5).map(p => (
                         <button key={p.id} type="button" onMouseDown={() => selectProduct(index, p.id)}
-                          className="w-full px-3 py-2 text-left hover:bg-[#FDC800]/5 border-b border-[#2a2a2a] last:border-b-0">
-                          <p className="text-xs text-[#fafafa]">{p.name}</p>
-                          <p className="text-[10px] text-zinc-500">{p.sku} · Stok: {p.stock}</p>
+                          className="w-full px-3 py-2 text-left hover:bg-[#FF5F03]/5 border-b border-gray-100 last:border-b-0">
+                          <p className="text-xs text-gray-900">{p.name}</p>
+                          <p className="text-[10px] text-gray-500">{p.sku} · Stok: {p.stock}</p>
                         </button>
                       ))}
                     </div>
@@ -718,7 +717,7 @@ function BulkEntryForm({ products, router, toast }: { products: Product[]; route
                   onFocus={e => { if (row.quantity <= 1) e.target.value = '' }}
                   onChange={e => updateRow(index, { quantity: Math.max(0, +e.target.value) })}
                   onBlur={e => { if (!e.target.value || +e.target.value < 1) updateRow(index, { quantity: 1 }) }}
-                  className="w-full rounded-lg text-xs text-center px-2 py-2 bg-[#0f0f0f] text-[#fafafa] border-none focus:outline-none focus:ring-1 focus:ring-[#FDC800]/50"
+                  className="w-full rounded-lg text-xs text-center px-2 py-2 bg-white border border-gray-200 text-gray-900 focus:outline-none focus:ring-1 focus:ring-[#072C2C]/30"
                 />
 
                 {/* Tanggal */}
@@ -726,8 +725,7 @@ function BulkEntryForm({ products, router, toast }: { products: Product[]; route
                   type="date"
                   value={row.date}
                   onChange={e => updateRow(index, { date: e.target.value })}
-                  className="w-full rounded-lg text-xs px-2 py-2 bg-[#0f0f0f] text-[#fafafa] border-none focus:outline-none focus:ring-1 focus:ring-[#FDC800]/50"
-                  style={{ colorScheme: 'dark' }}
+                  className="w-full rounded-lg text-xs px-2 py-2 bg-white border border-gray-200 text-gray-900 focus:outline-none focus:ring-1 focus:ring-[#072C2C]/30"
                 />
 
                 {/* Keterangan */}
@@ -735,14 +733,14 @@ function BulkEntryForm({ products, router, toast }: { products: Product[]; route
                   type="text"
                   value={row.note}
                   onChange={e => updateRow(index, { note: e.target.value })}
-                  className="w-full rounded-lg text-xs px-3 py-2 bg-[#0f0f0f] text-[#fafafa] border-none focus:outline-none focus:ring-1 focus:ring-[#FDC800]/50 placeholder:text-zinc-600"
+                  className="w-full rounded-lg text-xs px-3 py-2 bg-white border border-gray-200 text-gray-900 focus:outline-none focus:ring-1 focus:ring-[#072C2C]/30 placeholder:text-gray-400"
                   placeholder="Opsional"
                 />
 
                 {/* Hapus */}
                 <div className="flex justify-center">
                   <button type="button" onClick={() => removeRow(index)} disabled={rows.length <= 1}
-                    className="w-7 h-7 rounded-lg bg-[#2a2a2a] flex items-center justify-center text-[#DC2626] disabled:opacity-30 active:scale-90 transition-all">
+                    className="w-7 h-7 rounded-lg bg-gray-100 flex items-center justify-center text-[#DC2626] disabled:opacity-30 active:scale-90 transition-all">
                     <X className="w-3.5 h-3.5" />
                   </button>
                 </div>
@@ -754,8 +752,8 @@ function BulkEntryForm({ products, router, toast }: { products: Product[]; route
 
       {/* Submit */}
       <div className="flex justify-end gap-3 mt-6">
-        <button type="button" onClick={() => router.push('/transactions')} className="px-5 py-3 rounded-xl text-sm font-bold bg-[#1a1a1a] border border-[#2a2a2a] text-zinc-300 active:scale-95 transition-all">Batal</button>
-        <button type="button" onClick={handleSubmit} disabled={loading || rows.filter(r => r.productId).length === 0} className="px-6 py-3 rounded-xl text-sm font-bold bg-[#FDC800] text-[#000000] disabled:opacity-40 flex items-center gap-2 active:scale-[0.97] transition-all shadow-lg shadow-[#FDC800]/20">
+        <button type="button" onClick={() => router.push('/transactions')} className="px-5 py-3 rounded-xl text-sm font-bold bg-white border border-gray-200 text-gray-700 active:scale-95 transition-all">Batal</button>
+        <button type="button" onClick={handleSubmit} disabled={loading || rows.filter(r => r.productId).length === 0} className="px-6 py-3 rounded-xl text-sm font-bold bg-[#FF5F03] text-white disabled:opacity-40 flex items-center gap-2 active:scale-[0.97] transition-all shadow-lg shadow-[#FF5F03]/20">
           {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Save className="w-4 h-4" />Catat {rows.filter(r => r.productId).length} Transaksi</>}
         </button>
       </div>
