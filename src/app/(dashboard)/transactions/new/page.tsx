@@ -248,11 +248,11 @@ export default function NewTransactionPage() {
   }
 
   return (
-    <div className="max-w-5xl mx-auto py-2 px-4 lg:px-8 pb-24 lg:pb-8">
+    <div className="max-w-5xl mx-auto py-2 px-4 lg:px-8">
       {/* Back + Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
-          <button onClick={() => router.push('/products')} className="group flex items-center gap-2 text-sm font-medium text-zinc-400 hover:text-white mb-2 transition">
+          <button onClick={() => router.push('/transactions')} className="group flex items-center gap-2 text-sm font-medium text-zinc-400 hover:text-white mb-2 transition">
             <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
             Kembali
           </button>
@@ -261,9 +261,6 @@ export default function NewTransactionPage() {
         </div>
       </div>
 
-      <div className="flex flex-col gap-6">
-      {/* Form */}
-      <div className="max-w-3xl w-full">
       <form id="txForm" onSubmit={handleSubmit} className="space-y-8">
 
         {/* === TIPE TRANSAKSI === */}
@@ -529,9 +526,6 @@ export default function NewTransactionPage() {
           </button>
         </div>
       </form>
-      </div>
-
-      </div>
 
       {/* Custom keyframes */}
       <style jsx global>{`
