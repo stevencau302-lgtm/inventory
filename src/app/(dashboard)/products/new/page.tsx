@@ -106,7 +106,7 @@ export default function NewProductPage() {
   const stockColor = stock === 0 ? 'text-red-400' : stock <= minStock ? 'text-amber-400' : 'text-emerald-400'
 
   return (
-    <div className="max-w-2xl mx-auto py-4 sm:py-8 px-2">
+    <div className="max-w-3xl mx-auto py-4 sm:py-8 px-2 lg:px-0">
       {/* Back */}
       <button onClick={() => router.push('/products')} className="group flex items-center gap-2 text-sm font-medium text-zinc-400 hover:text-white mb-6 transition">
         <ArrowLeft size={16} className="group-hover:-translate-x-0.5 transition-transform" />
