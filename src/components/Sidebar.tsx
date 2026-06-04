@@ -22,9 +22,8 @@ import { useAuth } from '@/components/AuthProvider'
 
 const navItems = [
   { href: '/', label: 'Dashboard', icon: LayoutDashboard },
-  { href: '/products', label: 'Master Produk', icon: Package },
+  { href: '/products', label: 'Produk & Stok', icon: Package },
   { href: '/categories', label: 'Kategori', icon: Tags },
-  { href: '/transactions', label: 'Transaksi', icon: ArrowLeftRight },
   { href: '/stock-opname', label: 'Stok Opname', icon: ClipboardCheck },
   { href: '/reports', label: 'Analisa', icon: BarChart3 },
   { href: '/settings', label: 'Pengaturan', icon: Settings },
