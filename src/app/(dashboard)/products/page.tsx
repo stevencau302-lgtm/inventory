@@ -370,37 +370,37 @@ export default function ProductsPage() {
       {activeTab === 'laporan-stok' && (
         <div className="space-y-4">
           {/* Desktop Table - Stock Report */}
-          <div className="hidden md:block overflow-hidden border border-white/10">
+          <div className="hidden md:block overflow-hidden border border-gray-200">
             <div className="overflow-x-auto max-h-[600px]">
               <table className="w-full border-collapse">
                 <thead className="sticky top-0 z-10">
-                  <tr className="bg-zinc-800">
-                    <th className="border border-white/10 w-[48px] px-2 py-2.5 text-center text-[11px] font-bold text-zinc-400 uppercase tracking-wide">No</th>
-                    <th className="border border-white/10 w-[110px] px-2 py-2.5 text-center text-[11px] font-bold text-zinc-400 uppercase tracking-wide">SKU</th>
-                    <th className="border border-white/10 px-3 py-2.5 text-left text-[11px] font-bold text-zinc-400 uppercase tracking-wide">Nama Produk</th>
-                    <th className="border border-white/10 w-[90px] px-2 py-2.5 text-center text-[11px] font-bold text-zinc-400 uppercase tracking-wide">Stok Awal</th>
-                    <th className="border border-white/10 w-[90px] px-2 py-2.5 text-center text-[11px] font-bold text-zinc-400 uppercase tracking-wide">Masuk</th>
-                    <th className="border border-white/10 w-[90px] px-2 py-2.5 text-center text-[11px] font-bold text-zinc-400 uppercase tracking-wide">Keluar</th>
-                    <th className="border border-white/10 w-[90px] px-2 py-2.5 text-center text-[11px] font-bold text-zinc-400 uppercase tracking-wide">Stok Akhir</th>
-                    <th className="border border-white/10 w-[100px] px-2 py-2.5 text-center text-[11px] font-bold text-zinc-400 uppercase tracking-wide">Status</th>
+                  <tr className="bg-gray-100">
+                    <th className="border border-gray-200 w-[48px] px-2 py-2.5 text-center text-[11px] font-bold text-gray-500 uppercase tracking-wide">No</th>
+                    <th className="border border-gray-200 w-[110px] px-2 py-2.5 text-center text-[11px] font-bold text-gray-500 uppercase tracking-wide">SKU</th>
+                    <th className="border border-gray-200 px-3 py-2.5 text-left text-[11px] font-bold text-gray-500 uppercase tracking-wide">Nama Produk</th>
+                    <th className="border border-gray-200 w-[90px] px-2 py-2.5 text-center text-[11px] font-bold text-gray-500 uppercase tracking-wide">Stok Awal</th>
+                    <th className="border border-gray-200 w-[90px] px-2 py-2.5 text-center text-[11px] font-bold text-gray-500 uppercase tracking-wide">Masuk</th>
+                    <th className="border border-gray-200 w-[90px] px-2 py-2.5 text-center text-[11px] font-bold text-gray-500 uppercase tracking-wide">Keluar</th>
+                    <th className="border border-gray-200 w-[90px] px-2 py-2.5 text-center text-[11px] font-bold text-gray-500 uppercase tracking-wide">Stok Akhir</th>
+                    <th className="border border-gray-200 w-[100px] px-2 py-2.5 text-center text-[11px] font-bold text-gray-500 uppercase tracking-wide">Status</th>
                   </tr>
                 </thead>
                 <tbody>
                   {stockReports.length === 0 ? (
-                    <tr><td colSpan={8} className="border border-white/10 text-center py-12 text-zinc-500">Tidak ada data ditemukan</td></tr>
+                    <tr><td colSpan={8} className="border border-gray-200 text-center py-12 text-gray-500">Tidak ada data ditemukan</td></tr>
                   ) : (
                     stockReports.map((r, idx) => (
-                      <tr key={r.product.id} className={`hover:bg-indigo-900/20 transition ${idx % 2 === 1 ? 'bg-zinc-900/40' : 'bg-zinc-950'}`}>
-                        <td className="border border-white/10 px-2 py-2 text-center text-xs text-zinc-500">{idx + 1}</td>
-                        <td className="border border-white/10 px-2 py-2 text-center text-sm text-zinc-300 font-mono">{r.product.sku}</td>
-                        <td className="border border-white/10 px-3 py-2 text-left text-sm font-medium text-white">{r.product.name}</td>
-                        <td className="border border-white/10 px-2 py-2 text-center text-sm text-zinc-300">{r.stockAwal}</td>
-                        <td className="border border-white/10 px-2 py-2 text-center text-sm font-medium text-emerald-400">{r.masuk > 0 ? `+${r.masuk}` : '0'}</td>
-                        <td className="border border-white/10 px-2 py-2 text-center text-sm font-medium text-red-400">{r.keluar > 0 ? `-${r.keluar}` : '0'}</td>
-                        <td className={`border border-white/10 px-2 py-2 text-center text-sm font-bold ${
-                          r.status === 'habis' ? 'text-red-400' : r.status === 'menipis' ? 'text-amber-400' : 'text-emerald-400'
+                      <tr key={r.product.id} className={`hover:bg-blue-50 transition ${idx % 2 === 1 ? 'bg-gray-50' : 'bg-white'}`}>
+                        <td className="border border-gray-200 px-2 py-2 text-center text-xs text-gray-500">{idx + 1}</td>
+                        <td className="border border-gray-200 px-2 py-2 text-center text-sm text-gray-700 font-mono">{r.product.sku}</td>
+                        <td className="border border-gray-200 px-3 py-2 text-left text-sm font-medium text-gray-900">{r.product.name}</td>
+                        <td className="border border-gray-200 px-2 py-2 text-center text-sm text-gray-700">{r.stockAwal}</td>
+                        <td className="border border-gray-200 px-2 py-2 text-center text-sm font-medium text-[#16A34A]">{r.masuk > 0 ? `+${r.masuk}` : '0'}</td>
+                        <td className="border border-gray-200 px-2 py-2 text-center text-sm font-medium text-[#DC2626]">{r.keluar > 0 ? `-${r.keluar}` : '0'}</td>
+                        <td className={`border border-gray-200 px-2 py-2 text-center text-sm font-bold ${
+                          r.status === 'habis' ? 'text-[#DC2626]' : r.status === 'menipis' ? 'text-[#D97706]' : 'text-[#16A34A]'
                         }`}>{r.stockAkhir}</td>
-                        <td className="border border-white/10 px-2 py-2 text-center"><StockStatusBadge status={r.status} /></td>
+                        <td className="border border-gray-200 px-2 py-2 text-center"><StockStatusBadge status={r.status} /></td>
                       </tr>
                     ))
                   )}
