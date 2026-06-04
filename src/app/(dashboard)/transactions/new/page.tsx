@@ -747,7 +747,7 @@ function BulkEntryForm({ products, router, toast }: { products: Product[]; route
 
       {/* Submit */}
       <div className="flex justify-end gap-3 mt-6">
-        <button type="button" onClick={() => router.push('/transactions')} className="px-5 py-3 rounded-xl text-sm font-bold bg-white border border-gray-200 text-gray-700 active:scale-95 transition-all">Batal</button>
+        <button type="button" onClick={() => router.push('/products')} className="px-5 py-3 rounded-xl text-sm font-bold bg-white border border-gray-200 text-gray-700 active:scale-95 transition-all">Batal</button>
         <button type="button" onClick={handleSubmit} disabled={loading || rows.filter(r => r.productId).length === 0} className="px-6 py-3 rounded-xl text-sm font-bold bg-[#FF5F03] text-white disabled:opacity-40 flex items-center gap-2 active:scale-[0.97] transition-all shadow-lg shadow-[#FF5F03]/20">
           {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Save className="w-4 h-4" />Catat {rows.filter(r => r.productId).length} Transaksi</>}
         </button>
