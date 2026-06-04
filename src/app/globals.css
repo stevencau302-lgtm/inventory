@@ -6,8 +6,8 @@
   body {
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
     @apply antialiased;
-    background: #1e2230;
-    color: #fafafa;
+    background: #EDEADE;
+    color: #111827;
     min-height: 100vh;
   }
 }
@@ -15,88 +15,88 @@
 @layer components {
   .glass-card {
     @apply rounded-xl relative overflow-hidden transition-all duration-200;
-    background: #161616;
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.08);
   }
   .glass-card:hover {
-    border-color: rgba(255, 255, 255, 0.12);
+    border-color: rgba(0, 0, 0, 0.15);
   }
 
   .form-input {
     @apply w-full px-4 py-3 rounded-xl text-sm font-medium outline-none transition-all duration-150;
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    color: #fafafa;
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    color: #111827;
   }
   .form-input::placeholder {
-    color: #52525b;
+    color: #9ca3af;
   }
   .form-input:focus {
-    border-color: #6366f1;
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
-    background: rgba(255, 255, 255, 0.06);
+    border-color: #072C2C;
+    box-shadow: 0 0 0 3px rgba(7, 44, 44, 0.1);
+    background: #ffffff;
   }
   select.form-input option {
-    background: #1a1a1a;
-    color: #fafafa;
+    background: #ffffff;
+    color: #111827;
   }
   select option {
-    background: #1a1a1a;
-    color: #fafafa;
+    background: #ffffff;
+    color: #111827;
   }
 
   .btn-primary {
     @apply inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold
            transition-all duration-150 cursor-pointer active:scale-[0.97];
-    background: #6366f1;
+    background: #072C2C;
     color: #fff;
-    box-shadow: 0 2px 12px rgba(99, 102, 241, 0.25);
+    box-shadow: 0 2px 12px rgba(7, 44, 44, 0.25);
   }
   .btn-primary:hover {
-    background: #4f46e5;
-    box-shadow: 0 4px 20px rgba(99, 102, 241, 0.35);
+    background: #0a3d3d;
+    box-shadow: 0 4px 20px rgba(7, 44, 44, 0.35);
   }
 
   .btn-ghost {
     @apply inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold
            transition-all duration-150 cursor-pointer active:scale-[0.97];
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    color: #d4d4d8;
+    background: rgba(0, 0, 0, 0.03);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    color: #374151;
   }
   .btn-ghost:hover {
-    background: rgba(255, 255, 255, 0.08);
-    color: #fafafa;
+    background: rgba(0, 0, 0, 0.06);
+    color: #111827;
   }
 
   .badge {
     @apply inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider;
   }
   .badge-success {
-    background: rgba(16, 185, 129, 0.12);
-    color: #34d399;
+    background: rgba(22, 163, 74, 0.1);
+    color: #16A34A;
   }
   .badge-warning {
-    background: rgba(245, 158, 11, 0.12);
-    color: #fbbf24;
+    background: rgba(217, 119, 6, 0.1);
+    color: #D97706;
   }
   .badge-danger {
-    background: rgba(239, 68, 68, 0.12);
-    color: #f87171;
+    background: rgba(220, 38, 38, 0.1);
+    color: #DC2626;
   }
 
   .nav-link {
     @apply flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150;
-    color: #a1a1aa;
+    color: #6b7280;
   }
   .nav-link:hover {
-    color: #fafafa;
-    background: rgba(255, 255, 255, 0.05);
+    color: #111827;
+    background: rgba(0, 0, 0, 0.04);
   }
   .nav-link.active {
-    color: #818cf8;
-    background: rgba(99, 102, 241, 0.08);
-    border: 1px solid rgba(99, 102, 241, 0.15);
+    color: #072C2C;
+    background: rgba(7, 44, 44, 0.08);
+    border: 1px solid rgba(7, 44, 44, 0.15);
     font-weight: 600;
   }
 }
@@ -105,7 +105,7 @@
 
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #27272a; border-radius: 4px; }
+::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; }
 
 @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 @keyframes slideOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
