@@ -1,10 +1,10 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
-import { Product, Category, uid, saveProduct, fetchCategories } from '@/lib/store'
+import { Product, Category, uid, saveProduct, fetchCategories, fetchProducts } from '@/lib/store'
 import { useToast } from '@/components/Toast'
-import { Package, DollarSign, ArrowLeft, Save, ScanBarcode } from 'lucide-react'
+import { Package, DollarSign, ArrowLeft, Save, ScanBarcode, Loader2, CheckCircle2, XCircle } from 'lucide-react'
 
 function formatRupiah(value: number): string {
   if (value === 0) return 'Rp 0'
@@ -20,6 +20,7 @@ export default function NewProductPage() {
   const router = useRouter()
   const { toast } = useToast()
   const [categories, setCategories] = useState<Category[]>([])
+  const [existingProducts, setExistingProducts] = useState<Product[]>([])
   const [mounted, setMounted] = useState(false)
   const [loading, setLoading] = useState(false)
   const [showScanner, setShowScanner] = useState(false)
@@ -32,6 +33,11 @@ export default function NewProductPage() {
   const [minStock, setMinStock] = useState(10)
   const [description, setDescription] = useState('')
 
+  // SKU validation state
+  const [skuStatus, setSkuStatus] = useState<'idle' | 'checking' | 'available' | 'duplicate'>('idle')
+  const [skuDuplicateName, setSkuDuplicateName] = useState('')
+  const skuTimerRef = useRef<NodeJS.Timeout | null>(null)
+
   // Display state for formatted fields
   const [priceDisplay, setPriceDisplay] = useState('Rp 0')
   const [stockDisplay, setStockDisplay] = useState('0')
@@ -39,12 +45,38 @@ export default function NewProductPage() {
 
   useEffect(() => {
     async function loadData() {
-      const c = await fetchCategories()
+      const [c, p] = await Promise.all([fetchCategories(), fetchProducts()])
       setCategories(c)
+      setExistingProducts(p)
       setMounted(true)
     }
     loadData()
   }, [])
+
+  // Real-time SKU validation with debounce
+  const handleSkuChange = (value: string) => {
+    setSku(value)
+    setSkuStatus('idle')
+    setSkuDuplicateName('')
+
+    if (skuTimerRef.current) clearTimeout(skuTimerRef.current)
+
+    if (!value.trim()) {
+      setSkuStatus('idle')
+      return
+    }
+
+    setSkuStatus('checking')
+    skuTimerRef.current = setTimeout(() => {
+      const duplicate = existingProducts.find(p => p.sku.toLowerCase() === value.toLowerCase())
+      if (duplicate) {
+        setSkuStatus('duplicate')
+        setSkuDuplicateName(duplicate.name)
+      } else {
+        setSkuStatus('available')
+      }
+    }, 500)
+  }
 
   if (!mounted) return null
 
@@ -52,11 +84,15 @@ export default function NewProductPage() {
     e.preventDefault()
     if (!name || !sku || !category) { toast('Lengkapi semua field wajib!', 'error'); return }
 
-    // Validate duplicate SKU
+    if (skuStatus === 'duplicate') {
+      toast(`SKU "${sku}" sudah dipakai oleh "${skuDuplicateName}"`, 'error')
+      return
+    }
+
+    // Double-check from DB
     setLoading(true)
-    const { fetchProducts } = await import('@/lib/store')
-    const existingProducts = await fetchProducts()
-    const duplicate = existingProducts.find(p => p.sku.toLowerCase() === sku.toLowerCase())
+    const freshProducts = await fetchProducts()
+    const duplicate = freshProducts.find(p => p.sku.toLowerCase() === sku.toLowerCase())
     if (duplicate) {
       toast(`SKU "${sku}" sudah dipakai oleh "${duplicate.name}"`, 'error')
       setLoading(false)
@@ -179,7 +215,15 @@ export default function NewProductPage() {
                         <div>
                           <label className={labelClass} style={labelStyle}>Kode Produk / SKU</label>
                           <div className="flex gap-2">
-                            <input type="text" required value={sku} onChange={e => setSku(e.target.value)} className={`${inputClass} flex-1`} style={inputStyle} placeholder="SKU-001" />
+                            <div className="relative flex-1">
+                              <input type="text" required value={sku} onChange={e => handleSkuChange(e.target.value)} className={`${inputClass} ${skuStatus === 'duplicate' ? 'ring-2 ring-red-500/50' : skuStatus === 'available' ? 'ring-2 ring-emerald-500/50' : ''}`} style={inputStyle} placeholder="SKU-001" />
+                              {/* Status indicator */}
+                              <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                                {skuStatus === 'checking' && <Loader2 className="w-4 h-4 text-[#FDC800] animate-spin" />}
+                                {skuStatus === 'available' && <CheckCircle2 className="w-4 h-4 text-emerald-400" />}
+                                {skuStatus === 'duplicate' && <XCircle className="w-4 h-4 text-red-400" />}
+                              </div>
+                            </div>
                             <button
                               type="button"
                               onClick={() => setShowScanner(true)}
@@ -190,6 +234,13 @@ export default function NewProductPage() {
                               <ScanBarcode size={18} color="#FDC800" />
                             </button>
                           </div>
+                          {/* Validation message */}
+                          {skuStatus === 'duplicate' && (
+                            <p className="text-[11px] text-red-400 mt-1.5 font-medium">⚠ SKU sudah dipakai oleh "{skuDuplicateName}"</p>
+                          )}
+                          {skuStatus === 'available' && (
+                            <p className="text-[11px] text-emerald-400 mt-1.5 font-medium">✓ SKU tersedia</p>
+                          )}
                         </div>
                         <div>
                           <label className={labelClass} style={labelStyle}>Kategori</label>
