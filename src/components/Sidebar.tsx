@@ -75,7 +75,7 @@ export default function Sidebar() {
       {/* Mobile hamburger */}
       <button
         onClick={() => setMobileOpen(true)}
-        className="fixed top-3 left-3 z-30 lg:hidden w-10 h-10 rounded-xl flex items-center justify-center text-white bg-[#1a1a1a] border border-white/[0.08] hover:border-white/[0.15] transition-all"
+        className="fixed top-3 left-3 z-30 lg:hidden w-10 h-10 rounded-xl flex items-center justify-center text-gray-700 bg-white border border-gray-200 hover:border-gray-300 transition-all shadow-sm"
       >
         <Menu className="w-5 h-5" />
       </button>
@@ -88,23 +88,23 @@ export default function Sidebar() {
           ${isCollapsedView ? 'w-[68px]' : 'w-[240px]'}
           ${mobileOpen ? 'translate-x-0 !w-[240px]' : '-translate-x-full lg:translate-x-0'}
         `}
-        style={{ background: '#111113', borderRight: '1px solid rgba(255,255,255,0.06)' }}
+        style={{ background: '#ffffff', borderRight: '1px solid rgba(0,0,0,0.08)' }}
       >
         {/* Header */}
-        <div className="h-14 flex items-center px-3 border-b border-white/[0.06]">
+        <div className="h-14 flex items-center px-3 border-b border-gray-200">
           <div className="flex items-center gap-2.5 min-w-0 flex-1">
-            <div className="w-9 h-9 rounded-xl bg-[#FDC800]/10 border border-[#FDC800]/20 flex items-center justify-center shrink-0">
-              <Box className="w-4.5 h-4.5 text-[#FDC800]" />
+            <div className="w-9 h-9 rounded-xl bg-[#072C2C]/10 border border-[#072C2C]/20 flex items-center justify-center shrink-0">
+              <Box className="w-4.5 h-4.5 text-[#072C2C]" />
             </div>
             {!isCollapsedView && (
-              <span className="text-sm font-bold text-white whitespace-nowrap">Nexo Inventory</span>
+              <span className="text-sm font-bold text-gray-900 whitespace-nowrap">Nexo Inventory</span>
             )}
           </div>
           {/* Close button mobile / Collapse desktop */}
           {!isCollapsedView && (
             <button
               onClick={() => mobileOpen ? setMobileOpen(false) : toggleCollapse()}
-              className="w-7 h-7 rounded-lg flex items-center justify-center text-zinc-500 hover:text-white hover:bg-white/[0.06] transition shrink-0"
+              className="w-7 h-7 rounded-lg flex items-center justify-center text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition shrink-0"
               title={mobileOpen ? 'Tutup' : 'Kecilkan sidebar'}
             >
               {mobileOpen ? <X className="w-4 h-4" /> : <PanelLeftClose className="w-4 h-4" />}
@@ -117,7 +117,7 @@ export default function Sidebar() {
           <div className="px-2 pt-2">
             <button
               onClick={toggleCollapse}
-              className="w-full h-8 rounded-lg flex items-center justify-center text-zinc-500 hover:text-[#FDC800] hover:bg-[#FDC800]/10 transition"
+              className="w-full h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-[#072C2C] hover:bg-[#072C2C]/10 transition"
               title="Besarkan sidebar"
             >
               <PanelLeftOpen className="w-4 h-4" />
@@ -140,12 +140,12 @@ export default function Sidebar() {
                   flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200
                   ${isCollapsedView ? 'justify-center' : ''}
                   ${isActive
-                    ? 'bg-[#FDC800] text-black shadow-lg shadow-[#FDC800]/20'
-                    : 'text-zinc-400 hover:text-white hover:bg-white/[0.04]'
+                    ? 'bg-[#072C2C] text-white shadow-lg shadow-[#072C2C]/20'
+                    : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'
                   }
                 `}
               >
-                <Icon className={`w-5 h-5 shrink-0 ${isActive ? 'text-black' : ''}`} strokeWidth={1.8} />
+                <Icon className={`w-5 h-5 shrink-0 ${isActive ? 'text-white' : ''}`} strokeWidth={1.8} />
                 {!isCollapsedView && (
                   <span className="text-[13px] font-medium whitespace-nowrap">{item.label}</span>
                 )}
@@ -161,19 +161,19 @@ export default function Sidebar() {
         </nav>
 
         {/* Separator */}
-        <div className="mx-3 border-t border-white/[0.06]" />
+        <div className="mx-3 border-t border-gray-200" />
 
         {/* User info */}
         <div className="p-3">
           <Tooltip label={userName} show={isCollapsedView}>
-            <div className={`flex items-center gap-3 px-2 py-2 rounded-xl hover:bg-white/[0.03] transition-all ${isCollapsedView ? 'justify-center px-0' : ''}`}>
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#FDC800] to-[#f59e0b] flex items-center justify-center text-[11px] font-bold text-black shrink-0">
+            <div className={`flex items-center gap-3 px-2 py-2 rounded-xl hover:bg-gray-50 transition-all ${isCollapsedView ? 'justify-center px-0' : ''}`}>
+              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#072C2C] to-[#0a3d3d] flex items-center justify-center text-[11px] font-bold text-white shrink-0">
                 {userInitial}
               </div>
               {!isCollapsedView && (
                 <div className="min-w-0">
-                  <p className="text-xs font-semibold text-white truncate">{userName}</p>
-                  <p className="text-[10px] text-zinc-500 truncate">{userEmail}</p>
+                  <p className="text-xs font-semibold text-gray-900 truncate">{userName}</p>
+                  <p className="text-[10px] text-gray-500 truncate">{userEmail}</p>
                 </div>
               )}
             </div>
