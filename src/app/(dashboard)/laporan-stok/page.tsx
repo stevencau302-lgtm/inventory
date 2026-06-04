@@ -290,41 +290,55 @@ export default function LaporanStok() {
       </div>
 
       {/* Mobile Cards */}
-      <div className="md:hidden space-y-3">
+      <div className="md:hidden space-y-2.5">
         {filtered.length === 0 ? (
-          <div className="text-center py-12">
-            <p className="text-zinc-500 text-sm">Tidak ada data ditemukan</p>
+          <div className="text-center py-16">
+            <svg className="w-10 h-10 text-zinc-700 mx-auto mb-3" fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" /></svg>
+            <p className="text-sm text-zinc-500">Tidak ada data ditemukan</p>
           </div>
         ) : (
           filtered.map(r => (
-            <div key={r.product.id} className="rounded-xl p-4 bg-[#1a1a1a] border border-white/[0.06]">
-              <div className="flex items-start justify-between mb-3">
-                <div>
-                  <p className="text-[13px] font-semibold text-white">{r.product.name}</p>
-                  <p className="text-[11px] text-zinc-500 font-mono mt-0.5">{r.product.sku}</p>
+            <div key={r.product.id} className={`rounded-xl overflow-hidden border transition-all ${
+              r.status === 'habis' ? 'border-red-500/20 bg-red-500/[0.02]' :
+              r.status === 'menipis' ? 'border-amber-500/20 bg-amber-500/[0.02]' :
+              'border-white/[0.06] bg-[#1a1a1a]'
+            }`}>
+              {/* Top row: product info + status */}
+              <div className="px-4 pt-3 pb-2 flex items-center justify-between">
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 text-[10px] font-bold ${
+                    r.status === 'habis' ? 'bg-red-500/15 text-red-400' :
+                    r.status === 'menipis' ? 'bg-amber-500/15 text-amber-400' :
+                    'bg-emerald-500/15 text-emerald-400'
+                  }`}>
+                    {r.product.name.substring(0, 2).toUpperCase()}
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-[13px] font-semibold text-white truncate">{r.product.name}</p>
+                    <p className="text-[10px] text-zinc-500 font-mono">{r.product.sku}</p>
+                  </div>
                 </div>
                 <StatusBadge status={r.status} />
               </div>
-              <div className="grid grid-cols-4 gap-2">
-                <div className="text-center p-2 rounded-lg bg-white/[0.03]">
-                  <p className="text-[10px] text-zinc-500 uppercase">Awal</p>
-                  <p className="text-[13px] font-semibold text-zinc-300 mt-0.5">{r.stockAwal}</p>
-                </div>
-                <div className="text-center p-2 rounded-lg bg-emerald-500/[0.06]">
-                  <p className="text-[10px] text-emerald-400 uppercase">Masuk</p>
-                  <p className="text-[13px] font-semibold text-emerald-400 mt-0.5">+{r.masuk}</p>
-                </div>
-                <div className="text-center p-2 rounded-lg bg-red-500/[0.06]">
-                  <p className="text-[10px] text-red-400 uppercase">Keluar</p>
-                  <p className="text-[13px] font-semibold text-red-400 mt-0.5">-{r.keluar}</p>
-                </div>
-                <div className={`text-center p-2 rounded-lg ${
-                  r.status === 'habis' ? 'bg-red-500/[0.08]' : r.status === 'menipis' ? 'bg-amber-500/[0.08]' : 'bg-emerald-500/[0.08]'
-                }`}>
-                  <p className="text-[10px] text-zinc-400 uppercase">Akhir</p>
-                  <p className={`text-[13px] font-bold mt-0.5 ${
-                    r.status === 'habis' ? 'text-red-400' : r.status === 'menipis' ? 'text-amber-400' : 'text-emerald-400'
-                  }`}>{r.stockAkhir}</p>
+
+              {/* Bottom row: stock flow visualization */}
+              <div className="px-4 pb-3">
+                <div className="flex items-center justify-between bg-[#0f0f0f] rounded-lg px-3 py-2">
+                  <div className="text-center">
+                    <p className="text-[10px] text-zinc-600">AWAL</p>
+                    <p className="text-sm font-semibold text-zinc-400">{r.stockAwal}</p>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[11px] font-bold text-emerald-400">+{r.masuk}</span>
+                    <svg className="w-3 h-3 text-zinc-600" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" /></svg>
+                    <span className="text-[11px] font-bold text-red-400">-{r.keluar}</span>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-[10px] text-zinc-600">AKHIR</p>
+                    <p className={`text-sm font-bold ${
+                      r.status === 'habis' ? 'text-red-400' : r.status === 'menipis' ? 'text-amber-400' : 'text-emerald-400'
+                    }`}>{r.stockAkhir}</p>
+                  </div>
                 </div>
               </div>
             </div>
