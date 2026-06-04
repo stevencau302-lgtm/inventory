@@ -490,7 +490,7 @@ export default function NewTransactionPage() {
             onChange={e => setNote(e.target.value.slice(0, 200))}
             maxLength={200}
             rows={3}
-            className="w-full rounded-xl text-sm px-4 py-3.5 resize-none font-medium bg-white border border-gray-200 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#16A34A]/30 transition-all placeholder:text-gray-400"
+            className="w-full rounded-xl text-sm px-4 py-3.5 resize-none font-medium bg-white border border-gray-200 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#FF5F03]/30 transition-all placeholder:text-gray-400"
             placeholder="Tambahkan catatan transaksi..."
           />
           <p className="text-right text-[10px] mt-1.5 text-gray-400">{note.length}/200</p>
@@ -510,7 +510,7 @@ export default function NewTransactionPage() {
           <button
             type="submit"
             disabled={loading || !selectedProduct}
-            className="px-8 py-3 rounded-lg bg-[#16A34A] hover:bg-[#16A34A]/90 text-white text-sm font-bold transition flex items-center gap-2 shadow-lg shadow-[#16A34A]/20 disabled:opacity-50 disabled:cursor-not-allowed active:scale-95"
+            className="px-8 py-3 rounded-lg bg-[#FF5F03] hover:bg-[#FF5F03]/90 text-white text-sm font-bold transition flex items-center gap-2 shadow-lg shadow-[#FF5F03]/20 disabled:opacity-50 disabled:cursor-not-allowed active:scale-95"
           >
             {loading ? (
               <Loader2 className="w-4 h-4 animate-spin" />
