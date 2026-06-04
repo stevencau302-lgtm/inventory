@@ -178,7 +178,7 @@ export default function NewTransactionPage() {
       'success'
     )
 
-    setTimeout(() => router.push('/transactions'), 1200)
+    setTimeout(() => router.push('/products'), 1200)
   }
 
   // Bulk Entry Mode
@@ -205,7 +205,7 @@ export default function NewTransactionPage() {
     <div className="max-w-5xl mx-auto py-2 px-4 lg:px-8">
       {/* Back + Header */}
       <div className="mb-6">
-        <button onClick={() => router.push('/transactions')} className="group flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-gray-900 mb-3 transition">
+        <button onClick={() => router.push('/products')} className="group flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-gray-900 mb-3 transition">
           <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
           Kembali
         </button>
@@ -455,7 +455,7 @@ export default function NewTransactionPage() {
         <div className="flex items-center justify-end gap-3 pt-6 border-t border-gray-200">
           <button
             type="button"
-            onClick={() => router.push('/transactions')}
+            onClick={() => router.push('/products')}
             className="px-6 py-3 rounded-lg border border-gray-200 text-sm font-medium text-gray-500 hover:text-gray-900 hover:border-gray-300 transition flex items-center gap-2"
           >
             <X className="w-4 h-4" />
@@ -559,7 +559,7 @@ function BulkEntryForm({ products, router, toast }: { products: Product[]; route
     setSuccess(true)
     const totalQty = validRows.reduce((s, r) => s + r.quantity, 0)
     toast(`${totalQty} item dari ${validRows.length} produk berhasil dicatat`, 'success')
-    setTimeout(() => router.push('/transactions'), 1200)
+    setTimeout(() => router.push('/products'), 1200)
   }
 
   if (success) {
@@ -576,7 +576,7 @@ function BulkEntryForm({ products, router, toast }: { products: Product[]; route
 
   return (
     <div className="max-w-5xl mx-auto pb-24 lg:pb-8">
-      <button onClick={() => router.push('/transactions')} className="group flex items-center gap-2 text-sm font-semibold text-gray-500 hover:text-gray-900 mb-6 transition-all active:scale-95">
+      <button onClick={() => router.push('/products')} className="group flex items-center gap-2 text-sm font-semibold text-gray-500 hover:text-gray-900 mb-6 transition-all active:scale-95">
         <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
         Kembali
       </button>
