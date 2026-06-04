@@ -314,37 +314,37 @@ export default function ProductsPage() {
           {/* Mobile Cards */}
           <div className="md:hidden space-y-3">
             {filtered.map(p => (
-              <div key={p.id} className="glass-card p-4">
+              <div key={p.id} className="rounded-xl bg-white border border-gray-200 p-4">
                 <div className="flex items-start gap-3">
-                  <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center text-white text-sm font-bold shrink-0">
+                  <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-[#FF5F03] to-[#072C2C] flex items-center justify-center text-white text-sm font-bold shrink-0">
                     {p.name.substring(0, 2).toUpperCase()}
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between gap-2">
                       <div className="min-w-0">
-                        <p className="text-sm font-semibold text-white truncate">{p.name}</p>
-                        <p className="text-xs text-slate-500 mt-0.5">{p.category} &middot; <code className="text-slate-400">{p.sku}</code></p>
+                        <p className="text-sm font-semibold text-gray-900 truncate">{p.name}</p>
+                        <p className="text-xs text-gray-500 mt-0.5">{p.category} &middot; <code className="text-gray-400">{p.sku}</code></p>
                       </div>
                       <StatusBadge product={p} />
                     </div>
                     <div className="flex items-center justify-between mt-3">
                       <div className="flex gap-4">
                         <div>
-                          <p className="text-[10px] text-slate-500 uppercase">Stok</p>
-                          <p className="text-sm font-semibold text-white">{p.stock}</p>
+                          <p className="text-[10px] text-gray-500 uppercase">Stok</p>
+                          <p className="text-sm font-semibold text-gray-900">{p.stock}</p>
                         </div>
                         <div>
-                          <p className="text-[10px] text-slate-500 uppercase">Harga</p>
-                          <p className="text-sm font-semibold text-white">{formatRp(p.price)}</p>
+                          <p className="text-[10px] text-gray-500 uppercase">Harga</p>
+                          <p className="text-sm font-semibold text-gray-900">{formatRp(p.price)}</p>
                         </div>
                       </div>
                       <div className="flex gap-1">
-                        <button onClick={() => handleEdit(p)} className="w-8 h-8 rounded-lg bg-brand-500/10 text-brand-400 hover:bg-brand-500 hover:text-white flex items-center justify-center transition">
+                        <button onClick={() => handleEdit(p)} className="w-8 h-8 rounded-lg bg-[#072C2C]/10 text-[#072C2C] hover:bg-[#072C2C] hover:text-white flex items-center justify-center transition">
                           <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
                           </svg>
                         </button>
-                        <button onClick={() => handleDelete(p.id, p.name)} className="w-8 h-8 rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white flex items-center justify-center transition">
+                        <button onClick={() => handleDelete(p.id, p.name)} className="w-8 h-8 rounded-lg bg-red-50 text-[#DC2626] hover:bg-[#DC2626] hover:text-white flex items-center justify-center transition">
                           <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
                           </svg>
@@ -356,8 +356,8 @@ export default function ProductsPage() {
               </div>
             ))}
             {filtered.length === 0 && (
-              <div className="text-center py-16 text-slate-500">
-                <svg className="w-12 h-12 mx-auto mb-3 text-slate-600" fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor">
+              <div className="text-center py-16 text-gray-500">
+                <svg className="w-12 h-12 mx-auto mb-3 text-gray-400" fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5m8.25 3v6.75m0 0l-3-3m3 3l3-3M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
                 </svg>
                 <p>Tidak ada produk ditemukan</p>
