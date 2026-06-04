@@ -263,7 +263,7 @@ export default function NewTransactionPage() {
 
         {/* === TIPE TRANSAKSI === */}
         <div>
-          <div className={`rounded-t-xl px-6 py-4 ${type === 'in' ? 'bg-[#FF5F03]' : 'bg-[#DC2626]'}`}>
+          <div className={`rounded-t-xl px-6 py-4 ${type === 'in' ? 'bg-[#16A34A]' : 'bg-[#DC2626]'}`}>
             <div className="flex items-center gap-3">
               {type === 'in' ? <ArrowDownCircle size={18} className="text-white" /> : <ArrowUpCircle size={18} className="text-white" />}
               <div>
@@ -344,7 +344,7 @@ export default function NewTransactionPage() {
 
         {/* === DETAIL PRODUK === */}
         <div>
-          <div className="rounded-t-xl px-6 py-4 bg-[#FF5F03]">
+          <div className="rounded-t-xl px-6 py-4 bg-[#072C2C]">
             <div className="flex items-center gap-3">
               <Search size={18} className="text-white" />
               <div>
