@@ -107,7 +107,8 @@ export default function Sidebar() {
       >
         {/* Header / Logo */}
         <div className="h-14 flex items-center justify-between px-3 border-b border-white/[0.06] overflow-hidden">
-          <div className="flex items-center gap-2.5 min-w-0">
+          {/* Logo - hide when collapsed */}
+          <div className={`flex items-center gap-2.5 min-w-0 transition-all duration-300 ${collapsed && !mobileOpen ? 'w-0 opacity-0 overflow-hidden' : ''}`}>
             <div className="w-9 h-9 rounded-xl bg-[#FDC800]/10 border border-[#FDC800]/20 flex items-center justify-center shrink-0">
               <Box className="w-4.5 h-4.5 text-[#FDC800]" />
             </div>
