@@ -53,25 +53,23 @@ export default function DashboardCharts({ products, transactions }: Props) {
   const outTransactions = transactions.filter(t => t.type === 'out')
   const hasAnyTransactions = transactions.length > 0
 
-  // Area chart: hourly revenue today (like reference image)
+  // Area chart: daily stock movement (masuk/keluar) last 7 days
   const areaData = (() => {
+    const dayNames = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab']
     const now = new Date()
-    const todayStr = now.toISOString().split('T')[0]
-    const hours = Array.from({ length: 24 }, (_, i) => {
-      const hourTx = outTransactions.filter(t => {
-        const d = new Date(t.createdAt)
-        return t.createdAt.startsWith(todayStr) && d.getHours() === i
-      })
-      const revenue = hourTx.reduce((sum, t) => {
-        const product = products.find(p => p.id === t.productId)
-        return sum + (product ? product.price * t.quantity : 0)
-      }, 0)
-      return { name: String(i).padStart(2, '0'), pendapatan: revenue / 1000 }
-    })
-    return hours
+    const result = []
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(now)
+      d.setDate(d.getDate() - i)
+      const dayStr = d.toISOString().split('T')[0]
+      const masuk = transactions.filter(t => t.type === 'in' && t.createdAt.startsWith(dayStr)).reduce((s, t) => s + t.quantity, 0)
+      const keluar = transactions.filter(t => t.type === 'out' && t.createdAt.startsWith(dayStr)).reduce((s, t) => s + t.quantity, 0)
+      result.push({ name: dayNames[d.getDay()], masuk, keluar })
+    }
+    return result
   })()
 
-  const hasRevenueData = areaData.some(d => d.pendapatan > 0)
+  const hasMovementData = areaData.some(d => d.masuk > 0 || d.keluar > 0)
 
   // Pie/Donut chart: stock distribution by category (like reference "Metode Bayar")
   const categoryData = (() => {
