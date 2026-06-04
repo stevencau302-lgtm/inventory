@@ -302,9 +302,9 @@ export default function NewTransactionPage() {
             <button
               type="button"
               onClick={() => setType('out')}
-              className={`relative w-full p-4 sm:p-5 rounded-2xl text-left transition-all duration-300 active:scale-[0.97] overflow-hidden ${
+              className={`relative w-full p-4 rounded-xl text-left transition-all duration-300 active:scale-[0.97] ${
                 type === 'out'
-                  ? 'bg-[#DC2626] text-white ring-2 ring-[#DC2626]/30 shadow-lg shadow-[#DC2626]/20'
+                  ? 'bg-[#DC2626] text-white ring-2 ring-[#DC2626]/30 shadow-md shadow-[#DC2626]/20'
                   : 'bg-white text-gray-700 border border-gray-200 hover:border-[#DC2626]/30'
               }`}
             >
