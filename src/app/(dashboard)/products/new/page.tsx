@@ -97,23 +97,23 @@ export default function NewProductPage() {
   const stockStatus = stock === 0 ? 'Habis' : stock <= minStock ? 'Menipis' : 'Tersedia'
   const stockColor = stock === 0 ? 'text-red-400' : stock <= minStock ? 'text-amber-400' : 'text-emerald-400'
 
-  const inputClass = "w-full px-4 py-3 rounded-lg bg-[#1a1f2e] border border-white/[0.1] text-sm text-white placeholder-zinc-600 focus:outline-none transition"
+  const inputClass = "w-full px-4 py-3 rounded-lg bg-white border border-gray-200 text-sm text-gray-900 placeholder-gray-400 focus:outline-none transition"
 
   return (
     <div className="max-w-5xl mx-auto py-2 px-4 lg:px-8">
       {/* Back + Title inline */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
-          <button onClick={() => router.push('/products')} className="group flex items-center gap-2 text-sm font-medium text-zinc-400 hover:text-white mb-2 transition">
+          <button onClick={() => router.push('/products')} className="group flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-gray-900 mb-2 transition">
             <ArrowLeft size={16} className="group-hover:-translate-x-0.5 transition-transform" />
             Kembali
           </button>
-          <h1 className="text-2xl font-bold text-white">Tambah Produk Baru</h1>
-          <p className="text-zinc-500 text-sm mt-0.5">Lengkapi data produk yang akan ditambahkan</p>
+          <h1 className="text-2xl font-bold text-gray-900">Tambah Produk Baru</h1>
+          <p className="text-gray-500 text-sm mt-0.5">Lengkapi data produk yang akan ditambahkan</p>
         </div>
         <div className="flex items-center gap-2">
           <button type="button" onClick={handleReset}
-            className="px-4 py-2.5 rounded-lg border border-white/[0.1] text-sm font-medium text-zinc-400 hover:text-white hover:border-white/[0.2] transition flex items-center gap-2">
+            className="px-4 py-2.5 rounded-lg border border-gray-200 text-sm font-medium text-gray-500 hover:text-gray-900 hover:border-gray-300 transition flex items-center gap-2">
             <RotateCcw size={15} />
             Reset
           </button>
@@ -123,38 +123,38 @@ export default function NewProductPage() {
       <form onSubmit={handleSubmit} className="space-y-8">
         {/* Section 1: Informasi Dasar */}
         <div>
-          <div className="rounded-t-xl px-6 py-4 bg-gradient-to-r from-indigo-600 to-blue-600">
+          <div className="rounded-t-xl px-6 py-4 bg-[#072C2C]">
             <div className="flex items-center gap-3">
               <Package size={18} className="text-white" />
               <div>
                 <p className="text-base font-bold text-white">Informasi Dasar Produk</p>
-                <p className="text-xs text-white/70">Data utama dan identitas produk</p>
+                <p className="text-xs text-white/80">Data utama dan identitas produk</p>
               </div>
             </div>
           </div>
-          <div className="rounded-b-xl border border-t-0 border-white/[0.08] bg-[#0f1219] p-6 lg:p-8">
+          <div className="rounded-b-xl border border-t-0 border-gray-200 bg-white p-6 lg:p-8">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* SKU */}
               <div>
-                <label className="text-[11px] font-bold text-zinc-300 uppercase tracking-wider mb-2 block">Kode SKU <span className="text-red-400">*</span></label>
+                <label className="text-[11px] font-bold text-gray-700 uppercase tracking-wider mb-2 block">Kode SKU <span className="text-red-400">*</span></label>
                 <div className="relative flex gap-2">
                   <div className="relative flex-1">
-                    <Hash size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" />
+                    <Hash size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
                     <input type="text" required value={sku} onChange={e => handleSkuChange(e.target.value)}
-                      className={`w-full pl-9 pr-10 py-3 rounded-lg bg-[#1a1f2e] border text-sm text-white placeholder-zinc-600 focus:outline-none transition ${
+                      className={`w-full pl-9 pr-10 py-3 rounded-lg bg-white border text-sm text-gray-900 placeholder-gray-400 focus:outline-none transition ${
                         skuStatus === 'duplicate' ? 'border-red-500/50 focus:border-red-500' :
-                        skuStatus === 'available' ? 'border-emerald-500/50 focus:border-emerald-500' :
-                        'border-white/[0.1] focus:border-indigo-500'
+                        skuStatus === 'available' ? 'border-emerald-500/50 focus:border-[#16A34A]' :
+                        'border-gray-200 focus:border-[#072C2C]'
                       }`}
                       placeholder="CONTOH: PRD-001" />
                     <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                      {skuStatus === 'checking' && <Loader2 className="w-4 h-4 text-indigo-400 animate-spin" />}
+                      {skuStatus === 'checking' && <Loader2 className="w-4 h-4 text-[#072C2C] animate-spin" />}
                       {skuStatus === 'available' && <CheckCircle2 className="w-4 h-4 text-emerald-400" />}
                       {skuStatus === 'duplicate' && <XCircle className="w-4 h-4 text-red-400" />}
                     </div>
                   </div>
                   <button type="button" onClick={() => setShowScanner(true)}
-                    className="shrink-0 w-11 h-11 rounded-lg bg-[#1a1f2e] border border-white/[0.1] flex items-center justify-center text-indigo-400 hover:bg-indigo-500/10 transition" title="Scan Barcode">
+                    className="shrink-0 w-11 h-11 rounded-lg bg-white border border-gray-200 flex items-center justify-center text-[#072C2C] hover:bg-[#072C2C]/5 transition" title="Scan Barcode">
                     <ScanBarcode size={18} />
                   </button>
                 </div>
@@ -164,20 +164,20 @@ export default function NewProductPage() {
 
               {/* Nama Produk */}
               <div>
-                <label className="text-[11px] font-bold text-zinc-300 uppercase tracking-wider mb-2 block">Nama Produk <span className="text-red-400">*</span></label>
+                <label className="text-[11px] font-bold text-gray-700 uppercase tracking-wider mb-2 block">Nama Produk <span className="text-red-400">*</span></label>
                 <div className="relative">
-                  <Tag size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" />
+                  <Tag size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
                   <input type="text" required value={name} onChange={e => setName(e.target.value)}
-                    className={`${inputClass} pl-9 focus:border-indigo-500`}
+                    className={`${inputClass} pl-9 focus:border-[#072C2C]`}
                     placeholder="Masukkan nama produk" />
                 </div>
               </div>
 
               {/* Kategori */}
               <div>
-                <label className="text-[11px] font-bold text-zinc-300 uppercase tracking-wider mb-2 block">Kategori <span className="text-red-400">*</span></label>
+                <label className="text-[11px] font-bold text-gray-700 uppercase tracking-wider mb-2 block">Kategori <span className="text-red-400">*</span></label>
                 <select required value={category} onChange={e => setCategory(e.target.value)}
-                  className={`${inputClass} focus:border-indigo-500 appearance-none cursor-pointer`}
+                  className={`${inputClass} focus:border-[#072C2C] appearance-none cursor-pointer`}
                   style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 12px center' }}>
                   <option value="">Pilih Kategori</option>
                   {categories.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
@@ -186,9 +186,9 @@ export default function NewProductPage() {
 
               {/* Deskripsi - span full width */}
               <div className="lg:col-span-2">
-                <label className="text-[11px] font-bold text-zinc-300 uppercase tracking-wider mb-2 block">Deskripsi <span className="text-zinc-600">(opsional)</span></label>
+                <label className="text-[11px] font-bold text-gray-700 uppercase tracking-wider mb-2 block">Deskripsi <span className="text-gray-400">(opsional)</span></label>
                 <textarea value={description} onChange={e => setDescription(e.target.value)} rows={3}
-                  className={`${inputClass} focus:border-indigo-500 resize-none`}
+                  className={`${inputClass} focus:border-[#072C2C] resize-none`}
                   placeholder="Deskripsi singkat produk..." />
               </div>
             </div>
@@ -197,40 +197,40 @@ export default function NewProductPage() {
 
         {/* Section 2: Harga */}
         <div>
-          <div className="rounded-t-xl px-6 py-4 bg-gradient-to-r from-purple-600 to-violet-600">
+          <div className="rounded-t-xl px-6 py-4 bg-[#072C2C]">
             <div className="flex items-center gap-3">
               <DollarSign size={18} className="text-white" />
               <div>
                 <p className="text-base font-bold text-white">Harga</p>
-                <p className="text-xs text-white/70">Tentukan harga produk</p>
+                <p className="text-xs text-white/80">Tentukan harga produk</p>
               </div>
             </div>
           </div>
-          <div className="rounded-b-xl border border-t-0 border-white/[0.08] bg-[#0f1219] p-6 lg:p-8">
+          <div className="rounded-b-xl border border-t-0 border-gray-200 bg-white p-6 lg:p-8">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div>
-                <label className="text-[11px] font-bold text-zinc-300 uppercase tracking-wider mb-2 block">Harga Per Unit <span className="text-red-400">*</span></label>
+                <label className="text-[11px] font-bold text-gray-700 uppercase tracking-wider mb-2 block">Harga Per Unit <span className="text-red-400">*</span></label>
                 <div className="relative">
-                  <DollarSign size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" />
+                  <DollarSign size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
                   <input type="text" inputMode="numeric" required value={priceDisplay}
                     onChange={handlePriceChange}
                     onFocus={() => { if (price === 0) setPriceDisplay('') }}
                     onBlur={() => { if (!priceDisplay) setPriceDisplay('') }}
-                    className={`${inputClass} pl-9 focus:border-purple-500`}
+                    className={`${inputClass} pl-9 focus:border-[#072C2C]`}
                     placeholder="Rp 0" />
                 </div>
-                <p className="text-[10px] text-zinc-600 mt-1.5">Harga jual per unit produk</p>
+                <p className="text-[10px] text-gray-400 mt-1.5">Harga jual per unit produk</p>
               </div>
 
               <div>
-                <label className="text-[11px] font-bold text-zinc-300 uppercase tracking-wider mb-2 block">Minimum Stok</label>
+                <label className="text-[11px] font-bold text-gray-700 uppercase tracking-wider mb-2 block">Minimum Stok</label>
                 <input type="text" inputMode="numeric" value={minStockDisplay}
                   onChange={e => { const v = e.target.value.replace(/[^0-9]/g, ''); setMinStockDisplay(v); setMinStock(v ? parseInt(v) : 0) }}
                   onFocus={() => { if (minStock === 0) setMinStockDisplay('') }}
                   onBlur={() => { if (!minStockDisplay) setMinStockDisplay('0') }}
-                  className={`${inputClass} focus:border-purple-500`}
+                  className={`${inputClass} focus:border-[#072C2C]`}
                   placeholder="0" />
-                <p className="text-[10px] text-zinc-600 mt-1.5">Alert ketika stok di bawah angka ini</p>
+                <p className="text-[10px] text-gray-400 mt-1.5">Alert ketika stok di bawah angka ini</p>
               </div>
             </div>
           </div>
@@ -238,36 +238,36 @@ export default function NewProductPage() {
 
         {/* Section 3: Stok Awal */}
         <div>
-          <div className="rounded-t-xl px-6 py-4 bg-gradient-to-r from-emerald-600 to-green-600">
+          <div className="rounded-t-xl px-6 py-4 bg-[#16A34A]">
             <div className="flex items-center gap-3">
               <Package size={18} className="text-white" />
               <div>
                 <p className="text-base font-bold text-white">Stok Awal</p>
-                <p className="text-xs text-white/70">Jumlah stok saat produk ditambahkan</p>
+                <p className="text-xs text-white/80">Jumlah stok saat produk ditambahkan</p>
               </div>
             </div>
           </div>
-          <div className="rounded-b-xl border border-t-0 border-white/[0.08] bg-[#0f1219] p-6 lg:p-8">
+          <div className="rounded-b-xl border border-t-0 border-gray-200 bg-white p-6 lg:p-8">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div>
-                <label className="text-[11px] font-bold text-zinc-300 uppercase tracking-wider mb-2 block">Jumlah Stok Awal</label>
+                <label className="text-[11px] font-bold text-gray-700 uppercase tracking-wider mb-2 block">Jumlah Stok Awal</label>
                 <div className="relative">
-                  <Hash size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" />
+                  <Hash size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
                   <input type="text" inputMode="numeric" value={stockDisplay}
                     onChange={e => { const v = e.target.value.replace(/[^0-9]/g, ''); setStockDisplay(v); setStock(v ? parseInt(v) : 0) }}
                     onFocus={() => { if (stock === 0) setStockDisplay('') }}
                     onBlur={() => { if (!stockDisplay) setStockDisplay('') }}
-                    className={`${inputClass} pl-9 focus:border-emerald-500`}
+                    className={`${inputClass} pl-9 focus:border-[#16A34A]`}
                     placeholder="0" />
                 </div>
-                <p className="text-[10px] text-zinc-600 mt-1.5">Kosongkan jika belum ada stok</p>
+                <p className="text-[10px] text-gray-400 mt-1.5">Kosongkan jika belum ada stok</p>
               </div>
 
               {/* Status preview */}
               <div className="flex items-center">
-                <div className="w-full flex items-center justify-between px-5 py-4 rounded-lg bg-[#1a1f2e] border border-white/[0.06]">
+                <div className="w-full flex items-center justify-between px-5 py-4 rounded-lg bg-white border border-gray-200">
                   <div>
-                    <p className="text-[10px] text-zinc-500 uppercase">Status Stok:</p>
+                    <p className="text-[10px] text-gray-500 uppercase">Status Stok:</p>
                     <p className={`text-lg font-bold ${stockColor}`}>{stockStatus}</p>
                   </div>
                   <span className={`text-base font-bold px-4 py-1.5 rounded-lg ${
@@ -282,14 +282,14 @@ export default function NewProductPage() {
         </div>
 
         {/* Actions - right aligned */}
-        <div className="flex items-center justify-end gap-3 pt-6 border-t border-white/[0.06]">
+        <div className="flex items-center justify-end gap-3 pt-6 border-t border-gray-200">
           <button type="button" onClick={() => router.push('/products')}
-            className="px-6 py-3 rounded-lg border border-white/[0.1] text-sm font-medium text-zinc-400 hover:text-white hover:border-white/[0.2] transition flex items-center gap-2">
+            className="px-6 py-3 rounded-lg border border-gray-200 text-sm font-medium text-gray-500 hover:text-gray-900 hover:border-gray-300 transition flex items-center gap-2">
             <XCircle size={16} />
             Batal
           </button>
           <button type="submit" disabled={loading || skuStatus === 'duplicate'}
-            className="px-8 py-3 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-bold transition flex items-center gap-2 shadow-lg shadow-emerald-600/20 disabled:opacity-50 disabled:cursor-not-allowed active:scale-95">
+            className="px-8 py-3 rounded-lg bg-[#16A34A] hover:bg-[#16A34A]/90 text-white text-sm font-bold transition flex items-center gap-2 shadow-lg shadow-[#16A34A]/20 disabled:opacity-50 disabled:cursor-not-allowed active:scale-95">
             {loading ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
             Simpan Produk
           </button>
@@ -304,7 +304,7 @@ export default function NewProductPage() {
               <XCircle size={20} />
             </button>
             <p className="text-center text-sm font-medium text-white/80 mb-4">Arahkan kamera ke barcode produk</p>
-            <div className="rounded-2xl overflow-hidden border-2 border-indigo-500/30" id="barcode-scanner-products" ref={(el) => {
+            <div className="rounded-2xl overflow-hidden border-2 border-[#072C2C]/30" id="barcode-scanner-products" ref={(el) => {
               if (!el || (el as any).__started) return;
               (el as any).__started = true;
               import('html5-qrcode').then(({ Html5Qrcode }) => {
