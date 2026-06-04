@@ -476,24 +476,31 @@ export default function NewTransactionPage() {
               />
             </div>
           </div>
+          </div>
         </div>
 
         {/* === KETERANGAN === */}
         <div>
-          <label className="text-xs font-bold uppercase tracking-wider text-zinc-400 mb-3 flex items-center gap-2">
-            <FileText className="w-3.5 h-3.5 text-[#FDC800]" />
-            Keterangan
-            <span className="normal-case font-normal text-zinc-600">(opsional)</span>
-          </label>
+          <div className="rounded-t-xl px-6 py-4 bg-gradient-to-r from-emerald-600 to-green-600">
+            <div className="flex items-center gap-3">
+              <FileText size={18} className="text-white" />
+              <div>
+                <p className="text-base font-bold text-white">Keterangan</p>
+                <p className="text-xs text-white/70">Catatan transaksi (opsional)</p>
+              </div>
+            </div>
+          </div>
+          <div className="rounded-b-xl border border-t-0 border-white/[0.08] bg-[#0f1219] p-6 lg:p-8">
           <textarea
             value={note}
             onChange={e => setNote(e.target.value.slice(0, 200))}
             maxLength={200}
             rows={3}
-            className="w-full rounded-xl text-sm px-4 py-3.5 resize-none font-medium bg-[#0f0f0f] text-[#fafafa] border-none focus:outline-none focus:ring-2 focus:ring-[#FDC800]/50 transition-all placeholder:text-zinc-600"
+            className="w-full rounded-xl text-sm px-4 py-3.5 resize-none font-medium bg-[#1a1f2e] text-[#fafafa] border border-white/[0.1] focus:outline-none focus:ring-2 focus:ring-emerald-500/40 transition-all placeholder:text-zinc-600"
             placeholder="Tambahkan catatan transaksi..."
           />
           <p className="text-right text-[10px] mt-1.5 text-zinc-600">{note.length}/200</p>
+          </div>
         </div>
 
         {/* === SUBMIT BUTTONS (mobile) === */}
