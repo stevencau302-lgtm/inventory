@@ -266,37 +266,37 @@ export default function ProductsPage() {
           </div>
 
           {/* Desktop Table - Spreadsheet Style */}
-          <div className="hidden md:block overflow-hidden border border-white/10">
+          <div className="hidden md:block overflow-hidden border border-gray-200">
             <div className="overflow-x-auto max-h-[600px]">
               <table className="w-full border-collapse">
                 <thead className="sticky top-0 z-10">
-                  <tr className="bg-zinc-800">
-                    <th className="border border-white/10 w-[48px] px-2 py-2.5 text-center text-[11px] font-bold text-zinc-400 uppercase tracking-wide">No</th>
-                    <th className="border border-white/10 w-[110px] px-2 py-2.5 text-center text-[11px] font-bold text-zinc-400 uppercase tracking-wide">SKU</th>
-                    <th className="border border-white/10 px-3 py-2.5 text-left text-[11px] font-bold text-zinc-400 uppercase tracking-wide">Nama Produk</th>
-                    <th className="border border-white/10 w-[120px] px-2 py-2.5 text-center text-[11px] font-bold text-zinc-400 uppercase tracking-wide">Kategori</th>
-                    <th className="border border-white/10 w-[80px] px-2 py-2.5 text-center text-[11px] font-bold text-zinc-400 uppercase tracking-wide">Stok</th>
-                    <th className="border border-white/10 w-[140px] px-3 py-2.5 text-right text-[11px] font-bold text-zinc-400 uppercase tracking-wide">Harga</th>
-                    <th className="border border-white/10 w-[110px] px-2 py-2.5 text-center text-[11px] font-bold text-zinc-400 uppercase tracking-wide">Status</th>
-                    <th className="border border-white/10 w-[80px] px-2 py-2.5 text-center text-[11px] font-bold text-zinc-400 uppercase tracking-wide">Aksi</th>
+                  <tr className="bg-gray-100">
+                    <th className="border border-gray-200 w-[48px] px-2 py-2.5 text-center text-[11px] font-bold text-gray-500 uppercase tracking-wide">No</th>
+                    <th className="border border-gray-200 w-[110px] px-2 py-2.5 text-center text-[11px] font-bold text-gray-500 uppercase tracking-wide">SKU</th>
+                    <th className="border border-gray-200 px-3 py-2.5 text-left text-[11px] font-bold text-gray-500 uppercase tracking-wide">Nama Produk</th>
+                    <th className="border border-gray-200 w-[120px] px-2 py-2.5 text-center text-[11px] font-bold text-gray-500 uppercase tracking-wide">Kategori</th>
+                    <th className="border border-gray-200 w-[80px] px-2 py-2.5 text-center text-[11px] font-bold text-gray-500 uppercase tracking-wide">Stok</th>
+                    <th className="border border-gray-200 w-[140px] px-3 py-2.5 text-right text-[11px] font-bold text-gray-500 uppercase tracking-wide">Harga</th>
+                    <th className="border border-gray-200 w-[110px] px-2 py-2.5 text-center text-[11px] font-bold text-gray-500 uppercase tracking-wide">Status</th>
+                    <th className="border border-gray-200 w-[80px] px-2 py-2.5 text-center text-[11px] font-bold text-gray-500 uppercase tracking-wide">Aksi</th>
                   </tr>
                 </thead>
                 <tbody>
                   {filtered.map((p, idx) => (
-                    <tr key={p.id} className={`hover:bg-indigo-900/20 transition ${idx % 2 === 1 ? 'bg-zinc-900/40' : 'bg-zinc-950'}`}>
-                      <td className="border border-white/10 px-2 py-2 text-center text-xs text-zinc-500">{idx + 1}</td>
-                      <td className="border border-white/10 px-2 py-2 text-center text-sm text-zinc-300">{p.sku}</td>
-                      <td className="border border-white/10 px-3 py-2 text-left text-sm font-medium text-white align-middle">{p.name}</td>
-                      <td className="border border-white/10 px-2 py-2 text-center text-xs text-zinc-400">{p.category}</td>
-                      <td className="border border-white/10 px-2 py-2 text-center font-mono text-sm font-medium text-zinc-300">{p.stock}</td>
-                      <td className="border border-white/10 px-3 py-2 text-right font-mono text-sm text-zinc-300">{formatRp(p.price)}</td>
-                      <td className="border border-white/10 px-2 py-2 text-center"><StatusBadge product={p} /></td>
-                      <td className="border border-white/10 px-2 py-2 text-center">
+                    <tr key={p.id} className={`hover:bg-blue-50 transition ${idx % 2 === 1 ? 'bg-gray-50' : 'bg-white'}`}>
+                      <td className="border border-gray-200 px-2 py-2 text-center text-xs text-gray-500">{idx + 1}</td>
+                      <td className="border border-gray-200 px-2 py-2 text-center text-sm text-gray-700">{p.sku}</td>
+                      <td className="border border-gray-200 px-3 py-2 text-left text-sm font-medium text-gray-900 align-middle">{p.name}</td>
+                      <td className="border border-gray-200 px-2 py-2 text-center text-xs text-gray-500">{p.category}</td>
+                      <td className="border border-gray-200 px-2 py-2 text-center font-mono text-sm font-medium text-gray-700">{p.stock}</td>
+                      <td className="border border-gray-200 px-3 py-2 text-right font-mono text-sm text-gray-700">{formatRp(p.price)}</td>
+                      <td className="border border-gray-200 px-2 py-2 text-center"><StatusBadge product={p} /></td>
+                      <td className="border border-gray-200 px-2 py-2 text-center">
                         <div className="flex justify-center gap-1">
-                          <button onClick={() => handleEdit(p)} className="w-7 h-7 rounded bg-indigo-500/10 text-indigo-400 hover:bg-indigo-500 hover:text-white flex items-center justify-center transition">
+                          <button onClick={() => handleEdit(p)} className="w-7 h-7 rounded bg-[#072C2C]/10 text-[#072C2C] hover:bg-[#072C2C] hover:text-white flex items-center justify-center transition">
                             <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" /></svg>
                           </button>
-                          <button onClick={() => handleDelete(p.id, p.name)} className="w-7 h-7 rounded bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white flex items-center justify-center transition">
+                          <button onClick={() => handleDelete(p.id, p.name)} className="w-7 h-7 rounded bg-red-50 text-[#DC2626] hover:bg-[#DC2626] hover:text-white flex items-center justify-center transition">
                             <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" /></svg>
                           </button>
                         </div>
@@ -304,7 +304,7 @@ export default function ProductsPage() {
                     </tr>
                   ))}
                   {filtered.length === 0 && (
-                    <tr><td colSpan={8} className="border border-white/10 text-center py-12 text-slate-500">Tidak ada produk ditemukan</td></tr>
+                    <tr><td colSpan={8} className="border border-gray-200 text-center py-12 text-gray-500">Tidak ada produk ditemukan</td></tr>
                   )}
                 </tbody>
               </table>
