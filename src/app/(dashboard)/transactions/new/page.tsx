@@ -679,70 +679,113 @@ function BulkEntryForm({ products, router, toast }: { products: Product[]; route
               p.sku.toLowerCase().includes(row.search.toLowerCase())
             )
             return (
-              <div key={row.id} className="md:grid md:grid-cols-[40px_1fr_80px_120px_1fr_40px] md:gap-2 md:items-center px-4 py-3 space-y-2 md:space-y-0">
-                {/* # */}
-                <span className="hidden md:block text-xs text-gray-500 font-medium">{index + 1}</span>
-
-                {/* Produk */}
-                <div className="relative">
-                  <input
-                    type="text"
-                    value={row.search}
-                    onChange={e => { updateRow(index, { search: e.target.value, showDropdown: true, productId: '' }) }}
-                    onFocus={() => updateRow(index, { showDropdown: true })}
-                    onBlur={() => setTimeout(() => updateRow(index, { showDropdown: false }), 250)}
-                    className="w-full rounded-lg text-xs px-3 py-2 bg-white border border-gray-200 text-gray-900 focus:outline-none focus:ring-1 focus:ring-[#072C2C]/30 placeholder:text-gray-400"
-                    placeholder="Pilih produk..."
+              <div key={row.id} className="px-4 py-3">
+                {/* Desktop: grid row */}
+                <div className="hidden md:grid md:grid-cols-[40px_1fr_80px_120px_1fr_40px] md:gap-2 md:items-center">
+                  <span className="text-xs text-gray-500 font-medium">{index + 1}</span>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      value={row.search}
+                      onChange={e => { updateRow(index, { search: e.target.value, showDropdown: true, productId: '' }) }}
+                      onFocus={() => updateRow(index, { showDropdown: true })}
+                      onBlur={() => setTimeout(() => updateRow(index, { showDropdown: false }), 250)}
+                      className="w-full rounded-lg text-xs px-3 py-2.5 bg-white border border-gray-200 text-gray-900 focus:outline-none focus:ring-1 focus:ring-[#072C2C]/30 placeholder:text-gray-400"
+                      placeholder="Pilih produk..."
+                    />
+                    {row.showDropdown && !row.productId && (
+                      <div className="absolute z-50 left-0 right-0 top-full mt-1 rounded-lg bg-white border border-gray-200 max-h-36 overflow-y-auto shadow-xl">
+                        {filteredForRow.length === 0 ? (
+                          <p className="px-3 py-2 text-xs text-gray-500 text-center">Tidak ditemukan</p>
+                        ) : filteredForRow.slice(0, 5).map(p => (
+                          <button key={p.id} type="button" onMouseDown={() => selectProduct(index, p.id)}
+                            className="w-full px-3 py-2 text-left hover:bg-[#FF5F03]/5 border-b border-gray-100 last:border-b-0">
+                            <p className="text-xs text-gray-900">{p.name}</p>
+                            <p className="text-[10px] text-gray-500">{p.sku} · Stok: {p.stock}</p>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                  <input type="number" min={1} value={row.quantity || ''}
+                    onFocus={e => { if (row.quantity <= 1) e.target.value = '' }}
+                    onChange={e => updateRow(index, { quantity: Math.max(0, +e.target.value) })}
+                    onBlur={e => { if (!e.target.value || +e.target.value < 1) updateRow(index, { quantity: 1 }) }}
+                    className="w-full rounded-lg text-xs text-center px-2 py-2.5 bg-white border border-gray-200 text-gray-900 focus:outline-none focus:ring-1 focus:ring-[#072C2C]/30"
                   />
-                  {row.showDropdown && !row.productId && (
-                    <div className="absolute z-50 left-0 right-0 top-full mt-1 rounded-lg bg-white border border-gray-200 max-h-36 overflow-y-auto shadow-xl">
-                      {filteredForRow.length === 0 ? (
-                        <p className="px-3 py-2 text-xs text-gray-500 text-center">Tidak ditemukan</p>
-                      ) : filteredForRow.slice(0, 5).map(p => (
-                        <button key={p.id} type="button" onMouseDown={() => selectProduct(index, p.id)}
-                          className="w-full px-3 py-2 text-left hover:bg-[#FF5F03]/5 border-b border-gray-100 last:border-b-0">
-                          <p className="text-xs text-gray-900">{p.name}</p>
-                          <p className="text-[10px] text-gray-500">{p.sku} · Stok: {p.stock}</p>
-                        </button>
-                      ))}
-                    </div>
-                  )}
+                  <input type="date" value={row.date} onChange={e => updateRow(index, { date: e.target.value })}
+                    className="w-full rounded-lg text-xs px-2 py-2.5 bg-white border border-gray-200 text-gray-900 focus:outline-none focus:ring-1 focus:ring-[#072C2C]/30"
+                  />
+                  <input type="text" value={row.note} onChange={e => updateRow(index, { note: e.target.value })}
+                    className="w-full rounded-lg text-xs px-3 py-2.5 bg-white border border-gray-200 text-gray-900 focus:outline-none focus:ring-1 focus:ring-[#072C2C]/30 placeholder:text-gray-400"
+                    placeholder="Opsional"
+                  />
+                  <div className="flex justify-center">
+                    <button type="button" onClick={() => removeRow(index)} disabled={rows.length <= 1}
+                      className="w-7 h-7 rounded-lg bg-gray-100 flex items-center justify-center text-[#DC2626] disabled:opacity-30 active:scale-90 transition-all hover:bg-red-50">
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
                 </div>
 
-                {/* Jumlah */}
-                <input
-                  type="number"
-                  min={1}
-                  value={row.quantity || ''}
-                  onFocus={e => { if (row.quantity <= 1) e.target.value = '' }}
-                  onChange={e => updateRow(index, { quantity: Math.max(0, +e.target.value) })}
-                  onBlur={e => { if (!e.target.value || +e.target.value < 1) updateRow(index, { quantity: 1 }) }}
-                  className="w-full rounded-lg text-xs text-center px-2 py-2 bg-white border border-gray-200 text-gray-900 focus:outline-none focus:ring-1 focus:ring-[#072C2C]/30"
-                />
-
-                {/* Tanggal */}
-                <input
-                  type="date"
-                  value={row.date}
-                  onChange={e => updateRow(index, { date: e.target.value })}
-                  className="w-full rounded-lg text-xs px-2 py-2 bg-white border border-gray-200 text-gray-900 focus:outline-none focus:ring-1 focus:ring-[#072C2C]/30"
-                />
-
-                {/* Keterangan */}
-                <input
-                  type="text"
-                  value={row.note}
-                  onChange={e => updateRow(index, { note: e.target.value })}
-                  className="w-full rounded-lg text-xs px-3 py-2 bg-white border border-gray-200 text-gray-900 focus:outline-none focus:ring-1 focus:ring-[#072C2C]/30 placeholder:text-gray-400"
-                  placeholder="Opsional"
-                />
-
-                {/* Hapus */}
-                <div className="flex justify-center">
-                  <button type="button" onClick={() => removeRow(index)} disabled={rows.length <= 1}
-                    className="w-7 h-7 rounded-lg bg-gray-100 flex items-center justify-center text-[#DC2626] disabled:opacity-30 active:scale-90 transition-all">
-                    <X className="w-3.5 h-3.5" />
-                  </button>
+                {/* Mobile: card layout */}
+                <div className="md:hidden space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-gray-500">Item #{index + 1}</span>
+                    <button type="button" onClick={() => removeRow(index)} disabled={rows.length <= 1}
+                      className="w-7 h-7 rounded-lg bg-gray-100 flex items-center justify-center text-[#DC2626] disabled:opacity-30 active:scale-90 transition-all">
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                  <div className="relative">
+                    <label className="text-[10px] font-semibold text-gray-500 uppercase mb-1 block">Produk</label>
+                    <input
+                      type="text"
+                      value={row.search}
+                      onChange={e => { updateRow(index, { search: e.target.value, showDropdown: true, productId: '' }) }}
+                      onFocus={() => updateRow(index, { showDropdown: true })}
+                      onBlur={() => setTimeout(() => updateRow(index, { showDropdown: false }), 250)}
+                      className="w-full rounded-lg text-sm px-3 py-2.5 bg-white border border-gray-200 text-gray-900 focus:outline-none focus:ring-1 focus:ring-[#072C2C]/30 placeholder:text-gray-400"
+                      placeholder="Cari produk..."
+                    />
+                    {row.showDropdown && !row.productId && (
+                      <div className="absolute z-50 left-0 right-0 top-full mt-1 rounded-lg bg-white border border-gray-200 max-h-36 overflow-y-auto shadow-xl">
+                        {filteredForRow.length === 0 ? (
+                          <p className="px-3 py-2 text-xs text-gray-500 text-center">Tidak ditemukan</p>
+                        ) : filteredForRow.slice(0, 5).map(p => (
+                          <button key={p.id} type="button" onMouseDown={() => selectProduct(index, p.id)}
+                            className="w-full px-3 py-2 text-left hover:bg-[#FF5F03]/5 border-b border-gray-100 last:border-b-0">
+                            <p className="text-xs text-gray-900">{p.name}</p>
+                            <p className="text-[10px] text-gray-500">{p.sku} · Stok: {p.stock}</p>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-[10px] font-semibold text-gray-500 uppercase mb-1 block">Jumlah</label>
+                      <input type="number" min={1} value={row.quantity || ''}
+                        onFocus={e => { if (row.quantity <= 1) e.target.value = '' }}
+                        onChange={e => updateRow(index, { quantity: Math.max(0, +e.target.value) })}
+                        onBlur={e => { if (!e.target.value || +e.target.value < 1) updateRow(index, { quantity: 1 }) }}
+                        className="w-full rounded-lg text-sm text-center px-2 py-2.5 bg-white border border-gray-200 text-gray-900 focus:outline-none focus:ring-1 focus:ring-[#072C2C]/30"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-[10px] font-semibold text-gray-500 uppercase mb-1 block">Tanggal</label>
+                      <input type="date" value={row.date} onChange={e => updateRow(index, { date: e.target.value })}
+                        className="w-full rounded-lg text-sm px-2 py-2.5 bg-white border border-gray-200 text-gray-900 focus:outline-none focus:ring-1 focus:ring-[#072C2C]/30"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-semibold text-gray-500 uppercase mb-1 block">Keterangan</label>
+                    <input type="text" value={row.note} onChange={e => updateRow(index, { note: e.target.value })}
+                      className="w-full rounded-lg text-sm px-3 py-2.5 bg-white border border-gray-200 text-gray-900 focus:outline-none focus:ring-1 focus:ring-[#072C2C]/30 placeholder:text-gray-400"
+                      placeholder="Opsional"
+                    />
+                  </div>
                 </div>
               </div>
             )
