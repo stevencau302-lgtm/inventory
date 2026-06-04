@@ -63,10 +63,10 @@ export default function CategoriesPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold text-cozy-text dark:text-[#fafafa]">Kategori</h1>
+          <h1 className="text-2xl md:text-3xl font-bold text-cozy-text dark:text-gray-900">Kategori</h1>
           <p className="text-cozy-muted text-sm mt-1">{categories.length} kategori tersedia</p>
         </div>
-        <button onClick={() => setModalOpen(true)} className="px-4 py-2 rounded-lg bg-[#FDC800] hover:bg-[#FDC800]/90 text-[#000000] text-sm font-bold transition flex items-center gap-2 shadow-lg shadow-[#FDC800]/20">
+        <button onClick={() => setModalOpen(true)} className="px-4 py-2 rounded-lg bg-[#FF5F03] hover:bg-[#FF5F03]/90 text-[#000000] text-sm font-bold transition flex items-center gap-2 shadow-lg shadow-[#FF5F03]/20">
           <svg className="w-4 h-4 text-[#000000]" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
           </svg>
@@ -93,14 +93,14 @@ export default function CategoriesPage() {
                 </div>
                 <button 
                   onClick={() => handleDelete(cat.id, cat.name)}
-                  className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-500 hover:text-red-400 hover:bg-red-500/10 opacity-0 group-hover:opacity-100 transition-all"
+                  className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-500 hover:text-[#DC2626] hover:bg-red-50 opacity-0 group-hover:opacity-100 transition-all"
                 >
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
                   </svg>
                 </button>
               </div>
-              <h3 className="text-cozy-text dark:text-[#fafafa] font-semibold mt-3">{cat.name}</h3>
+              <h3 className="text-cozy-text dark:text-gray-900 font-semibold mt-3">{cat.name}</h3>
               <div className="flex items-center gap-3 mt-1.5">
                 <p className="text-xs text-cozy-muted">{count} produk</p>
                 <span className="text-[10px] text-cozy-muted">·</span>
@@ -112,7 +112,7 @@ export default function CategoriesPage() {
               
               {/* Progress with label */}
               <div className="mt-3 flex items-center gap-2">
-                <div className="flex-1 h-1.5 rounded-full bg-cozy-border dark:bg-[#2a2a2e] overflow-hidden">
+                <div className="flex-1 h-1.5 rounded-full bg-cozy-border bg-gray-200 overflow-hidden">
                   <div 
                     className="h-full rounded-full transition-all duration-500"
                     style={{ 
@@ -128,7 +128,7 @@ export default function CategoriesPage() {
         })}
 
         {categories.length === 0 && (
-          <div className="col-span-full text-center py-16 text-slate-500">
+          <div className="col-span-full text-center py-16 text-gray-500">
             <svg className="w-14 h-14 mx-auto mb-4 text-slate-600" fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z" />
             </svg>
@@ -188,11 +188,11 @@ function CategoryModal({ onClose, onSave }: { onClose: () => void, onSave: (name
 
   return (
     <div className="fixed inset-0 z-[9000] flex items-center justify-center p-4" onClick={onClose}>
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
-      <div className="relative bg-gradient-to-b from-slate-800 to-slate-900 border border-white/10 rounded-2xl w-full max-w-md shadow-2xl" onClick={e => e.stopPropagation()}>
-        <div className="flex items-center justify-between p-5 border-b border-white/5">
+      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
+      <div className="relative bg-gradient-to-b from-white to-gray-50 border border-gray-200 rounded-2xl w-full max-w-md shadow-2xl" onClick={e => e.stopPropagation()}>
+        <div className="flex items-center justify-between p-5 border-b border-gray-100">
           <h2 className="text-lg font-bold text-white">Tambah Kategori</h2>
-          <button onClick={onClose} className="w-8 h-8 rounded-lg bg-slate-700/50 flex items-center justify-center text-slate-400 hover:text-red-400 transition">
+          <button onClick={onClose} className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center text-gray-500 hover:text-[#DC2626] transition">
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
@@ -200,11 +200,11 @@ function CategoryModal({ onClose, onSave }: { onClose: () => void, onSave: (name
         </div>
         <form onSubmit={handleSubmit} className="p-5 space-y-4">
           <div className="space-y-1.5">
-            <label className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Nama Kategori</label>
+            <label className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">Nama Kategori</label>
             <input type="text" required value={name} onChange={e => setName(e.target.value)} className="form-input" placeholder="Nama kategori" />
           </div>
           <div className="space-y-1.5">
-            <label className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Icon</label>
+            <label className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">Icon</label>
             <div className="relative" ref={dropdownRef}>
               <button
                 type="button"
@@ -213,24 +213,24 @@ function CategoryModal({ onClose, onSave }: { onClose: () => void, onSave: (name
                 style={{ color: '#fafafa', background: '#18181b' }}
               >
                 <div className="flex items-center gap-2.5">
-                  <span className="text-indigo-400">{selectedOption.icon}</span>
+                  <span className="text-[#072C2C]">{selectedOption.icon}</span>
                   <span className="text-sm text-white">{selectedOption.label}</span>
                 </div>
-                <svg className={`w-4 h-4 text-zinc-500 transition-transform ${dropdownOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" /></svg>
+                <svg className={`w-4 h-4 text-gray-500 transition-transform ${dropdownOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" /></svg>
               </button>
               {dropdownOpen && (
-                <div className="absolute z-50 left-0 right-0 top-full mt-1 bg-[#1c1c1e] border border-white/10 rounded-xl shadow-lg overflow-hidden">
+                <div className="absolute z-50 left-0 right-0 top-full mt-1 bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden">
                   {iconOptions.map(opt => (
                     <button
                       key={opt.value}
                       type="button"
                       onClick={() => { setIcon(opt.value); setDropdownOpen(false) }}
-                      className={`w-full flex items-center gap-2.5 px-3 py-2.5 text-left hover:bg-zinc-800 transition-colors ${icon === opt.value ? 'bg-zinc-800' : ''}`}
+                      className={`w-full flex items-center gap-2.5 px-3 py-2.5 text-left hover:bg-gray-100 transition-colors ${icon === opt.value ? 'bg-gray-100' : ''}`}
                     >
-                      <span className="text-indigo-400">{opt.icon}</span>
+                      <span className="text-[#072C2C]">{opt.icon}</span>
                       <span className="text-sm text-white">{opt.label}</span>
                       {icon === opt.value && (
-                        <svg className="w-4 h-4 ml-auto text-emerald-400" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>
+                        <svg className="w-4 h-4 ml-auto text-[#16A34A]" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>
                       )}
                     </button>
                   ))}
@@ -239,13 +239,13 @@ function CategoryModal({ onClose, onSave }: { onClose: () => void, onSave: (name
             </div>
           </div>
           <div className="space-y-1.5">
-            <label className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Warna</label>
+            <label className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">Warna</label>
             <div className="flex gap-2 items-center">
-              <input type="color" value={color} onChange={e => setColor(e.target.value)} className="w-10 h-10 rounded-lg border border-white/10 bg-transparent cursor-pointer" />
+              <input type="color" value={color} onChange={e => setColor(e.target.value)} className="w-10 h-10 rounded-lg border border-gray-200 bg-transparent cursor-pointer" />
               <input type="text" value={color} onChange={e => setColor(e.target.value)} className="form-input flex-1" />
             </div>
           </div>
-          <div className="flex justify-end gap-3 pt-4 border-t border-white/5">
+          <div className="flex justify-end gap-3 pt-4 border-t border-gray-100">
             <button type="button" onClick={onClose} className="btn-ghost">Batal</button>
             <button type="submit" className="btn-primary">
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
