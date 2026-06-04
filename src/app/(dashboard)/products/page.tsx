@@ -457,13 +457,13 @@ export default function ProductsPage() {
 
       {activeTab === 'barang-masuk' && (
         <div className="space-y-4">
-          <div className="overflow-hidden border border-white/10">
+          <div className="overflow-hidden border border-gray-200">
             <div className="overflow-x-auto max-h-[600px]">
               <table className="w-full border-collapse">
                 <thead className="sticky top-0 z-10">
-                  <tr className="bg-zinc-800">
-                    <th className="border border-white/10 w-[48px] px-2 py-2.5 text-center text-[11px] font-bold text-zinc-400 uppercase tracking-wide">No</th>
-                    <th className="border border-white/10 px-3 py-2.5 text-left text-[11px] font-bold text-zinc-400 uppercase tracking-wide">Nama Produk</th>
+                  <tr className="bg-gray-100">
+                    <th className="border border-gray-200 w-[48px] px-2 py-2.5 text-center text-[11px] font-bold text-gray-500 uppercase tracking-wide">No</th>
+                    <th className="border border-gray-200 px-3 py-2.5 text-left text-[11px] font-bold text-gray-500 uppercase tracking-wide">Nama Produk</th>
                     <th className="border border-gray-200 w-[100px] px-2 py-2.5 text-center text-[11px] font-bold text-gray-500 uppercase tracking-wide">Jumlah</th>
                     <th className="border border-gray-200 w-[140px] px-2 py-2.5 text-center text-[11px] font-bold text-gray-500 uppercase tracking-wide">Tanggal</th>
                     <th className="border border-gray-200 px-3 py-2.5 text-left text-[11px] font-bold text-gray-500 uppercase tracking-wide">Catatan</th>
