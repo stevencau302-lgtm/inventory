@@ -106,7 +106,7 @@ export default function Sidebar() {
         }}
       >
         {/* Header / Logo */}
-        <div className="h-14 flex items-center justify-between px-3 border-b border-white/[0.06]">
+        <div className="h-14 flex items-center justify-between px-3 border-b border-white/[0.06] relative">
           {/* Logo */}
           <div className={`flex items-center gap-2.5 min-w-0 transition-all duration-300 ${collapsed && !mobileOpen ? 'hidden' : ''}`}>
             <div className="w-9 h-9 rounded-xl bg-[#FDC800]/10 border border-[#FDC800]/20 flex items-center justify-center shrink-0">
