@@ -344,7 +344,7 @@ export default function NewTransactionPage() {
 
         {/* === DETAIL PRODUK === */}
         <div>
-          <div className="rounded-t-xl px-6 py-4 bg-[#072C2C]">
+          <div className="rounded-t-xl px-6 py-4 bg-[#FF5F03]">
             <div className="flex items-center gap-3">
               <Search size={18} className="text-white" />
               <div>
@@ -475,7 +475,7 @@ export default function NewTransactionPage() {
 
         {/* === KETERANGAN === */}
         <div>
-          <div className="rounded-t-xl px-6 py-4 bg-[#16A34A]">
+          <div className="rounded-t-xl px-6 py-4 bg-[#FF5F03]">
             <div className="flex items-center gap-3">
               <FileText size={18} className="text-white" />
               <div>
