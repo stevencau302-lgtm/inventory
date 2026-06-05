@@ -97,43 +97,43 @@ export default function NewProductPage() {
   const stockStatus = stock === 0 ? 'Habis' : stock <= minStock ? 'Menipis' : 'Tersedia'
   const stockColor = stock === 0 ? 'text-red-400' : stock <= minStock ? 'text-amber-400' : 'text-emerald-400'
 
-  const inputClass = "w-full px-4 py-3 rounded-lg bg-white border border-gray-200 text-sm text-gray-900 placeholder-gray-400 focus:outline-none transition"
+  const inputClass = "w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg bg-white border border-gray-200 text-sm text-gray-900 placeholder-gray-400 focus:outline-none transition"
 
   return (
-    <div className="max-w-5xl mx-auto py-2 px-4 lg:px-8">
+    <div className="max-w-5xl mx-auto py-2 px-3 sm:px-4 lg:px-8">
       {/* Back + Title inline */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 mb-5 sm:mb-6">
         <div>
-          <button onClick={() => router.push('/products')} className="group flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-gray-900 mb-2 transition">
+          <button onClick={() => router.push('/products')} className="group flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-gray-900 mb-1.5 sm:mb-2 transition">
             <ArrowLeft size={16} className="group-hover:-translate-x-0.5 transition-transform" />
             Kembali
           </button>
-          <h1 className="text-2xl font-bold text-gray-900">Tambah Produk Baru</h1>
-          <p className="text-gray-500 text-sm mt-0.5">Lengkapi data produk yang akan ditambahkan</p>
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Tambah Produk Baru</h1>
+          <p className="text-gray-500 text-xs sm:text-sm mt-0.5">Lengkapi data produk yang akan ditambahkan</p>
         </div>
         <div className="flex items-center gap-2">
           <button type="button" onClick={handleReset}
-            className="px-4 py-2.5 rounded-lg border border-gray-200 text-sm font-medium text-gray-500 hover:text-gray-900 hover:border-gray-300 transition flex items-center gap-2">
-            <RotateCcw size={15} />
+            className="px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg border border-gray-200 text-xs sm:text-sm font-medium text-gray-500 hover:text-gray-900 hover:border-gray-300 transition flex items-center gap-1.5 sm:gap-2">
+            <RotateCcw size={14} className="sm:w-[15px] sm:h-[15px]" />
             Reset
           </button>
         </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-8">
+      <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-8">
         {/* Section 1: Informasi Dasar */}
         <div>
-          <div className="rounded-t-xl px-6 py-4 bg-[#072C2C]">
-            <div className="flex items-center gap-3">
-              <Package size={18} className="text-white" />
+          <div className="rounded-t-xl px-4 sm:px-6 py-3 sm:py-4 bg-[#072C2C]">
+            <div className="flex items-center gap-2.5 sm:gap-3">
+              <Package size={16} className="text-white sm:w-[18px] sm:h-[18px]" />
               <div>
-                <p className="text-base font-bold text-white">Informasi Dasar Produk</p>
-                <p className="text-xs text-white/80">Data utama dan identitas produk</p>
+                <p className="text-sm sm:text-base font-bold text-white">Informasi Dasar Produk</p>
+                <p className="text-[10px] sm:text-xs text-white/80">Data utama dan identitas produk</p>
               </div>
             </div>
           </div>
-          <div className="rounded-b-xl border border-t-0 border-gray-200 bg-white p-6 lg:p-8">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="rounded-b-xl border border-t-0 border-gray-200 bg-white p-4 sm:p-6 lg:p-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
               {/* SKU */}
               <div>
                 <label className="text-[11px] font-bold text-gray-700 uppercase tracking-wider mb-2 block">Kode SKU <span className="text-red-400">*</span></label>
@@ -197,17 +197,17 @@ export default function NewProductPage() {
 
         {/* Section 2: Harga */}
         <div>
-          <div className="rounded-t-xl px-6 py-4 bg-[#072C2C]">
-            <div className="flex items-center gap-3">
-              <DollarSign size={18} className="text-white" />
+          <div className="rounded-t-xl px-4 sm:px-6 py-3 sm:py-4 bg-[#072C2C]">
+            <div className="flex items-center gap-2.5 sm:gap-3">
+              <DollarSign size={16} className="text-white sm:w-[18px] sm:h-[18px]" />
               <div>
-                <p className="text-base font-bold text-white">Harga</p>
-                <p className="text-xs text-white/80">Tentukan harga produk</p>
+                <p className="text-sm sm:text-base font-bold text-white">Harga</p>
+                <p className="text-[10px] sm:text-xs text-white/80">Tentukan harga produk</p>
               </div>
             </div>
           </div>
-          <div className="rounded-b-xl border border-t-0 border-gray-200 bg-white p-6 lg:p-8">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="rounded-b-xl border border-t-0 border-gray-200 bg-white p-4 sm:p-6 lg:p-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
               <div>
                 <label className="text-[11px] font-bold text-gray-700 uppercase tracking-wider mb-2 block">Harga Per Unit <span className="text-red-400">*</span></label>
                 <div className="relative">
@@ -238,17 +238,17 @@ export default function NewProductPage() {
 
         {/* Section 3: Stok Awal */}
         <div>
-          <div className="rounded-t-xl px-6 py-4 bg-[#16A34A]">
-            <div className="flex items-center gap-3">
-              <Package size={18} className="text-white" />
+          <div className="rounded-t-xl px-4 sm:px-6 py-3 sm:py-4 bg-[#16A34A]">
+            <div className="flex items-center gap-2.5 sm:gap-3">
+              <Package size={16} className="text-white sm:w-[18px] sm:h-[18px]" />
               <div>
-                <p className="text-base font-bold text-white">Stok Awal</p>
-                <p className="text-xs text-white/80">Jumlah stok saat produk ditambahkan</p>
+                <p className="text-sm sm:text-base font-bold text-white">Stok Awal</p>
+                <p className="text-[10px] sm:text-xs text-white/80">Jumlah stok saat produk ditambahkan</p>
               </div>
             </div>
           </div>
-          <div className="rounded-b-xl border border-t-0 border-gray-200 bg-white p-6 lg:p-8">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="rounded-b-xl border border-t-0 border-gray-200 bg-white p-4 sm:p-6 lg:p-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
               <div>
                 <label className="text-[11px] font-bold text-gray-700 uppercase tracking-wider mb-2 block">Jumlah Stok Awal</label>
                 <div className="relative">
@@ -265,12 +265,12 @@ export default function NewProductPage() {
 
               {/* Status preview */}
               <div className="flex items-center">
-                <div className="w-full flex items-center justify-between px-5 py-4 rounded-lg bg-white border border-gray-200">
+                <div className="w-full flex items-center justify-between px-3 sm:px-5 py-3 sm:py-4 rounded-lg bg-white border border-gray-200">
                   <div>
                     <p className="text-[10px] text-gray-500 uppercase">Status Stok:</p>
-                    <p className={`text-lg font-bold ${stockColor}`}>{stockStatus}</p>
+                    <p className={`text-base sm:text-lg font-bold ${stockColor}`}>{stockStatus}</p>
                   </div>
-                  <span className={`text-base font-bold px-4 py-1.5 rounded-lg ${
+                  <span className={`text-sm sm:text-base font-bold px-3 sm:px-4 py-1 sm:py-1.5 rounded-lg ${
                     stock === 0 ? 'bg-red-500/10 text-red-400' :
                     stock <= minStock ? 'bg-amber-500/10 text-amber-400' :
                     'bg-emerald-500/10 text-emerald-400'
@@ -281,16 +281,16 @@ export default function NewProductPage() {
           </div>
         </div>
 
-        {/* Actions - right aligned */}
-        <div className="flex items-center justify-end gap-3 pt-6 border-t border-gray-200">
+        {/* Actions - sticky on mobile, right aligned on desktop */}
+        <div className="flex items-center justify-end gap-2 sm:gap-3 pt-4 sm:pt-6 border-t border-gray-200 pb-4 sm:pb-0">
           <button type="button" onClick={() => router.push('/products')}
-            className="px-6 py-3 rounded-lg border border-gray-200 text-sm font-medium text-gray-500 hover:text-gray-900 hover:border-gray-300 transition flex items-center gap-2">
-            <XCircle size={16} />
+            className="px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg border border-gray-200 text-xs sm:text-sm font-medium text-gray-500 hover:text-gray-900 hover:border-gray-300 transition flex items-center gap-1.5 sm:gap-2">
+            <XCircle size={14} className="sm:w-4 sm:h-4" />
             Batal
           </button>
           <button type="submit" disabled={loading || skuStatus === 'duplicate'}
-            className="px-8 py-3 rounded-lg bg-[#16A34A] hover:bg-[#16A34A]/90 text-white text-sm font-bold transition flex items-center gap-2 shadow-lg shadow-[#16A34A]/20 disabled:opacity-50 disabled:cursor-not-allowed active:scale-95">
-            {loading ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
+            className="px-5 sm:px-8 py-2.5 sm:py-3 rounded-lg bg-[#16A34A] hover:bg-[#16A34A]/90 text-white text-xs sm:text-sm font-bold transition flex items-center gap-1.5 sm:gap-2 shadow-lg shadow-[#16A34A]/20 disabled:opacity-50 disabled:cursor-not-allowed active:scale-95">
+            {loading ? <Loader2 size={14} className="animate-spin sm:w-4 sm:h-4" /> : <Save size={14} className="sm:w-4 sm:h-4" />}
             Simpan Produk
           </button>
         </div>
