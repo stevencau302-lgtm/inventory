@@ -251,11 +251,10 @@ function InlineCategoryManager({ catCount, setCatCount }: { catCount: number; se
             <input
               ref={inputRef}
               type="text"
-              autoComplete="off"
-              autoCorrect="off"
-              autoCapitalize="off"
-              spellCheck={false}
-              name="category-name"
+              readOnly
+              onFocus={(e) => e.target.removeAttribute('readonly')}
+              autoComplete="new-password"
+              name="new-category"
               data-form-type="other"
               data-lpignore="true"
               value={newName}
