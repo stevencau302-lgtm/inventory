@@ -245,7 +245,7 @@ function InlineCategoryManager({ catCount, setCatCount }: { catCount: number; se
             <p className="text-[10px] text-gray-500">{categories.length} kategori tersimpan</p>
           </div>
         </div>
-        <div className="p-5 space-y-4">
+        <div className="p-3.5 sm:p-5 space-y-3 sm:space-y-4">
           {/* Input tambah */}
           <div className="flex gap-2">
             <input
@@ -260,17 +260,17 @@ function InlineCategoryManager({ catCount, setCatCount }: { catCount: number; se
               value={newName}
               onChange={e => setNewName(e.target.value)}
               onKeyDown={handleKeyDown}
-              className="flex-1 px-4 py-2.5 rounded-xl text-sm bg-gray-50 border border-gray-200 text-gray-900 placeholder-gray-400 outline-none focus:border-[#072C2C]/50 focus:bg-white transition-all"
-              placeholder="Nama kategori baru..."
+              className="flex-1 min-w-0 px-3 sm:px-4 py-2.5 rounded-xl text-sm bg-gray-50 border border-gray-200 text-gray-900 placeholder-gray-400 outline-none focus:border-[#072C2C]/50 focus:bg-white transition-all"
+              placeholder="Kategori baru..."
             />
             <button
               type="button"
               onClick={handleAdd}
               disabled={!newName.trim()}
-              className="px-4 py-2.5 rounded-xl bg-[#072C2C] text-white text-xs font-bold hover:bg-[#072C2C]/90 transition-all active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1.5 shrink-0"
+              className="px-3 sm:px-4 py-2.5 rounded-xl bg-[#072C2C] text-white text-xs font-bold hover:bg-[#072C2C]/90 transition-all active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1 sm:gap-1.5 shrink-0"
             >
               <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
-              Tambah
+              <span className="hidden sm:inline">Tambah</span>
             </button>
           </div>
 
@@ -282,17 +282,17 @@ function InlineCategoryManager({ catCount, setCatCount }: { catCount: number; se
           ) : (
             <div className="space-y-1.5 max-h-[240px] overflow-y-auto">
               {categories.map(cat => (
-                <div key={cat.id} className="flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-gray-50 border border-gray-100 group hover:border-gray-200 transition">
-                  <div className="flex items-center gap-2.5">
+                <div key={cat.id} className="flex items-center justify-between px-3 sm:px-3.5 py-2.5 rounded-xl bg-gray-50 border border-gray-100 hover:border-gray-200 transition">
+                  <div className="flex items-center gap-2 sm:gap-2.5 min-w-0">
                     <div className="w-3 h-3 rounded-full shrink-0" style={{ background: cat.color }} />
-                    <span className="text-sm text-gray-700 font-medium">{cat.name}</span>
+                    <span className="text-sm text-gray-700 font-medium truncate">{cat.name}</span>
                   </div>
                   <button
                     onClick={() => setDelModal({ open: true, id: cat.id, name: cat.name })}
-                    className="w-7 h-7 rounded-lg flex items-center justify-center text-gray-300 hover:text-red-500 hover:bg-red-50 opacity-0 group-hover:opacity-100 transition-all"
+                    className="w-8 h-8 sm:w-7 sm:h-7 rounded-lg flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 active:bg-red-100 transition-all shrink-0 ml-2"
                     title="Hapus"
                   >
-                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" /></svg>
+                    <svg className="w-4 h-4 sm:w-3.5 sm:h-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" /></svg>
                   </button>
                 </div>
               ))}
