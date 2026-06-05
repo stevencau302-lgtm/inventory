@@ -251,6 +251,13 @@ function InlineCategoryManager({ catCount, setCatCount }: { catCount: number; se
             <input
               ref={inputRef}
               type="text"
+              autoComplete="off"
+              autoCorrect="off"
+              autoCapitalize="off"
+              spellCheck={false}
+              name="category-name"
+              data-form-type="other"
+              data-lpignore="true"
               value={newName}
               onChange={e => setNewName(e.target.value)}
               onKeyDown={handleKeyDown}
