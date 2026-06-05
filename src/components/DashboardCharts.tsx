@@ -1,6 +1,6 @@
 'use client'
-import { AreaChart, Area, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts'
-import { Product, Transaction, formatRp } from '@/lib/store'
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
+import { Product, Transaction } from '@/lib/store'
 import Link from 'next/link'
 
 interface Props {
@@ -30,28 +30,12 @@ function EmptyStateSales() {
   )
 }
 
-function EmptyStateCategory() {
-  return (
-    <div className="relative flex flex-col items-center justify-center h-[280px] px-6">
-      <div className="relative z-10 flex flex-col items-center text-center">
-        <div className="w-14 h-14 rounded-2xl bg-[#FF5F03]/10 flex items-center justify-center mb-4">
-          <svg className="w-7 h-7 text-[#FF5F03]" fill="none" viewBox="0 0 24 24" strokeWidth={1.2} stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 6a7.5 7.5 0 107.5 7.5h-7.5V6z" />
-            <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 10.5H21A7.5 7.5 0 0013.5 3v7.5z" />
-          </svg>
-        </div>
-        <h4 className="text-[15px] font-semibold text-gray-800 mb-1.5">Belum ada data kategori</h4>
-        <p className="text-[12px] text-gray-500 leading-relaxed max-w-[240px]">
-          Distribusi stok per kategori akan tampil setelah produk ditambahkan.
-        </p>
-      </div>
-    </div>
-  )
-}
-
 export default function DashboardCharts({ products, transactions }: Props) {
-  const outTransactions = transactions.filter(t => t.type === 'out')
-  const hasAnyTransactions = transactions.length > 0
+  // Products that need restock (sorted by stock level ascending)
+  const restockProducts = [...products]
+    .filter(p => p.stock <= p.minStock)
+    .sort((a, b) => a.stock - b.stock)
+    .slice(0, 6)
 
   // Area chart: daily stock movement (masuk/keluar) last 7 days
   const areaData = (() => {
@@ -70,23 +54,6 @@ export default function DashboardCharts({ products, transactions }: Props) {
   })()
 
   const hasMovementData = areaData.some(d => d.masuk > 0 || d.keluar > 0)
-
-  // Pie/Donut chart: stock distribution by category (like reference "Metode Bayar")
-  const categoryData = (() => {
-    const catMap: Record<string, number> = {}
-    products.forEach(p => {
-      const cat = p.category || 'Uncategorized'
-      catMap[cat] = (catMap[cat] || 0) + p.stock
-    })
-    return Object.entries(catMap)
-      .map(([name, value]) => ({ name, value }))
-      .filter(d => d.value > 0)
-      .sort((a, b) => b.value - a.value)
-      .slice(0, 5)
-  })()
-
-  const COLORS = ['#FF5F03', '#072C2C', '#16A34A', '#D97706', '#DC2626']
-  const totalStock = categoryData.reduce((s, d) => s + d.value, 0)
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
@@ -136,55 +103,54 @@ export default function DashboardCharts({ products, transactions }: Props) {
         </div>
       </div>
 
-      {/* Donut Chart - Stok per Kategori (1/3 width like reference) */}
+      {/* Perlu Restock - produk stok terendah */}
       <div className="rounded-xl bg-white border border-gray-200 overflow-hidden">
-        <div className="px-5 pt-5 pb-2">
-          <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wide">Stok Kategori</h3>
-          <p className="text-[11px] text-gray-500 mt-0.5">Distribusi stok</p>
+        <div className="px-5 pt-5 pb-2 flex items-center justify-between">
+          <div>
+            <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wide">Perlu Restock</h3>
+            <p className="text-[11px] text-gray-500 mt-0.5">Stok paling rendah</p>
+          </div>
+          <Link href="/products" className="px-2.5 py-1 rounded-lg border border-gray-200 text-[10px] font-medium text-gray-500 hover:bg-gray-50 transition">
+            Semua
+          </Link>
         </div>
         <div className="px-4 pb-4">
-          {categoryData.length > 0 ? (
-            <div className="flex flex-col items-center">
-              <div className="h-[180px] w-full">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={categoryData}
-                      cx="50%"
-                      cy="50%"
-                      innerRadius={55}
-                      outerRadius={80}
-                      paddingAngle={2}
-                      dataKey="value"
-                      animationBegin={0}
-                      animationDuration={800}
-                    >
-                      {categoryData.map((_, index) => (
-                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                      ))}
-                    </Pie>
-                    <Tooltip
-                      contentStyle={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: '8px', fontSize: '12px' }}
-                      formatter={(value: number, name: string) => [`${value} unit`, name]}
-                    />
-                  </PieChart>
-                </ResponsiveContainer>
-              </div>
-              {/* Legend */}
-              <div className="w-full space-y-2 mt-2">
-                {categoryData.map((d, i) => (
-                  <div key={d.name} className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <div className="w-2.5 h-2.5 rounded-full" style={{ background: COLORS[i % COLORS.length] }} />
-                      <span className="text-[12px] text-gray-700">{d.name}</span>
+          {restockProducts.length > 0 ? (
+            <div className="space-y-2 mt-2">
+              {restockProducts.map(p => {
+                const percentage = p.minStock > 0 ? Math.min(100, Math.round((p.stock / p.minStock) * 100)) : (p.stock > 0 ? 100 : 0)
+                const isOut = p.stock === 0
+                const isLow = p.stock > 0 && p.stock <= p.minStock
+                return (
+                  <div key={p.id} className="px-3 py-2.5 rounded-lg bg-gray-50 border border-gray-100">
+                    <div className="flex items-center justify-between mb-1.5">
+                      <p className="text-[12px] font-semibold text-gray-800 truncate max-w-[120px]">{p.name}</p>
+                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                        isOut ? 'bg-red-50 text-red-600' : isLow ? 'bg-amber-50 text-amber-600' : 'bg-emerald-50 text-emerald-600'
+                      }`}>
+                        {p.stock} / {p.minStock}
+                      </span>
                     </div>
-                    <span className="text-[12px] font-semibold text-gray-900">{totalStock > 0 ? Math.round((d.value / totalStock) * 100) : 0}%</span>
+                    <div className="w-full h-1.5 rounded-full bg-gray-200 overflow-hidden">
+                      <div
+                        className={`h-full rounded-full transition-all ${
+                          isOut ? 'bg-red-500' : isLow ? 'bg-amber-500' : 'bg-emerald-500'
+                        }`}
+                        style={{ width: `${percentage}%` }}
+                      />
+                    </div>
                   </div>
-                ))}
-              </div>
+                )
+              })}
             </div>
           ) : (
-            <EmptyStateCategory />
+            <div className="flex flex-col items-center justify-center h-[260px] text-center">
+              <div className="w-12 h-12 rounded-xl bg-emerald-50 flex items-center justify-center mb-3">
+                <svg className="w-6 h-6 text-emerald-500" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+              </div>
+              <p className="text-[13px] font-medium text-gray-700">Stok aman semua</p>
+              <p className="text-[11px] text-gray-400 mt-1">Tidak ada produk yang perlu restock</p>
+            </div>
           )}
         </div>
       </div>
