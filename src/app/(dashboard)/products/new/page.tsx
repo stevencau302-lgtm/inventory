@@ -97,12 +97,12 @@ export default function NewProductPage() {
   const stockStatus = stock === 0 ? 'Habis' : stock <= minStock ? 'Menipis' : 'Tersedia'
   const stockColor = stock === 0 ? 'text-red-400' : stock <= minStock ? 'text-amber-400' : 'text-emerald-400'
 
-  const inputBase = "w-full rounded-lg bg-white border border-gray-200 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#072C2C] transition"
+  const inputBase = "w-full rounded-lg bg-white border border-gray-200 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#072C2C] focus:ring-1 focus:ring-[#072C2C]/10 transition"
 
   return (
     <div className="max-w-5xl mx-auto px-0 sm:px-4 lg:px-8 py-0 sm:py-2">
-      {/* Header - compact on mobile */}
-      <div className="flex items-center justify-between px-4 sm:px-0 py-3 sm:py-0 sm:mb-6 border-b sm:border-0 border-gray-100">
+      {/* Header */}
+      <div className="flex items-center justify-between px-4 sm:px-0 py-3 sm:py-0 sm:mb-6">
         <div className="flex items-center gap-3">
           <button onClick={() => router.push('/products')} className="w-8 h-8 sm:w-auto sm:h-auto sm:px-0 rounded-full sm:rounded-none bg-gray-100 sm:bg-transparent flex items-center justify-center sm:inline-flex text-gray-600 hover:text-gray-900 transition">
             <ArrowLeft size={16} />
@@ -114,128 +114,155 @@ export default function NewProductPage() {
         </div>
         <button type="button" onClick={handleReset} className="text-[11px] sm:text-sm text-gray-400 hover:text-gray-700 flex items-center gap-1 transition">
           <RotateCcw size={12} className="sm:w-[14px] sm:h-[14px]" />
-          <span className="hidden sm:inline">Reset</span>
+          Reset
         </button>
       </div>
 
       <form onSubmit={handleSubmit}>
         {/* ===== MOBILE LAYOUT ===== */}
-        <div className="sm:hidden px-4 pt-4 pb-24 space-y-4">
-          {/* SKU */}
-          <div>
-            <label className="text-[11px] font-semibold text-gray-500 uppercase mb-1.5 block">Kode SKU *</label>
-            <div className="flex gap-2">
-              <div className="relative flex-1">
-                <Hash size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                <input type="text" required value={sku} onChange={e => handleSkuChange(e.target.value)}
-                  className={`${inputBase} pl-8 pr-9 py-2.5 ${
-                    skuStatus === 'duplicate' ? 'border-red-400' :
-                    skuStatus === 'available' ? 'border-emerald-400' : ''
-                  }`}
-                  placeholder="PRD-001" />
-                <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                  {skuStatus === 'checking' && <Loader2 className="w-3.5 h-3.5 text-gray-400 animate-spin" />}
-                  {skuStatus === 'available' && <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />}
-                  {skuStatus === 'duplicate' && <XCircle className="w-3.5 h-3.5 text-red-400" />}
+        <div className="sm:hidden px-4 pt-3 pb-6 space-y-5">
+
+          {/* Section: Informasi Produk */}
+          <div className="rounded-xl border border-gray-200 bg-white overflow-hidden shadow-sm">
+            <div className="px-4 py-2.5 bg-[#072C2C] flex items-center gap-2">
+              <Package size={14} className="text-white" />
+              <span className="text-xs font-semibold text-white">Informasi Produk</span>
+            </div>
+            <div className="p-4 space-y-3.5">
+              {/* SKU */}
+              <div>
+                <label className="text-[11px] font-semibold text-gray-500 uppercase mb-1.5 block">Kode SKU *</label>
+                <div className="flex gap-2">
+                  <div className="relative flex-1">
+                    <Hash size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                    <input type="text" required value={sku} onChange={e => handleSkuChange(e.target.value)}
+                      className={`${inputBase} pl-8 pr-9 py-2.5 ${
+                        skuStatus === 'duplicate' ? 'border-red-400' :
+                        skuStatus === 'available' ? 'border-emerald-400' : ''
+                      }`}
+                      placeholder="PRD-001" />
+                    <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                      {skuStatus === 'checking' && <Loader2 className="w-3.5 h-3.5 text-gray-400 animate-spin" />}
+                      {skuStatus === 'available' && <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />}
+                      {skuStatus === 'duplicate' && <XCircle className="w-3.5 h-3.5 text-red-400" />}
+                    </div>
+                  </div>
+                  <button type="button" onClick={() => setShowScanner(true)}
+                    className="shrink-0 w-[42px] h-[42px] rounded-lg border border-gray-200 bg-gray-50 flex items-center justify-center text-[#072C2C] active:bg-gray-100">
+                    <ScanBarcode size={16} />
+                  </button>
+                </div>
+                {skuStatus === 'duplicate' && <p className="text-[10px] text-red-400 mt-1">⚠ Dipakai oleh &ldquo;{skuDuplicateName}&rdquo;</p>}
+                {skuStatus === 'available' && <p className="text-[10px] text-emerald-500 mt-1">✓ Tersedia</p>}
+              </div>
+
+              {/* Nama */}
+              <div>
+                <label className="text-[11px] font-semibold text-gray-500 uppercase mb-1.5 block">Nama Produk *</label>
+                <div className="relative">
+                  <Tag size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                  <input type="text" required value={name} onChange={e => setName(e.target.value)}
+                    className={`${inputBase} pl-8 py-2.5`}
+                    placeholder="Nama produk" />
                 </div>
               </div>
-              <button type="button" onClick={() => setShowScanner(true)}
-                className="shrink-0 w-10 h-10 rounded-lg border border-gray-200 flex items-center justify-center text-gray-500 active:bg-gray-50">
-                <ScanBarcode size={16} />
-              </button>
-            </div>
-            {skuStatus === 'duplicate' && <p className="text-[10px] text-red-400 mt-1">⚠ Dipakai oleh &ldquo;{skuDuplicateName}&rdquo;</p>}
-            {skuStatus === 'available' && <p className="text-[10px] text-emerald-500 mt-1">✓ Tersedia</p>}
-          </div>
 
-          {/* Nama */}
-          <div>
-            <label className="text-[11px] font-semibold text-gray-500 uppercase mb-1.5 block">Nama Produk *</label>
-            <div className="relative">
-              <Tag size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-              <input type="text" required value={name} onChange={e => setName(e.target.value)}
-                className={`${inputBase} pl-8 py-2.5`}
-                placeholder="Nama produk" />
-            </div>
-          </div>
-
-          {/* Kategori */}
-          <div>
-            <label className="text-[11px] font-semibold text-gray-500 uppercase mb-1.5 block">Kategori *</label>
-            <select required value={category} onChange={e => setCategory(e.target.value)}
-              className={`${inputBase} px-3 py-2.5 appearance-none`}
-              style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 12px center' }}>
-              <option value="">Pilih Kategori</option>
-              {categories.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
-            </select>
-          </div>
-
-          {/* Harga & Min Stok - 2 kolom */}
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="text-[11px] font-semibold text-gray-500 uppercase mb-1.5 block">Harga *</label>
-              <input type="text" inputMode="numeric" required value={priceDisplay}
-                onChange={handlePriceChange}
-                onFocus={() => { if (price === 0) setPriceDisplay('') }}
-                onBlur={() => { if (!priceDisplay) setPriceDisplay('') }}
-                className={`${inputBase} px-3 py-2.5`}
-                placeholder="Rp 0" />
-            </div>
-            <div>
-              <label className="text-[11px] font-semibold text-gray-500 uppercase mb-1.5 block">Min. Stok</label>
-              <input type="text" inputMode="numeric" value={minStockDisplay}
-                onChange={e => { const v = e.target.value.replace(/[^0-9]/g, ''); setMinStockDisplay(v); setMinStock(v ? parseInt(v) : 0) }}
-                onFocus={() => { if (minStock === 0) setMinStockDisplay('') }}
-                onBlur={() => { if (!minStockDisplay) setMinStockDisplay('0') }}
-                className={`${inputBase} px-3 py-2.5`}
-                placeholder="10" />
-            </div>
-          </div>
-
-          {/* Stok Awal */}
-          <div>
-            <label className="text-[11px] font-semibold text-gray-500 uppercase mb-1.5 block">Stok Awal</label>
-            <div className="flex items-center gap-3">
-              <div className="relative flex-1">
-                <Hash size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                <input type="text" inputMode="numeric" value={stockDisplay}
-                  onChange={e => { const v = e.target.value.replace(/[^0-9]/g, ''); setStockDisplay(v); setStock(v ? parseInt(v) : 0) }}
-                  onFocus={() => { if (stock === 0) setStockDisplay('') }}
-                  onBlur={() => { if (!stockDisplay) setStockDisplay('') }}
-                  className={`${inputBase} pl-8 py-2.5`}
-                  placeholder="0" />
+              {/* Kategori */}
+              <div>
+                <label className="text-[11px] font-semibold text-gray-500 uppercase mb-1.5 block">Kategori *</label>
+                <select required value={category} onChange={e => setCategory(e.target.value)}
+                  className={`${inputBase} px-3 py-2.5 appearance-none`}
+                  style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 12px center' }}>
+                  <option value="">Pilih Kategori</option>
+                  {categories.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
+                </select>
               </div>
-              <div className={`shrink-0 text-xs font-bold px-3 py-1.5 rounded-md ${
-                stock === 0 ? 'bg-red-50 text-red-500' :
-                stock <= minStock ? 'bg-amber-50 text-amber-600' :
-                'bg-emerald-50 text-emerald-600'
+
+              {/* Deskripsi */}
+              <div>
+                <label className="text-[11px] font-semibold text-gray-500 uppercase mb-1.5 block">Deskripsi <span className="normal-case text-gray-300">(opsional)</span></label>
+                <textarea value={description} onChange={e => setDescription(e.target.value)} rows={2}
+                  className={`${inputBase} px-3 py-2.5 resize-none`}
+                  placeholder="Deskripsi singkat..." />
+              </div>
+            </div>
+          </div>
+
+          {/* Section: Harga & Stok */}
+          <div className="rounded-xl border border-gray-200 bg-white overflow-hidden shadow-sm">
+            <div className="px-4 py-2.5 bg-[#072C2C] flex items-center gap-2">
+              <DollarSign size={14} className="text-white" />
+              <span className="text-xs font-semibold text-white">Harga & Stok</span>
+            </div>
+            <div className="p-4 space-y-3.5">
+              {/* Harga */}
+              <div>
+                <label className="text-[11px] font-semibold text-gray-500 uppercase mb-1.5 block">Harga Per Unit *</label>
+                <div className="relative">
+                  <DollarSign size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                  <input type="text" inputMode="numeric" required value={priceDisplay}
+                    onChange={handlePriceChange}
+                    onFocus={() => { if (price === 0) setPriceDisplay('') }}
+                    onBlur={() => { if (!priceDisplay) setPriceDisplay('') }}
+                    className={`${inputBase} pl-8 py-2.5`}
+                    placeholder="Rp 0" />
+                </div>
+              </div>
+
+              {/* Min Stok & Stok Awal - 2 kolom */}
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-[11px] font-semibold text-gray-500 uppercase mb-1.5 block">Min. Stok</label>
+                  <input type="text" inputMode="numeric" value={minStockDisplay}
+                    onChange={e => { const v = e.target.value.replace(/[^0-9]/g, ''); setMinStockDisplay(v); setMinStock(v ? parseInt(v) : 0) }}
+                    onFocus={() => { if (minStock === 0) setMinStockDisplay('') }}
+                    onBlur={() => { if (!minStockDisplay) setMinStockDisplay('0') }}
+                    className={`${inputBase} px-3 py-2.5`}
+                    placeholder="10" />
+                </div>
+                <div>
+                  <label className="text-[11px] font-semibold text-gray-500 uppercase mb-1.5 block">Stok Awal</label>
+                  <div className="relative">
+                    <input type="text" inputMode="numeric" value={stockDisplay}
+                      onChange={e => { const v = e.target.value.replace(/[^0-9]/g, ''); setStockDisplay(v); setStock(v ? parseInt(v) : 0) }}
+                      onFocus={() => { if (stock === 0) setStockDisplay('') }}
+                      onBlur={() => { if (!stockDisplay) setStockDisplay('') }}
+                      className={`${inputBase} px-3 py-2.5`}
+                      placeholder="0" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Status preview */}
+              <div className={`flex items-center justify-between px-3 py-2.5 rounded-lg border ${
+                stock === 0 ? 'bg-red-50/50 border-red-100' :
+                stock <= minStock ? 'bg-amber-50/50 border-amber-100' :
+                'bg-emerald-50/50 border-emerald-100'
               }`}>
-                {stockStatus}
+                <span className="text-[11px] text-gray-500">Status Stok</span>
+                <div className="flex items-center gap-2">
+                  <span className={`text-xs font-bold ${stockColor}`}>{stockStatus}</span>
+                  <span className={`text-[11px] font-semibold px-2 py-0.5 rounded ${
+                    stock === 0 ? 'bg-red-100 text-red-600' :
+                    stock <= minStock ? 'bg-amber-100 text-amber-700' :
+                    'bg-emerald-100 text-emerald-700'
+                  }`}>{stock} unit</span>
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Deskripsi */}
-          <div>
-            <label className="text-[11px] font-semibold text-gray-500 uppercase mb-1.5 block">Deskripsi <span className="text-gray-300 normal-case">(opsional)</span></label>
-            <textarea value={description} onChange={e => setDescription(e.target.value)} rows={2}
-              className={`${inputBase} px-3 py-2.5 resize-none`}
-              placeholder="Deskripsi singkat..." />
-          </div>
-
-          {/* Fixed bottom button on mobile */}
-          <div className="fixed bottom-0 left-0 right-0 p-3 bg-white border-t border-gray-100 shadow-[0_-4px_12px_rgba(0,0,0,0.05)] z-50">
-            <div className="flex gap-2">
-              <button type="button" onClick={() => router.push('/products')}
-                className="flex-1 py-2.5 rounded-lg border border-gray-200 text-xs font-medium text-gray-500 active:bg-gray-50 transition">
-                Batal
-              </button>
-              <button type="submit" disabled={loading || skuStatus === 'duplicate'}
-                className="flex-[2] py-2.5 rounded-lg bg-[#16A34A] text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm disabled:opacity-50 active:scale-[0.98] transition">
-                {loading ? <Loader2 size={13} className="animate-spin" /> : <Save size={13} />}
-                Simpan Produk
-              </button>
-            </div>
+          {/* Action Buttons - inline, NOT fixed */}
+          <div className="flex gap-3 pt-2">
+            <button type="button" onClick={() => router.push('/products')}
+              className="flex-1 py-3 rounded-xl border border-gray-200 text-sm font-medium text-gray-500 active:bg-gray-50 transition">
+              Batal
+            </button>
+            <button type="submit" disabled={loading || skuStatus === 'duplicate'}
+              className="flex-[2] py-3 rounded-xl bg-[#16A34A] text-white text-sm font-bold flex items-center justify-center gap-2 shadow-md shadow-[#16A34A]/25 disabled:opacity-50 active:scale-[0.98] transition">
+              {loading ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
+              Simpan Produk
+            </button>
           </div>
         </div>
 
