@@ -84,6 +84,33 @@ export default function SettingsPage() {
       {/* Appearance */}
       <div className="rounded-2xl overflow-hidden border border-gray-200 bg-white">
         <div className="px-5 py-4 border-b border-gray-200 flex items-center gap-3">
+          <div className="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center">
+            <svg className="w-4 h-4 text-amber-600" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z" /><path strokeLinecap="round" strokeLinejoin="round" d="M6 6h.008v.008H6V6z" /></svg>
+          </div>
+          <div>
+            <h2 className="text-sm font-semibold text-gray-900">Kelola Kategori</h2>
+            <p className="text-[10px] text-gray-500">Tambah, edit, atau hapus kategori produk</p>
+          </div>
+        </div>
+        <div className="p-5">
+          <a href="/categories" className="flex items-center justify-between px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 hover:border-[#072C2C]/30 hover:bg-[#072C2C]/5 transition-all group">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-lg bg-white border border-gray-200 flex items-center justify-center group-hover:border-[#072C2C]/30 transition">
+                <svg className="w-4 h-4 text-gray-500 group-hover:text-[#072C2C] transition" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z" /><path strokeLinecap="round" strokeLinejoin="round" d="M6 6h.008v.008H6V6z" /></svg>
+              </div>
+              <div>
+                <p className="text-sm font-medium text-gray-700 group-hover:text-gray-900 transition">Buka Halaman Kategori</p>
+                <p className="text-[10px] text-gray-400">{catCount} kategori tersimpan</p>
+              </div>
+            </div>
+            <svg className="w-4 h-4 text-gray-400 group-hover:text-[#072C2C] group-hover:translate-x-0.5 transition-all" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
+          </a>
+        </div>
+      </div>
+
+      {/* Appearance */}
+      <div className="rounded-2xl overflow-hidden border border-gray-200 bg-white">
+        <div className="px-5 py-4 border-b border-gray-200 flex items-center gap-3">
           <div className="w-8 h-8 rounded-lg bg-[#072C2C]/15 flex items-center justify-center">
             <svg className="w-4 h-4 text-[#072C2C]" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M21.752 15.002A9.72 9.72 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" /></svg>
           </div>
