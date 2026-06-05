@@ -247,8 +247,9 @@ function Greeting({ products, transactions, lowStock, outOfStock }: { products: 
   const { user } = useAuth()
   const userName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User'
 
-  const hour = new Date().getHours()
-  const greeting = hour < 12 ? 'Selamat pagi' : hour < 17 ? 'Selamat siang' : hour < 20 ? 'Selamat sore' : 'Selamat malam'
+  // Pakai WIB (UTC+7) supaya greeting akurat
+  const wibHour = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Jakarta' })).getHours()
+  const greeting = wibHour < 12 ? 'Selamat pagi' : wibHour < 17 ? 'Selamat siang' : wibHour < 20 ? 'Selamat sore' : 'Selamat malam'
 
   // Today's transactions
   const today = new Date()
