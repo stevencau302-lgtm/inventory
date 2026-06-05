@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useMemo } from 'react'
 import Link from 'next/link'
-import { Product, Category, Transaction, formatRp, getStatus, getStatusLabel, fetchProducts, fetchCategories, fetchTransactions, deleteProduct, saveProduct } from '@/lib/store'
+import { Product, Category, Transaction, formatRp, getStatus, getStatusLabel, fetchProducts, fetchCategories, fetchTransactions, deleteProduct, deleteTransaction, saveProduct } from '@/lib/store'
 import { useToast } from '@/components/Toast'
 import ProductModal from '@/components/ProductModal'
 import DeleteModal from '@/components/DeleteModal'
@@ -22,6 +22,7 @@ export default function ProductsPage() {
   const [modalOpen, setModalOpen] = useState(false)
   const [editProduct, setEditProduct] = useState<Product | null>(null)
   const [deleteModal, setDeleteModal] = useState<{ open: boolean; id: string; name: string }>({ open: false, id: '', name: '' })
+  const [deleteTxModal, setDeleteTxModal] = useState<{ open: boolean; id: string; name: string }>({ open: false, id: '', name: '' })
   const [csvModal, setCsvModal] = useState(false)
   const [mounted, setMounted] = useState(false)
   const [activeTab, setActiveTab] = useState<TabKey>('daftar-produk')
@@ -142,6 +143,29 @@ export default function ProductsPage() {
     setProducts(updated)
     toast('Produk dihapus!', 'success')
     setDeleteModal({ open: false, id: '', name: '' })
+  }
+
+  const handleDeleteTx = (txId: string, productName: string) => {
+    setDeleteTxModal({ open: true, id: txId, name: productName })
+  }
+
+  const confirmDeleteTx = async () => {
+    const tx = transactions.find(t => t.id === deleteTxModal.id)
+    if (tx) {
+      const product = products.find(p => p.id === tx.productId)
+      if (product) {
+        const rollbackStock = tx.type === 'out'
+          ? product.stock + tx.quantity
+          : Math.max(0, product.stock - tx.quantity)
+        const updatedProduct = { ...product, stock: rollbackStock, updatedAt: new Date().toISOString() }
+        await saveProduct(updatedProduct)
+        setProducts(prev => prev.map(p => p.id === product.id ? updatedProduct : p))
+      }
+    }
+    await deleteTransaction(deleteTxModal.id)
+    setTransactions(prev => prev.filter(t => t.id !== deleteTxModal.id))
+    toast('Transaksi dihapus & stok dikembalikan!', 'success')
+    setDeleteTxModal({ open: false, id: '', name: '' })
   }
 
   const handleEdit = (p: Product) => {
@@ -487,11 +511,12 @@ export default function ProductsPage() {
                     <th className="border border-gray-200 w-[100px] px-2 py-2.5 text-center text-[11px] font-bold text-gray-500 uppercase tracking-wide">Jumlah</th>
                     <th className="border border-gray-200 w-[140px] px-2 py-2.5 text-center text-[11px] font-bold text-gray-500 uppercase tracking-wide">Tanggal</th>
                     <th className="border border-gray-200 px-3 py-2.5 text-left text-[11px] font-bold text-gray-500 uppercase tracking-wide">Catatan</th>
+                    <th className="border border-gray-200 w-[60px] px-2 py-2.5 text-center text-[11px] font-bold text-gray-500 uppercase tracking-wide">Aksi</th>
                   </tr>
                 </thead>
                 <tbody>
                   {barangMasuk.filter(t => !search || t.productName.toLowerCase().includes(search.toLowerCase())).length === 0 ? (
-                    <tr><td colSpan={5} className="border border-gray-200 text-center py-12 text-gray-500">Tidak ada barang masuk</td></tr>
+                    <tr><td colSpan={6} className="border border-gray-200 text-center py-12 text-gray-500">Tidak ada barang masuk</td></tr>
                   ) : (
                     barangMasuk.filter(t => !search || t.productName.toLowerCase().includes(search.toLowerCase())).map((t, idx) => (
                       <tr key={t.id} className={`hover:bg-blue-50 transition ${idx % 2 === 1 ? 'bg-gray-50' : 'bg-white'}`}>
@@ -502,6 +527,11 @@ export default function ProductsPage() {
                           {new Date(t.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
                         </td>
                         <td className="border border-gray-200 px-3 py-2 text-left text-sm text-gray-500">{t.note || '-'}</td>
+                        <td className="border border-gray-200 px-2 py-2 text-center">
+                          <button onClick={() => handleDeleteTx(t.id, t.productName)} className="w-7 h-7 rounded bg-red-50 text-[#DC2626] hover:bg-[#DC2626] hover:text-white flex items-center justify-center transition mx-auto">
+                            <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" /></svg>
+                          </button>
+                        </td>
                       </tr>
                     ))
                   )}
@@ -544,11 +574,12 @@ export default function ProductsPage() {
                     <th className="border border-gray-200 w-[100px] px-2 py-2.5 text-center text-[11px] font-bold text-gray-500 uppercase tracking-wide">Jumlah</th>
                     <th className="border border-gray-200 w-[140px] px-2 py-2.5 text-center text-[11px] font-bold text-gray-500 uppercase tracking-wide">Tanggal</th>
                     <th className="border border-gray-200 px-3 py-2.5 text-left text-[11px] font-bold text-gray-500 uppercase tracking-wide">Catatan</th>
+                    <th className="border border-gray-200 w-[60px] px-2 py-2.5 text-center text-[11px] font-bold text-gray-500 uppercase tracking-wide">Aksi</th>
                   </tr>
                 </thead>
                 <tbody>
                   {barangKeluar.filter(t => !search || t.productName.toLowerCase().includes(search.toLowerCase())).length === 0 ? (
-                    <tr><td colSpan={5} className="border border-gray-200 text-center py-12 text-gray-500">Tidak ada barang keluar</td></tr>
+                    <tr><td colSpan={6} className="border border-gray-200 text-center py-12 text-gray-500">Tidak ada barang keluar</td></tr>
                   ) : (
                     barangKeluar.filter(t => !search || t.productName.toLowerCase().includes(search.toLowerCase())).map((t, idx) => (
                       <tr key={t.id} className={`hover:bg-blue-50 transition ${idx % 2 === 1 ? 'bg-gray-50' : 'bg-white'}`}>
@@ -559,6 +590,11 @@ export default function ProductsPage() {
                           {new Date(t.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
                         </td>
                         <td className="border border-gray-200 px-3 py-2 text-left text-sm text-gray-500">{t.note || '-'}</td>
+                        <td className="border border-gray-200 px-2 py-2 text-center">
+                          <button onClick={() => handleDeleteTx(t.id, t.productName)} className="w-7 h-7 rounded bg-red-50 text-[#DC2626] hover:bg-[#DC2626] hover:text-white flex items-center justify-center transition mx-auto">
+                            <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" /></svg>
+                          </button>
+                        </td>
                       </tr>
                     ))
                   )}
@@ -590,6 +626,15 @@ export default function ProductsPage() {
         onClose={() => setCsvModal(false)}
         onImportComplete={handleCsvImport}
         existingProducts={products}
+      />
+
+      <DeleteModal
+        isOpen={deleteTxModal.open}
+        title="Hapus Transaksi?"
+        message="Transaksi akan dihapus dan stok produk akan dikembalikan seperti semula."
+        productName={deleteTxModal.name}
+        onConfirm={confirmDeleteTx}
+        onCancel={() => setDeleteTxModal({ open: false, id: '', name: '' })}
       />
     </div>
   )
