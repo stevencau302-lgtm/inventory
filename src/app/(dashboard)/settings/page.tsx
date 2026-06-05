@@ -1,7 +1,7 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { fetchProducts, fetchCategories, fetchTransactions, deleteProduct, deleteCategory, deleteTransaction } from '@/lib/store'
+import { useEffect, useState, useRef } from 'react'
+import { fetchProducts, fetchCategories, fetchTransactions, deleteProduct, deleteCategory, deleteTransaction, saveCategory, uid, Category } from '@/lib/store'
 import { useToast } from '@/components/Toast'
 import DeleteModal from '@/components/DeleteModal'
 
@@ -81,32 +81,8 @@ export default function SettingsPage() {
         </div>
       </div>
 
-      {/* Appearance */}
-      <div className="rounded-2xl overflow-hidden border border-gray-200 bg-white">
-        <div className="px-5 py-4 border-b border-gray-200 flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center">
-            <svg className="w-4 h-4 text-amber-600" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z" /><path strokeLinecap="round" strokeLinejoin="round" d="M6 6h.008v.008H6V6z" /></svg>
-          </div>
-          <div>
-            <h2 className="text-sm font-semibold text-gray-900">Kelola Kategori</h2>
-            <p className="text-[10px] text-gray-500">Tambah, edit, atau hapus kategori produk</p>
-          </div>
-        </div>
-        <div className="p-5">
-          <a href="/categories" className="flex items-center justify-between px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 hover:border-[#072C2C]/30 hover:bg-[#072C2C]/5 transition-all group">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-white border border-gray-200 flex items-center justify-center group-hover:border-[#072C2C]/30 transition">
-                <svg className="w-4 h-4 text-gray-500 group-hover:text-[#072C2C] transition" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z" /><path strokeLinecap="round" strokeLinejoin="round" d="M6 6h.008v.008H6V6z" /></svg>
-              </div>
-              <div>
-                <p className="text-sm font-medium text-gray-700 group-hover:text-gray-900 transition">Buka Halaman Kategori</p>
-                <p className="text-[10px] text-gray-400">{catCount} kategori tersimpan</p>
-              </div>
-            </div>
-            <svg className="w-4 h-4 text-gray-400 group-hover:text-[#072C2C] group-hover:translate-x-0.5 transition-all" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
-          </a>
-        </div>
-      </div>
+      {/* Kelola Kategori - Inline */}
+      <InlineCategoryManager catCount={catCount} setCatCount={setCatCount} />
 
       {/* Appearance */}
       <div className="rounded-2xl overflow-hidden border border-gray-200 bg-white">
@@ -209,6 +185,126 @@ export default function SettingsPage() {
   )
 }
 
+
+
+/* ─── Inline Category Manager ─── */
+function InlineCategoryManager({ catCount, setCatCount }: { catCount: number; setCatCount: (n: number) => void }) {
+  const [categories, setCategories] = useState<Category[]>([])
+  const [newName, setNewName] = useState('')
+  const [loading, setLoading] = useState(true)
+  const [delModal, setDelModal] = useState<{ open: boolean; id: string; name: string }>({ open: false, id: '', name: '' })
+  const inputRef = useRef<HTMLInputElement>(null)
+  const { toast } = useToast()
+
+  useEffect(() => {
+    fetchCategories().then(c => { setCategories(c); setLoading(false) })
+  }, [])
+
+  const handleAdd = async () => {
+    const trimmed = newName.trim()
+    if (!trimmed) return
+    if (categories.some(c => c.name.toLowerCase() === trimmed.toLowerCase())) {
+      toast('Kategori sudah ada!', 'error')
+      return
+    }
+    const newCat: Category = { id: uid(), name: trimmed, icon: 'fas fa-tag', color: '#6366f1', createdAt: new Date().toISOString() }
+    await saveCategory(newCat)
+    const updated = [...categories, newCat]
+    setCategories(updated)
+    setCatCount(updated.length)
+    setNewName('')
+    inputRef.current?.focus()
+    toast(`Kategori "${trimmed}" ditambahkan!`, 'success')
+  }
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      handleAdd()
+    }
+  }
+
+  const confirmDelete = async () => {
+    await deleteCategory(delModal.id)
+    const updated = categories.filter(c => c.id !== delModal.id)
+    setCategories(updated)
+    setCatCount(updated.length)
+    toast('Kategori dihapus!', 'success')
+    setDelModal({ open: false, id: '', name: '' })
+  }
+
+  return (
+    <>
+      <div className="rounded-2xl overflow-hidden border border-gray-200 bg-white">
+        <div className="px-5 py-4 border-b border-gray-200 flex items-center gap-3">
+          <div className="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center">
+            <svg className="w-4 h-4 text-amber-600" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z" /><path strokeLinecap="round" strokeLinejoin="round" d="M6 6h.008v.008H6V6z" /></svg>
+          </div>
+          <div>
+            <h2 className="text-sm font-semibold text-gray-900">Kelola Kategori</h2>
+            <p className="text-[10px] text-gray-500">{categories.length} kategori tersimpan</p>
+          </div>
+        </div>
+        <div className="p-5 space-y-4">
+          {/* Input tambah */}
+          <div className="flex gap-2">
+            <input
+              ref={inputRef}
+              type="text"
+              value={newName}
+              onChange={e => setNewName(e.target.value)}
+              onKeyDown={handleKeyDown}
+              className="flex-1 px-4 py-2.5 rounded-xl text-sm bg-gray-50 border border-gray-200 text-gray-900 placeholder-gray-400 outline-none focus:border-[#072C2C]/50 focus:bg-white transition-all"
+              placeholder="Nama kategori baru..."
+            />
+            <button
+              type="button"
+              onClick={handleAdd}
+              disabled={!newName.trim()}
+              className="px-4 py-2.5 rounded-xl bg-[#072C2C] text-white text-xs font-bold hover:bg-[#072C2C]/90 transition-all active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1.5 shrink-0"
+            >
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+              Tambah
+            </button>
+          </div>
+
+          {/* List kategori */}
+          {loading ? (
+            <div className="py-4 text-center text-xs text-gray-400">Memuat...</div>
+          ) : categories.length === 0 ? (
+            <div className="py-6 text-center text-xs text-gray-400">Belum ada kategori. Tambahkan di atas.</div>
+          ) : (
+            <div className="space-y-1.5 max-h-[240px] overflow-y-auto">
+              {categories.map(cat => (
+                <div key={cat.id} className="flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-gray-50 border border-gray-100 group hover:border-gray-200 transition">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-3 h-3 rounded-full shrink-0" style={{ background: cat.color }} />
+                    <span className="text-sm text-gray-700 font-medium">{cat.name}</span>
+                  </div>
+                  <button
+                    onClick={() => setDelModal({ open: true, id: cat.id, name: cat.name })}
+                    className="w-7 h-7 rounded-lg flex items-center justify-center text-gray-300 hover:text-red-500 hover:bg-red-50 opacity-0 group-hover:opacity-100 transition-all"
+                    title="Hapus"
+                  >
+                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" /></svg>
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      <DeleteModal
+        isOpen={delModal.open}
+        title="Hapus Kategori?"
+        productName={delModal.name}
+        onConfirm={confirmDelete}
+        onCancel={() => setDelModal({ open: false, id: '', name: '' })}
+      />
+    </>
+  )
+}
 
 
 /* ─── WhatsApp Settings Component ─── */
