@@ -21,7 +21,7 @@ function EmptyStateSales() {
         <p className="text-[12px] text-gray-500 leading-relaxed max-w-[240px] mb-5">
           Grafik akan muncul setelah transaksi barang masuk atau keluar dicatat.
         </p>
-        <Link href="/transactions" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#072C2C] hover:bg-[#0a3d3d] text-white text-[12px] font-semibold shadow-lg shadow-[#072C2C]/20 transition-all duration-200 active:scale-[0.98]">
+        <Link href="/transactions/new" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#072C2C] hover:bg-[#0a3d3d] text-white text-[12px] font-semibold shadow-lg shadow-[#072C2C]/20 transition-all duration-200 active:scale-[0.98]">
           <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
           Input Transaksi
         </Link>
