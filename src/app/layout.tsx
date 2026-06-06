@@ -3,6 +3,7 @@
 import './globals.css'
 import { useEffect } from 'react'
 import { registerServiceWorker } from '@/lib/offline'
+import { Analytics } from '@vercel/analytics/next'
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   useEffect(() => {
@@ -26,6 +27,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="bg-[#EDEADE] text-[#111827] antialiased">
         {children}
+        <Analytics />
       </body>
     </html>
   )
