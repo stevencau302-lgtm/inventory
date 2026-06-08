@@ -7,7 +7,7 @@ import {
   BarChart3, Package, DollarSign, Tag, TrendingUp, TrendingDown,
   AlertTriangle, XCircle, ArrowDownCircle, ArrowUpCircle,
   Activity, PieChart, Loader2, RotateCcw, Skull,
-  Calendar, ChevronDown, FileSpreadsheet, FileText
+  Calendar, ChevronDown, FileSpreadsheet, FileText, Sparkles
 } from 'lucide-react'
 
 type DateRange = '7d' | '30d' | '3m' | '6m' | '1y' | 'all' | 'custom'
