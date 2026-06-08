@@ -53,8 +53,8 @@ export function StockDonut({ products }: { products: Product[] }) {
   ]
 
   return (
-    <div className="rounded-xl bg-white border border-gray-200 overflow-hidden">
-      <div className="px-5 py-4 border-b border-gray-200">
+    <div className="rounded-2xl bg-white border border-gray-200 overflow-hidden shadow-sm">
+      <div className="px-5 py-4 border-b border-gray-100">
         <h3 className="text-sm font-semibold text-gray-900">Ringkasan Stok</h3>
       </div>
       <div className="p-5 flex items-center gap-6">
@@ -124,7 +124,7 @@ export default function DashboardCharts({ transactions, rangeDays = 7 }: Props) 
   const rangeLabel = `${range} Hari Terakhir`
 
   return (
-    <div className="rounded-xl bg-white border border-gray-200 overflow-hidden">
+    <div className="rounded-2xl bg-white border border-gray-200 overflow-hidden shadow-sm">
       <div className="px-5 pt-5 pb-2 flex items-center justify-between">
         <div>
           <h3 className="text-sm font-semibold text-gray-900">Pergerakan Stok</h3>

@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { Product, Transaction, formatRp, fetchProducts, fetchTransactions } from '@/lib/store'
 import { useAuth } from '@/components/AuthProvider'
 import dynamic from 'next/dynamic'
-import { Plus, ArrowDownToLine, ArrowUpFromLine, Sparkles, Package, AlertTriangle, Activity, ArrowRight, CheckCircle2, ArrowLeftRight, Trophy } from 'lucide-react'
+import { Plus, ArrowDownToLine, ArrowUpFromLine, Sparkles, Package, AlertTriangle, Activity, ArrowRight, CheckCircle2, ArrowLeftRight, Trophy, ChevronRight } from 'lucide-react'
 
 const DashboardCharts = dynamic(() => import('@/components/DashboardCharts'), { ssr: false })
 const StockDonut = dynamic(() => import('@/components/DashboardCharts').then(m => m.StockDonut), { ssr: false })
@@ -103,9 +103,9 @@ export default function Dashboard() {
 
       {/* Restock status banner */}
       {restockProducts.length === 0 ? (
-        <div className="rounded-xl bg-emerald-50 border border-emerald-100 px-5 py-4 flex items-center justify-between gap-4">
+        <div className="rounded-2xl bg-gradient-to-r from-emerald-50 to-emerald-50/40 border border-emerald-100 px-5 py-4 flex items-center justify-between gap-4 shadow-sm">
           <div className="flex items-center gap-3">
-            <span className="w-9 h-9 rounded-full bg-emerald-100 flex items-center justify-center shrink-0">
+            <span className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center shrink-0">
               <CheckCircle2 className="w-5 h-5 text-emerald-600" />
             </span>
             <div>
@@ -113,14 +113,14 @@ export default function Dashboard() {
               <p className="text-[11px] text-emerald-600/80 mt-0.5">Semua produk memiliki stok yang aman.</p>
             </div>
           </div>
-          <Link href="/products" className="hidden sm:flex items-center gap-1.5 text-[12px] font-semibold text-emerald-700 hover:text-emerald-800 whitespace-nowrap">
+          <Link href="/products" className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-white/70 text-[12px] font-semibold text-emerald-700 hover:bg-white border border-emerald-100 transition whitespace-nowrap">
             Lihat Semua Stok <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
       ) : (
-        <div className="rounded-xl bg-amber-50 border border-amber-100 px-5 py-4 flex items-center justify-between gap-4">
+        <div className="rounded-2xl bg-gradient-to-r from-amber-50 to-amber-50/40 border border-amber-100 px-5 py-4 flex items-center justify-between gap-4 shadow-sm">
           <div className="flex items-center gap-3">
-            <span className="w-9 h-9 rounded-full bg-amber-100 flex items-center justify-center shrink-0">
+            <span className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center shrink-0">
               <AlertTriangle className="w-5 h-5 text-amber-600" />
             </span>
             <div>
@@ -128,7 +128,7 @@ export default function Dashboard() {
               <p className="text-[11px] text-amber-600/80 mt-0.5">Segera lakukan pengadaan agar stok tidak habis.</p>
             </div>
           </div>
-          <Link href="/products" className="hidden sm:flex items-center gap-1.5 text-[12px] font-semibold text-amber-700 hover:text-amber-800 whitespace-nowrap">
+          <Link href="/products" className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-white/70 text-[12px] font-semibold text-amber-700 hover:bg-white border border-amber-100 transition whitespace-nowrap">
             Lihat Semua Stok <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
@@ -137,24 +137,15 @@ export default function Dashboard() {
       {/* Row 2: Recent Transactions + Restock */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Recent Transactions */}
-        <div className="rounded-xl overflow-hidden border border-gray-200 bg-white">
-          <div className="px-5 py-4 border-b border-gray-200 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <ArrowLeftRight className="w-4 h-4 text-[#072C2C]" />
-              <h3 className="text-sm font-semibold text-gray-900">Transaksi Terbaru</h3>
-            </div>
-            <Link href="/reports" className="text-[11px] font-medium text-gray-400 hover:text-gray-600">Lihat Semua</Link>
-          </div>
+        <div className="rounded-2xl overflow-hidden border border-gray-200 bg-white shadow-sm">
+          <SectionHeader icon={<ArrowLeftRight className="w-4 h-4" />} tint="bg-[#072C2C]/10 text-[#072C2C]" title="Transaksi Terbaru" href="/reports" />
           <div className="p-4">
             {paginatedTx.length === 0 ? (
-              <div className="text-center py-10">
-                <ArrowLeftRight className="w-10 h-10 mx-auto text-gray-200 mb-3" />
-                <p className="text-gray-500 text-sm">Belum ada transaksi</p>
-              </div>
+              <EmptyState icon={<ArrowLeftRight className="w-6 h-6" />} title="Belum ada transaksi" subtitle="Transaksi yang kamu catat akan muncul di sini." />
             ) : (
               <div className="space-y-2">
                 {paginatedTx.map(tx => (
-                  <div key={tx.id} className="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-gray-50 border border-gray-100">
+                  <div key={tx.id} className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-gray-50/70 border border-gray-100 hover:bg-gray-50 hover:border-gray-200 transition">
                     <span className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${tx.type === 'in' ? 'bg-emerald-100 text-emerald-600' : 'bg-orange-100 text-orange-600'}`}>
                       {tx.type === 'in' ? <ArrowDownToLine className="w-4 h-4" /> : <ArrowUpFromLine className="w-4 h-4" />}
                     </span>
@@ -171,9 +162,9 @@ export default function Dashboard() {
                   </div>
                 ))}
                 <div className="flex items-center justify-center gap-4 pt-3">
-                  <button onClick={() => setTxPage(p => Math.max(1, p - 1))} className="px-3 py-1.5 rounded-lg border border-gray-200 text-xs font-medium text-gray-500 hover:bg-[#072C2C] hover:text-white hover:border-[#072C2C] transition">Prev</button>
+                  <button onClick={() => setTxPage(p => Math.max(1, p - 1))} disabled={txPage === 1} className="px-3 py-1.5 rounded-lg border border-gray-200 text-xs font-medium text-gray-500 hover:bg-[#072C2C] hover:text-white hover:border-[#072C2C] disabled:opacity-40 disabled:hover:bg-white disabled:hover:text-gray-500 disabled:hover:border-gray-200 transition">Prev</button>
                   <span className="text-xs text-gray-500">{txPage} / {totalTxPages}</span>
-                  <button onClick={() => setTxPage(p => Math.min(totalTxPages, p + 1))} className="px-3 py-1.5 rounded-lg border border-gray-200 text-xs font-medium text-gray-500 hover:bg-[#072C2C] hover:text-white hover:border-[#072C2C] transition">Next</button>
+                  <button onClick={() => setTxPage(p => Math.min(totalTxPages, p + 1))} disabled={txPage === totalTxPages} className="px-3 py-1.5 rounded-lg border border-gray-200 text-xs font-medium text-gray-500 hover:bg-[#072C2C] hover:text-white hover:border-[#072C2C] disabled:opacity-40 disabled:hover:bg-white disabled:hover:text-gray-500 disabled:hover:border-gray-200 transition">Next</button>
                 </div>
               </div>
             )}
@@ -181,19 +172,13 @@ export default function Dashboard() {
         </div>
 
         {/* Perlu Restock */}
-        <div className="rounded-xl overflow-hidden border border-gray-200 bg-white">
-          <div className="px-5 py-4 border-b border-gray-200 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <AlertTriangle className="w-4 h-4 text-amber-500" />
-              <h3 className="text-sm font-semibold text-gray-900">Perlu Restock</h3>
-            </div>
-            <Link href="/products" className="text-[11px] font-medium text-gray-400 hover:text-gray-600">Lihat Semua</Link>
-          </div>
+        <div className="rounded-2xl overflow-hidden border border-gray-200 bg-white shadow-sm">
+          <SectionHeader icon={<AlertTriangle className="w-4 h-4" />} tint="bg-amber-50 text-amber-500" title="Perlu Restock" href="/products" />
           <div className="p-4">
             {restockProducts.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-10 text-center">
-                <div className="w-14 h-14 rounded-full bg-amber-50 flex items-center justify-center mb-3">
-                  <Package className="w-6 h-6 text-amber-400" />
+                <div className="w-14 h-14 rounded-2xl bg-emerald-50 flex items-center justify-center mb-3">
+                  <CheckCircle2 className="w-7 h-7 text-emerald-500" />
                 </div>
                 <p className="text-[13px] font-medium text-gray-700">Stok aman semua</p>
                 <p className="text-[11px] text-gray-400 mt-1">Tidak ada produk yang perlu di restock.</p>
@@ -204,7 +189,7 @@ export default function Dashboard() {
                   const pctVal = p.minStock > 0 ? Math.min(100, Math.round((p.stock / p.minStock) * 100)) : (p.stock > 0 ? 100 : 0)
                   const isOut = p.stock === 0
                   return (
-                    <div key={p.id} className="px-3 py-2.5 rounded-lg bg-gray-50 border border-gray-100">
+                    <div key={p.id} className="px-3 py-2.5 rounded-xl bg-gray-50/70 border border-gray-100 hover:border-gray-200 transition">
                       <div className="flex items-center justify-between mb-1.5">
                         <p className="text-[12px] font-semibold text-gray-800 truncate max-w-[150px]">{p.name}</p>
                         <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${isOut ? 'bg-red-50 text-red-600' : 'bg-amber-50 text-amber-600'}`}>
@@ -212,7 +197,7 @@ export default function Dashboard() {
                         </span>
                       </div>
                       <div className="w-full h-1.5 rounded-full bg-gray-200 overflow-hidden">
-                        <div className={`h-full rounded-full ${isOut ? 'bg-red-500' : 'bg-amber-500'}`} style={{ width: `${pctVal}%` }} />
+                        <div className={`h-full rounded-full transition-all duration-700 ${isOut ? 'bg-red-500' : 'bg-amber-500'}`} style={{ width: `${pctVal}%` }} />
                       </div>
                     </div>
                   )
@@ -226,36 +211,30 @@ export default function Dashboard() {
       {/* Row 3: Best Sellers + Stock Summary Donut */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Best Sellers */}
-        <div className="rounded-xl overflow-hidden border border-gray-200 bg-white">
-          <div className="px-5 py-4 border-b border-gray-200 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Trophy className="w-4 h-4 text-[#FF5F03]" />
-              <h3 className="text-sm font-semibold text-gray-900">Produk Terlaris</h3>
-            </div>
-            <Link href="/reports" className="text-[11px] font-medium text-gray-400 hover:text-gray-600">Lihat Semua</Link>
-          </div>
+        <div className="rounded-2xl overflow-hidden border border-gray-200 bg-white shadow-sm">
+          <SectionHeader icon={<Trophy className="w-4 h-4" />} tint="bg-[#FF5F03]/10 text-[#FF5F03]" title="Produk Terlaris" href="/reports" />
           <div className="p-4">
             {bestSellers.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-8 text-center">
-                <div className="w-14 h-14 rounded-full bg-[#FF5F03]/10 flex items-center justify-center mb-3">
-                  <Package className="w-6 h-6 text-[#FF5F03]/60" />
+                <div className="w-14 h-14 rounded-2xl bg-[#FF5F03]/10 flex items-center justify-center mb-3">
+                  <Trophy className="w-6 h-6 text-[#FF5F03]/60" />
                 </div>
                 <p className="text-[13px] font-medium text-gray-700">Belum ada data penjualan</p>
                 <p className="text-[11px] text-gray-400 mt-1 mb-4">Catat transaksi keluar untuk melihat<br />produk terlaris kamu.</p>
-                <Link href="/transactions/new" className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#072C2C] hover:bg-[#0a3d3d] text-white text-[12px] font-semibold transition active:scale-[0.98]">
+                <Link href="/transactions/new" className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#072C2C] hover:bg-[#0a3d3d] text-white text-[12px] font-semibold transition active:scale-[0.98] shadow-sm">
                   <Plus className="w-3.5 h-3.5" /> Catat Penjualan
                 </Link>
               </div>
             ) : (
               <div className="space-y-2">
                 {bestSellers.map((p, i) => (
-                  <div key={p.id} className="flex items-center gap-3 px-3 py-3 rounded-lg bg-gray-50 border border-gray-100">
-                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold shrink-0 ${i === 0 ? 'bg-[#FF5F03] text-white' : 'bg-[#FF5F03]/10 text-[#FF5F03]'}`}>{i + 1}</div>
+                  <div key={p.id} className="flex items-center gap-3 px-3 py-3 rounded-xl bg-gray-50/70 border border-gray-100 hover:bg-gray-50 hover:border-gray-200 transition">
+                    <RankBadge rank={i} />
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-semibold text-gray-800 truncate">{p.name}</p>
                       <p className="text-[11px] text-gray-500 mt-0.5">{p.sold} terjual</p>
                     </div>
-                    {i < 3 && <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-[#FF5F03]/10 text-[#FF5F03] shrink-0">Best Seller</span>}
+                    {i === 0 && <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-amber-100 text-amber-600 shrink-0">Terlaris</span>}
                   </div>
                 ))}
               </div>
@@ -271,6 +250,39 @@ export default function Dashboard() {
       <DashboardCharts products={products} transactions={transactions} rangeDays={rangeDays} />
     </div>
   )
+}
+
+function SectionHeader({ icon, tint, title, href }: { icon: React.ReactNode; tint: string; title: string; href: string }) {
+  return (
+    <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
+      <div className="flex items-center gap-2.5">
+        <span className={`w-7 h-7 rounded-lg flex items-center justify-center ${tint}`}>{icon}</span>
+        <h3 className="text-sm font-semibold text-gray-900">{title}</h3>
+      </div>
+      <Link href={href} className="group inline-flex items-center gap-0.5 text-[11px] font-medium text-gray-400 hover:text-[#072C2C] transition">
+        Lihat Semua <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+      </Link>
+    </div>
+  )
+}
+
+function EmptyState({ icon, title, subtitle }: { icon: React.ReactNode; title: string; subtitle: string }) {
+  return (
+    <div className="flex flex-col items-center justify-center py-10 text-center">
+      <div className="w-14 h-14 rounded-2xl bg-gray-50 flex items-center justify-center mb-3 text-gray-300">{icon}</div>
+      <p className="text-[13px] font-medium text-gray-700">{title}</p>
+      <p className="text-[11px] text-gray-400 mt-1">{subtitle}</p>
+    </div>
+  )
+}
+
+function RankBadge({ rank }: { rank: number }) {
+  const styles = [
+    'bg-gradient-to-br from-amber-300 to-amber-500 text-white shadow-sm shadow-amber-500/30',
+    'bg-gradient-to-br from-gray-200 to-gray-400 text-white',
+    'bg-gradient-to-br from-orange-300 to-orange-500 text-white',
+  ][rank] || 'bg-[#FF5F03]/10 text-[#FF5F03]'
+  return <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold shrink-0 ${styles}`}>{rank + 1}</div>
 }
 
 function Greeting({ transactions, totalValue, rangeDays, onRangeChange }: { transactions: Transaction[]; totalValue: number; rangeDays: number; onRangeChange: (d: number) => void }) {
@@ -300,7 +312,7 @@ function Greeting({ transactions, totalValue, rangeDays, onRangeChange }: { tran
           value={rangeDays}
           onChange={e => onRangeChange(Number(e.target.value))}
           aria-label="Filter rentang waktu"
-          className="appearance-none pl-9 pr-9 py-2 rounded-xl bg-white border border-gray-200 text-[13px] font-medium text-gray-600 cursor-pointer outline-none hover:bg-gray-50 focus:border-[#072C2C] transition"
+          className="appearance-none pl-9 pr-9 py-2 rounded-xl bg-white border border-gray-200 text-[13px] font-medium text-gray-600 cursor-pointer outline-none hover:bg-gray-50 focus:border-[#072C2C] transition shadow-sm"
         >
           <option value={7}>7 Hari Terakhir</option>
           <option value={14}>14 Hari Terakhir</option>
@@ -315,13 +327,13 @@ function Greeting({ transactions, totalValue, rangeDays, onRangeChange }: { tran
 
 function HealthCard({ score, className = '' }: { score: number; className?: string }) {
   const status = score >= 80
-    ? { label: 'Inventory Sehat', color: 'text-emerald-600', dot: 'bg-emerald-500', bar: 'bg-emerald-500', iconBg: 'bg-emerald-50 text-emerald-500', msg: 'Bagus! Pertahankan kondisi inventory kamu.' }
+    ? { label: 'Inventory Sehat', color: 'text-emerald-600', dot: 'bg-emerald-500', bar: 'from-emerald-400 to-emerald-500', iconBg: 'bg-emerald-50 text-emerald-500', msg: 'Bagus! Pertahankan kondisi inventory kamu.' }
     : score >= 50
-      ? { label: 'Perlu Perhatian', color: 'text-amber-600', dot: 'bg-amber-500', bar: 'bg-amber-500', iconBg: 'bg-amber-50 text-amber-500', msg: 'Beberapa produk perlu direstock segera.' }
-      : { label: 'Kondisi Kritis', color: 'text-red-600', dot: 'bg-red-500', bar: 'bg-red-500', iconBg: 'bg-red-50 text-red-500', msg: 'Banyak produk kehabisan stok, segera tindak lanjuti.' }
+      ? { label: 'Perlu Perhatian', color: 'text-amber-600', dot: 'bg-amber-500', bar: 'from-amber-400 to-amber-500', iconBg: 'bg-amber-50 text-amber-500', msg: 'Beberapa produk perlu direstock segera.' }
+      : { label: 'Kondisi Kritis', color: 'text-red-600', dot: 'bg-red-500', bar: 'from-red-400 to-red-500', iconBg: 'bg-red-50 text-red-500', msg: 'Banyak produk kehabisan stok, segera tindak lanjuti.' }
 
   return (
-    <div className={`rounded-2xl bg-white border border-gray-200 p-5 flex flex-col ${className}`}>
+    <div className={`rounded-2xl bg-white border border-gray-200 p-5 flex flex-col shadow-sm ${className}`}>
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-1.5">
           <h3 className="text-sm font-semibold text-gray-900">Kesehatan Inventory</h3>
@@ -340,7 +352,7 @@ function HealthCard({ score, className = '' }: { score: number; className?: stri
         <span className={`text-[12px] font-semibold ${status.color}`}>{status.label}</span>
       </div>
       <div className="w-full h-2 rounded-full bg-gray-100 overflow-hidden mt-3">
-        <div className={`h-full rounded-full transition-all duration-700 ${status.bar}`} style={{ width: `${score}%` }} />
+        <div className={`h-full rounded-full bg-gradient-to-r transition-all duration-700 ${status.bar}`} style={{ width: `${score}%` }} />
       </div>
       <p className="text-[12px] text-gray-500 mt-3">{status.msg}</p>
     </div>
@@ -355,11 +367,11 @@ function QuickAction({ className = '' }: { className?: string }) {
     { label: 'Generate Insight', href: '/ai-chat', icon: <Sparkles className="w-5 h-5" />, tint: 'bg-[#FF5F03]/10 text-[#FF5F03] group-hover:bg-[#FF5F03] group-hover:text-white' },
   ]
   return (
-    <div className={`rounded-2xl bg-white border border-gray-200 p-5 ${className}`}>
+    <div className={`rounded-2xl bg-white border border-gray-200 p-5 shadow-sm ${className}`}>
       <h3 className="text-sm font-semibold text-gray-900 mb-4">Quick Action</h3>
       <div className="grid grid-cols-4 gap-2">
         {actions.map(a => (
-          <Link key={a.label} href={a.href} className="group flex flex-col items-center gap-2 p-3 rounded-xl border border-gray-100 hover:border-gray-200 hover:shadow-sm transition-all text-center">
+          <Link key={a.label} href={a.href} className="group flex flex-col items-center gap-2 p-3 rounded-xl border border-gray-100 hover:border-gray-200 hover:shadow-sm hover:-translate-y-0.5 transition-all duration-200 text-center">
             <span className={`w-11 h-11 rounded-xl flex items-center justify-center transition-colors ${a.tint}`}>{a.icon}</span>
             <span className="text-[10px] font-medium text-gray-600 leading-tight">{a.label}</span>
           </Link>
@@ -397,13 +409,13 @@ function AnimatedValue({ value }: { value: string }) {
 
 function StatCard({ border, label, value, trend, trendUp }: { border: string; label: string; value: string; trend: string; trendUp: boolean }) {
   return (
-    <div className={`rounded-lg p-3 bg-white border border-gray-200 border-l-4 ${border} hover:shadow-sm transition-all`}>
+    <div className={`rounded-xl p-3.5 bg-white border border-gray-200 border-l-4 ${border} shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200`}>
       <p className="text-[9px] text-gray-500 font-bold uppercase tracking-wider mb-1">{label}</p>
       <p className="text-lg font-bold text-gray-900">
         <AnimatedValue value={value} />
       </p>
-      <p className={`text-[10px] mt-0.5 flex items-center gap-0.5 ${trendUp ? 'text-emerald-500' : 'text-amber-500'}`}>
-        {trendUp && <span>↑</span>}{trend}
+      <p className={`text-[10px] mt-1 flex items-center gap-0.5 font-medium ${trendUp ? 'text-emerald-500' : 'text-amber-500'}`}>
+        {trendUp && <span className="text-[9px]">▲</span>}{trend}
       </p>
     </div>
   )
