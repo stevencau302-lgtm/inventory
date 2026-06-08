@@ -446,24 +446,32 @@ function AddReturnModal({
               {/* Kondisi */}
               <div>
                 <label className="text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-2 block">Kondisi Barang</label>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-2 gap-2.5">
                   <button
                     type="button"
                     onClick={() => setCondition('good')}
-                    className={`relative p-4 rounded-2xl text-left transition active:scale-[0.97] ${condition === 'good' ? 'bg-[#16A34A]/10 border-2 border-[#16A34A]/50 ring-2 ring-[#16A34A]/10' : 'bg-gray-50 border border-gray-200 hover:border-[#16A34A]/30'}`}
+                    className={`flex items-center gap-2.5 p-3 rounded-2xl text-left transition active:scale-[0.97] ${condition === 'good' ? 'bg-[#16A34A]/10 border-2 border-[#16A34A]/50 ring-2 ring-[#16A34A]/10' : 'bg-gray-50 border border-gray-200 hover:border-[#16A34A]/30'}`}
                   >
-                    <CheckCircle2 className={`w-5 h-5 mb-2 ${condition === 'good' ? 'text-[#16A34A]' : 'text-gray-400'}`} />
-                    <p className={`text-sm font-bold ${condition === 'good' ? 'text-[#16A34A]' : 'text-gray-700'}`}>Bagus</p>
-                    <p className="text-[10px] text-gray-500 mt-0.5">Stok bertambah +{quantity}</p>
+                    <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${condition === 'good' ? 'bg-[#16A34A] text-white' : 'bg-white text-gray-400 border border-gray-200'}`}>
+                      <CheckCircle2 className="w-4.5 h-4.5" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className={`text-sm font-bold leading-tight ${condition === 'good' ? 'text-[#16A34A]' : 'text-gray-700'}`}>Bagus</p>
+                      <p className="text-[10px] text-gray-500 leading-tight mt-0.5">Stok +{quantity}</p>
+                    </div>
                   </button>
                   <button
                     type="button"
                     onClick={() => setCondition('damaged')}
-                    className={`relative p-4 rounded-2xl text-left transition active:scale-[0.97] ${condition === 'damaged' ? 'bg-[#DC2626]/10 border-2 border-[#DC2626]/50 ring-2 ring-[#DC2626]/10' : 'bg-gray-50 border border-gray-200 hover:border-[#DC2626]/30'}`}
+                    className={`flex items-center gap-2.5 p-3 rounded-2xl text-left transition active:scale-[0.97] ${condition === 'damaged' ? 'bg-[#DC2626]/10 border-2 border-[#DC2626]/50 ring-2 ring-[#DC2626]/10' : 'bg-gray-50 border border-gray-200 hover:border-[#DC2626]/30'}`}
                   >
-                    <XCircle className={`w-5 h-5 mb-2 ${condition === 'damaged' ? 'text-[#DC2626]' : 'text-gray-400'}`} />
-                    <p className={`text-sm font-bold ${condition === 'damaged' ? 'text-[#DC2626]' : 'text-gray-700'}`}>Rusak</p>
-                    <p className="text-[10px] text-gray-500 mt-0.5">Stok tidak berubah</p>
+                    <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${condition === 'damaged' ? 'bg-[#DC2626] text-white' : 'bg-white text-gray-400 border border-gray-200'}`}>
+                      <XCircle className="w-4.5 h-4.5" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className={`text-sm font-bold leading-tight ${condition === 'damaged' ? 'text-[#DC2626]' : 'text-gray-700'}`}>Rusak</p>
+                      <p className="text-[10px] text-gray-500 leading-tight mt-0.5">Stok tetap</p>
+                    </div>
                   </button>
                 </div>
               </div>
