@@ -1,7 +1,6 @@
 'use client'
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
 import { Product, Transaction } from '@/lib/store'
-import { useState } from 'react'
 import Link from 'next/link'
 
 interface Props {
@@ -102,8 +101,8 @@ export function StockDonut({ products }: { products: Product[] }) {
 }
 
 // ─── Pergerakan Stok (Area Chart, full width) ───
-export default function DashboardCharts({ transactions }: Props) {
-  const [range, setRange] = useState<7 | 14 | 30>(7)
+export default function DashboardCharts({ transactions, rangeDays = 7 }: Props) {
+  const range = rangeDays
 
   const dayNames = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab']
   const now = new Date()
@@ -122,30 +121,18 @@ export default function DashboardCharts({ transactions }: Props) {
   })()
 
   const hasMovementData = areaData.some(d => d.masuk > 0 || d.keluar > 0)
-  const rangeLabel = range === 7 ? '7 Hari Terakhir' : range === 14 ? '14 Hari Terakhir' : '30 Hari Terakhir'
+  const rangeLabel = `${range} Hari Terakhir`
 
   return (
     <div className="rounded-xl bg-white border border-gray-200 overflow-hidden">
       <div className="px-5 pt-5 pb-2 flex items-center justify-between">
         <div>
           <h3 className="text-sm font-semibold text-gray-900">Pergerakan Stok</h3>
-          <p className="text-[11px] text-gray-500 mt-0.5">Perubahan stok terakhir (barang masuk & keluar)</p>
+          <p className="text-[11px] text-gray-500 mt-0.5">{rangeLabel.toLowerCase()} · barang masuk & keluar</p>
         </div>
         <div className="flex items-center gap-3">
-          <div className="hidden sm:flex items-center gap-3 mr-1">
-            <span className="flex items-center gap-1.5 text-[11px] text-gray-500"><span className="w-2 h-2 rounded-full bg-[#16A34A]" />Masuk</span>
-            <span className="flex items-center gap-1.5 text-[11px] text-gray-500"><span className="w-2 h-2 rounded-full bg-[#FF5F03]" />Keluar</span>
-          </div>
-          <select
-            value={range}
-            onChange={(e) => setRange(Number(e.target.value) as 7 | 14 | 30)}
-            className="px-3 py-1.5 rounded-lg border border-gray-200 text-[11px] font-medium text-gray-600 bg-white hover:bg-gray-50 transition cursor-pointer outline-none focus:border-[#072C2C]"
-            aria-label="Rentang waktu"
-          >
-            <option value={7}>7 Hari Terakhir</option>
-            <option value={14}>14 Hari Terakhir</option>
-            <option value={30}>30 Hari Terakhir</option>
-          </select>
+          <span className="flex items-center gap-1.5 text-[11px] text-gray-500"><span className="w-2 h-2 rounded-full bg-[#16A34A]" />Masuk</span>
+          <span className="flex items-center gap-1.5 text-[11px] text-gray-500"><span className="w-2 h-2 rounded-full bg-[#FF5F03]" />Keluar</span>
         </div>
       </div>
       <div className="px-2 pb-4">
