@@ -28,7 +28,6 @@ function isReturn(t: Transaction) {
 }
 
 export default function ReturnsPage() {
-  const { toast } = useToast()
   const [products, setProducts] = useState<Product[]>([])
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [mounted, setMounted] = useState(false)
