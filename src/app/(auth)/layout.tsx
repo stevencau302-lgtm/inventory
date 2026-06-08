@@ -88,7 +88,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
               transition={{ delay: 1.6, duration: 0.6 }}
               className="text-3xl font-bold text-white mb-3"
             >
-              Nexo Inventory
+              Nexa
             </motion.h2>
 
             {/* Tagline */}
@@ -128,7 +128,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
               transition={{ delay: 2.2, duration: 0.6 }}
               className="text-center text-[10px] text-zinc-600 mt-4"
             >
-              &copy; 2024 Nexo Inventory. All rights reserved.
+              &copy; 2024 Nexa. All rights reserved.
             </motion.p>
           </div>
         </div>
@@ -143,7 +143,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
             <div className="w-8 h-8 rounded-lg bg-[#F59E0B]/10 border border-[#F59E0B]/20 flex items-center justify-center">
               <Box className="w-4 h-4 text-[#F59E0B]" />
             </div>
-            <span className="text-sm font-bold text-white">Nexo</span>
+            <span className="text-sm font-bold text-white">Nexa</span>
           </div>
 
           {/* Form container */}
