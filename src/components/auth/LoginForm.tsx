@@ -116,7 +116,7 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
               type="email"
               placeholder="nama@email.com"
               {...register('email')}
-              className="w-full pl-11 pr-4 py-3 rounded-xl text-sm bg-white/[0.03] border border-white/[0.08] text-white placeholder-zinc-600 outline-none transition-all duration-200 focus:border-[#F59E0B]/50 focus:ring-2 focus:ring-[#F59E0B]/10 focus:bg-white/[0.05]"
+              className="w-full pl-11 pr-4 py-3 rounded-xl text-sm bg-white/[0.03] border border-white/[0.08] text-white placeholder-zinc-600 outline-none transition-all duration-200 focus:border-[#FF5F03]/50 focus:ring-2 focus:ring-[#FF5F03]/10 focus:bg-white/[0.05]"
             />
           </div>
           <AnimatePresence>
@@ -142,7 +142,7 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
               type={showPassword ? 'text' : 'password'}
               placeholder="••••••••"
               {...register('password')}
-              className="w-full pl-11 pr-11 py-3 rounded-xl text-sm bg-white/[0.03] border border-white/[0.08] text-white placeholder-zinc-600 outline-none transition-all duration-200 focus:border-[#F59E0B]/50 focus:ring-2 focus:ring-[#F59E0B]/10 focus:bg-white/[0.05]"
+              className="w-full pl-11 pr-11 py-3 rounded-xl text-sm bg-white/[0.03] border border-white/[0.08] text-white placeholder-zinc-600 outline-none transition-all duration-200 focus:border-[#FF5F03]/50 focus:ring-2 focus:ring-[#FF5F03]/10 focus:bg-white/[0.05]"
             />
             <button
               type="button"
@@ -186,7 +186,7 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
           disabled={loading || success}
           whileHover={{ scale: 1.01 }}
           whileTap={{ scale: 0.98 }}
-          className="w-full py-3.5 rounded-xl font-semibold text-sm transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed bg-[#F59E0B] text-black hover:bg-[#F59E0B]/90 shadow-lg shadow-[#F59E0B]/20 hover:shadow-[#F59E0B]/30"
+          className="w-full py-3.5 rounded-xl font-semibold text-sm transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed bg-[#FF5F03] text-white hover:bg-[#FF5F03]/90 shadow-lg shadow-[#FF5F03]/20 hover:shadow-[#FF5F03]/30"
         >
           {success ? (
             <motion.span
@@ -213,7 +213,7 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
         Belum punya akun?{' '}
         <button
           onClick={onSwitchToRegister}
-          className="text-[#F59E0B] font-medium hover:underline transition"
+          className="text-[#FF5F03] font-medium hover:underline transition"
         >
           Daftar
         </button>
