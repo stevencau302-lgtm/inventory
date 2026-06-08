@@ -31,7 +31,6 @@ function DashboardSkeleton() {
 export default function Dashboard() {
   const [products, setProducts] = useState<Product[]>([])
   const [transactions, setTransactions] = useState<Transaction[]>([])
-  const [categories, setCategories] = useState<Category[]>([])
   const [mounted, setMounted] = useState(false)
   const [txPage, setTxPage] = useState(1)
   const [rangeDays, setRangeDays] = useState(7)
@@ -43,8 +42,6 @@ export default function Dashboard() {
       setProducts(p)
       const tx = await fetchTransactions()
       setTransactions(tx)
-      const c = await fetchCategories()
-      setCategories(c)
       setMounted(true)
     }
     loadData()
@@ -53,51 +50,21 @@ export default function Dashboard() {
   if (!mounted) return <DashboardSkeleton />
 
   const totalProducts = products.length
-  const totalItems = products.reduce((s, p) => s + p.stock, 0)
   const totalValue = products.reduce((s, p) => s + p.price * p.stock, 0)
-  const avgPrice = products.length ? products.reduce((s, p) => s + p.price, 0) / products.length : 0
-  const inStockCount = products.filter(p => p.stock > 0).length
-  const lowStock = products.filter(p => p.stock > 0 && p.stock <= p.minStock)
-  const outStock = products.filter(p => p.stock === 0)
+  const lowStock = products.filter(p => p.stock > 0 && p.stock <= p.minStock).length
+  const outOfStock = products.filter(p => p.stock === 0).length
+  const safeStock = products.filter(p => p.stock > p.minStock).length
 
-  // Kategori teratas berdasarkan nilai stok
-  const topCategory = categories.map(c => ({
-    name: c.name,
-    value: products.filter(p => p.category === c.name).reduce((s, p) => s + p.price * p.stock, 0),
-  })).sort((a, b) => b.value - a.value)
-  const topCategoryName = topCategory.length > 0 && topCategory[0].value > 0 ? topCategory[0].name : null
-
-  // Dead stock: produk tanpa transaksi keluar & berumur >= 30 hari
-  const deadStock = (() => {
-    const now = Date.now()
-    const thirtyDaysMs = 30 * 24 * 60 * 60 * 1000
-    const outProductIds = new Set(transactions.filter(t => t.type === 'out').map(t => t.productId))
-    return products.filter(p => {
-      if (outProductIds.has(p.id)) return false
-      return (now - new Date(p.createdAt).getTime()) >= thirtyDaysMs
-    })
-  })()
-  const deadStockValue = deadStock.reduce((s, p) => s + p.price * p.stock, 0)
-
-  const priceRange = products.length === 0
-    ? null
-    : { min: Math.min(...products.map(p => p.price)), max: Math.max(...products.map(p => p.price)) }
-
-  // Arus nilai dalam rentang waktu terpilih
-  const rangeLabel = `${rangeDays} Hari Terakhir`
-  const rangeStartMs = Date.now() - rangeDays * 24 * 60 * 60 * 1000
-  const rangedTx = transactions.filter(t => new Date(t.createdAt).getTime() >= rangeStartMs)
-  const valueTrend = (() => {
-    const inValue = rangedTx.filter(t => t.type === 'in').reduce((s, t) => {
-      const p = products.find(pr => pr.id === t.productId); return s + (p ? p.price * t.quantity : 0)
-    }, 0)
-    const outValue = rangedTx.filter(t => t.type === 'out').reduce((s, t) => {
-      const p = products.find(pr => pr.id === t.productId); return s + (p ? p.price * t.quantity : 0)
-    }, 0)
-    return inValue - outValue
-  })()
-
+  // Health score: weighted by stock condition
+  const healthScore = totalProducts === 0
+    ? 100
+    : Math.round(((safeStock * 1 + lowStock * 0.5 + outOfStock * 0) / totalProducts) * 100)
   const restockProducts = [...products].filter(p => p.stock <= p.minStock).sort((a, b) => a.stock - b.stock)
+
+  // Trends (this week)
+  const now = new Date()
+  const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
+  const newProductsThisWeek = products.filter(p => new Date(p.createdAt) >= oneWeekAgo).length
 
   const bestSellers = [...products]
     .map(p => {
