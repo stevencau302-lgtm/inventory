@@ -25,7 +25,7 @@ const features = [
   { icon: ClipboardCheck, title: 'Stok Opname', desc: 'Proses stock opname digital — bandingkan stok sistem vs fisik secara instan.' },
   { icon: Zap, title: 'Transaksi Cepat', desc: 'Catat barang masuk/keluar dengan barcode scanner dan bulk entry.' },
   { icon: Shield, title: 'Retur Terlacak', desc: 'Catat retur dengan alasan, kondisi barang, dan analisis kerugian lengkap.' },
-  { icon: Smartphone, title: 'Mobile Ready', desc: 'PWA responsif yang bisa diakses dari HP, tablet, atau desktop kapan saja.' },
+  { icon: Sparkles, title: 'AI Asisten', desc: 'Asisten AI yang menganalisa inventory, memberikan insight, dan rekomendasi restock otomatis.' },
 ]
 
 const testimonials = [
