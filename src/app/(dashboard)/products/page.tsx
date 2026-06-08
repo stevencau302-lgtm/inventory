@@ -306,7 +306,7 @@ export default function ProductsPage() {
                     <th className="border border-gray-200 w-[110px] px-2 py-2.5 text-center text-[11px] font-bold text-gray-500 uppercase tracking-wide">SKU</th>
                     <th className="border border-gray-200 px-3 py-2.5 text-left text-[11px] font-bold text-gray-500 uppercase tracking-wide">Nama Produk</th>
                     <th className="border border-gray-200 w-[120px] px-2 py-2.5 text-center text-[11px] font-bold text-gray-500 uppercase tracking-wide">Kategori</th>
-                    <th className="border border-gray-200 w-[80px] px-2 py-2.5 text-center text-[11px] font-bold text-gray-500 uppercase tracking-wide">Stok Awal</th>
+                    <th className="border border-gray-200 w-[90px] px-2 py-2.5 text-center text-[11px] font-bold text-gray-500 uppercase tracking-wide whitespace-nowrap">Stok Awal</th>
                     <th className="border border-gray-200 w-[140px] px-3 py-2.5 text-right text-[11px] font-bold text-gray-500 uppercase tracking-wide">Harga</th>
                     <th className="border border-gray-200 w-[110px] px-2 py-2.5 text-center text-[11px] font-bold text-gray-500 uppercase tracking-wide">Status</th>
                     <th className="border border-gray-200 w-[80px] px-2 py-2.5 text-center text-[11px] font-bold text-gray-500 uppercase tracking-wide">Aksi</th>
