@@ -7,6 +7,7 @@ import Link from 'next/link'
 interface Props {
   products: Product[]
   transactions: Transaction[]
+  rangeDays?: number
 }
 
 function EmptyStateSales() {
