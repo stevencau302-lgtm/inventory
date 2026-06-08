@@ -143,7 +143,7 @@ export default function AiChatPage() {
             <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500/10 to-indigo-500/10 border border-purple-200 flex items-center justify-center mb-5">
               <Sparkles className="w-8 h-8 text-purple-400" />
             </div>
-            <h2 className="text-lg font-bold text-gray-900 mb-1">Halo! Saya AI Asisten Nexa</h2>
+            <h2 className="text-lg font-bold text-gray-900 mb-1">Halo! Saya AI Asisten Nexa Inventory</h2>
             <p className="text-sm text-gray-500 max-w-md mb-8">
               Tanya saya tentang inventory kamu — stok, analisa, rekomendasi, atau apapun. Saya punya akses ke data real-time.
             </p>

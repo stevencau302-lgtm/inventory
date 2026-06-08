@@ -113,7 +113,7 @@ async function exportToPDF(products: Product[], transactions: Transaction[], cat
   doc.text(`Digenerate: ${dateStr}, ${timeStr}`, 14, 33)
 
   doc.setFontSize(9)
-  doc.text('Nexa', pageWidth - 14, 18, { align: 'right' })
+  doc.text('Nexa Inventory', pageWidth - 14, 18, { align: 'right' })
   doc.text('inventory-rose-delta.vercel.app', pageWidth - 14, 25, { align: 'right' })
 
   let y = 52

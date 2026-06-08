@@ -86,7 +86,7 @@ export default function DemoPage() {
           <div className="w-16 h-16 rounded-2xl bg-[#FDC800]/10 border border-[#FDC800]/20 flex items-center justify-center mx-auto mb-4">
             <Package className="w-8 h-8 text-[#FDC800]" />
           </div>
-          <h1 className="text-3xl font-bold text-white">Nexa</h1>
+          <h1 className="text-3xl font-bold text-white">Nexa Inventory</h1>
           <p className="text-zinc-500 mt-2">Coba langsung tanpa perlu daftar</p>
         </div>
 

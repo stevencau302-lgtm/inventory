@@ -12,7 +12,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="id">
       <head>
-        <title>Nexa</title>
+        <title>Nexa Inventory</title>
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#072C2C" />

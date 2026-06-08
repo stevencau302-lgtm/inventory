@@ -112,16 +112,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
               transition={{ delay: 1.4, duration: 0.6 }}
               className="mb-8 flex justify-center"
             >
-              <div className="w-20 h-20 rounded-3xl overflow-hidden shadow-2xl shadow-[#F59E0B]/20">
-                <Image
-                  src={LOGO_URL}
-                  alt="Nexa"
-                  width={80}
-                  height={80}
-                  className="w-full h-full object-cover"
-                  unoptimized
-                />
-              </div>
+              <NexaLogoLarge />
             </motion.div>
 
             {/* Brand name */}
@@ -129,10 +120,18 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 1.6, duration: 0.6 }}
-              className="text-3xl font-bold text-white mb-3"
+              className="text-3xl font-bold text-white mb-1"
             >
               Nexa
             </motion.h2>
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 1.6, duration: 0.6 }}
+              className="text-sm font-medium text-white/40 uppercase tracking-[0.2em] mb-4"
+            >
+              Inventory
+            </motion.p>
 
             {/* Tagline */}
             <motion.p
@@ -183,17 +182,11 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
 
           {/* Mobile logo (shown only on mobile) */}
           <div className="absolute top-6 left-6 flex items-center gap-2 lg:hidden">
-            <div className="w-8 h-8 rounded-lg overflow-hidden">
-              <Image
-                src={LOGO_URL}
-                alt="Nexa"
-                width={32}
-                height={32}
-                className="w-full h-full object-cover"
-                unoptimized
-              />
+            <NexaLogoSmall />
+            <div className="flex flex-col">
+              <span className="text-sm font-bold text-white leading-tight">Nexa</span>
+              <span className="text-[8px] text-white/40 font-medium uppercase tracking-widest">Inventory</span>
             </div>
-            <span className="text-sm font-bold text-white">Nexa</span>
           </div>
 
           {/* Form container */}
