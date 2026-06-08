@@ -6,7 +6,7 @@ import { Product, Category, Transaction, fetchProducts, fetchCategories, fetchTr
 import {
   BarChart3, Package, DollarSign, Tag, TrendingUp, TrendingDown,
   AlertTriangle, XCircle, ArrowDownCircle, ArrowUpCircle,
-  Activity, PieChart, Loader2, RotateCcw, Skull,
+  Activity, PieChart, Loader2, Skull,
   Calendar, ChevronDown, FileSpreadsheet, FileText, Sparkles
 } from 'lucide-react'
 
