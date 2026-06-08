@@ -2,9 +2,43 @@
 
 import CurtainAnimation from '@/components/auth/CurtainAnimation'
 import { motion } from 'framer-motion'
-import Image from 'next/image'
 
-const LOGO_URL = 'https://res.cloudinary.com/dqjh7utdb/image/upload/v1780900133/ir2utm5qy58xshaoij3m.webp'
+function NexaLogoLarge() {
+  return (
+    <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="80" height="80" rx="24" fill="url(#auth-logo-grad)" />
+      <path d="M22 30L40 20L58 30V50L40 60L22 50V30Z" stroke="white" strokeWidth="2.5" strokeLinejoin="round" fill="none" />
+      <path d="M40 20V60" stroke="white" strokeWidth="1.5" opacity="0.4" />
+      <path d="M22 30L58 50" stroke="white" strokeWidth="1.5" opacity="0.4" />
+      <path d="M58 30L22 50" stroke="white" strokeWidth="1.5" opacity="0.4" />
+      <circle cx="40" cy="40" r="6" fill="white" opacity="0.9" />
+      <defs>
+        <linearGradient id="auth-logo-grad" x1="0" y1="0" x2="80" y2="80" gradientUnits="userSpaceOnUse">
+          <stop stopColor="#FF5F03" />
+          <stop offset="1" stopColor="#FF8A3D" />
+        </linearGradient>
+      </defs>
+    </svg>
+  )
+}
+
+function NexaLogoSmall() {
+  return (
+    <svg width="32" height="32" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="36" height="36" rx="10" fill="url(#auth-logo-sm)" />
+      <path d="M10 13.5L18 9L26 13.5V22.5L18 27L10 22.5V13.5Z" stroke="white" strokeWidth="1.8" strokeLinejoin="round" fill="none" />
+      <path d="M18 9V27" stroke="white" strokeWidth="1.2" opacity="0.4" />
+      <path d="M22 11.5L14 24.5" stroke="white" strokeWidth="1.2" opacity="0.4" />
+      <circle cx="18" cy="18" r="3" fill="white" opacity="0.9" />
+      <defs>
+        <linearGradient id="auth-logo-sm" x1="0" y1="0" x2="36" y2="36" gradientUnits="userSpaceOnUse">
+          <stop stopColor="#FF5F03" />
+          <stop offset="1" stopColor="#FF8A3D" />
+        </linearGradient>
+      </defs>
+    </svg>
+  )
+}
 
 function FloatingParticles() {
   return (
