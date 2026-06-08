@@ -299,15 +299,15 @@ export default function StockOpnamePage() {
         </div>
         <div className="flex items-center gap-2">
           <input type="date" value={opnameDate} onChange={e => { setOpnameDate(e.target.value); saveDate(e.target.value) }}
-            className="px-3 py-2 rounded-lg bg-white border border-gray-200 text-xs font-medium text-gray-600 outline-none focus:border-[#072C2C] transition" />
-          <button onClick={handleResetAll} className="w-9 h-9 rounded-lg border border-gray-200 text-gray-500 hover:text-red-500 hover:border-red-200 hover:bg-red-50 transition flex items-center justify-center" title="Reset semua">
+            className="flex-1 sm:flex-none px-3 py-2 rounded-lg bg-white border border-gray-200 text-xs font-medium text-gray-600 outline-none focus:border-[#072C2C] transition" />
+          <button onClick={handleResetAll} className="w-9 h-9 shrink-0 rounded-lg border border-gray-200 text-gray-500 hover:text-red-500 hover:border-red-200 hover:bg-red-50 transition flex items-center justify-center" title="Reset semua">
             <Trash2 className="w-4 h-4" />
           </button>
-          <button onClick={handleExport} className="w-9 h-9 rounded-lg border border-gray-200 text-gray-500 hover:text-gray-900 hover:bg-gray-50 transition flex items-center justify-center" title="Export CSV">
+          <button onClick={handleExport} className="w-9 h-9 shrink-0 rounded-lg border border-gray-200 text-gray-500 hover:text-gray-900 hover:bg-gray-50 transition flex items-center justify-center" title="Export CSV">
             <Download className="w-4 h-4" />
           </button>
           <button onClick={handleSave} disabled={saving || checkedCount === 0}
-            className="px-4 py-2 rounded-lg bg-[#FF5F03] text-white text-sm font-bold transition active:scale-95 disabled:opacity-40 hover:bg-[#e85503] flex items-center gap-2">
+            className="shrink-0 px-4 py-2 rounded-lg bg-[#FF5F03] text-white text-sm font-bold transition active:scale-95 disabled:opacity-40 hover:bg-[#e85503] flex items-center gap-2">
             {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
             Simpan
           </button>
