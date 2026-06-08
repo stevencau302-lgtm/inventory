@@ -163,7 +163,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
 
           {/* Bottom decoration */}
           <div className="absolute bottom-8 left-12 right-12">
-            <div className="h-px bg-gradient-to-r from-transparent via-[#F59E0B]/20 to-transparent" />
+            <div className="h-px bg-gradient-to-r from-transparent via-[#FF5F03]/20 to-transparent" />
             <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
