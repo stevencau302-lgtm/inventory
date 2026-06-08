@@ -320,29 +320,44 @@ function AddReturnModal({
     }
   }
 
+  const stockAfter = selected ? (condition === 'good' ? selected.stock + quantity : selected.stock) : 0
+
   return (
-    <div className="fixed inset-0 z-[9999] flex items-end sm:items-center justify-center bg-black/50 backdrop-blur-sm p-0 sm:p-4">
-      <div className="w-full sm:max-w-lg bg-white rounded-t-2xl sm:rounded-2xl shadow-2xl max-h-[92vh] overflow-y-auto">
-        {/* Header */}
-        <div className="sticky top-0 z-10 flex items-center justify-between gap-3 px-5 py-4 bg-white border-b border-gray-100">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-[#D97706]/10 flex items-center justify-center">
-              <RotateCcw className="w-5 h-5 text-[#D97706]" />
-            </div>
-            <div>
-              <h2 className="text-base font-bold text-gray-900">Tambah Retur</h2>
-              <p className="text-[11px] text-gray-500">Catat barang kembali dari customer</p>
-            </div>
-          </div>
-          <button
-            onClick={onClose}
-            className="w-9 h-9 rounded-lg bg-gray-100 flex items-center justify-center text-gray-500 hover:bg-gray-200 transition active:scale-90"
-          >
-            <X className="w-4.5 h-4.5" />
-          </button>
+    <div
+      className="fixed inset-0 z-[9999] flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-md p-0 sm:p-4 animate-[returnFade_0.2s_ease-out]"
+      onMouseDown={e => { if (e.target === e.currentTarget) onClose() }}
+    >
+      <div className="w-full sm:max-w-lg bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl shadow-black/30 max-h-[94vh] sm:max-h-[90vh] flex flex-col overflow-hidden animate-[returnSheet_0.32s_cubic-bezier(0.16,1,0.3,1)]">
+        {/* Mobile drag handle */}
+        <div className="sm:hidden flex justify-center pt-3 pb-1 shrink-0">
+          <div className="w-10 h-1.5 rounded-full bg-gray-300" />
         </div>
 
-        <form onSubmit={handleSubmit} className="p-5 space-y-5">
+        {/* Header with gradient accent */}
+        <div className="relative shrink-0 px-5 pt-4 pb-4 border-b border-gray-100 overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-r from-[#D97706]/8 via-transparent to-transparent" />
+          <div className="relative flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-[#D97706] to-[#B45309] flex items-center justify-center shadow-lg shadow-[#D97706]/25 shrink-0">
+                <RotateCcw className="w-5 h-5 text-white" />
+              </div>
+              <div className="min-w-0">
+                <h2 className="text-base font-bold text-gray-900 truncate">Tambah Retur</h2>
+                <p className="text-[11px] text-gray-500 truncate">Catat barang kembali dari customer</p>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={onClose}
+              className="w-9 h-9 rounded-xl bg-gray-100 flex items-center justify-center text-gray-500 hover:bg-gray-200 hover:text-gray-700 transition active:scale-90 shrink-0"
+            >
+              <X className="w-4.5 h-4.5" />
+            </button>
+          </div>
+        </div>
+
+        {/* Scrollable body */}
+        <form id="return-form" onSubmit={handleSubmit} className="flex-1 overflow-y-auto px-5 py-5 space-y-5">
           {/* Pilih produk */}
           <div className="space-y-2">
             <label className="text-[11px] font-bold uppercase tracking-wider text-gray-500 block">Produk yang Dikembalikan</label>
@@ -353,7 +368,7 @@ function AddReturnModal({
                 value={productSearch}
                 onChange={e => { setProductSearch(e.target.value); setShowDropdown(true); setSelectedProduct('') }}
                 onFocus={() => setShowDropdown(true)}
-                className="w-full rounded-xl text-sm pl-10 pr-9 py-3 font-medium bg-white text-gray-900 border border-gray-200 focus:outline-none focus:border-[#D97706]/50 focus:ring-2 focus:ring-[#D97706]/15 transition placeholder:text-gray-400"
+                className="w-full rounded-2xl text-sm pl-10 pr-9 py-3.5 font-medium bg-gray-50 text-gray-900 border border-gray-200 focus:outline-none focus:bg-white focus:border-[#D97706]/50 focus:ring-2 focus:ring-[#D97706]/15 transition placeholder:text-gray-400"
                 placeholder="Cari produk..."
                 autoComplete="off"
               />
@@ -368,9 +383,9 @@ function AddReturnModal({
               )}
 
               {showDropdown && !selected && (
-                <div className="absolute z-50 left-0 right-0 top-full mt-2 rounded-xl bg-white border border-gray-200 max-h-52 overflow-y-auto shadow-xl">
+                <div className="absolute z-50 left-0 right-0 top-full mt-2 rounded-2xl bg-white border border-gray-200 max-h-56 overflow-y-auto shadow-xl shadow-black/10 animate-[returnFade_0.15s_ease-out]">
                   {filteredProducts.length === 0 ? (
-                    <div className="px-4 py-5 text-center text-sm text-gray-500">Produk tidak ditemukan</div>
+                    <div className="px-4 py-6 text-center text-sm text-gray-500">Produk tidak ditemukan</div>
                   ) : filteredProducts.map(p => (
                     <button
                       key={p.id}
@@ -378,7 +393,7 @@ function AddReturnModal({
                       onClick={() => handleSelectProduct(p.id)}
                       className="w-full flex items-center gap-3 px-4 py-3 text-left transition hover:bg-[#D97706]/5 border-b border-gray-100 last:border-b-0"
                     >
-                      <div className="w-9 h-9 rounded-lg bg-[#D97706]/10 flex items-center justify-center text-[10px] font-black text-[#D97706] shrink-0">
+                      <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#D97706]/15 to-[#B45309]/10 flex items-center justify-center text-[10px] font-black text-[#D97706] shrink-0">
                         {p.name.substring(0, 2).toUpperCase()}
                       </div>
                       <div className="flex-1 min-w-0">
@@ -391,15 +406,29 @@ function AddReturnModal({
                 </div>
               )}
             </div>
+
+            {/* Selected product preview */}
+            {selected && (
+              <div className="flex items-center gap-3 p-3 rounded-2xl bg-[#D97706]/[0.06] border border-[#D97706]/15 animate-[returnFade_0.2s_ease-out]">
+                <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-[#D97706] to-[#B45309] flex items-center justify-center text-xs font-black text-white shrink-0">
+                  {selected.name.substring(0, 2).toUpperCase()}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-gray-900 truncate">{selected.name}</p>
+                  <p className="text-[11px] text-gray-500">{selected.sku} · Stok: <span className="font-semibold text-gray-700">{selected.stock}</span></p>
+                </div>
+                <span className="text-xs font-bold text-[#D97706] shrink-0">{formatRp(selected.price)}</span>
+              </div>
+            )}
           </div>
 
           {selected && (
-            <>
+            <div className="space-y-5 animate-[returnFade_0.25s_ease-out]">
               {/* Quantity */}
               <div>
                 <label className="text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-2 block">Jumlah Retur</label>
                 <div className="flex items-center gap-2">
-                  <button type="button" onClick={() => setQuantity(Math.max(1, quantity - 1))} className="w-11 h-11 rounded-xl bg-white border border-gray-200 flex items-center justify-center text-gray-900 hover:bg-gray-50 active:scale-90 transition shrink-0">
+                  <button type="button" onClick={() => setQuantity(Math.max(1, quantity - 1))} className="w-12 h-12 rounded-2xl bg-gray-100 flex items-center justify-center text-gray-700 hover:bg-gray-200 active:scale-90 transition shrink-0">
                     <Minus className="w-4 h-4" />
                   </button>
                   <input
@@ -407,9 +436,9 @@ function AddReturnModal({
                     min={1}
                     value={quantity}
                     onChange={e => setQuantity(Math.max(1, +e.target.value))}
-                    className="flex-1 min-w-0 rounded-xl text-center text-lg font-bold py-2.5 bg-white border border-gray-200 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#D97706]/20 transition"
+                    className="flex-1 min-w-0 rounded-2xl text-center text-lg font-bold py-3 bg-gray-50 border border-gray-200 text-gray-900 focus:outline-none focus:bg-white focus:ring-2 focus:ring-[#D97706]/20 transition"
                   />
-                  <button type="button" onClick={() => setQuantity(quantity + 1)} className="w-11 h-11 rounded-xl bg-white border border-gray-200 flex items-center justify-center text-gray-900 hover:bg-gray-50 active:scale-90 transition shrink-0">
+                  <button type="button" onClick={() => setQuantity(quantity + 1)} className="w-12 h-12 rounded-2xl bg-gray-100 flex items-center justify-center text-gray-700 hover:bg-gray-200 active:scale-90 transition shrink-0">
                     <Plus className="w-4 h-4" />
                   </button>
                 </div>
@@ -422,7 +451,7 @@ function AddReturnModal({
                   <button
                     type="button"
                     onClick={() => setCondition('good')}
-                    className={`p-4 rounded-xl text-left transition active:scale-[0.97] ${condition === 'good' ? 'bg-[#16A34A]/10 border-2 border-[#16A34A]/50' : 'bg-white border border-gray-200 hover:border-[#16A34A]/30'}`}
+                    className={`relative p-4 rounded-2xl text-left transition active:scale-[0.97] ${condition === 'good' ? 'bg-[#16A34A]/10 border-2 border-[#16A34A]/50 ring-2 ring-[#16A34A]/10' : 'bg-gray-50 border border-gray-200 hover:border-[#16A34A]/30'}`}
                   >
                     <CheckCircle2 className={`w-5 h-5 mb-2 ${condition === 'good' ? 'text-[#16A34A]' : 'text-gray-400'}`} />
                     <p className={`text-sm font-bold ${condition === 'good' ? 'text-[#16A34A]' : 'text-gray-700'}`}>Bagus</p>
@@ -431,7 +460,7 @@ function AddReturnModal({
                   <button
                     type="button"
                     onClick={() => setCondition('damaged')}
-                    className={`p-4 rounded-xl text-left transition active:scale-[0.97] ${condition === 'damaged' ? 'bg-[#DC2626]/10 border-2 border-[#DC2626]/50' : 'bg-white border border-gray-200 hover:border-[#DC2626]/30'}`}
+                    className={`relative p-4 rounded-2xl text-left transition active:scale-[0.97] ${condition === 'damaged' ? 'bg-[#DC2626]/10 border-2 border-[#DC2626]/50 ring-2 ring-[#DC2626]/10' : 'bg-gray-50 border border-gray-200 hover:border-[#DC2626]/30'}`}
                   >
                     <XCircle className={`w-5 h-5 mb-2 ${condition === 'damaged' ? 'text-[#DC2626]' : 'text-gray-400'}`} />
                     <p className={`text-sm font-bold ${condition === 'damaged' ? 'text-[#DC2626]' : 'text-gray-700'}`}>Rusak</p>
@@ -449,7 +478,7 @@ function AddReturnModal({
                       key={r.value}
                       type="button"
                       onClick={() => setReason(r.value)}
-                      className={`flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition active:scale-[0.97] ${reason === r.value ? 'bg-[#D97706]/10 border border-[#D97706]/40 text-[#D97706]' : 'bg-white border border-gray-200 text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}
+                      className={`flex items-center gap-2 px-3.5 py-3 rounded-2xl text-xs font-semibold transition active:scale-[0.97] ${reason === r.value ? 'bg-[#D97706]/10 border border-[#D97706]/40 text-[#D97706]' : 'bg-gray-50 border border-gray-200 text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}
                     >
                       {r.icon}
                       {r.label}
@@ -469,33 +498,60 @@ function AddReturnModal({
                   onChange={e => setNote(e.target.value.slice(0, 200))}
                   maxLength={200}
                   rows={2}
-                  className="w-full rounded-xl text-sm px-4 py-3 resize-none font-medium bg-white border border-gray-200 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#D97706]/20 transition placeholder:text-gray-400"
+                  className="w-full rounded-2xl text-sm px-4 py-3 resize-none font-medium bg-gray-50 border border-gray-200 text-gray-900 focus:outline-none focus:bg-white focus:ring-2 focus:ring-[#D97706]/20 transition placeholder:text-gray-400"
                   placeholder="Catatan tambahan..."
                 />
                 <p className="text-right text-[10px] mt-1 text-gray-400">{note.length}/200</p>
               </div>
-            </>
+            </div>
           )}
+        </form>
 
-          {/* Actions */}
-          <div className="flex justify-end gap-3 pt-1">
+        {/* Sticky footer */}
+        <div className="shrink-0 border-t border-gray-100 bg-white px-5 py-4 space-y-3">
+          {selected && (
+            <div className="flex items-center justify-between px-3.5 py-2.5 rounded-2xl bg-gray-50 border border-gray-100">
+              <span className="text-[11px] font-semibold uppercase tracking-wider text-gray-500">Stok setelah retur</span>
+              <div className="flex items-center gap-2 text-sm font-bold">
+                <span className="text-gray-400">{selected.stock}</span>
+                <span className="text-[#D97706]">→</span>
+                <span className={stockAfter > selected.stock ? 'text-[#16A34A]' : 'text-gray-900'}>{stockAfter}</span>
+                {stockAfter > selected.stock && (
+                  <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-[#16A34A]/10 text-[#16A34A]">+{quantity}</span>
+                )}
+              </div>
+            </div>
+          )}
+          <div className="flex gap-3">
             <button
               type="button"
               onClick={onClose}
-              className="px-5 py-3 rounded-xl text-sm font-bold bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 transition active:scale-95"
+              className="flex-1 sm:flex-none px-5 py-3.5 rounded-2xl text-sm font-bold bg-gray-100 text-gray-700 hover:bg-gray-200 transition active:scale-95"
             >
               Batal
             </button>
             <button
               type="submit"
+              form="return-form"
               disabled={loading || !selectedProduct}
-              className="px-6 py-3 rounded-xl text-sm font-bold bg-[#D97706] text-white hover:bg-[#B45309] disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2 transition active:scale-[0.97] shadow-lg shadow-[#D97706]/20"
+              className="flex-1 px-6 py-3.5 rounded-2xl text-sm font-bold bg-gradient-to-r from-[#D97706] to-[#B45309] text-white hover:shadow-lg hover:shadow-[#D97706]/30 disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none flex items-center justify-center gap-2 transition active:scale-[0.97]"
             >
               {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Save className="w-4 h-4" /> Catat Retur</>}
             </button>
           </div>
-        </form>
+        </div>
       </div>
+
+      <style jsx global>{`
+        @keyframes returnFade {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        @keyframes returnSheet {
+          from { opacity: 0; transform: translateY(24px) scale(0.98); }
+          to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+      `}</style>
     </div>
   )
 }
