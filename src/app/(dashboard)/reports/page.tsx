@@ -333,6 +333,9 @@ export default function ReportsPage() {
   const [customFrom, setCustomFrom] = useState('')
   const [customTo, setCustomTo] = useState('')
   const [showDatePicker, setShowDatePicker] = useState(false)
+  const [aiInsight, setAiInsight] = useState('')
+  const [aiLoading, setAiLoading] = useState(false)
+  const [aiError, setAiError] = useState('')
 
   useEffect(() => {
     async function loadData() {
@@ -433,6 +436,34 @@ export default function ReportsPage() {
 
   const lowStock = useMemo(() => products.filter(p => p.stock > 0 && p.stock <= p.minStock), [products])
   const outStock = useMemo(() => products.filter(p => p.stock === 0), [products])
+
+  const handleAiInsight = async () => {
+    setAiLoading(true)
+    setAiError('')
+    setAiInsight('')
+    try {
+      const res = await fetch('/api/ai-insight', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          products,
+          transactions: filteredTransactions,
+          categories,
+          dateRange: rangeLabel,
+        }),
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        setAiError(data.error || 'Gagal mendapatkan insight')
+      } else {
+        setAiInsight(data.insight)
+      }
+    } catch (err: any) {
+      setAiError('Gagal terhubung ke AI. Coba lagi.')
+    } finally {
+      setAiLoading(false)
+    }
+  }
 
 
   if (!mounted) return (
@@ -549,6 +580,65 @@ export default function ReportsPage() {
         <GlassStatCard label="Perputaran Stok" value={Number(stockTurnover) > 0 ? `${stockTurnover}x` : '—'} icon={<RotateCcw className="w-4 h-4" />} accent="text-[#D97706]" accentBg="bg-amber-50" subtitle={Number(stockTurnover) === 0 ? 'Belum ada penjualan' : undefined} />
         <GlassStatCard label="Total Kategori" value={categories.length.toString()} icon={<Tag className="w-4 h-4" />} accent="text-cyan-400" accentBg="bg-cyan-500/10" />
       </div>
+
+      {/* ===== AI INSIGHT ===== */}
+      <GlassPanel>
+        <div className="p-5 border-b border-gray-200">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-lg bg-purple-50 flex items-center justify-center">
+                <Sparkles className="w-4 h-4 text-purple-500" />
+              </div>
+              <div>
+                <h2 className="font-semibold text-gray-900">AI Insight</h2>
+                <p className="text-xs text-gray-500">Analisa otomatis oleh AI berdasarkan data inventory</p>
+              </div>
+            </div>
+            <button
+              onClick={handleAiInsight}
+              disabled={aiLoading}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium bg-purple-50 border border-purple-200 text-purple-700 hover:bg-purple-100 hover:border-purple-300 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+            >
+              {aiLoading ? (
+                <>
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  <span>Menganalisa...</span>
+                </>
+              ) : (
+                <>
+                  <Sparkles className="w-3.5 h-3.5" />
+                  <span>Generate Insight</span>
+                </>
+              )}
+            </button>
+          </div>
+        </div>
+        <div className="p-5">
+          {!aiInsight && !aiLoading && !aiError && (
+            <div className="text-center py-8">
+              <Sparkles className="w-8 h-8 text-purple-300 mx-auto mb-3" />
+              <p className="text-sm text-gray-500">Klik "Generate Insight" untuk mendapatkan analisa AI</p>
+              <p className="text-xs text-gray-400 mt-1">AI akan menganalisa kondisi inventory dan memberikan rekomendasi</p>
+            </div>
+          )}
+          {aiLoading && (
+            <div className="text-center py-8">
+              <Loader2 className="w-6 h-6 text-purple-400 animate-spin mx-auto mb-3" />
+              <p className="text-sm text-gray-500">AI sedang menganalisa data inventory...</p>
+            </div>
+          )}
+          {aiError && (
+            <div className="rounded-xl p-4 bg-red-50 border border-red-200">
+              <p className="text-sm text-red-700">{aiError}</p>
+            </div>
+          )}
+          {aiInsight && (
+            <div className="prose prose-sm max-w-none text-gray-700 [&_h1]:text-lg [&_h1]:font-bold [&_h1]:text-gray-900 [&_h2]:text-base [&_h2]:font-semibold [&_h2]:text-gray-900 [&_h3]:text-sm [&_h3]:font-semibold [&_h3]:text-gray-900 [&_strong]:text-gray-900 [&_li]:text-gray-600 [&_p]:text-gray-600 [&_ul]:space-y-1 [&_ol]:space-y-1">
+              <div dangerouslySetInnerHTML={{ __html: formatMarkdown(aiInsight) }} />
+            </div>
+          )}
+        </div>
+      </GlassPanel>
 
       {/* ===== NILAI PER KATEGORI ===== */}
       <GlassPanel>
