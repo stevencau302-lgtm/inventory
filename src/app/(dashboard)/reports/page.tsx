@@ -572,26 +572,6 @@ export default function ReportsPage() {
         </div>
       </div>
 
-      {/* ===== QUICK ACTIONS ===== */}
-      <div className="flex flex-wrap gap-2.5">
-        <a href="/products/new" className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium bg-indigo-50 border border-indigo-100 text-indigo-600 hover:bg-indigo-100 transition-all">
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
-          Tambah Produk
-        </a>
-        <a href="/transactions/new" className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium bg-emerald-50 border border-emerald-100 text-emerald-600 hover:bg-emerald-100 transition-all">
-          <ArrowDownCircle className="w-4 h-4" />
-          Stok Masuk
-        </a>
-        <a href="/transactions/new" className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium bg-rose-50 border border-rose-100 text-rose-600 hover:bg-rose-100 transition-all">
-          <ArrowUpCircle className="w-4 h-4" />
-          Stok Keluar
-        </a>
-        <button onClick={handleAiInsight} disabled={aiLoading} className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-gradient-to-r from-violet-500 to-purple-500 text-white shadow-lg shadow-purple-500/20 hover:shadow-purple-500/30 hover:scale-[1.02] disabled:opacity-50 transition-all">
-          <Sparkles className="w-4 h-4" />
-          Generate Insight
-        </button>
-      </div>
-
       {/* ===== STAT CARDS (bento grid) ===== */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         {/* Big card - Total Nilai */}
