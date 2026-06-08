@@ -111,3 +111,12 @@
 @keyframes slideOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
 .toast-enter { animation: slideIn 0.3s ease-out; }
 .toast-exit { animation: slideOut 0.3s ease-in forwards; }
+
+/* Hide scrollbar but keep scroll functionality (used for mobile tab bars) */
+.no-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
