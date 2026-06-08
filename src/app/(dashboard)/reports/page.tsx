@@ -363,45 +363,45 @@ function RobotMascot() {
     <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
       {/* Decorative blobs */}
       <circle cx="100" cy="100" r="85" fill="url(#robotBg)" opacity="0.5" />
-      <circle cx="45" cy="60" r="5" fill="#a78bfa" opacity="0.5" />
-      <circle cx="160" cy="80" r="4" fill="#c4b5fd" opacity="0.6" />
-      <circle cx="155" cy="140" r="6" fill="#a78bfa" opacity="0.4" />
+      <circle cx="45" cy="60" r="5" fill="#FF8A3D" opacity="0.5" />
+      <circle cx="160" cy="80" r="4" fill="#FFC79E" opacity="0.6" />
+      <circle cx="155" cy="140" r="6" fill="#FF8A3D" opacity="0.4" />
       {/* Sparkles */}
-      <path d="M40 110 l2 5 5 2 -5 2 -2 5 -2 -5 -5 -2 5 -2 z" fill="#a78bfa" opacity="0.7" />
-      <path d="M165 110 l1.5 4 4 1.5 -4 1.5 -1.5 4 -1.5 -4 -4 -1.5 4 -1.5 z" fill="#c4b5fd" opacity="0.6" />
+      <path d="M40 110 l2 5 5 2 -5 2 -2 5 -2 -5 -5 -2 5 -2 z" fill="#FF8A3D" opacity="0.7" />
+      <path d="M165 110 l1.5 4 4 1.5 -4 1.5 -1.5 4 -1.5 -4 -4 -1.5 4 -1.5 z" fill="#FFC79E" opacity="0.6" />
       {/* Antenna */}
-      <line x1="100" y1="48" x2="100" y2="62" stroke="#8b5cf6" strokeWidth="3" strokeLinecap="round" />
-      <circle cx="100" cy="44" r="6" fill="#8b5cf6" />
-      <circle cx="100" cy="44" r="2.5" fill="#ede9fe" />
+      <line x1="100" y1="48" x2="100" y2="62" stroke="#FF7A28" strokeWidth="3" strokeLinecap="round" />
+      <circle cx="100" cy="44" r="6" fill="#FF7A28" />
+      <circle cx="100" cy="44" r="2.5" fill="#FFF1E6" />
       {/* Head */}
       <rect x="58" y="62" width="84" height="68" rx="24" fill="url(#robotHead)" />
       {/* Face screen */}
-      <rect x="70" y="76" width="60" height="40" rx="16" fill="#1e1b4b" />
+      <rect x="70" y="76" width="60" height="40" rx="16" fill="#072C2C" />
       {/* Eyes */}
       <circle cx="87" cy="96" r="7" fill="#ffffff" />
       <circle cx="113" cy="96" r="7" fill="#ffffff" />
-      <circle cx="88" cy="97" r="3" fill="#1e1b4b" />
-      <circle cx="114" cy="97" r="3" fill="#1e1b4b" />
+      <circle cx="88" cy="97" r="3" fill="#072C2C" />
+      <circle cx="114" cy="97" r="3" fill="#072C2C" />
       {/* Smile */}
-      <path d="M90 106 Q100 112 110 106" stroke="#a78bfa" strokeWidth="2.5" strokeLinecap="round" fill="none" />
+      <path d="M90 106 Q100 112 110 106" stroke="#FF8A3D" strokeWidth="2.5" strokeLinecap="round" fill="none" />
       {/* Ears */}
-      <rect x="50" y="88" width="9" height="20" rx="4" fill="#c4b5fd" />
-      <rect x="141" y="88" width="9" height="20" rx="4" fill="#c4b5fd" />
+      <rect x="50" y="88" width="9" height="20" rx="4" fill="#FFC79E" />
+      <rect x="141" y="88" width="9" height="20" rx="4" fill="#FFC79E" />
       {/* Body */}
       <rect x="70" y="132" width="60" height="34" rx="16" fill="url(#robotBody)" />
-      <circle cx="100" cy="149" r="6" fill="#ede9fe" opacity="0.8" />
+      <circle cx="100" cy="149" r="6" fill="#FFF1E6" opacity="0.8" />
       <defs>
         <linearGradient id="robotBg" x1="15" y1="15" x2="185" y2="185" gradientUnits="userSpaceOnUse">
-          <stop stopColor="#ede9fe" />
-          <stop offset="1" stopColor="#f5f3ff" />
+          <stop stopColor="#FFF1E6" />
+          <stop offset="1" stopColor="#FFF8F2" />
         </linearGradient>
         <linearGradient id="robotHead" x1="58" y1="62" x2="142" y2="130" gradientUnits="userSpaceOnUse">
-          <stop stopColor="#a78bfa" />
-          <stop offset="1" stopColor="#7c3aed" />
+          <stop stopColor="#FF8A3D" />
+          <stop offset="1" stopColor="#FF5F03" />
         </linearGradient>
         <linearGradient id="robotBody" x1="70" y1="132" x2="130" y2="166" gradientUnits="userSpaceOnUse">
-          <stop stopColor="#8b5cf6" />
-          <stop offset="1" stopColor="#6d28d9" />
+          <stop stopColor="#FF7A28" />
+          <stop offset="1" stopColor="#e85503" />
         </linearGradient>
       </defs>
     </svg>
@@ -616,7 +616,7 @@ export default function ReportsPage() {
                       <button
                         key={opt.value}
                         onClick={() => { setDateRange(opt.value); setShowDatePicker(false) }}
-                        className={`w-full text-left px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${dateRange === opt.value ? 'bg-indigo-50 text-indigo-600' : 'text-gray-700 hover:bg-gray-50'}`}
+                        className={`w-full text-left px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${dateRange === opt.value ? 'bg-[#072C2C]/10 text-[#072C2C]' : 'text-gray-700 hover:bg-gray-50'}`}
                       >
                         {opt.label}
                       </button>
@@ -625,10 +625,10 @@ export default function ReportsPage() {
                   <div className="border-t border-gray-100 p-3 space-y-2">
                     <p className="text-[11px] text-gray-500 font-medium uppercase tracking-wider">Custom</p>
                     <div className="grid grid-cols-2 gap-2">
-                      <input type="date" value={customFrom} onChange={e => setCustomFrom(e.target.value)} className="w-full px-2.5 py-2 rounded-lg text-xs bg-gray-50 border border-gray-200 text-gray-700 outline-none focus:border-indigo-400" />
-                      <input type="date" value={customTo} onChange={e => setCustomTo(e.target.value)} className="w-full px-2.5 py-2 rounded-lg text-xs bg-gray-50 border border-gray-200 text-gray-700 outline-none focus:border-indigo-400" />
+                      <input type="date" value={customFrom} onChange={e => setCustomFrom(e.target.value)} className="w-full px-2.5 py-2 rounded-lg text-xs bg-gray-50 border border-gray-200 text-gray-700 outline-none focus:border-[#072C2C]" />
+                      <input type="date" value={customTo} onChange={e => setCustomTo(e.target.value)} className="w-full px-2.5 py-2 rounded-lg text-xs bg-gray-50 border border-gray-200 text-gray-700 outline-none focus:border-[#072C2C]" />
                     </div>
-                    <button onClick={() => { if (customFrom) { setDateRange('custom'); setShowDatePicker(false) } }} disabled={!customFrom} className="w-full py-2 rounded-lg text-xs font-semibold bg-indigo-50 text-indigo-600 hover:bg-indigo-100 disabled:opacity-40 transition-all">Terapkan</button>
+                    <button onClick={() => { if (customFrom) { setDateRange('custom'); setShowDatePicker(false) } }} disabled={!customFrom} className="w-full py-2 rounded-lg text-xs font-semibold bg-[#072C2C]/10 text-[#072C2C] hover:bg-[#072C2C]/15 disabled:opacity-40 transition-all">Terapkan</button>
                   </div>
                 </div>
               </>
