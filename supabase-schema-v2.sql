@@ -1,5 +1,5 @@
 -- ============================================
--- Nexo Inventory — Schema Migration v2
+-- Nexa — Schema Migration v2
 -- TAMBAH user_id + RLS per user
 -- ============================================
 -- Jalankan di Supabase Dashboard → SQL Editor

@@ -2,7 +2,7 @@
 
 import { Transaction, Product, saveTransaction, saveProduct } from './store'
 
-const OFFLINE_QUEUE_KEY = 'nexo_offline_queue'
+const OFFLINE_QUEUE_KEY = 'nexa_offline_queue'
 
 export interface OfflineAction {
   id: string

@@ -27,8 +27,8 @@ interface OpnameItem {
 
 type FilterStatus = 'all' | 'unchecked' | 'match' | 'mismatch'
 
-const STORAGE_KEY = 'nexo_opname_progress'
-const DATE_KEY = 'nexo_opname_date'
+const STORAGE_KEY = 'nexa_opname_progress'
+const DATE_KEY = 'nexa_opname_date'
 
 function loadProgress(): OpnameProgress {
   if (typeof window === 'undefined') return {}

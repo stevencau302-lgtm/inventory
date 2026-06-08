@@ -1,4 +1,4 @@
-const CACHE_NAME = 'nexo-v1'
+const CACHE_NAME = 'nexa-v1'
 const OFFLINE_URL = '/'
 
 // Files to cache for offline shell
