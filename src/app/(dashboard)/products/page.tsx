@@ -79,6 +79,13 @@ export default function ProductsPage() {
     })
   }, [products, transactions])
 
+  // Map stok awal per produk (invariant terhadap transaksi masuk/keluar)
+  const stokAwalMap = useMemo(() => {
+    const m = new Map<string, number>()
+    stockReports.forEach(r => m.set(r.product.id, r.stockAwal))
+    return m
+  }, [stockReports])
+
   // === Filtered transactions ===
   const barangMasuk = useMemo(() => {
     return transactions.filter(t => t.type === 'in')
@@ -100,8 +107,8 @@ export default function ProductsPage() {
     switch (sortBy) {
       case 'name-asc': return a.name.localeCompare(b.name)
       case 'name-desc': return b.name.localeCompare(a.name)
-      case 'stock-asc': return a.stock - b.stock
-      case 'stock-desc': return b.stock - a.stock
+      case 'stock-asc': return (stokAwalMap.get(a.id) ?? 0) - (stokAwalMap.get(b.id) ?? 0)
+      case 'stock-desc': return (stokAwalMap.get(b.id) ?? 0) - (stokAwalMap.get(a.id) ?? 0)
       case 'price-asc': return a.price - b.price
       case 'price-desc': return b.price - a.price
       default: return 0
@@ -299,7 +306,7 @@ export default function ProductsPage() {
                     <th className="border border-gray-200 w-[110px] px-2 py-2.5 text-center text-[11px] font-bold text-gray-500 uppercase tracking-wide">SKU</th>
                     <th className="border border-gray-200 px-3 py-2.5 text-left text-[11px] font-bold text-gray-500 uppercase tracking-wide">Nama Produk</th>
                     <th className="border border-gray-200 w-[120px] px-2 py-2.5 text-center text-[11px] font-bold text-gray-500 uppercase tracking-wide">Kategori</th>
-                    <th className="border border-gray-200 w-[80px] px-2 py-2.5 text-center text-[11px] font-bold text-gray-500 uppercase tracking-wide">Stok</th>
+                    <th className="border border-gray-200 w-[80px] px-2 py-2.5 text-center text-[11px] font-bold text-gray-500 uppercase tracking-wide">Stok Awal</th>
                     <th className="border border-gray-200 w-[140px] px-3 py-2.5 text-right text-[11px] font-bold text-gray-500 uppercase tracking-wide">Harga</th>
                     <th className="border border-gray-200 w-[110px] px-2 py-2.5 text-center text-[11px] font-bold text-gray-500 uppercase tracking-wide">Status</th>
                     <th className="border border-gray-200 w-[80px] px-2 py-2.5 text-center text-[11px] font-bold text-gray-500 uppercase tracking-wide">Aksi</th>
@@ -312,7 +319,7 @@ export default function ProductsPage() {
                       <td className="border border-gray-200 px-2 py-2 text-center text-sm text-gray-700">{p.sku}</td>
                       <td className="border border-gray-200 px-3 py-2 text-left text-sm font-medium text-gray-900 align-middle">{p.name}</td>
                       <td className="border border-gray-200 px-2 py-2 text-center text-xs text-gray-500">{p.category}</td>
-                      <td className="border border-gray-200 px-2 py-2 text-center font-mono text-sm font-medium text-gray-700">{p.stock}</td>
+                      <td className="border border-gray-200 px-2 py-2 text-center font-mono text-sm font-medium text-gray-700">{stokAwalMap.get(p.id) ?? p.stock}</td>
                       <td className="border border-gray-200 px-3 py-2 text-right font-mono text-sm text-gray-700">{formatRp(p.price)}</td>
                       <td className="border border-gray-200 px-2 py-2 text-center"><StatusBadge product={p} /></td>
                       <td className="border border-gray-200 px-2 py-2 text-center">
@@ -354,8 +361,8 @@ export default function ProductsPage() {
                     <div className="flex items-center justify-between mt-3">
                       <div className="flex gap-4">
                         <div>
-                          <p className="text-[10px] text-gray-500 uppercase">Stok</p>
-                          <p className="text-sm font-semibold text-gray-900">{p.stock}</p>
+                          <p className="text-[10px] text-gray-500 uppercase">Stok Awal</p>
+                          <p className="text-sm font-semibold text-gray-900">{stokAwalMap.get(p.id) ?? p.stock}</p>
                         </div>
                         <div>
                           <p className="text-[10px] text-gray-500 uppercase">Harga</p>
