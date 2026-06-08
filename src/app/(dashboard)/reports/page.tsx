@@ -731,9 +731,9 @@ export default function ReportsPage() {
       </div>
 
       {/* ===== NILAI KATEGORI + RINGKASAN TRANSAKSI (side by side) ===== */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-stretch">
         {/* Nilai Per Kategori */}
-        <div className="rounded-2xl border border-gray-200 bg-white shadow-sm overflow-hidden">
+        <div className="rounded-2xl border border-gray-200 bg-white shadow-sm overflow-hidden flex flex-col">
           <div className="px-5 py-4 border-b border-gray-100 flex items-center gap-3">
             <div className="w-8 h-8 rounded-lg bg-violet-50 flex items-center justify-center">
               <PieChart className="w-4 h-4 text-violet-500" />
