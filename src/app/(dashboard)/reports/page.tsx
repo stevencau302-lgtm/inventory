@@ -324,22 +324,42 @@ const RechartsBarChart = dynamic(
 )
 
 
-// Simple markdown to HTML converter
-function formatMarkdown(md: string): string {
-  return md
-    .replace(/^### (.*$)/gm, '<h3>$1</h3>')
-    .replace(/^## (.*$)/gm, '<h2>$1</h2>')
-    .replace(/^# (.*$)/gm, '<h1>$1</h1>')
-    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-    .replace(/\*(.*?)\*/g, '<em>$1</em>')
-    .replace(/^\- (.*$)/gm, '<li>$1</li>')
-    .replace(/^\d+\. (.*$)/gm, '<li>$1</li>')
-    .replace(/(<li>.*<\/li>\n?)+/g, (match) => {
-      return `<ul>${match}</ul>`
-    })
-    .replace(/\n\n/g, '</p><p>')
-    .replace(/\n/g, '<br/>')
-    .replace(/^(.*)$/, '<p>$1</p>')
+// Parse AI markdown into structured sections
+function parseAiSections(md: string): { title: string; items: string[] }[] {
+  const sections: { title: string; items: string[] }[] = []
+  const lines = md.split('\n')
+  let currentSection: { title: string; items: string[] } | null = null
+
+  for (const line of lines) {
+    const trimmed = line.trim()
+    // Detect section headers (## or ### or numbered like "1. **Title**")
+    const headerMatch = trimmed.match(/^#{1,3}\s+(.+)/) || trimmed.match(/^\d+\.\s+\*\*(.+?)\*\*/)
+    if (headerMatch) {
+      if (currentSection) sections.push(currentSection)
+      currentSection = { title: headerMatch[1].replace(/\*\*/g, ''), items: [] }
+    } else if (trimmed.startsWith('- ') || trimmed.startsWith('• ')) {
+      const content = trimmed.replace(/^[-•]\s+/, '').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      if (currentSection) currentSection.items.push(content)
+      else {
+        currentSection = { title: 'Insight', items: [content] }
+      }
+    } else if (trimmed && currentSection) {
+      // Regular paragraph text — add as item
+      const content = trimmed.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      currentSection.items.push(content)
+    } else if (trimmed && !currentSection) {
+      currentSection = { title: 'Ringkasan', items: [trimmed.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')] }
+    }
+  }
+  if (currentSection) sections.push(currentSection)
+  return sections
+}
+
+const sectionIcons: Record<number, { icon: string; color: string; bg: string }> = {
+  0: { icon: '📊', color: 'text-blue-600', bg: 'bg-blue-50 border-blue-200' },
+  1: { icon: '💡', color: 'text-amber-600', bg: 'bg-amber-50 border-amber-200' },
+  2: { icon: '🎯', color: 'text-emerald-600', bg: 'bg-emerald-50 border-emerald-200' },
+  3: { icon: '⚠️', color: 'text-red-600', bg: 'bg-red-50 border-red-200' },
 }
 
 export default function ReportsPage() {
