@@ -30,9 +30,10 @@ export async function middleware(req: NextRequest) {
 
   const isAuthPage = req.nextUrl.pathname.startsWith('/login') || req.nextUrl.pathname.startsWith('/register')
   const isDemoPage = req.nextUrl.pathname.startsWith('/demo')
+  const isLandingPage = req.nextUrl.pathname.startsWith('/landing')
 
-  // Not logged in → redirect to login (except demo page)
-  if (!session && !isAuthPage && !isDemoPage) {
+  // Not logged in → redirect to login (except demo & landing page)
+  if (!session && !isAuthPage && !isDemoPage && !isLandingPage) {
     const redirectUrl = new URL('/login', req.url)
     return NextResponse.redirect(redirectUrl)
   }
