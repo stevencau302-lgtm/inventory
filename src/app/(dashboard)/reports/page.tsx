@@ -774,26 +774,29 @@ export default function ReportsPage() {
             </div>
           )}
           {!aiInsight && !aiLoading && !aiError && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="flex items-start gap-4 p-4 rounded-xl bg-gray-50 border border-gray-100">
-                <div className="w-12 h-12 rounded-xl bg-violet-100 flex items-center justify-center shrink-0">
-                  <Sparkles className="w-6 h-6 text-violet-500" />
-                </div>
-                <div>
-                  <h3 className="text-sm font-semibold text-gray-900 mb-2">Belum ada insight tersedia</h3>
-                  <p className="text-xs text-gray-500 mb-3">Yuk mulai transaksi untuk mendapatkan analisa AI yang membantu.</p>
-                  <p className="text-xs font-medium text-gray-600 mb-1.5">Tips memulai:</p>
-                  <ul className="space-y-1">
-                    <li className="text-xs text-gray-500 flex items-center gap-1.5"><span className="w-1 h-1 rounded-full bg-gray-400" />Tambahkan produk pertama kamu</li>
-                    <li className="text-xs text-gray-500 flex items-center gap-1.5"><span className="w-1 h-1 rounded-full bg-gray-400" />Catat stok masuk</li>
-                    <li className="text-xs text-gray-500 flex items-center gap-1.5"><span className="w-1 h-1 rounded-full bg-gray-400" />Lakukan transaksi keluar</li>
-                    <li className="text-xs text-gray-500 flex items-center gap-1.5"><span className="w-1 h-1 rounded-full bg-gray-400" />AI akan memberikan insight setelah minimal 5 transaksi</li>
-                  </ul>
-                </div>
+            <div className="flex flex-col lg:flex-row items-center gap-6">
+              {/* Robot illustration */}
+              <div className="w-32 h-32 sm:w-40 sm:h-40 shrink-0">
+                <RobotMascot />
               </div>
-              <div className="p-4 rounded-xl bg-gray-50 border border-gray-100">
-                <p className="text-xs font-medium text-gray-600 mb-3">Insight akan membantu kamu:</p>
-                <div className="space-y-2">
+              {/* Tips */}
+              <div className="flex-1 min-w-0">
+                <h3 className="text-base font-bold text-gray-900 mb-1">Belum ada insight tersedia</h3>
+                <p className="text-xs text-gray-500 mb-3">Yuk mulai transaksi untuk mendapatkan analisa AI yang membantu!</p>
+                <p className="text-xs font-semibold text-gray-700 mb-2">Tips memulai:</p>
+                <ul className="space-y-1.5">
+                  {['Tambahkan produk pertama kamu', 'Catat stok masuk', 'Lakukan transaksi keluar', 'AI akan memberikan insight setelah minimal 5 transaksi'].map((t, i) => (
+                    <li key={i} className="text-xs text-gray-500 flex items-start gap-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-violet-400 shrink-0 mt-1.5" />
+                      <span>{t}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              {/* Benefits box */}
+              <div className="w-full lg:w-64 shrink-0 p-4 rounded-xl bg-violet-50/60 border border-violet-100">
+                <p className="text-xs font-semibold text-gray-700 mb-3">Insight akan membantu kamu:</p>
+                <div className="space-y-2.5">
                   {['Mendeteksi slow moving item', 'Memprediksi kebutuhan stok', 'Mengoptimalkan nilai inventory', 'Mencegah kehabisan stok'].map((t, i) => (
                     <div key={i} className="flex items-center gap-2">
                       <svg className="w-4 h-4 text-emerald-500 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
