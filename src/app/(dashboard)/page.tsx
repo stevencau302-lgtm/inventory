@@ -327,34 +327,39 @@ function Greeting({ transactions, totalValue, rangeDays, onRangeChange }: { tran
 
 function HealthCard({ score, className = '' }: { score: number; className?: string }) {
   const status = score >= 80
-    ? { label: 'Inventory Sehat', color: 'text-emerald-600', dot: 'bg-emerald-500', bar: 'from-emerald-400 to-emerald-500', iconBg: 'bg-emerald-50 text-emerald-500', msg: 'Bagus! Pertahankan kondisi inventory kamu.' }
+    ? { label: 'Inventory Sehat', badge: 'bg-emerald-400/20 text-emerald-50', dot: 'bg-emerald-300', bar: 'from-emerald-300 to-emerald-400', msg: 'Bagus! Pertahankan kondisi inventory kamu.' }
     : score >= 50
-      ? { label: 'Perlu Perhatian', color: 'text-amber-600', dot: 'bg-amber-500', bar: 'from-amber-400 to-amber-500', iconBg: 'bg-amber-50 text-amber-500', msg: 'Beberapa produk perlu direstock segera.' }
-      : { label: 'Kondisi Kritis', color: 'text-red-600', dot: 'bg-red-500', bar: 'from-red-400 to-red-500', iconBg: 'bg-red-50 text-red-500', msg: 'Banyak produk kehabisan stok, segera tindak lanjuti.' }
+      ? { label: 'Perlu Perhatian', badge: 'bg-amber-400/20 text-amber-50', dot: 'bg-amber-300', bar: 'from-amber-300 to-amber-400', msg: 'Beberapa produk perlu direstock segera.' }
+      : { label: 'Kondisi Kritis', badge: 'bg-red-400/20 text-red-50', dot: 'bg-red-300', bar: 'from-red-300 to-red-400', msg: 'Banyak produk kehabisan stok, segera tindak lanjuti.' }
 
   return (
-    <div className={`rounded-2xl bg-white border border-gray-200 p-5 flex flex-col shadow-sm ${className}`}>
-      <div className="flex items-start justify-between">
-        <div className="flex items-center gap-1.5">
-          <h3 className="text-sm font-semibold text-gray-900">Kesehatan Inventory</h3>
-          <svg className="w-3.5 h-3.5 text-gray-300" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z" /></svg>
+    <div className={`relative overflow-hidden rounded-2xl p-5 sm:p-6 bg-gradient-to-br from-[#0F4C4C] to-[#072C2C] text-white shadow-lg shadow-[#072C2C]/20 ${className}`}>
+      <div className="absolute top-0 right-0 w-40 h-40 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/4" />
+      <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/4" />
+      <div className="relative flex flex-col h-full">
+        <div className="flex items-center justify-between mb-4">
+          <p className="text-sm font-medium text-white/70">Kesehatan Inventory</p>
+          <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center">
+            <Activity className="w-5 h-5 text-white/80" />
+          </div>
         </div>
-        <span className={`w-11 h-11 rounded-xl flex items-center justify-center ${status.iconBg}`}>
-          <Activity className="w-5 h-5" />
-        </span>
+        <div className="flex items-end gap-1 mb-3">
+          <span className="text-3xl sm:text-4xl font-extrabold leading-none">{score}</span>
+          <span className="text-white/50 text-lg font-semibold mb-0.5">/100</span>
+        </div>
+        <div className="flex flex-wrap items-center gap-2 mb-auto">
+          <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold ${status.badge}`}>
+            <span className={`w-2 h-2 rounded-full ${status.dot}`} />
+            <span>{status.label}</span>
+          </div>
+        </div>
+        <div className="mt-4 pt-4 border-t border-white/15">
+          <div className="w-full h-2 rounded-full bg-white/15 overflow-hidden">
+            <div className={`h-full rounded-full bg-gradient-to-r transition-all duration-700 ${status.bar}`} style={{ width: `${score}%` }} />
+          </div>
+          <p className="text-[12px] text-white/60 mt-3">{status.msg}</p>
+        </div>
       </div>
-      <div className="mt-3 flex items-end gap-1">
-        <span className={`text-4xl font-bold ${status.color} leading-none`}>{score}</span>
-        <span className="text-gray-400 text-lg font-semibold mb-0.5">/100</span>
-      </div>
-      <div className="flex items-center gap-1.5 mt-2">
-        <span className={`w-2 h-2 rounded-full ${status.dot}`} />
-        <span className={`text-[12px] font-semibold ${status.color}`}>{status.label}</span>
-      </div>
-      <div className="w-full h-2 rounded-full bg-gray-100 overflow-hidden mt-3">
-        <div className={`h-full rounded-full bg-gradient-to-r transition-all duration-700 ${status.bar}`} style={{ width: `${score}%` }} />
-      </div>
-      <p className="text-[12px] text-gray-500 mt-3">{status.msg}</p>
     </div>
   )
 }
