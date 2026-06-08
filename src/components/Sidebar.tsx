@@ -26,6 +26,7 @@ const navItems = [
   { href: '/products', label: 'Produk & Stok', icon: Package },
   { href: '/stock-opname', label: 'Stok Opname', icon: ClipboardCheck },
   { href: '/reports', label: 'Analisa', icon: BarChart3 },
+  { href: '/ai-chat', label: 'AI Asisten', icon: MessageSquare },
   { href: '/settings', label: 'Pengaturan', icon: Settings },
 ]
 
