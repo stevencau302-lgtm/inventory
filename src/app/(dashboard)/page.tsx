@@ -83,22 +83,43 @@ export default function Dashboard() {
       {/* Greeting */}
       <Greeting transactions={transactions} totalValue={totalValue} rangeDays={rangeDays} onRangeChange={setRangeDays} />
 
-      {/* Row 1: Health Score + Quick Action */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
-        <HealthCard score={healthScore} className="lg:col-span-7" />
-        <QuickAction className="lg:col-span-5" />
-      </div>
+      {/* Row 1: Health Score */}
+      <HealthCard score={healthScore} />
 
       {/* Stat Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        <StatCard border="border-l-[#072C2C]" label="Total produk"
-          value={String(totalProducts)} trend={newProductsThisWeek > 0 ? `+${newProductsThisWeek} minggu ini` : 'Tidak ada produk baru'} trendUp={newProductsThisWeek > 0} />
-        <StatCard border="border-l-[#FF5F03]" label="Nilai inventory"
-          value={formatRp(totalValue)} trend="Total nilai stok saat ini" trendUp />
-        <StatCard border="border-l-[#D97706]" label="Stok menipis"
-          value={String(lowStock)} trend={lowStock === 0 ? 'Semua stok aman' : 'Perlu restock segera'} trendUp={lowStock === 0} />
-        <StatCard border="border-l-[#DC2626]" label="Stok habis"
-          value={String(outOfStock)} trend={outOfStock === 0 ? 'Semua stok tersedia' : 'Produk tidak tersedia'} trendUp={outOfStock === 0} />
+        <MetricCard
+          label="Total produk"
+          value={String(totalProducts)}
+          icon={<Package className="w-4 h-4 text-[#072C2C]" />}
+          iconTint="bg-[#072C2C]/10"
+          sub={newProductsThisWeek > 0 ? `+${newProductsThisWeek} minggu ini` : 'Tidak ada produk baru'}
+          subColor={newProductsThisWeek > 0 ? 'text-emerald-500' : 'text-gray-400'}
+        />
+        <MetricCard
+          label="Nilai inventory"
+          value={formatRp(totalValue)}
+          icon={<DollarSign className="w-4 h-4 text-[#FF5F03]" />}
+          iconTint="bg-[#FF5F03]/10"
+          sub="Total nilai stok saat ini"
+          subColor="text-gray-400"
+        />
+        <MetricCard
+          label="Stok menipis"
+          value={String(lowStock)}
+          icon={<AlertTriangle className="w-4 h-4 text-[#D97706]" />}
+          iconTint="bg-amber-50"
+          sub={lowStock === 0 ? 'Semua stok aman' : 'Perlu restock segera'}
+          subColor={lowStock === 0 ? 'text-emerald-500' : 'text-amber-500'}
+        />
+        <MetricCard
+          label="Stok habis"
+          value={String(outOfStock)}
+          icon={<XCircle className="w-4 h-4 text-[#DC2626]" />}
+          iconTint="bg-red-50"
+          sub={outOfStock === 0 ? 'Semua stok tersedia' : 'Produk tidak tersedia'}
+          subColor={outOfStock === 0 ? 'text-emerald-500' : 'text-red-500'}
+        />
       </div>
 
       {/* Restock status banner */}
@@ -364,64 +385,15 @@ function HealthCard({ score, className = '' }: { score: number; className?: stri
   )
 }
 
-function QuickAction({ className = '' }: { className?: string }) {
-  const actions = [
-    { label: 'Tambah Produk', href: '/products/new', icon: <Plus className="w-5 h-5" />, tint: 'bg-[#072C2C]/10 text-[#072C2C] group-hover:bg-[#072C2C] group-hover:text-white' },
-    { label: 'Stok Masuk', href: '/transactions/new', icon: <ArrowDownToLine className="w-5 h-5" />, tint: 'bg-emerald-50 text-emerald-500 group-hover:bg-emerald-500 group-hover:text-white' },
-    { label: 'Stok Keluar', href: '/transactions/new', icon: <ArrowUpFromLine className="w-5 h-5" />, tint: 'bg-orange-50 text-orange-500 group-hover:bg-orange-500 group-hover:text-white' },
-    { label: 'Generate Insight', href: '/ai-chat', icon: <Sparkles className="w-5 h-5" />, tint: 'bg-[#FF5F03]/10 text-[#FF5F03] group-hover:bg-[#FF5F03] group-hover:text-white' },
-  ]
+function MetricCard({ label, value, icon, iconTint, sub, subColor }: { label: string; value: string; icon: React.ReactNode; iconTint: string; sub: string; subColor: string }) {
   return (
-    <div className={`rounded-2xl bg-white border border-gray-200 p-5 shadow-sm ${className}`}>
-      <h3 className="text-sm font-semibold text-gray-900 mb-4">Quick Action</h3>
-      <div className="grid grid-cols-4 gap-2">
-        {actions.map(a => (
-          <Link key={a.label} href={a.href} className="group flex flex-col items-center gap-2 p-3 rounded-xl border border-gray-100 hover:border-gray-200 hover:shadow-sm hover:-translate-y-0.5 transition-all duration-200 text-center">
-            <span className={`w-11 h-11 rounded-xl flex items-center justify-center transition-colors ${a.tint}`}>{a.icon}</span>
-            <span className="text-[10px] font-medium text-gray-600 leading-tight">{a.label}</span>
-          </Link>
-        ))}
+    <div className="rounded-2xl p-4 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-all">
+      <div className="flex items-center justify-between mb-3">
+        <p className="text-xs font-medium text-gray-500">{label}</p>
+        <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${iconTint}`}>{icon}</div>
       </div>
-    </div>
-  )
-}
-
-function useCountUp(end: number, duration: number = 1000) {
-  const [count, setCount] = useState(0)
-  useEffect(() => {
-    if (end === 0) { setCount(0); return }
-    const startTime = performance.now()
-    const step = (currentTime: number) => {
-      const elapsed = currentTime - startTime
-      const progress = Math.min(elapsed / duration, 1)
-      const eased = 1 - Math.pow(1 - progress, 3)
-      setCount(Math.floor(eased * end))
-      if (progress < 1) requestAnimationFrame(step)
-    }
-    requestAnimationFrame(step)
-  }, [end, duration])
-  return count
-}
-
-function AnimatedValue({ value }: { value: string }) {
-  const isRupiah = value.includes('Rp')
-  const num = parseInt(value.replace(/[^\d]/g, '')) || 0
-  const animated = useCountUp(num)
-  if (isRupiah && num > 0) return <>{formatRp(animated)}</>
-  if (/^\d+$/.test(value)) return <>{animated}</>
-  return <>{value}</>
-}
-
-function StatCard({ border, label, value, trend, trendUp }: { border: string; label: string; value: string; trend: string; trendUp: boolean }) {
-  return (
-    <div className={`rounded-xl p-3.5 bg-white border border-gray-200 border-l-4 ${border} shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200`}>
-      <p className="text-[9px] text-gray-500 font-bold uppercase tracking-wider mb-1">{label}</p>
-      <p className="text-lg font-bold text-gray-900">
-        <AnimatedValue value={value} />
-      </p>
-      <p className={`text-[10px] mt-1 flex items-center gap-0.5 font-medium ${trendUp ? 'text-emerald-500' : 'text-amber-500'}`}>
-        {trendUp && <span className="text-[9px]">▲</span>}{trend}
-      </p>
+      <p className="text-2xl font-bold text-gray-900 truncate">{value}</p>
+      <p className={`text-[11px] mt-1 font-medium ${subColor}`}>{sub}</p>
     </div>
   )
 }
