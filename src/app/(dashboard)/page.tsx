@@ -83,102 +83,47 @@ export default function Dashboard() {
       {/* Greeting */}
       <Greeting transactions={transactions} totalValue={totalValue} rangeDays={rangeDays} onRangeChange={setRangeDays} />
 
-      {/* ===== STAT CARDS (bento grid) — sama seperti Analisa ===== */}
+      {/* ===== Bento grid: layout seperti Analisa, konten dashboard ===== */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        {/* Big card - Total Nilai */}
-        <div className="col-span-2 lg:col-span-2 lg:row-span-2 relative overflow-hidden rounded-2xl p-5 sm:p-6 bg-gradient-to-br from-[#0F4C4C] to-[#072C2C] text-white shadow-lg shadow-[#072C2C]/20">
-          <div className="absolute top-0 right-0 w-40 h-40 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/4" />
-          <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/4" />
-          <div className="relative flex flex-col h-full">
-            <div className="flex items-center justify-between mb-4">
-              <p className="text-sm font-medium text-white/70">Total Nilai Inventory</p>
-              <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center">
-                <DollarSign className="w-5 h-5 text-white/80" />
-              </div>
-            </div>
-            <p className="text-3xl sm:text-4xl font-extrabold mb-3">{formatRp(totalValue)}</p>
-            <div className="flex flex-wrap items-center gap-2 mb-auto">
-              <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold ${valueTrend >= 0 ? 'bg-emerald-400/20 text-emerald-50' : 'bg-red-400/20 text-red-50'}`}>
-                {valueTrend >= 0 ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
-                <span>{valueTrend >= 0 ? '+' : ''}{formatRp(Math.abs(valueTrend))}</span>
-              </div>
-              <span className="text-[11px] text-white/50">arus nilai {rangeLabel.toLowerCase()}</span>
-            </div>
-            {/* Mini breakdown */}
-            <div className="mt-4 pt-4 border-t border-white/15 grid grid-cols-2 gap-3">
-              <div>
-                <p className="text-[10px] text-white/50 uppercase tracking-wider mb-0.5">Produk Aktif</p>
-                <p className="text-lg font-bold">{inStockCount}<span className="text-xs font-normal text-white/60">/{products.length}</span></p>
-              </div>
-              <div>
-                <p className="text-[10px] text-white/50 uppercase tracking-wider mb-0.5">Kategori Teratas</p>
-                <p className="text-lg font-bold truncate">{topCategoryName || '—'}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-        {/* Total Unit */}
-        <div className="rounded-2xl p-4 bg-white border border-gray-200 shadow-sm hover:shadow-md hover:border-blue-200 transition-all">
-          <div className="flex items-center justify-between mb-3">
-            <p className="text-xs font-medium text-gray-500">Total Unit</p>
-            <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center">
-              <Package className="w-4 h-4 text-blue-500" />
-            </div>
-          </div>
-          <p className="text-2xl font-bold text-gray-900">{totalItems.toLocaleString()}</p>
-          <p className="text-[11px] mt-1 flex items-center gap-1">
-            {outStock.length > 0 ? (
-              <span className="text-red-500 font-medium">{outStock.length} produk habis</span>
-            ) : lowStock.length > 0 ? (
-              <span className="text-amber-500 font-medium">{lowStock.length} stok menipis</span>
-            ) : (
-              <span className="text-emerald-500 font-medium">semua stok aman</span>
-            )}
-          </p>
-        </div>
-        {/* Total Kategori */}
-        <div className="rounded-2xl p-4 bg-white border border-gray-200 shadow-sm hover:shadow-md hover:border-[#072C2C]/20 transition-all">
-          <div className="flex items-center justify-between mb-3">
-            <p className="text-xs font-medium text-gray-500">Total Kategori</p>
-            <div className="w-8 h-8 rounded-lg bg-[#072C2C]/10 flex items-center justify-center">
-              <Tag className="w-4 h-4 text-[#072C2C]" />
-            </div>
-          </div>
-          <p className="text-2xl font-bold text-gray-900">{categories.length}</p>
-          <p className="text-[11px] text-gray-400 mt-1 truncate">
-            {topCategoryName ? <>terbesar: <span className="text-gray-600 font-medium">{topCategoryName}</span></> : 'belum ada nilai'}
-          </p>
-        </div>
-        {/* Dead Stock */}
-        <div className="rounded-2xl p-4 bg-white border border-gray-200 shadow-sm hover:shadow-md hover:border-amber-200 transition-all">
-          <div className="flex items-center justify-between mb-3">
-            <p className="text-xs font-medium text-gray-500">Dead Stock</p>
-            <div className="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center">
-              <Skull className="w-4 h-4 text-amber-500" />
-            </div>
-          </div>
-          <p className="text-2xl font-bold text-gray-900">{deadStock.length}</p>
-          <p className="text-[11px] mt-1">
-            {deadStock.length > 0 ? (
-              <span className="text-amber-500 font-medium">{formatRp(deadStockValue)} tertahan</span>
-            ) : (
-              <span className="text-emerald-500 font-medium">tidak ada 🎉</span>
-            )}
-          </p>
-        </div>
-        {/* Rata-rata Harga */}
-        <div className="rounded-2xl p-4 bg-white border border-gray-200 shadow-sm hover:shadow-md hover:border-emerald-200 transition-all">
-          <div className="flex items-center justify-between mb-3">
-            <p className="text-xs font-medium text-gray-500">Rata-rata Harga</p>
-            <div className="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center">
-              <PieChart className="w-4 h-4 text-emerald-500" />
-            </div>
-          </div>
-          <p className="text-2xl font-bold text-gray-900">{formatRp(avgPrice)}</p>
-          <p className="text-[11px] text-gray-400 mt-1 truncate">
-            {priceRange ? <>rentang {formatRp(priceRange.min)} – {formatRp(priceRange.max)}</> : 'belum ada produk'}
-          </p>
-        </div>
+        {/* Big card - Kesehatan Inventory */}
+        <HealthCard score={healthScore} className="col-span-2 lg:col-span-2 lg:row-span-2" />
+
+        {/* Total produk */}
+        <MetricCard
+          label="Total produk"
+          value={String(totalProducts)}
+          icon={<Package className="w-4 h-4 text-[#072C2C]" />}
+          iconTint="bg-[#072C2C]/10"
+          sub={newProductsThisWeek > 0 ? `+${newProductsThisWeek} minggu ini` : 'Tidak ada produk baru'}
+          subColor={newProductsThisWeek > 0 ? 'text-emerald-500' : 'text-gray-400'}
+        />
+        {/* Nilai inventory */}
+        <MetricCard
+          label="Nilai inventory"
+          value={formatRp(totalValue)}
+          icon={<DollarSign className="w-4 h-4 text-[#FF5F03]" />}
+          iconTint="bg-[#FF5F03]/10"
+          sub="Total nilai stok saat ini"
+          subColor="text-gray-400"
+        />
+        {/* Stok menipis */}
+        <MetricCard
+          label="Stok menipis"
+          value={String(lowStock)}
+          icon={<AlertTriangle className="w-4 h-4 text-[#D97706]" />}
+          iconTint="bg-amber-50"
+          sub={lowStock === 0 ? 'Semua stok aman' : 'Perlu restock segera'}
+          subColor={lowStock === 0 ? 'text-emerald-500' : 'text-amber-500'}
+        />
+        {/* Stok habis */}
+        <MetricCard
+          label="Stok habis"
+          value={String(outOfStock)}
+          icon={<XCircle className="w-4 h-4 text-[#DC2626]" />}
+          iconTint="bg-red-50"
+          sub={outOfStock === 0 ? 'Semua stok tersedia' : 'Produk tidak tersedia'}
+          subColor={outOfStock === 0 ? 'text-emerald-500' : 'text-red-500'}
+        />
       </div>
 
       {/* Restock status banner */}
