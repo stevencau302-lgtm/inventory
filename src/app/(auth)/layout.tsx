@@ -2,7 +2,9 @@
 
 import CurtainAnimation from '@/components/auth/CurtainAnimation'
 import { motion } from 'framer-motion'
-import { Box } from 'lucide-react'
+import Image from 'next/image'
+
+const LOGO_URL = 'https://res.cloudinary.com/dqjh7utdb/image/upload/v1780900133/ir2utm5qy58xshaoij3m.webp'
 
 function FloatingParticles() {
   return (
@@ -76,8 +78,15 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
               transition={{ delay: 1.4, duration: 0.6 }}
               className="mb-8 flex justify-center"
             >
-              <div className="w-20 h-20 rounded-3xl bg-[#F59E0B]/10 border border-[#F59E0B]/20 flex items-center justify-center backdrop-blur-sm">
-                <Box className="w-10 h-10 text-[#F59E0B]" strokeWidth={1.5} />
+              <div className="w-20 h-20 rounded-3xl overflow-hidden shadow-2xl shadow-[#F59E0B]/20">
+                <Image
+                  src={LOGO_URL}
+                  alt="Nexa"
+                  width={80}
+                  height={80}
+                  className="w-full h-full object-cover"
+                  unoptimized
+                />
               </div>
             </motion.div>
 
@@ -140,8 +149,15 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
 
           {/* Mobile logo (shown only on mobile) */}
           <div className="absolute top-6 left-6 flex items-center gap-2 lg:hidden">
-            <div className="w-8 h-8 rounded-lg bg-[#F59E0B]/10 border border-[#F59E0B]/20 flex items-center justify-center">
-              <Box className="w-4 h-4 text-[#F59E0B]" />
+            <div className="w-8 h-8 rounded-lg overflow-hidden">
+              <Image
+                src={LOGO_URL}
+                alt="Nexa"
+                width={32}
+                height={32}
+                className="w-full h-full object-cover"
+                unoptimized
+              />
             </div>
             <span className="text-sm font-bold text-white">Nexa</span>
           </div>
