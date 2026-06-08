@@ -470,6 +470,28 @@ export default function ReportsPage() {
   const lowStock = useMemo(() => products.filter(p => p.stock > 0 && p.stock <= p.minStock), [products])
   const outStock = useMemo(() => products.filter(p => p.stock === 0), [products])
 
+  // ── Dynamic stat descriptions based on real data ──
+  const topCategoryName = useMemo(() => topCategory.length > 0 && topCategory[0].value > 0 ? topCategory[0].name : null, [topCategory])
+  const deadStockValue = useMemo(() => deadStock.reduce((s, p) => s + p.price * p.stock, 0), [deadStock])
+  const inStockCount = useMemo(() => products.filter(p => p.stock > 0).length, [products])
+  const valueTrend = useMemo(() => {
+    // Estimate value change based on net transactions in range
+    const inValue = filteredTransactions.filter(t => t.type === 'in').reduce((s, t) => {
+      const p = products.find(pr => pr.id === t.productId)
+      return s + (p ? p.price * t.quantity : 0)
+    }, 0)
+    const outValue = filteredTransactions.filter(t => t.type === 'out').reduce((s, t) => {
+      const p = products.find(pr => pr.id === t.productId)
+      return s + (p ? p.price * t.quantity : 0)
+    }, 0)
+    return inValue - outValue
+  }, [filteredTransactions, products])
+  const priceRange = useMemo(() => {
+    if (products.length === 0) return null
+    const prices = products.map(p => p.price)
+    return { min: Math.min(...prices), max: Math.max(...prices) }
+  }, [products])
+
   const handleAiInsight = async () => {
     setAiLoading(true)
     setAiError('')
