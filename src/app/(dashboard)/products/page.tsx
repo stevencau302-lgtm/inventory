@@ -235,19 +235,19 @@ export default function ProductsPage() {
       </div>
 
       {/* Tab Bar */}
-      <div className="flex gap-1 p-1 rounded-xl bg-white border border-gray-200">
+      <div className="flex gap-1 p-1 rounded-xl bg-white border border-gray-200 overflow-x-auto no-scrollbar">
         {tabs.map(tab => (
           <button
             key={tab.key}
             onClick={() => setActiveTab(tab.key)}
-            className={`flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm transition flex items-center justify-center gap-2 ${
+            className={`shrink-0 px-3.5 py-2 rounded-lg text-[13px] transition flex items-center justify-center gap-2 whitespace-nowrap ${
               activeTab === tab.key
                 ? 'bg-[#072C2C] text-white font-bold shadow-lg shadow-[#072C2C]/20'
                 : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'
             }`}
           >
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d={tab.icon} /></svg>
-            <span className="hidden sm:inline">{tab.label}</span>
+            <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d={tab.icon} /></svg>
+            <span>{tab.label}</span>
           </button>
         ))}
       </div>
