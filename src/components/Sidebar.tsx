@@ -14,6 +14,7 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
   MessageSquare,
+  RotateCcw,
 } from 'lucide-react'
 import { getSetting, saveSetting } from '@/lib/store'
 import { useAuth } from '@/components/AuthProvider'
@@ -42,6 +43,7 @@ const navItems = [
   { href: '/', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/products', label: 'Produk & Stok', icon: Package },
   { href: '/stock-opname', label: 'Stok Opname', icon: ClipboardCheck },
+  { href: '/returns', label: 'Retur', icon: RotateCcw },
   { href: '/reports', label: 'Analisa', icon: BarChart3 },
   { href: '/ai-chat', label: 'AI Asisten', icon: MessageSquare },
   { href: '/settings', label: 'Pengaturan', icon: Settings },
