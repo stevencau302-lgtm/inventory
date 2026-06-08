@@ -325,6 +325,7 @@ const RechartsBarChart = dynamic(
 
 
 // Parse AI markdown into structured sections
+// Parse AI markdown into structured sections with better formatting
 function parseAiSections(md: string): { title: string; items: string[] }[] {
   const sections: { title: string; items: string[] }[] = []
   const lines = md.split('\n')
@@ -332,34 +333,28 @@ function parseAiSections(md: string): { title: string; items: string[] }[] {
 
   for (const line of lines) {
     const trimmed = line.trim()
-    // Detect section headers (## or ### or numbered like "1. **Title**")
-    const headerMatch = trimmed.match(/^#{1,3}\s+(.+)/) || trimmed.match(/^\d+\.\s+\*\*(.+?)\*\*/)
+    if (!trimmed) continue
+    
+    // Detect section headers
+    const headerMatch = trimmed.match(/^#{1,3}\s+(.+)/) || trimmed.match(/^\d+\.\s+\*\*(.+?)\*\*\s*$/)
     if (headerMatch) {
-      if (currentSection) sections.push(currentSection)
+      if (currentSection && currentSection.items.length > 0) sections.push(currentSection)
       currentSection = { title: headerMatch[1].replace(/\*\*/g, ''), items: [] }
-    } else if (trimmed.startsWith('- ') || trimmed.startsWith('• ')) {
-      const content = trimmed.replace(/^[-•]\s+/, '').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    } else if (trimmed.startsWith('- ') || trimmed.startsWith('• ') || trimmed.match(/^\d+\.\s/)) {
+      const content = trimmed.replace(/^[-•]\s+/, '').replace(/^\d+\.\s+/, '').replace(/\*\*(.*?)\*\*/g, '<strong class="text-gray-900">$1</strong>')
       if (currentSection) currentSection.items.push(content)
       else {
         currentSection = { title: 'Insight', items: [content] }
       }
-    } else if (trimmed && currentSection) {
-      // Regular paragraph text — add as item
-      const content = trimmed.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    } else if (currentSection) {
+      const content = trimmed.replace(/\*\*(.*?)\*\*/g, '<strong class="text-gray-900">$1</strong>')
       currentSection.items.push(content)
-    } else if (trimmed && !currentSection) {
-      currentSection = { title: 'Ringkasan', items: [trimmed.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')] }
+    } else {
+      currentSection = { title: 'Ringkasan', items: [trimmed.replace(/\*\*(.*?)\*\*/g, '<strong class="text-gray-900">$1</strong>')] }
     }
   }
-  if (currentSection) sections.push(currentSection)
+  if (currentSection && currentSection.items.length > 0) sections.push(currentSection)
   return sections
-}
-
-const sectionIcons: Record<number, { icon: string; color: string; bg: string }> = {
-  0: { icon: '📊', color: 'text-blue-600', bg: 'bg-blue-50 border-blue-200' },
-  1: { icon: '💡', color: 'text-amber-600', bg: 'bg-amber-50 border-amber-200' },
-  2: { icon: '🎯', color: 'text-emerald-600', bg: 'bg-emerald-50 border-emerald-200' },
-  3: { icon: '⚠️', color: 'text-red-600', bg: 'bg-red-50 border-red-200' },
 }
 
 export default function ReportsPage() {
