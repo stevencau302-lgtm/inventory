@@ -349,10 +349,10 @@ export default function StockOpnamePage() {
           <input type="text" placeholder="Cari produk atau SKU..." value={search} onChange={e => setSearch(e.target.value)}
             className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-white border border-gray-200 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#072C2C] transition" />
         </div>
-        <div className="flex gap-1 p-1 rounded-xl bg-white border border-gray-200">
+        <div className="grid grid-cols-4 sm:flex gap-1 p-1 rounded-xl bg-white border border-gray-200">
           {filterTabs.map(tab => (
             <button key={tab.key} onClick={() => setFilterStatus(tab.key)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
+              className={`flex items-center justify-center gap-1.5 px-2 sm:px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
                 filterStatus === tab.key ? 'bg-[#072C2C] text-white' : 'text-gray-500 hover:bg-gray-50'
               }`}>
               {tab.label}
@@ -376,70 +376,74 @@ export default function StockOpnamePage() {
                 isMatch ? 'bg-emerald-50/40 border-emerald-100' :
                 'bg-white border-gray-200 hover:border-gray-300'
               }`}>
-              <div className="p-3.5 flex items-center gap-3">
-                {/* Status indicator */}
-                <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${
-                  isMismatch ? 'bg-red-100 text-red-500' :
-                  isMatch ? 'bg-emerald-100 text-emerald-600' :
-                  'bg-[#072C2C]/10 text-[#072C2C]'
-                }`}>
-                  {isMismatch ? (item.difference > 0 ? <ArrowUp className="w-4 h-4" /> : <ArrowDown className="w-4 h-4" />) :
-                   isMatch ? <CheckCircle2 className="w-4 h-4" /> :
-                   <Package className="w-4 h-4" />}
+              <div className="p-3 sm:p-3.5 flex flex-col sm:flex-row sm:items-center gap-3">
+                {/* Info */}
+                <div className="flex items-center gap-3 min-w-0 flex-1">
+                  <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${
+                    isMismatch ? 'bg-red-100 text-red-500' :
+                    isMatch ? 'bg-emerald-100 text-emerald-600' :
+                    'bg-[#072C2C]/10 text-[#072C2C]'
+                  }`}>
+                    {isMismatch ? (item.difference > 0 ? <ArrowUp className="w-4 h-4" /> : <ArrowDown className="w-4 h-4" />) :
+                     isMatch ? <CheckCircle2 className="w-4 h-4" /> :
+                     <Package className="w-4 h-4" />}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-[13px] font-semibold text-gray-900 truncate">{item.product.name}</p>
+                    <p className="text-[11px] text-gray-500 font-mono truncate">{item.product.sku} · {item.product.category}</p>
+                  </div>
                 </div>
 
-                {/* Product info */}
-                <div className="flex-1 min-w-0">
-                  <p className="text-[13px] font-semibold text-gray-900 truncate">{item.product.name}</p>
-                  <p className="text-[11px] text-gray-500 font-mono truncate">{item.product.sku} · {item.product.category}</p>
-                </div>
+                {/* Control strip */}
+                <div className="flex items-end justify-between sm:justify-end gap-3 sm:gap-4 pt-3 sm:pt-0 border-t border-gray-100 sm:border-0">
+                  {/* System stock */}
+                  <div className="text-center shrink-0">
+                    <p className="text-[9px] text-gray-400 uppercase tracking-wider">Sistem</p>
+                    <p className="text-sm font-bold text-gray-500 mt-1">{item.systemStock}</p>
+                  </div>
 
-                {/* System stock */}
-                <div className="text-center shrink-0 hidden sm:block px-2">
-                  <p className="text-[9px] text-gray-400 uppercase tracking-wider">Sistem</p>
-                  <p className="text-sm font-bold text-gray-500">{item.systemStock}</p>
-                </div>
+                  {/* Input aktual */}
+                  <div className="shrink-0 text-center">
+                    <p className="text-[9px] text-gray-400 uppercase tracking-wider mb-1">Fisik</p>
+                    <input
+                      type="number" min={0} inputMode="numeric"
+                      value={item.actualStock ?? ''}
+                      onChange={e => setActual(item.product.id, e.target.value)}
+                      placeholder={String(item.systemStock)}
+                      className={`w-16 text-center text-sm font-bold rounded-lg px-2 py-1.5 border transition focus:outline-none focus:border-[#FF5F03] ${
+                        hasInput ? 'bg-white border-gray-300 text-gray-900' : 'bg-gray-50 border-gray-200 text-gray-500'
+                      }`}
+                    />
+                  </div>
 
-                {/* Input aktual */}
-                <div className="shrink-0 text-center">
-                  <p className="text-[9px] text-gray-400 uppercase tracking-wider mb-0.5 hidden sm:block">Fisik</p>
-                  <input
-                    type="number" min={0}
-                    value={item.actualStock ?? ''}
-                    onChange={e => setActual(item.product.id, e.target.value)}
-                    placeholder={String(item.systemStock)}
-                    className={`w-16 text-center text-sm font-bold rounded-lg px-2 py-1.5 border transition focus:outline-none focus:border-[#FF5F03] ${
-                      hasInput ? 'bg-white border-gray-300 text-gray-900' : 'bg-gray-50 border-gray-200 text-gray-500'
-                    }`}
-                  />
-                </div>
+                  {/* Difference badge */}
+                  <div className="text-center shrink-0 min-w-[3rem]">
+                    <p className="text-[9px] text-gray-400 uppercase tracking-wider mb-1">Selisih</p>
+                    {hasInput ? (
+                      <span className={`text-xs font-bold px-2 py-1 rounded-full inline-block ${
+                        item.difference === 0 ? 'text-emerald-600 bg-emerald-50' :
+                        item.difference > 0 ? 'text-emerald-600 bg-emerald-50' :
+                        'text-red-500 bg-red-50'
+                      }`}>
+                        {item.difference === 0 ? '✓' : (item.difference > 0 ? `+${item.difference}` : item.difference)}
+                      </span>
+                    ) : <span className="text-sm text-gray-300 inline-block py-1">—</span>}
+                  </div>
 
-                {/* Difference badge */}
-                <div className="w-12 text-center shrink-0">
-                  {hasInput ? (
-                    <span className={`text-xs font-bold px-2 py-1 rounded-full inline-block ${
-                      item.difference === 0 ? 'text-emerald-600 bg-emerald-50' :
-                      item.difference > 0 ? 'text-emerald-600 bg-emerald-50' :
-                      'text-red-500 bg-red-50'
-                    }`}>
-                      {item.difference === 0 ? '✓' : (item.difference > 0 ? `+${item.difference}` : item.difference)}
-                    </span>
-                  ) : <span className="text-xs text-gray-300">—</span>}
-                </div>
-
-                {/* Quick action */}
-                <div className="shrink-0">
-                  {!hasInput ? (
-                    <button onClick={() => quickMatch(item.product.id)} title="Tandai sesuai"
-                      className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 hover:bg-emerald-600 hover:text-white flex items-center justify-center transition">
-                      <Equal className="w-3.5 h-3.5" />
-                    </button>
-                  ) : (
-                    <button onClick={() => clearItem(item.product.id)} title="Hapus input"
-                      className="w-8 h-8 rounded-lg bg-gray-100 text-gray-400 hover:bg-gray-200 hover:text-gray-600 flex items-center justify-center transition">
-                      <RotateCcw className="w-3.5 h-3.5" />
-                    </button>
-                  )}
+                  {/* Quick action */}
+                  <div className="shrink-0">
+                    {!hasInput ? (
+                      <button onClick={() => quickMatch(item.product.id)} title="Tandai sesuai"
+                        className="w-9 h-9 rounded-lg bg-emerald-50 text-emerald-600 hover:bg-emerald-600 hover:text-white flex items-center justify-center transition active:scale-95">
+                        <Equal className="w-4 h-4" />
+                      </button>
+                    ) : (
+                      <button onClick={() => clearItem(item.product.id)} title="Hapus input"
+                        className="w-9 h-9 rounded-lg bg-gray-100 text-gray-400 hover:bg-gray-200 hover:text-gray-600 flex items-center justify-center transition active:scale-95">
+                        <RotateCcw className="w-4 h-4" />
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
 
@@ -476,7 +480,7 @@ function MiniStat({ color, icon, value, label }: { color: 'emerald' | 'red' | 'g
     gray: 'bg-gray-50 text-gray-500',
   }[color]
   return (
-    <div className={`flex items-center gap-2 px-3 py-2 rounded-xl ${styles}`}>
+    <div className={`flex items-center justify-center sm:justify-start gap-2 px-2.5 sm:px-3 py-2 rounded-xl ${styles}`}>
       {icon}
       <div className="leading-tight">
         <p className="text-sm font-bold">{value}</p>
