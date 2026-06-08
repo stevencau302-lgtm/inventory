@@ -472,7 +472,10 @@ export default function ReportsPage() {
 
   const totalMasukRange = useMemo(() => filteredTransactions.filter(t => t.type === 'in').reduce((s, t) => s + t.quantity, 0), [filteredTransactions])
   const totalKeluarRange = useMemo(() => filteredTransactions.filter(t => t.type === 'out').reduce((s, t) => s + t.quantity, 0), [filteredTransactions])
-  const netSelisih = totalMasukRange - totalKeluarRange
+  const totalReturnRange = useMemo(
+    () => filteredTransactions.filter(t => t.note?.toUpperCase().startsWith('[RETURN]')).reduce((s, t) => s + t.quantity, 0),
+    [filteredTransactions]
+  )
 
   const weeklyData = useMemo(() => {
     const rangeDays = Math.max(1, Math.ceil((rangeTo - rangeFrom) / (24 * 60 * 60 * 1000)))
@@ -938,10 +941,10 @@ export default function ReportsPage() {
                 <p className="text-xl font-bold text-red-700">-{totalKeluarRange.toLocaleString()}</p>
                 <p className="text-[9px] text-red-500">unit</p>
               </div>
-              <div className={`rounded-xl p-3 text-center ${netSelisih >= 0 ? 'bg-blue-50 border border-blue-100' : 'bg-orange-50 border border-orange-100'}`}>
-                <p className={`text-[10px] font-semibold mb-0.5 ${netSelisih >= 0 ? 'text-blue-600' : 'text-orange-600'}`}>Selisih Net</p>
-                <p className={`text-xl font-bold ${netSelisih >= 0 ? 'text-blue-700' : 'text-orange-700'}`}>{netSelisih >= 0 ? '+' : ''}{netSelisih.toLocaleString()}</p>
-                <p className={`text-[9px] ${netSelisih >= 0 ? 'text-blue-500' : 'text-orange-500'}`}>{netSelisih >= 0 ? 'stok bertambah' : 'stok berkurang'}</p>
+              <div className="rounded-xl p-3 text-center bg-amber-50 border border-amber-100">
+                <p className="text-[10px] font-semibold mb-0.5 text-amber-600">Total Retur</p>
+                <p className="text-xl font-bold text-amber-700">{totalReturnRange.toLocaleString()}</p>
+                <p className="text-[9px] text-amber-500">unit dikembalikan</p>
               </div>
             </div>
             {/* Chart */}
