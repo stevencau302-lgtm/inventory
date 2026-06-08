@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { Package, BarChart3, ClipboardCheck, Zap, Shield, Smartphone, ArrowRight, Play, CheckCircle2, Star } from 'lucide-react'
+import { Package, BarChart3, ClipboardCheck, Zap, Shield, Smartphone, ArrowRight, Play, CheckCircle2, Star, Sparkles } from 'lucide-react'
 
 function NexaLogo() {
   return (
