@@ -14,6 +14,7 @@ import {
   X,
   PanelLeftClose,
   PanelLeftOpen,
+  MessageSquare,
 } from 'lucide-react'
 import { getSetting, saveSetting } from '@/lib/store'
 import { useAuth } from '@/components/AuthProvider'
