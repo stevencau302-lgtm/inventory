@@ -6,7 +6,7 @@ import { supabase } from '@/lib/supabase'
 import { Loader2, Play, Package, BarChart3, ClipboardCheck, ArrowRight } from 'lucide-react'
 
 // Demo account credentials
-const DEMO_EMAIL = 'demo@nexoinventory.id'
+const DEMO_EMAIL = 'demo@nexa.id'
 const DEMO_PASSWORD = 'demo123456'
 
 export default function DemoPage() {
@@ -86,7 +86,7 @@ export default function DemoPage() {
           <div className="w-16 h-16 rounded-2xl bg-[#FDC800]/10 border border-[#FDC800]/20 flex items-center justify-center mx-auto mb-4">
             <Package className="w-8 h-8 text-[#FDC800]" />
           </div>
-          <h1 className="text-3xl font-bold text-white">Nexo Inventory</h1>
+          <h1 className="text-3xl font-bold text-white">Nexa</h1>
           <p className="text-zinc-500 mt-2">Coba langsung tanpa perlu daftar</p>
         </div>
 

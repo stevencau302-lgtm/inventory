@@ -113,7 +113,7 @@ async function exportToPDF(products: Product[], transactions: Transaction[], cat
   doc.text(`Digenerate: ${dateStr}, ${timeStr}`, 14, 33)
 
   doc.setFontSize(9)
-  doc.text('Nexo Inventory', pageWidth - 14, 18, { align: 'right' })
+  doc.text('Nexa', pageWidth - 14, 18, { align: 'right' })
   doc.text('inventory-rose-delta.vercel.app', pageWidth - 14, 25, { align: 'right' })
 
   let y = 52
@@ -287,7 +287,7 @@ async function exportToPDF(products: Product[], transactions: Transaction[], cat
     doc.line(14, pH - 14, pageWidth - 14, pH - 14)
     doc.setFontSize(7)
     doc.setTextColor(...gray)
-    doc.text('Nexo Inventory — Laporan digenerate otomatis', 14, pH - 8)
+    doc.text('Nexa — Laporan digenerate otomatis', 14, pH - 8)
     doc.text(`Halaman ${i} dari ${totalPages}`, pageWidth - 14, pH - 8, { align: 'right' })
   }
 
