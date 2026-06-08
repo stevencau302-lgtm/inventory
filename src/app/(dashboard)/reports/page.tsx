@@ -743,42 +743,59 @@ export default function ReportsPage() {
               <p className="text-[11px] text-gray-500">Distribusi nilai inventory</p>
             </div>
           </div>
-          <div className="p-5 flex-1 flex flex-col justify-center">
-            {/* Donut visualization */}
-            <div className="flex items-center gap-6">
-              <div className="relative w-32 h-32 shrink-0">
+          <div className="p-5 flex-1 flex flex-col">
+            {/* Donut centered at top */}
+            <div className="flex justify-center mb-5">
+              <div className="relative w-40 h-40 shrink-0">
                 <svg viewBox="0 0 100 100" className="w-full h-full -rotate-90">
-                  {topCategory.length > 0 ? (() => {
+                  {topCategory.length > 0 && totalValue > 0 ? (() => {
                     let offset = 0
                     return topCategory.map((cat, i) => {
-                      const pct = totalValue > 0 ? (cat.value / totalValue) * 100 : 0
+                      const pct = (cat.value / totalValue) * 100
+                      if (pct <= 0) return null
                       const dashArray = `${pct * 2.51} ${251 - pct * 2.51}`
-                      const el = <circle key={i} cx="50" cy="50" r="40" fill="none" stroke={cat.color || '#a855f7'} strokeWidth="12" strokeDasharray={dashArray} strokeDashoffset={-offset * 2.51} strokeLinecap="round" />
+                      const el = <circle key={i} cx="50" cy="50" r="40" fill="none" stroke={cat.color || '#a855f7'} strokeWidth="11" strokeDasharray={dashArray} strokeDashoffset={-offset * 2.51} strokeLinecap="round" />
                       offset += pct
                       return el
                     })
-                  })() : <circle cx="50" cy="50" r="40" fill="none" stroke="#e5e7eb" strokeWidth="12" />}
+                  })() : <circle cx="50" cy="50" r="40" fill="none" stroke="#e5e7eb" strokeWidth="11" />}
                 </svg>
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <p className="text-lg font-bold text-gray-900">100%</p>
-                  <p className="text-[9px] text-gray-400">Total Nilai</p>
-                  <p className="text-[10px] font-semibold text-gray-600">{formatRp(totalValue)}</p>
+                  <p className="text-2xl font-extrabold text-gray-900">{topCategory.length}</p>
+                  <p className="text-[10px] text-gray-400 -mt-0.5">kategori</p>
+                  <p className="text-xs font-bold text-violet-600 mt-1">{formatRp(totalValue)}</p>
                 </div>
               </div>
-              <div className="flex-1 space-y-2 min-w-0">
-                {topCategory.slice(0, 7).map(cat => {
-                  const pct = totalValue > 0 ? (cat.value / totalValue) * 100 : 0
-                  return (
-                    <div key={cat.id} className="flex items-center gap-2 text-xs">
-                      <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: cat.color || '#a855f7' }} />
-                      <span className="text-gray-700 truncate flex-1">{cat.name}</span>
-                      <span className="text-gray-500 font-medium">{formatRp(cat.value)}</span>
-                      <span className="text-gray-400 w-8 text-right">{pct.toFixed(0)}%</span>
+            </div>
+            {/* Category list with bars */}
+            <div className="space-y-3 flex-1">
+              {topCategory.slice(0, 7).map(cat => {
+                const pct = totalValue > 0 ? (cat.value / totalValue) * 100 : 0
+                return (
+                  <div key={cat.id}>
+                    <div className="flex items-center justify-between mb-1">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: cat.color || '#a855f7' }} />
+                        <span className="text-xs font-medium text-gray-700 truncate">{cat.name}</span>
+                        <span className="text-[10px] text-gray-400 bg-gray-50 px-1.5 py-0.5 rounded-full shrink-0">{cat.count}</span>
+                      </div>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <span className="text-xs font-semibold text-gray-900">{formatRp(cat.value)}</span>
+                        <span className="text-[10px] text-gray-400 w-8 text-right">{pct.toFixed(0)}%</span>
+                      </div>
                     </div>
-                  )
-                })}
-                {topCategory.length === 0 && <p className="text-xs text-gray-400">Belum ada kategori</p>}
-              </div>
+                    <div className="h-1.5 rounded-full bg-gray-100 overflow-hidden">
+                      <div className="h-full rounded-full transition-all duration-700" style={{ width: `${Math.max(pct, 2)}%`, background: cat.color || '#a855f7' }} />
+                    </div>
+                  </div>
+                )
+              })}
+              {topCategory.length === 0 && (
+                <div className="text-center py-8">
+                  <p className="text-sm text-gray-500">Belum ada kategori</p>
+                  <p className="text-xs text-gray-400 mt-1">Tambahkan produk untuk melihat distribusi</p>
+                </div>
+              )}
             </div>
           </div>
         </div>
