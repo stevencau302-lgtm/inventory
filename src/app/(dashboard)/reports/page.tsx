@@ -648,7 +648,7 @@ export default function ReportsPage() {
       {/* ===== STAT CARDS (bento grid) ===== */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         {/* Big card - Total Nilai */}
-        <div className="col-span-2 lg:col-span-2 lg:row-span-2 relative overflow-hidden rounded-2xl p-5 sm:p-6 bg-gradient-to-br from-[#FF5F03] to-[#FF8A3D] text-white shadow-xl shadow-[#FF5F03]/20">
+        <div className="col-span-2 lg:col-span-2 lg:row-span-2 relative overflow-hidden rounded-2xl p-5 sm:p-6 bg-gradient-to-br from-[#0F4C4C] to-[#072C2C] text-white shadow-lg shadow-[#072C2C]/20">
           <div className="absolute top-0 right-0 w-40 h-40 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/4" />
           <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/4" />
           <div className="relative flex flex-col h-full">
