@@ -763,7 +763,7 @@ export default function ReportsPage() {
         <div className="p-5">
           {aiLoading && (
             <div className="text-center py-8">
-              <Loader2 className="w-6 h-6 text-purple-400 animate-spin mx-auto mb-3" />
+              <Loader2 className="w-6 h-6 text-[#FF5F03] animate-spin mx-auto mb-3" />
               <p className="text-sm text-gray-500">AI sedang menganalisa...</p>
             </div>
           )}
@@ -787,14 +787,14 @@ export default function ReportsPage() {
                 <ul className="space-y-1.5">
                   {['Tambahkan produk pertama kamu', 'Catat stok masuk', 'Lakukan transaksi keluar', 'AI akan memberikan insight setelah minimal 5 transaksi'].map((t, i) => (
                     <li key={i} className="text-xs text-gray-500 flex items-start gap-2">
-                      <span className="w-1.5 h-1.5 rounded-full bg-violet-400 shrink-0 mt-1.5" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#FF5F03] shrink-0 mt-1.5" />
                       <span>{t}</span>
                     </li>
                   ))}
                 </ul>
               </div>
               {/* Benefits box */}
-              <div className="w-full lg:w-64 shrink-0 p-4 rounded-xl bg-violet-50/60 border border-violet-100">
+              <div className="w-full lg:w-64 shrink-0 p-4 rounded-xl bg-[#072C2C]/5 border border-[#072C2C]/10">
                 <p className="text-xs font-semibold text-gray-700 mb-3">Insight akan membantu kamu:</p>
                 <div className="space-y-2.5">
                   {['Mendeteksi slow moving item', 'Memprediksi kebutuhan stok', 'Mengoptimalkan nilai inventory', 'Mencegah kehabisan stok'].map((t, i) => (
@@ -843,8 +843,8 @@ export default function ReportsPage() {
         {/* Nilai Per Kategori */}
         <div className="rounded-2xl border border-gray-200 bg-white shadow-sm overflow-hidden flex flex-col">
           <div className="px-5 py-4 border-b border-gray-100 flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-violet-50 flex items-center justify-center">
-              <PieChart className="w-4 h-4 text-violet-500" />
+            <div className="w-8 h-8 rounded-lg bg-[#072C2C]/10 flex items-center justify-center">
+              <PieChart className="w-4 h-4 text-[#072C2C]" />
             </div>
             <div>
               <h2 className="text-sm font-semibold text-gray-900">Nilai Per Kategori</h2>
@@ -862,7 +862,7 @@ export default function ReportsPage() {
                       const pct = (cat.value / totalValue) * 100
                       if (pct <= 0) return null
                       const dashArray = `${pct * 2.51} ${251 - pct * 2.51}`
-                      const el = <circle key={i} cx="50" cy="50" r="40" fill="none" stroke={cat.color || '#a855f7'} strokeWidth="11" strokeDasharray={dashArray} strokeDashoffset={-offset * 2.51} strokeLinecap="round" />
+                      const el = <circle key={i} cx="50" cy="50" r="40" fill="none" stroke={cat.color || '#FF5F03'} strokeWidth="11" strokeDasharray={dashArray} strokeDashoffset={-offset * 2.51} strokeLinecap="round" />
                       offset += pct
                       return el
                     })
@@ -871,7 +871,7 @@ export default function ReportsPage() {
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
                   <p className="text-2xl font-extrabold text-gray-900">{topCategory.length}</p>
                   <p className="text-[10px] text-gray-400 -mt-0.5">kategori</p>
-                  <p className="text-xs font-bold text-violet-600 mt-1">{formatRp(totalValue)}</p>
+                  <p className="text-xs font-bold text-[#FF5F03] mt-1">{formatRp(totalValue)}</p>
                 </div>
               </div>
             </div>
@@ -883,7 +883,7 @@ export default function ReportsPage() {
                   <div key={cat.id}>
                     <div className="flex items-center justify-between mb-1">
                       <div className="flex items-center gap-2 min-w-0">
-                        <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: cat.color || '#a855f7' }} />
+                        <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: cat.color || '#FF5F03' }} />
                         <span className="text-xs font-medium text-gray-700 truncate">{cat.name}</span>
                         <span className="text-[10px] text-gray-400 bg-gray-50 px-1.5 py-0.5 rounded-full shrink-0">{cat.count}</span>
                       </div>
@@ -893,7 +893,7 @@ export default function ReportsPage() {
                       </div>
                     </div>
                     <div className="h-1.5 rounded-full bg-gray-100 overflow-hidden">
-                      <div className="h-full rounded-full transition-all duration-700" style={{ width: `${Math.max(pct, 2)}%`, background: cat.color || '#a855f7' }} />
+                      <div className="h-full rounded-full transition-all duration-700" style={{ width: `${Math.max(pct, 2)}%`, background: cat.color || '#FF5F03' }} />
                     </div>
                   </div>
                 )
@@ -912,8 +912,8 @@ export default function ReportsPage() {
         <div className="rounded-2xl border border-gray-200 bg-white shadow-sm overflow-hidden flex flex-col">
           <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center">
-                <Activity className="w-4 h-4 text-indigo-500" />
+              <div className="w-8 h-8 rounded-lg bg-[#072C2C]/10 flex items-center justify-center">
+                <Activity className="w-4 h-4 text-[#072C2C]" />
               </div>
               <div>
                 <h2 className="text-sm font-semibold text-gray-900">Ringkasan Transaksi</h2>
@@ -1194,7 +1194,7 @@ function DeadStockTable({ deadStock, transactions, formatRp }: { deadStock: Prod
 
   const SortIcon = ({ col }: { col: typeof sortCol }) => {
     if (sortCol !== col) return <span className="text-gray-400 ml-1">↕</span>
-    return <span className="text-purple-400 ml-1">{sortAsc ? '↑' : '↓'}</span>
+    return <span className="text-[#FF5F03] ml-1">{sortAsc ? '↑' : '↓'}</span>
   }
 
 
