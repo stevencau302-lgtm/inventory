@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { Product, Transaction, formatRp, fetchProducts, fetchTransactions } from '@/lib/store'
 import { useAuth } from '@/components/AuthProvider'
 import dynamic from 'next/dynamic'
-import { Plus, ArrowDownToLine, ArrowUpFromLine, Sparkles, Package, Coins, AlertTriangle, Ban, Activity, ArrowRight, CheckCircle2, ArrowLeftRight, Trophy } from 'lucide-react'
+import { Plus, ArrowDownToLine, ArrowUpFromLine, Sparkles, Package, AlertTriangle, Activity, ArrowRight, CheckCircle2, ArrowLeftRight, Trophy } from 'lucide-react'
 
 const DashboardCharts = dynamic(() => import('@/components/DashboardCharts'), { ssr: false })
 const StockDonut = dynamic(() => import('@/components/DashboardCharts').then(m => m.StockDonut), { ssr: false })
