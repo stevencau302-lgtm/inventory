@@ -357,7 +357,59 @@ function parseAiSections(md: string): { title: string; items: string[] }[] {
   return sections
 }
 
-export default function ReportsPage() {  const [products, setProducts] = useState<Product[]>([])
+/* ─── Robot Mascot Illustration ─── */
+function RobotMascot() {
+  return (
+    <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
+      {/* Decorative blobs */}
+      <circle cx="100" cy="100" r="85" fill="url(#robotBg)" opacity="0.5" />
+      <circle cx="45" cy="60" r="5" fill="#a78bfa" opacity="0.5" />
+      <circle cx="160" cy="80" r="4" fill="#c4b5fd" opacity="0.6" />
+      <circle cx="155" cy="140" r="6" fill="#a78bfa" opacity="0.4" />
+      {/* Sparkles */}
+      <path d="M40 110 l2 5 5 2 -5 2 -2 5 -2 -5 -5 -2 5 -2 z" fill="#a78bfa" opacity="0.7" />
+      <path d="M165 110 l1.5 4 4 1.5 -4 1.5 -1.5 4 -1.5 -4 -4 -1.5 4 -1.5 z" fill="#c4b5fd" opacity="0.6" />
+      {/* Antenna */}
+      <line x1="100" y1="48" x2="100" y2="62" stroke="#8b5cf6" strokeWidth="3" strokeLinecap="round" />
+      <circle cx="100" cy="44" r="6" fill="#8b5cf6" />
+      <circle cx="100" cy="44" r="2.5" fill="#ede9fe" />
+      {/* Head */}
+      <rect x="58" y="62" width="84" height="68" rx="24" fill="url(#robotHead)" />
+      {/* Face screen */}
+      <rect x="70" y="76" width="60" height="40" rx="16" fill="#1e1b4b" />
+      {/* Eyes */}
+      <circle cx="87" cy="96" r="7" fill="#ffffff" />
+      <circle cx="113" cy="96" r="7" fill="#ffffff" />
+      <circle cx="88" cy="97" r="3" fill="#1e1b4b" />
+      <circle cx="114" cy="97" r="3" fill="#1e1b4b" />
+      {/* Smile */}
+      <path d="M90 106 Q100 112 110 106" stroke="#a78bfa" strokeWidth="2.5" strokeLinecap="round" fill="none" />
+      {/* Ears */}
+      <rect x="50" y="88" width="9" height="20" rx="4" fill="#c4b5fd" />
+      <rect x="141" y="88" width="9" height="20" rx="4" fill="#c4b5fd" />
+      {/* Body */}
+      <rect x="70" y="132" width="60" height="34" rx="16" fill="url(#robotBody)" />
+      <circle cx="100" cy="149" r="6" fill="#ede9fe" opacity="0.8" />
+      <defs>
+        <linearGradient id="robotBg" x1="15" y1="15" x2="185" y2="185" gradientUnits="userSpaceOnUse">
+          <stop stopColor="#ede9fe" />
+          <stop offset="1" stopColor="#f5f3ff" />
+        </linearGradient>
+        <linearGradient id="robotHead" x1="58" y1="62" x2="142" y2="130" gradientUnits="userSpaceOnUse">
+          <stop stopColor="#a78bfa" />
+          <stop offset="1" stopColor="#7c3aed" />
+        </linearGradient>
+        <linearGradient id="robotBody" x1="70" y1="132" x2="130" y2="166" gradientUnits="userSpaceOnUse">
+          <stop stopColor="#8b5cf6" />
+          <stop offset="1" stopColor="#6d28d9" />
+        </linearGradient>
+      </defs>
+    </svg>
+  )
+}
+
+export default function ReportsPage() {
+  const [products, setProducts] = useState<Product[]>([])
   const [categories, setCategories] = useState<Category[]>([])
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [mounted, setMounted] = useState(false)
