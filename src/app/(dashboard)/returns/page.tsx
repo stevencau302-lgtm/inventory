@@ -246,3 +246,256 @@ function parseReason(note: string): string {
   const cleaned = note?.replace(/^\[RETURN\]\s*/i, '').trim()
   return cleaned || '-'
 }
+
+type Condition = 'good' | 'damaged'
+
+function AddReturnModal({
+  products,
+  onClose,
+  onDone,
+}: {
+  products: Product[]
+  onClose: () => void
+  onDone: () => void | Promise<void>
+}) {
+  const { toast } = useToast()
+  const [loading, setLoading] = useState(false)
+  const [selectedProduct, setSelectedProduct] = useState('')
+  const [productSearch, setProductSearch] = useState('')
+  const [showDropdown, setShowDropdown] = useState(false)
+  const [quantity, setQuantity] = useState(1)
+  const [condition, setCondition] = useState<Condition>('good')
+  const [reason, setReason] = useState<Reason>('wrong_product')
+  const [note, setNote] = useState('')
+
+  const filteredProducts = products.filter(p =>
+    p.name.toLowerCase().includes(productSearch.toLowerCase()) ||
+    p.sku.toLowerCase().includes(productSearch.toLowerCase())
+  )
+  const selected = products.find(p => p.id === selectedProduct)
+
+  const handleSelectProduct = (id: string) => {
+    setSelectedProduct(id)
+    const p = products.find(pr => pr.id === id)
+    if (p) setProductSearch(p.name)
+    setShowDropdown(false)
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!selectedProduct) { toast('Pilih produk terlebih dahulu!', 'error'); return }
+    const product = products.find(p => p.id === selectedProduct)
+    if (!product) { toast('Produk tidak ditemukan', 'error'); return }
+
+    setLoading(true)
+    try {
+      if (condition === 'good') {
+        await saveProduct({
+          ...product,
+          stock: product.stock + quantity,
+          updatedAt: new Date().toISOString(),
+        })
+      }
+
+      const reasonLabel = reasons.find(r => r.value === reason)?.label || reason
+      const conditionLabel = condition === 'good' ? 'Bagus' : 'Rusak'
+      const txNote = `[RETURN] Kondisi: ${conditionLabel} | Alasan: ${reasonLabel}${note ? ` | ${note}` : ''}`
+
+      const newTx: Transaction = {
+        id: uid(),
+        productId: product.id,
+        productName: product.name,
+        type: condition === 'good' ? 'in' : 'out',
+        quantity,
+        note: txNote,
+        createdAt: new Date().toISOString(),
+      }
+      await saveTransaction(newTx)
+
+      toast('Retur berhasil dicatat!', 'success')
+      await onDone()
+    } catch {
+      toast('Gagal menyimpan retur', 'error')
+      setLoading(false)
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 z-[9999] flex items-end sm:items-center justify-center bg-black/50 backdrop-blur-sm p-0 sm:p-4">
+      <div className="w-full sm:max-w-lg bg-white rounded-t-2xl sm:rounded-2xl shadow-2xl max-h-[92vh] overflow-y-auto">
+        {/* Header */}
+        <div className="sticky top-0 z-10 flex items-center justify-between gap-3 px-5 py-4 bg-white border-b border-gray-100">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-[#D97706]/10 flex items-center justify-center">
+              <RotateCcw className="w-5 h-5 text-[#D97706]" />
+            </div>
+            <div>
+              <h2 className="text-base font-bold text-gray-900">Tambah Retur</h2>
+              <p className="text-[11px] text-gray-500">Catat barang kembali dari customer</p>
+            </div>
+          </div>
+          <button
+            onClick={onClose}
+            className="w-9 h-9 rounded-lg bg-gray-100 flex items-center justify-center text-gray-500 hover:bg-gray-200 transition active:scale-90"
+          >
+            <X className="w-4.5 h-4.5" />
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="p-5 space-y-5">
+          {/* Pilih produk */}
+          <div className="space-y-2">
+            <label className="text-[11px] font-bold uppercase tracking-wider text-gray-500 block">Produk yang Dikembalikan</label>
+            <div className="relative">
+              <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+              <input
+                type="text"
+                value={productSearch}
+                onChange={e => { setProductSearch(e.target.value); setShowDropdown(true); setSelectedProduct('') }}
+                onFocus={() => setShowDropdown(true)}
+                className="w-full rounded-xl text-sm pl-10 pr-9 py-3 font-medium bg-white text-gray-900 border border-gray-200 focus:outline-none focus:border-[#D97706]/50 focus:ring-2 focus:ring-[#D97706]/15 transition placeholder:text-gray-400"
+                placeholder="Cari produk..."
+                autoComplete="off"
+              />
+              {productSearch && (
+                <button
+                  type="button"
+                  onClick={() => { setProductSearch(''); setSelectedProduct(''); setShowDropdown(true) }}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              )}
+
+              {showDropdown && !selected && (
+                <div className="absolute z-50 left-0 right-0 top-full mt-2 rounded-xl bg-white border border-gray-200 max-h-52 overflow-y-auto shadow-xl">
+                  {filteredProducts.length === 0 ? (
+                    <div className="px-4 py-5 text-center text-sm text-gray-500">Produk tidak ditemukan</div>
+                  ) : filteredProducts.map(p => (
+                    <button
+                      key={p.id}
+                      type="button"
+                      onClick={() => handleSelectProduct(p.id)}
+                      className="w-full flex items-center gap-3 px-4 py-3 text-left transition hover:bg-[#D97706]/5 border-b border-gray-100 last:border-b-0"
+                    >
+                      <div className="w-9 h-9 rounded-lg bg-[#D97706]/10 flex items-center justify-center text-[10px] font-black text-[#D97706] shrink-0">
+                        {p.name.substring(0, 2).toUpperCase()}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-semibold text-gray-900 truncate">{p.name}</p>
+                        <p className="text-[11px] text-gray-500">{p.sku} · Stok: {p.stock}</p>
+                      </div>
+                      <span className="text-[11px] font-medium text-gray-500 shrink-0">{formatRp(p.price)}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {selected && (
+            <>
+              {/* Quantity */}
+              <div>
+                <label className="text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-2 block">Jumlah Retur</label>
+                <div className="flex items-center gap-2">
+                  <button type="button" onClick={() => setQuantity(Math.max(1, quantity - 1))} className="w-11 h-11 rounded-xl bg-white border border-gray-200 flex items-center justify-center text-gray-900 hover:bg-gray-50 active:scale-90 transition shrink-0">
+                    <Minus className="w-4 h-4" />
+                  </button>
+                  <input
+                    type="number"
+                    min={1}
+                    value={quantity}
+                    onChange={e => setQuantity(Math.max(1, +e.target.value))}
+                    className="flex-1 min-w-0 rounded-xl text-center text-lg font-bold py-2.5 bg-white border border-gray-200 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#D97706]/20 transition"
+                  />
+                  <button type="button" onClick={() => setQuantity(quantity + 1)} className="w-11 h-11 rounded-xl bg-white border border-gray-200 flex items-center justify-center text-gray-900 hover:bg-gray-50 active:scale-90 transition shrink-0">
+                    <Plus className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Kondisi */}
+              <div>
+                <label className="text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-2 block">Kondisi Barang</label>
+                <div className="grid grid-cols-2 gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setCondition('good')}
+                    className={`p-4 rounded-xl text-left transition active:scale-[0.97] ${condition === 'good' ? 'bg-[#16A34A]/10 border-2 border-[#16A34A]/50' : 'bg-white border border-gray-200 hover:border-[#16A34A]/30'}`}
+                  >
+                    <CheckCircle2 className={`w-5 h-5 mb-2 ${condition === 'good' ? 'text-[#16A34A]' : 'text-gray-400'}`} />
+                    <p className={`text-sm font-bold ${condition === 'good' ? 'text-[#16A34A]' : 'text-gray-700'}`}>Bagus</p>
+                    <p className="text-[10px] text-gray-500 mt-0.5">Stok bertambah +{quantity}</p>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setCondition('damaged')}
+                    className={`p-4 rounded-xl text-left transition active:scale-[0.97] ${condition === 'damaged' ? 'bg-[#DC2626]/10 border-2 border-[#DC2626]/50' : 'bg-white border border-gray-200 hover:border-[#DC2626]/30'}`}
+                  >
+                    <XCircle className={`w-5 h-5 mb-2 ${condition === 'damaged' ? 'text-[#DC2626]' : 'text-gray-400'}`} />
+                    <p className={`text-sm font-bold ${condition === 'damaged' ? 'text-[#DC2626]' : 'text-gray-700'}`}>Rusak</p>
+                    <p className="text-[10px] text-gray-500 mt-0.5">Stok tidak berubah</p>
+                  </button>
+                </div>
+              </div>
+
+              {/* Alasan */}
+              <div>
+                <label className="text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-2 block">Alasan Retur</label>
+                <div className="grid grid-cols-2 gap-2">
+                  {reasons.map(r => (
+                    <button
+                      key={r.value}
+                      type="button"
+                      onClick={() => setReason(r.value)}
+                      className={`flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition active:scale-[0.97] ${reason === r.value ? 'bg-[#D97706]/10 border border-[#D97706]/40 text-[#D97706]' : 'bg-white border border-gray-200 text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}
+                    >
+                      {r.icon}
+                      {r.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Catatan */}
+              <div>
+                <label className="text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-2 flex items-center gap-1.5">
+                  <FileText className="w-3.5 h-3.5 text-[#D97706]" />
+                  Catatan <span className="normal-case font-normal text-gray-400">(opsional)</span>
+                </label>
+                <textarea
+                  value={note}
+                  onChange={e => setNote(e.target.value.slice(0, 200))}
+                  maxLength={200}
+                  rows={2}
+                  className="w-full rounded-xl text-sm px-4 py-3 resize-none font-medium bg-white border border-gray-200 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#D97706]/20 transition placeholder:text-gray-400"
+                  placeholder="Catatan tambahan..."
+                />
+                <p className="text-right text-[10px] mt-1 text-gray-400">{note.length}/200</p>
+              </div>
+            </>
+          )}
+
+          {/* Actions */}
+          <div className="flex justify-end gap-3 pt-1">
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-5 py-3 rounded-xl text-sm font-bold bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 transition active:scale-95"
+            >
+              Batal
+            </button>
+            <button
+              type="submit"
+              disabled={loading || !selectedProduct}
+              className="px-6 py-3 rounded-xl text-sm font-bold bg-[#D97706] text-white hover:bg-[#B45309] disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2 transition active:scale-[0.97] shadow-lg shadow-[#D97706]/20"
+            >
+              {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Save className="w-4 h-4" /> Catat Retur</>}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  )
+}
