@@ -509,33 +509,28 @@ export default function ReportsPage() {
   )
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-6">
       {/* ===== HEADER ===== */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gray-50 border border-gray-200 flex items-center justify-center">
-            <BarChart3 className="w-5 h-5 text-gray-500" />
-          </div>
-          <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Analisa Inventory</h1>
-            <p className="text-gray-500 text-sm mt-0.5">Ringkasan performa & status inventory</p>
-          </div>
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Analisa Inventory</h1>
+          <p className="text-gray-500 text-sm mt-0.5">Ringkasan performa & status inventory</p>
         </div>
         <div className="flex items-center gap-2">
-          {/* Date Range Picker */}
+          {/* Date Range */}
           <div className="relative">
             <button
               onClick={() => setShowDatePicker(!showDatePicker)}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium border border-gray-200 bg-gray-50 text-gray-700 hover:text-white hover:border-gray-300 transition-all"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium border border-gray-200 bg-white text-gray-700 hover:border-gray-300 shadow-sm transition-all"
             >
-              <Calendar className="w-4 h-4 text-[#072C2C]" />
+              <Calendar className="w-4 h-4 text-gray-400" />
               <span>{rangeLabel}</span>
-              <ChevronDown className="w-3.5 h-3.5 text-gray-500" />
+              <ChevronDown className="w-3.5 h-3.5 text-gray-400" />
             </button>
             {showDatePicker && (
               <>
                 <div className="fixed inset-0 z-40" onClick={() => setShowDatePicker(false)} />
-                <div className="absolute right-0 top-full mt-2 z-50 w-72 rounded-xl border border-gray-200 bg-white shadow-2xl shadow-black/50 overflow-hidden">
+                <div className="absolute right-0 top-full mt-2 z-50 w-72 rounded-xl border border-gray-200 bg-white shadow-2xl overflow-hidden">
                   <div className="p-2 space-y-0.5">
                     {([
                       { value: '7d', label: '7 Hari Terakhir' },
@@ -548,165 +543,202 @@ export default function ReportsPage() {
                       <button
                         key={opt.value}
                         onClick={() => { setDateRange(opt.value); setShowDatePicker(false) }}
-                        className={`w-full text-left px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
-                          dateRange === opt.value ? 'bg-[#072C2C]/15 text-[#072C2C]' : 'text-gray-700 hover:bg-gray-50'
-                        }`}
+                        className={`w-full text-left px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${dateRange === opt.value ? 'bg-indigo-50 text-indigo-600' : 'text-gray-700 hover:bg-gray-50'}`}
                       >
                         {opt.label}
                       </button>
                     ))}
                   </div>
-                  <div className="border-t border-gray-200 p-3 space-y-2">
-                    <p className="text-[11px] text-gray-500 font-medium uppercase tracking-wider">Custom Range</p>
+                  <div className="border-t border-gray-100 p-3 space-y-2">
+                    <p className="text-[11px] text-gray-500 font-medium uppercase tracking-wider">Custom</p>
                     <div className="grid grid-cols-2 gap-2">
-                      <input
-                        type="date"
-                        value={customFrom}
-                        onChange={e => setCustomFrom(e.target.value)}
-                        className="w-full px-2.5 py-2 rounded-lg text-xs bg-gray-50 border border-gray-200 text-gray-700 outline-none focus:border-indigo-500/50"
-                      />
-                      <input
-                        type="date"
-                        value={customTo}
-                        onChange={e => setCustomTo(e.target.value)}
-                        className="w-full px-2.5 py-2 rounded-lg text-xs bg-gray-50 border border-gray-200 text-gray-700 outline-none focus:border-indigo-500/50"
-                      />
+                      <input type="date" value={customFrom} onChange={e => setCustomFrom(e.target.value)} className="w-full px-2.5 py-2 rounded-lg text-xs bg-gray-50 border border-gray-200 text-gray-700 outline-none focus:border-indigo-400" />
+                      <input type="date" value={customTo} onChange={e => setCustomTo(e.target.value)} className="w-full px-2.5 py-2 rounded-lg text-xs bg-gray-50 border border-gray-200 text-gray-700 outline-none focus:border-indigo-400" />
                     </div>
-                    <button
-                      onClick={() => { if (customFrom) { setDateRange('custom'); setShowDatePicker(false) } }}
-                      disabled={!customFrom}
-                      className="w-full py-2 rounded-lg text-xs font-semibold bg-[#072C2C]/20 text-[#072C2C] hover:bg-[#072C2C]/30 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
-                    >
-                      Terapkan
-                    </button>
+                    <button onClick={() => { if (customFrom) { setDateRange('custom'); setShowDatePicker(false) } }} disabled={!customFrom} className="w-full py-2 rounded-lg text-xs font-semibold bg-indigo-50 text-indigo-600 hover:bg-indigo-100 disabled:opacity-40 transition-all">Terapkan</button>
                   </div>
                 </div>
               </>
             )}
           </div>
-          {/* Export CSV */}
-          <button
-            onClick={() => exportToCSV(products, filteredTransactions, categories, rangeLabel)}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium border border-gray-200 bg-gray-50 text-gray-500 hover:text-[#16A34A] hover:border-emerald-500/30 hover:bg-emerald-500/5 transition-all"
-          >
+          <button onClick={() => exportToCSV(products, filteredTransactions, categories, rangeLabel)} className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 shadow-sm transition-all">
             <FileSpreadsheet className="w-4 h-4" />
             <span className="hidden sm:inline">CSV</span>
           </button>
-          {/* Export PDF */}
-          <button
-            onClick={() => exportToPDF(products, filteredTransactions, categories, rangeLabel, formatRp)}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium border border-gray-200 bg-gray-50 text-gray-500 hover:text-[#DC2626] hover:border-red-500/30 hover:bg-red-500/5 transition-all"
-          >
+          <button onClick={() => exportToPDF(products, filteredTransactions, categories, rangeLabel, formatRp)} className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 shadow-sm transition-all">
             <FileText className="w-4 h-4" />
             <span className="hidden sm:inline">PDF</span>
           </button>
         </div>
       </div>
 
+      {/* ===== QUICK ACTIONS ===== */}
+      <div className="flex flex-wrap gap-2.5">
+        <a href="/products/new" className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium bg-indigo-50 border border-indigo-100 text-indigo-600 hover:bg-indigo-100 transition-all">
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+          Tambah Produk
+        </a>
+        <a href="/transactions/new" className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium bg-emerald-50 border border-emerald-100 text-emerald-600 hover:bg-emerald-100 transition-all">
+          <ArrowDownCircle className="w-4 h-4" />
+          Stok Masuk
+        </a>
+        <a href="/transactions/new" className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium bg-rose-50 border border-rose-100 text-rose-600 hover:bg-rose-100 transition-all">
+          <ArrowUpCircle className="w-4 h-4" />
+          Stok Keluar
+        </a>
+        <button onClick={handleAiInsight} disabled={aiLoading} className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-gradient-to-r from-violet-500 to-purple-500 text-white shadow-lg shadow-purple-500/20 hover:shadow-purple-500/30 hover:scale-[1.02] disabled:opacity-50 transition-all">
+          <Sparkles className="w-4 h-4" />
+          Generate Insight
+        </button>
+      </div>
 
-      {/* ===== 6 STAT CARDS ===== */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-3">
-        <GlassStatCard label="Total Unit" value={totalItems.toLocaleString()} icon={<Package className="w-4 h-4" />} accent="text-blue-400" accentBg="bg-blue-500/10" />
-        <GlassStatCard label="Total Nilai Stok" value={formatRp(totalValue)} icon={<DollarSign className="w-4 h-4" />} accent="text-[#16A34A]" accentBg="bg-emerald-50" />
-        <GlassStatCard label="Rata-rata Harga" value={formatRp(avgPrice)} icon={<PieChart className="w-4 h-4" />} accent="text-violet-400" accentBg="bg-violet-500/10" />
-        <GlassStatCard label="Dead Stock" value={`${deadStock.length} produk`} icon={<Skull className="w-4 h-4" />} accent="text-[#DC2626]" accentBg="bg-red-50" />
-        <GlassStatCard label="Perputaran Stok" value={Number(stockTurnover) > 0 ? `${stockTurnover}x` : '—'} icon={<RotateCcw className="w-4 h-4" />} accent="text-[#D97706]" accentBg="bg-amber-50" subtitle={Number(stockTurnover) === 0 ? 'Belum ada penjualan' : undefined} />
-        <GlassStatCard label="Total Kategori" value={categories.length.toString()} icon={<Tag className="w-4 h-4" />} accent="text-cyan-400" accentBg="bg-cyan-500/10" />
+      {/* ===== STAT CARDS (bento grid) ===== */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        {/* Big card - Total Nilai */}
+        <div className="col-span-2 lg:col-span-2 lg:row-span-2 relative overflow-hidden rounded-2xl p-6 bg-gradient-to-br from-violet-500 to-purple-600 text-white shadow-xl shadow-purple-500/15">
+          <div className="absolute top-0 right-0 w-40 h-40 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/4" />
+          <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/4" />
+          <div className="relative">
+            <div className="flex items-center justify-between mb-4">
+              <p className="text-sm font-medium text-white/70">Total Nilai Inventory</p>
+              <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center">
+                <DollarSign className="w-5 h-5 text-white/80" />
+              </div>
+            </div>
+            <p className="text-3xl sm:text-4xl font-extrabold mb-2">{formatRp(totalValue)}</p>
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/15 text-xs font-medium">
+              <TrendingUp className="w-3 h-3" />
+              <span>dibanding {rangeLabel.toLowerCase()}</span>
+            </div>
+          </div>
+        </div>
+        {/* Total Unit */}
+        <div className="rounded-2xl p-4 bg-white border border-gray-200 shadow-sm">
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-xs font-medium text-gray-500">Total Unit</p>
+            <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center">
+              <Package className="w-4 h-4 text-blue-500" />
+            </div>
+          </div>
+          <p className="text-2xl font-bold text-gray-900">{totalItems.toLocaleString()}</p>
+          <p className="text-[11px] text-gray-400 mt-1">unit</p>
+        </div>
+        {/* Total Kategori */}
+        <div className="rounded-2xl p-4 bg-white border border-gray-200 shadow-sm">
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-xs font-medium text-gray-500">Total Kategori</p>
+            <div className="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center">
+              <Tag className="w-4 h-4 text-indigo-500" />
+            </div>
+          </div>
+          <p className="text-2xl font-bold text-gray-900">{categories.length}</p>
+          <p className="text-[11px] text-gray-400 mt-1">kategori</p>
+        </div>
+        {/* Dead Stock */}
+        <div className="rounded-2xl p-4 bg-white border border-gray-200 shadow-sm">
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-xs font-medium text-gray-500">Dead Stock</p>
+            <div className="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center">
+              <Skull className="w-4 h-4 text-amber-500" />
+            </div>
+          </div>
+          <p className="text-2xl font-bold text-gray-900">{deadStock.length}</p>
+          <p className="text-[11px] text-gray-400 mt-1">produk</p>
+        </div>
+        {/* Rata-rata Harga */}
+        <div className="rounded-2xl p-4 bg-white border border-gray-200 shadow-sm">
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-xs font-medium text-gray-500">Rata-rata Harga</p>
+            <div className="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center">
+              <PieChart className="w-4 h-4 text-emerald-500" />
+            </div>
+          </div>
+          <p className="text-2xl font-bold text-gray-900">{formatRp(avgPrice)}</p>
+          <p className="text-[11px] text-gray-400 mt-1">per unit</p>
+        </div>
       </div>
 
       {/* ===== AI INSIGHT ===== */}
-      <GlassPanel>
-        <div className="p-5 border-b border-gray-200">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-purple-500 to-indigo-500 flex items-center justify-center shadow-lg shadow-purple-500/20">
-                <Sparkles className="w-4 h-4 text-white" />
-              </div>
-              <div>
-                <h2 className="font-semibold text-gray-900">AI Insight</h2>
-                <p className="text-[11px] text-gray-500">Analisa cerdas berdasarkan data inventory kamu</p>
-              </div>
+      <div className="rounded-2xl border border-gray-200 bg-white shadow-sm overflow-hidden">
+        <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-500 to-purple-500 flex items-center justify-center shadow-md shadow-purple-500/20">
+              <Sparkles className="w-4 h-4 text-white" />
             </div>
-            <button
-              onClick={handleAiInsight}
-              disabled={aiLoading}
-              className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-gradient-to-r from-purple-500 to-indigo-500 text-white shadow-lg shadow-purple-500/20 hover:shadow-purple-500/30 hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 transition-all duration-200"
-            >
-              {aiLoading ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  <span>Menganalisa...</span>
-                </>
-              ) : (
-                <>
-                  <Sparkles className="w-4 h-4" />
-                  <span>{aiInsight ? 'Refresh' : 'Generate Insight'}</span>
-                </>
-              )}
-            </button>
+            <div>
+              <h2 className="text-sm font-semibold text-gray-900">AI Insight</h2>
+              <p className="text-[11px] text-gray-500">Rekomendasi cerdas untuk inventory kamu</p>
+            </div>
           </div>
+          <button onClick={handleAiInsight} disabled={aiLoading} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-50 transition-all">
+            {aiLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5 text-purple-500" />}
+            Generate AI Insight
+          </button>
         </div>
         <div className="p-5">
-          {!aiInsight && !aiLoading && !aiError && (
-            <div className="text-center py-10">
-              <div className="w-14 h-14 rounded-2xl bg-purple-50 border border-purple-100 flex items-center justify-center mx-auto mb-4">
-                <Sparkles className="w-7 h-7 text-purple-300" />
-              </div>
-              <p className="text-sm font-medium text-gray-700">Belum ada insight</p>
-              <p className="text-xs text-gray-400 mt-1.5 max-w-[280px] mx-auto">Klik tombol di atas untuk mendapatkan analisa AI</p>
-            </div>
-          )}
           {aiLoading && (
-            <div className="text-center py-10">
-              <div className="relative w-14 h-14 mx-auto mb-4">
-                <div className="absolute inset-0 rounded-2xl bg-purple-100 animate-ping opacity-30" />
-                <div className="relative w-14 h-14 rounded-2xl bg-purple-50 border border-purple-100 flex items-center justify-center">
-                  <Sparkles className="w-7 h-7 text-purple-400 animate-pulse" />
-                </div>
-              </div>
-              <p className="text-sm font-medium text-gray-700">Sedang menganalisa data...</p>
-              <p className="text-xs text-gray-400 mt-1.5">Biasanya 5-10 detik</p>
+            <div className="text-center py-8">
+              <Loader2 className="w-6 h-6 text-purple-400 animate-spin mx-auto mb-3" />
+              <p className="text-sm text-gray-500">AI sedang menganalisa...</p>
             </div>
           )}
           {aiError && (
-            <div className="rounded-xl p-4 bg-red-50 border border-red-200 flex items-start gap-3">
-              <div className="w-8 h-8 rounded-lg bg-red-100 flex items-center justify-center shrink-0 mt-0.5">
-                <XCircle className="w-4 h-4 text-red-500" />
+            <div className="rounded-xl p-4 bg-red-50 border border-red-100 flex items-start gap-3">
+              <XCircle className="w-5 h-5 text-red-400 shrink-0 mt-0.5" />
+              <p className="text-sm text-red-600">{aiError}</p>
+            </div>
+          )}
+          {!aiInsight && !aiLoading && !aiError && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="flex items-start gap-4 p-4 rounded-xl bg-gray-50 border border-gray-100">
+                <div className="w-12 h-12 rounded-xl bg-violet-100 flex items-center justify-center shrink-0">
+                  <Sparkles className="w-6 h-6 text-violet-500" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-semibold text-gray-900 mb-2">Belum ada insight tersedia</h3>
+                  <p className="text-xs text-gray-500 mb-3">Yuk mulai transaksi untuk mendapatkan analisa AI yang membantu.</p>
+                  <p className="text-xs font-medium text-gray-600 mb-1.5">Tips memulai:</p>
+                  <ul className="space-y-1">
+                    <li className="text-xs text-gray-500 flex items-center gap-1.5"><span className="w-1 h-1 rounded-full bg-gray-400" />Tambahkan produk pertama kamu</li>
+                    <li className="text-xs text-gray-500 flex items-center gap-1.5"><span className="w-1 h-1 rounded-full bg-gray-400" />Catat stok masuk</li>
+                    <li className="text-xs text-gray-500 flex items-center gap-1.5"><span className="w-1 h-1 rounded-full bg-gray-400" />Lakukan transaksi keluar</li>
+                    <li className="text-xs text-gray-500 flex items-center gap-1.5"><span className="w-1 h-1 rounded-full bg-gray-400" />AI akan memberikan insight setelah minimal 5 transaksi</li>
+                  </ul>
+                </div>
               </div>
-              <div>
-                <p className="text-sm font-medium text-red-700">Gagal mendapatkan insight</p>
-                <p className="text-xs text-red-500 mt-1">{aiError}</p>
+              <div className="p-4 rounded-xl bg-gray-50 border border-gray-100">
+                <p className="text-xs font-medium text-gray-600 mb-3">Insight akan membantu kamu:</p>
+                <div className="space-y-2">
+                  {['Mendeteksi slow moving item', 'Memprediksi kebutuhan stok', 'Mengoptimalkan nilai inventory', 'Mencegah kehabisan stok'].map((t, i) => (
+                    <div key={i} className="flex items-center gap-2">
+                      <svg className="w-4 h-4 text-emerald-500 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                      <span className="text-xs text-gray-600">{t}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           )}
           {aiInsight && (
-            <div className="space-y-4">
+            <div className="space-y-3">
               {parseAiSections(aiInsight).map((section, idx) => {
-                // SVG icons for each section type
-                const sectionConfig = [
-                  { color: 'blue', iconBg: 'bg-blue-100', iconColor: 'text-blue-600', borderColor: 'border-blue-200', headerBg: 'bg-blue-50', icon: <Activity className="w-4 h-4" /> },
-                  { color: 'amber', iconBg: 'bg-amber-100', iconColor: 'text-amber-600', borderColor: 'border-amber-200', headerBg: 'bg-amber-50', icon: <AlertTriangle className="w-4 h-4" /> },
-                  { color: 'emerald', iconBg: 'bg-emerald-100', iconColor: 'text-emerald-600', borderColor: 'border-emerald-200', headerBg: 'bg-emerald-50', icon: <TrendingUp className="w-4 h-4" /> },
-                  { color: 'rose', iconBg: 'bg-rose-100', iconColor: 'text-rose-600', borderColor: 'border-rose-200', headerBg: 'bg-rose-50', icon: <AlertTriangle className="w-4 h-4" /> },
-                ][idx % 4]
-
+                const configs = [
+                  { iconBg: 'bg-blue-100', iconColor: 'text-blue-600', borderColor: 'border-blue-100', headerBg: 'bg-blue-50', icon: <Activity className="w-4 h-4" /> },
+                  { iconBg: 'bg-amber-100', iconColor: 'text-amber-600', borderColor: 'border-amber-100', headerBg: 'bg-amber-50', icon: <AlertTriangle className="w-4 h-4" /> },
+                  { iconBg: 'bg-emerald-100', iconColor: 'text-emerald-600', borderColor: 'border-emerald-100', headerBg: 'bg-emerald-50', icon: <TrendingUp className="w-4 h-4" /> },
+                ]
+                const cfg = configs[idx % 3]
                 return (
-                  <div key={idx} className={`rounded-xl border ${sectionConfig.borderColor} overflow-hidden`}>
-                    {/* Section header */}
-                    <div className={`px-4 py-3 ${sectionConfig.headerBg} flex items-center gap-2.5`}>
-                      <div className={`w-7 h-7 rounded-lg ${sectionConfig.iconBg} ${sectionConfig.iconColor} flex items-center justify-center shrink-0`}>
-                        {sectionConfig.icon}
-                      </div>
-                      <h3 className="text-sm font-bold text-gray-900">{section.title}</h3>
+                  <div key={idx} className={`rounded-xl border ${cfg.borderColor} overflow-hidden`}>
+                    <div className={`px-4 py-2.5 ${cfg.headerBg} flex items-center gap-2`}>
+                      <div className={`w-6 h-6 rounded-md ${cfg.iconBg} ${cfg.iconColor} flex items-center justify-center`}>{cfg.icon}</div>
+                      <h3 className="text-xs font-bold text-gray-800">{section.title}</h3>
                     </div>
-                    {/* Section content */}
-                    <div className="px-4 py-3 space-y-2.5 bg-white">
+                    <div className="px-4 py-3 space-y-2 bg-white">
                       {section.items.map((item, i) => (
-                        <div key={i} className="flex items-start gap-2.5">
-                          <div className={`w-5 h-5 rounded-md ${sectionConfig.iconBg} ${sectionConfig.iconColor} flex items-center justify-center shrink-0 mt-0.5`}>
-                            <span className="text-[10px] font-bold">{i + 1}</span>
-                          </div>
-                          <p className="text-[13px] text-gray-600 leading-relaxed [&_strong]:text-gray-900 [&_strong]:font-semibold" dangerouslySetInnerHTML={{ __html: item }} />
+                        <div key={i} className="flex items-start gap-2">
+                          <span className={`w-4 h-4 rounded text-[9px] font-bold flex items-center justify-center shrink-0 mt-0.5 ${cfg.iconBg} ${cfg.iconColor}`}>{i + 1}</span>
+                          <p className="text-xs text-gray-600 leading-relaxed [&_strong]:text-gray-900 [&_strong]:font-semibold" dangerouslySetInnerHTML={{ __html: item }} />
                         </div>
                       ))}
                     </div>
@@ -716,293 +748,264 @@ export default function ReportsPage() {
             </div>
           )}
         </div>
-      </GlassPanel>
+      </div>
 
-      {/* ===== NILAI PER KATEGORI ===== */}
-      <GlassPanel>
-        <div className="p-5 border-b border-gray-200">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-violet-500/10 flex items-center justify-center">
-              <PieChart className="w-4 h-4 text-violet-400" />
+      {/* ===== NILAI KATEGORI + RINGKASAN TRANSAKSI (side by side) ===== */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        {/* Nilai Per Kategori */}
+        <div className="rounded-2xl border border-gray-200 bg-white shadow-sm overflow-hidden">
+          <div className="px-5 py-4 border-b border-gray-100 flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-violet-50 flex items-center justify-center">
+              <PieChart className="w-4 h-4 text-violet-500" />
             </div>
             <div>
-              <h2 className="font-semibold text-gray-900">Nilai Per Kategori</h2>
-              <p className="text-xs text-gray-500">Distribusi nilai inventory berdasarkan kategori</p>
+              <h2 className="text-sm font-semibold text-gray-900">Nilai Per Kategori</h2>
+              <p className="text-[11px] text-gray-500">Distribusi nilai inventory</p>
+            </div>
+          </div>
+          <div className="p-5">
+            {/* Donut visualization */}
+            <div className="flex items-center gap-6">
+              <div className="relative w-32 h-32 shrink-0">
+                <svg viewBox="0 0 100 100" className="w-full h-full -rotate-90">
+                  {topCategory.length > 0 ? (() => {
+                    let offset = 0
+                    return topCategory.map((cat, i) => {
+                      const pct = totalValue > 0 ? (cat.value / totalValue) * 100 : 0
+                      const dashArray = `${pct * 2.51} ${251 - pct * 2.51}`
+                      const el = <circle key={i} cx="50" cy="50" r="40" fill="none" stroke={cat.color || '#a855f7'} strokeWidth="12" strokeDasharray={dashArray} strokeDashoffset={-offset * 2.51} strokeLinecap="round" />
+                      offset += pct
+                      return el
+                    })
+                  })() : <circle cx="50" cy="50" r="40" fill="none" stroke="#e5e7eb" strokeWidth="12" />}
+                </svg>
+                <div className="absolute inset-0 flex flex-col items-center justify-center">
+                  <p className="text-lg font-bold text-gray-900">100%</p>
+                  <p className="text-[9px] text-gray-400">Total Nilai</p>
+                  <p className="text-[10px] font-semibold text-gray-600">{formatRp(totalValue)}</p>
+                </div>
+              </div>
+              <div className="flex-1 space-y-2 min-w-0">
+                {topCategory.slice(0, 7).map(cat => {
+                  const pct = totalValue > 0 ? (cat.value / totalValue) * 100 : 0
+                  return (
+                    <div key={cat.id} className="flex items-center gap-2 text-xs">
+                      <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: cat.color || '#a855f7' }} />
+                      <span className="text-gray-700 truncate flex-1">{cat.name}</span>
+                      <span className="text-gray-500 font-medium">{formatRp(cat.value)}</span>
+                      <span className="text-gray-400 w-8 text-right">{pct.toFixed(0)}%</span>
+                    </div>
+                  )
+                })}
+                {topCategory.length === 0 && <p className="text-xs text-gray-400">Belum ada kategori</p>}
+              </div>
             </div>
           </div>
         </div>
-        <div className="p-5 space-y-4">
-          {topCategory.map(cat => {
-            const pct = totalValue > 0 ? (cat.value / totalValue) * 100 : 0
-            return (
-              <div key={cat.id}>
-                <div className="flex items-center justify-between mb-2.5">
-                  <div className="flex items-center gap-3">
-                    <div className="w-3 h-3 rounded-full" style={{ background: cat.color || '#a855f7' }} />
-                    <span className="text-sm font-medium text-gray-900">{cat.name}</span>
-                    <span className="text-[11px] text-gray-500 bg-gray-50 px-2 py-0.5 rounded-full">{cat.count} produk</span>
-                  </div>
-                  <div className="text-right flex items-center gap-2">
-                    <span className="text-sm font-semibold text-gray-900">{formatRp(cat.value)}</span>
-                    <span className="text-[11px] font-medium text-gray-500 bg-gray-50 px-2 py-0.5 rounded-full">{pct.toFixed(1)}%</span>
-                  </div>
-                </div>
-                <div className="h-2 rounded-full bg-gray-50 overflow-hidden">
-                  <div className="h-full rounded-full transition-all duration-700 ease-out" style={{ width: `${pct}%`, background: cat.color || '#a855f7' }} />
-                </div>
-              </div>
-            )
-          })}
-          {topCategory.length === 0 && (
-            <div className="text-center py-12">
-              <p className="text-sm text-gray-700">Belum ada kategori produk</p>
-              <p className="text-xs text-gray-500 mt-1">Tambahkan kategori dan produk untuk melihat distribusi nilai</p>
-            </div>
-          )}
-        </div>
-      </GlassPanel>
 
-
-      {/* ===== RINGKASAN TRANSAKSI ===== */}
-      <GlassPanel>
-        <div className="p-5 border-b border-gray-200">
-          <div className="flex items-center justify-between">
+        {/* Ringkasan Transaksi */}
+        <div className="rounded-2xl border border-gray-200 bg-white shadow-sm overflow-hidden">
+          <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#072C2C] to-[#0a4a4a] flex items-center justify-center shadow-lg shadow-[#072C2C]/15">
-                <Activity className="w-4 h-4 text-white" />
+              <div className="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center">
+                <Activity className="w-4 h-4 text-indigo-500" />
               </div>
               <div>
-                <h2 className="font-semibold text-gray-900">Ringkasan Transaksi</h2>
+                <h2 className="text-sm font-semibold text-gray-900">Ringkasan Transaksi</h2>
                 <p className="text-[11px] text-gray-500">Performa {rangeLabel.toLowerCase()}</p>
               </div>
             </div>
-            <div className="hidden sm:flex items-center gap-4">
-              <div className="flex items-center gap-1.5">
-                <div className="w-3 h-3 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-500 shadow-sm shadow-emerald-500/30" />
-                <span className="text-[11px] font-medium text-gray-500">Masuk</span>
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-emerald-400" /><span className="text-[10px] text-gray-400">Masuk</span></div>
+              <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-red-400" /><span className="text-[10px] text-gray-400">Keluar</span></div>
+            </div>
+          </div>
+          <div className="p-5 space-y-4">
+            {/* Mini stat row */}
+            <div className="grid grid-cols-3 gap-2">
+              <div className="rounded-xl p-3 bg-emerald-50 border border-emerald-100 text-center">
+                <p className="text-[10px] text-emerald-600 font-semibold mb-0.5">Barang Masuk</p>
+                <p className="text-xl font-bold text-emerald-700">+{totalMasukRange.toLocaleString()}</p>
+                <p className="text-[9px] text-emerald-500">unit</p>
               </div>
-              <div className="flex items-center gap-1.5">
-                <div className="w-3 h-3 rounded-full bg-gradient-to-br from-red-400 to-red-500 shadow-sm shadow-red-500/30" />
-                <span className="text-[11px] font-medium text-gray-500">Keluar</span>
+              <div className="rounded-xl p-3 bg-red-50 border border-red-100 text-center">
+                <p className="text-[10px] text-red-600 font-semibold mb-0.5">Barang Keluar</p>
+                <p className="text-xl font-bold text-red-700">-{totalKeluarRange.toLocaleString()}</p>
+                <p className="text-[9px] text-red-500">unit</p>
               </div>
+              <div className={`rounded-xl p-3 text-center ${netSelisih >= 0 ? 'bg-blue-50 border border-blue-100' : 'bg-orange-50 border border-orange-100'}`}>
+                <p className={`text-[10px] font-semibold mb-0.5 ${netSelisih >= 0 ? 'text-blue-600' : 'text-orange-600'}`}>Selisih Net</p>
+                <p className={`text-xl font-bold ${netSelisih >= 0 ? 'text-blue-700' : 'text-orange-700'}`}>{netSelisih >= 0 ? '+' : ''}{netSelisih.toLocaleString()}</p>
+                <p className={`text-[9px] ${netSelisih >= 0 ? 'text-blue-500' : 'text-orange-500'}`}>{netSelisih >= 0 ? 'stok bertambah' : 'stok berkurang'}</p>
+              </div>
+            </div>
+            {/* Chart */}
+            <div className="rounded-xl bg-gray-50 border border-gray-100 p-3">
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-[11px] font-medium text-gray-500 flex items-center gap-1.5"><BarChart3 className="w-3 h-3" />Tren Mingguan</p>
+                <p className="text-[10px] text-gray-400">{rangeLabel}</p>
+              </div>
+              <RechartsBarChart data={weeklyData} />
             </div>
           </div>
         </div>
-        <div className="p-5 space-y-5">
-          {/* Stat cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            {/* Barang Masuk */}
-            <div className="relative overflow-hidden rounded-2xl p-5 bg-gradient-to-br from-emerald-50 to-green-50 border border-emerald-200/60">
-              <div className="absolute top-0 right-0 w-20 h-20 bg-emerald-200/20 rounded-full -translate-y-1/2 translate-x-1/2" />
-              <div className="relative">
-                <div className="w-10 h-10 rounded-xl bg-white border border-emerald-200 flex items-center justify-center mb-3 shadow-sm">
-                  <ArrowDownCircle className="w-5 h-5 text-emerald-500" />
-                </div>
-                <p className="text-[11px] text-emerald-600/70 font-semibold uppercase tracking-wider mb-1">Barang Masuk</p>
-                <p className="text-3xl font-extrabold text-emerald-700">+{totalMasukRange.toLocaleString()}</p>
-                <p className="text-[11px] text-emerald-500/70 mt-1 font-medium">unit · {rangeLabel.toLowerCase()}</p>
-              </div>
-            </div>
-            {/* Barang Keluar */}
-            <div className="relative overflow-hidden rounded-2xl p-5 bg-gradient-to-br from-red-50 to-rose-50 border border-red-200/60">
-              <div className="absolute top-0 right-0 w-20 h-20 bg-red-200/20 rounded-full -translate-y-1/2 translate-x-1/2" />
-              <div className="relative">
-                <div className="w-10 h-10 rounded-xl bg-white border border-red-200 flex items-center justify-center mb-3 shadow-sm">
-                  <ArrowUpCircle className="w-5 h-5 text-red-500" />
-                </div>
-                <p className="text-[11px] text-red-600/70 font-semibold uppercase tracking-wider mb-1">Barang Keluar</p>
-                <p className="text-3xl font-extrabold text-red-700">-{totalKeluarRange.toLocaleString()}</p>
-                <p className="text-[11px] text-red-500/70 mt-1 font-medium">unit · {rangeLabel.toLowerCase()}</p>
-              </div>
-            </div>
-            {/* Selisih Net */}
-            <div className={`relative overflow-hidden rounded-2xl p-5 border ${netSelisih >= 0 ? 'bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200/60' : 'bg-gradient-to-br from-orange-50 to-amber-50 border-orange-200/60'}`}>
-              <div className={`absolute top-0 right-0 w-20 h-20 rounded-full -translate-y-1/2 translate-x-1/2 ${netSelisih >= 0 ? 'bg-blue-200/20' : 'bg-orange-200/20'}`} />
-              <div className="relative">
-                <div className={`w-10 h-10 rounded-xl bg-white border flex items-center justify-center mb-3 shadow-sm ${netSelisih >= 0 ? 'border-blue-200' : 'border-orange-200'}`}>
-                  <TrendingUp className={`w-5 h-5 ${netSelisih >= 0 ? 'text-blue-500' : 'text-orange-500'}`} />
-                </div>
-                <p className={`text-[11px] font-semibold uppercase tracking-wider mb-1 ${netSelisih >= 0 ? 'text-blue-600/70' : 'text-orange-600/70'}`}>Selisih Net</p>
-                <p className={`text-3xl font-extrabold ${netSelisih >= 0 ? 'text-blue-700' : 'text-orange-700'}`}>
-                  {netSelisih >= 0 ? '+' : ''}{netSelisih.toLocaleString()}
-                </p>
-                <p className={`text-[11px] mt-1 font-medium ${netSelisih >= 0 ? 'text-blue-500/70' : 'text-orange-500/70'}`}>
-                  {netSelisih >= 0 ? 'stok bertambah' : 'stok berkurang'}
-                </p>
-              </div>
-            </div>
-          </div>
-          {/* Chart */}
-          <div className="rounded-2xl p-5 bg-gradient-to-br from-gray-50 to-slate-50 border border-gray-200/60">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <BarChart3 className="w-4 h-4 text-gray-400" />
-                <p className="text-xs font-semibold text-gray-500">Tren Mingguan</p>
-              </div>
-              <p className="text-[10px] text-gray-400 font-medium">{rangeLabel}</p>
-            </div>
-            <RechartsBarChart data={weeklyData} />
-          </div>
-        </div>
-      </GlassPanel>
+      </div>
 
-
-      {/* ===== PRODUK AKTIF vs STAGNAN ===== */}
-      <GlassPanel>
-        <div className="p-5 border-b border-gray-200">
-          <div className="flex items-center gap-3">
+      {/* ===== PRODUK AKTIF vs STAGNAN + DEAD STOCK ===== */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        {/* Produk Aktif vs Stagnan */}
+        <div className="rounded-2xl border border-gray-200 bg-white shadow-sm overflow-hidden">
+          <div className="px-5 py-4 border-b border-gray-100 flex items-center gap-3">
             <div className="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center">
-              <TrendingUp className="w-4 h-4 text-[#D97706]" />
+              <TrendingUp className="w-4 h-4 text-amber-500" />
             </div>
             <div>
-              <h2 className="font-semibold text-gray-900">Produk Aktif vs Stagnan</h2>
-              <p className="text-xs text-gray-500">Berdasarkan jumlah transaksi keluar</p>
+              <h2 className="text-sm font-semibold text-gray-900">Produk Aktif vs Stagnan</h2>
+              <p className="text-[11px] text-gray-500">Berdasarkan jumlah transaksi keluar</p>
             </div>
           </div>
-        </div>
-        <div className="grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-white/[0.06]">
-          {/* Top 5 Terlaris */}
-          <div className="p-5">
-            <div className="flex items-center gap-2 mb-4">
-              <TrendingUp className="w-3.5 h-3.5 text-[#16A34A]" />
-              <h3 className="text-sm font-medium text-gray-700">Top 5 Terlaris</h3>
-            </div>
-            <div className="space-y-2">
+          <div className="grid grid-cols-2 divide-x divide-gray-100">
+            <div className="p-4">
+              <div className="flex items-center gap-1.5 mb-3">
+                <TrendingUp className="w-3 h-3 text-emerald-500" />
+                <p className="text-[11px] font-semibold text-gray-600">Top 5 Terlaris</p>
+              </div>
               {topActive.length > 0 ? topActive.map((item, i) => (
-                <div key={i} className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-gray-50 transition-colors">
-                  <span className="w-6 h-6 rounded-md bg-gray-50 text-gray-500 text-[10px] font-bold flex items-center justify-center shrink-0">
-                    {i + 1}
-                  </span>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm text-gray-900 font-medium truncate">{item.name}</p>
-                    <span className="text-[10px] text-gray-500">{item.category || '-'}</span>
-                  </div>
-                  <span className="text-sm font-bold text-gray-900">{item.count}</span>
+                <div key={i} className="flex items-center gap-2 py-1.5">
+                  <span className="w-5 h-5 rounded bg-gray-100 text-[9px] font-bold flex items-center justify-center text-gray-500">{i + 1}</span>
+                  <span className="text-xs text-gray-700 truncate flex-1">{item.name}</span>
+                  <span className="text-xs font-semibold text-gray-900">{item.count}</span>
                 </div>
-              )) : (
-                <div className="text-center py-8">
-                  <p className="text-sm text-gray-700">Belum ada transaksi keluar</p>
-                  <p className="text-xs text-gray-500 mt-1">Mulai input penjualan pertama</p>
-                </div>
-              )}
+              )) : <p className="text-xs text-gray-400 py-4">Belum ada transaksi keluar</p>}
             </div>
-          </div>
-          {/* Top 5 Stagnan */}
-          <div className="p-5">
-            <div className="flex items-center gap-2 mb-4">
-              <TrendingDown className="w-3.5 h-3.5 text-[#D97706]" />
-              <h3 className="text-sm font-medium text-gray-700">Top 5 Stagnan</h3>
-            </div>
-            <div className="space-y-2">
+            <div className="p-4">
+              <div className="flex items-center gap-1.5 mb-3">
+                <TrendingDown className="w-3 h-3 text-amber-500" />
+                <p className="text-[11px] font-semibold text-gray-600">Top 5 Stagnan</p>
+              </div>
               {topStagnant.length > 0 ? topStagnant.map((item, i) => (
-                <div key={i} className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-gray-50 transition-colors">
-                  <span className="w-6 h-6 rounded-md bg-gray-50 text-gray-500 text-[10px] font-bold flex items-center justify-center shrink-0">
-                    {i + 1}
-                  </span>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm text-gray-900 font-medium truncate">{item.name}</p>
-                    <span className="text-[10px] text-gray-500">{item.category}</span>
-                  </div>
-                  <span className="text-sm font-bold text-gray-900">{item.count}</span>
+                <div key={i} className="flex items-center gap-2 py-1.5">
+                  <span className="w-5 h-5 rounded bg-gray-100 text-[9px] font-bold flex items-center justify-center text-gray-500">{i + 1}</span>
+                  <span className="text-xs text-gray-700 truncate flex-1">{item.name}</span>
+                  <span className="text-xs font-semibold text-gray-900">{item.count}</span>
                 </div>
-              )) : (
-                <div className="text-center py-8">
-                  <p className="text-sm text-gray-700">Semua produk masih aktif</p>
-                  <p className="text-xs text-gray-500 mt-1">Tidak ada produk yang diam tanpa transaksi</p>
-                </div>
-              )}
+              )) : <p className="text-xs text-gray-400 py-4">Semua produk masih aktif</p>}
             </div>
           </div>
         </div>
-      </GlassPanel>
 
-
-      {/* ===== DEAD STOCK ===== */}
-      <DeadStockTable deadStock={deadStock} transactions={transactions} formatRp={formatRp} />
-
-      {/* ===== ALERT STOK ===== */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Low Stock */}
-        <GlassPanel>
-          <div className="p-5 border-b border-gray-200 flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center">
-              <AlertTriangle className="w-4 h-4 text-[#D97706]" />
-            </div>
-            <div>
-              <h3 className="font-semibold text-gray-900 text-sm">Stok Rendah</h3>
-              <p className="text-xs text-gray-500">{lowStock.length} produk perlu restock</p>
-            </div>
-          </div>
-          <div className="divide-y divide-white/[0.04]">
-            {lowStock.slice(0, 5).map(p => {
-              const ratio = p.minStock > 0 ? p.stock / p.minStock : 1
-              const barColor = ratio < 0.5 ? 'bg-red-500' : ratio < 0.8 ? 'bg-amber-500' : 'bg-emerald-500'
-              return (
-                <div key={p.id} className="px-6 py-4 hover:bg-gray-50 transition-all duration-200">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-lg bg-amber-50 flex items-center justify-center text-[#D97706] text-[10px] font-bold">
-                        {p.name.substring(0, 2).toUpperCase()}
-                      </div>
-                      <div>
-                        <p className="text-sm text-gray-900 font-medium">{p.name}</p>
-                        <p className="text-[11px] text-gray-500">{p.category}</p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-sm font-bold text-gray-900">{p.stock}</p>
-                      <p className="text-[10px] text-gray-400">min: {p.minStock}</p>
-                    </div>
-                  </div>
-                  <div className="mt-2.5 h-1.5 rounded-full bg-gray-50 border border-gray-100 overflow-hidden">
-                    <div className={`h-full rounded-full transition-all duration-700 ${barColor}`} style={{ width: `${Math.min(ratio * 100, 100)}%` }} />
-                  </div>
-                </div>
-              )
-            })}
-            {lowStock.length === 0 && (
-              <div className="px-6 py-10 text-center">
-                <p className="text-sm text-[#16A34A] font-medium">Semua stok aman</p>
-                <p className="text-xs text-gray-500 mt-1">Tidak ada produk mendekati batas minimum</p>
-              </div>
-            )}
-          </div>
-        </GlassPanel>
-
-        {/* Out of Stock */}
-        <GlassPanel>
-          <div className="p-5 border-b border-gray-200 flex items-center gap-3">
+        {/* Dead Stock */}
+        <div className="rounded-2xl border border-gray-200 bg-white shadow-sm overflow-hidden">
+          <div className="px-5 py-4 border-b border-gray-100 flex items-center gap-3">
             <div className="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center">
-              <XCircle className="w-4 h-4 text-[#DC2626]" />
+              <Skull className="w-4 h-4 text-red-500" />
             </div>
             <div>
-              <h3 className="font-semibold text-gray-900 text-sm">Stok Habis</h3>
-              <p className="text-xs text-gray-500">{outStock.length} produk habis</p>
+              <h2 className="text-sm font-semibold text-gray-900">Dead Stock</h2>
+              <p className="text-[11px] text-gray-500">Produk tanpa transaksi keluar</p>
             </div>
           </div>
-          <div className="divide-y divide-white/[0.04]">
-            {outStock.slice(0, 5).map(p => (
-              <div key={p.id} className="px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-all duration-200">
-                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-lg bg-red-50 flex items-center justify-center text-[#DC2626] text-[10px] font-bold">
-                    {p.name.substring(0, 2).toUpperCase()}
+          <div className="p-5">
+            {deadStock.length > 0 ? (
+              <div className="space-y-2">
+                {deadStock.slice(0, 5).map((p, i) => (
+                  <div key={p.id} className="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-gray-50">
+                    <span className="w-6 h-6 rounded bg-red-50 text-[10px] font-bold flex items-center justify-center text-red-500">{i + 1}</span>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-medium text-gray-800 truncate">{p.name}</p>
+                      <p className="text-[10px] text-gray-400">{p.category}</p>
+                    </div>
+                    <span className="text-xs font-semibold text-gray-600">{p.stock} unit</span>
                   </div>
-                  <div>
-                    <p className="text-sm text-gray-900 font-medium">{p.name}</p>
-                    <p className="text-[11px] text-gray-500">{p.category}</p>
-                  </div>
-                </div>
-                <span className="text-[10px] font-semibold px-2 py-1 rounded-md bg-red-50 text-[#DC2626]">Habis</span>
+                ))}
+                {deadStock.length > 5 && <p className="text-[11px] text-gray-400 text-center pt-2">+{deadStock.length - 5} produk lainnya</p>}
               </div>
-            ))}
-            {outStock.length === 0 && (
-              <div className="px-6 py-10 text-center">
-                <p className="text-sm text-[#16A34A] font-medium">Semua produk tersedia</p>
-                <p className="text-xs text-gray-500 mt-1">Tidak ada produk dengan stok kosong</p>
+            ) : (
+              <div className="text-center py-8">
+                <svg className="w-10 h-10 text-emerald-400 mx-auto mb-3" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                <p className="text-sm font-medium text-emerald-600">Tidak ada dead stock</p>
+                <p className="text-xs text-gray-400 mt-1">Semua produk memiliki transaksi keluar 🎉</p>
               </div>
             )}
           </div>
-        </GlassPanel>
+        </div>
+      </div>
+
+      {/* ===== STOK RENDAH + STOK HABIS ===== */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        {/* Stok Rendah */}
+        <div className="rounded-2xl border border-gray-200 bg-white shadow-sm overflow-hidden">
+          <div className="px-5 py-4 border-b border-gray-100 flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center">
+              <AlertTriangle className="w-4 h-4 text-amber-500" />
+            </div>
+            <div>
+              <h2 className="text-sm font-semibold text-gray-900">Stok Rendah</h2>
+              <p className="text-[11px] text-gray-500">Produk perlu restock</p>
+            </div>
+          </div>
+          <div className="p-5">
+            {lowStock.length > 0 ? (
+              <div className="space-y-3">
+                {lowStock.slice(0, 5).map(p => (
+                  <div key={p.id} className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center text-[10px] font-bold text-amber-600">{p.name.substring(0, 2).toUpperCase()}</div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-medium text-gray-800 truncate">{p.name}</p>
+                      <div className="flex items-center gap-2 mt-1">
+                        <div className="flex-1 h-1.5 rounded-full bg-gray-100 overflow-hidden">
+                          <div className="h-full rounded-full bg-amber-400" style={{ width: `${Math.min((p.stock / p.minStock) * 100, 100)}%` }} />
+                        </div>
+                        <span className="text-[10px] text-gray-500 font-medium">{p.stock}/{p.minStock}</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <svg className="w-10 h-10 text-emerald-400 mx-auto mb-3" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                <p className="text-sm font-medium text-emerald-600">Semua stok aman</p>
+                <p className="text-xs text-gray-400 mt-1">Tidak ada produk mendekati batas minimum</p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Stok Habis */}
+        <div className="rounded-2xl border border-gray-200 bg-white shadow-sm overflow-hidden">
+          <div className="px-5 py-4 border-b border-gray-100 flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center">
+              <XCircle className="w-4 h-4 text-red-500" />
+            </div>
+            <div>
+              <h2 className="text-sm font-semibold text-gray-900">Stok Habis</h2>
+              <p className="text-[11px] text-gray-500">Produk habis</p>
+            </div>
+          </div>
+          <div className="p-5">
+            {outStock.length > 0 ? (
+              <div className="space-y-2">
+                {outStock.slice(0, 5).map(p => (
+                  <div key={p.id} className="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-gray-50">
+                    <div className="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center text-[10px] font-bold text-red-600">{p.name.substring(0, 2).toUpperCase()}</div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-medium text-gray-800 truncate">{p.name}</p>
+                      <p className="text-[10px] text-gray-400">{p.category}</p>
+                    </div>
+                    <span className="text-[10px] font-semibold px-2 py-0.5 rounded bg-red-50 text-red-600">Habis</span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <svg className="w-10 h-10 text-emerald-400 mx-auto mb-3" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                <p className="text-sm font-medium text-emerald-600">Semua produk tersedia</p>
+                <p className="text-xs text-gray-400 mt-1">Tidak ada produk dengan stok kosong</p>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   )
