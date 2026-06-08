@@ -622,30 +622,30 @@ export default function ReportsPage() {
       {/* ===== AI INSIGHT ===== */}
       <GlassPanel>
         <div className="p-5 border-b border-gray-200">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-purple-50 flex items-center justify-center">
-                <Sparkles className="w-4 h-4 text-purple-500" />
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-purple-500/20 to-indigo-500/20 border border-purple-200 flex items-center justify-center">
+                <Sparkles className="w-4.5 h-4.5 text-purple-500" />
               </div>
               <div>
                 <h2 className="font-semibold text-gray-900">AI Insight</h2>
-                <p className="text-xs text-gray-500">Analisa otomatis oleh AI berdasarkan data inventory</p>
+                <p className="text-[11px] text-gray-500">Analisa otomatis oleh AI berdasarkan data inventory</p>
               </div>
             </div>
             <button
               onClick={handleAiInsight}
               disabled={aiLoading}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium bg-purple-50 border border-purple-200 text-purple-700 hover:bg-purple-100 hover:border-purple-300 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+              className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-gradient-to-r from-purple-500 to-indigo-500 text-white shadow-lg shadow-purple-500/20 hover:shadow-purple-500/30 hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 transition-all duration-200"
             >
               {aiLoading ? (
                 <>
-                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  <Loader2 className="w-4 h-4 animate-spin" />
                   <span>Menganalisa...</span>
                 </>
               ) : (
                 <>
-                  <Sparkles className="w-3.5 h-3.5" />
-                  <span>Generate Insight</span>
+                  <Sparkles className="w-4 h-4" />
+                  <span>{aiInsight ? 'Refresh Insight' : 'Generate Insight'}</span>
                 </>
               )}
             </button>
@@ -653,26 +653,52 @@ export default function ReportsPage() {
         </div>
         <div className="p-5">
           {!aiInsight && !aiLoading && !aiError && (
-            <div className="text-center py-8">
-              <Sparkles className="w-8 h-8 text-purple-300 mx-auto mb-3" />
-              <p className="text-sm text-gray-500">Klik "Generate Insight" untuk mendapatkan analisa AI</p>
-              <p className="text-xs text-gray-400 mt-1">AI akan menganalisa kondisi inventory dan memberikan rekomendasi</p>
+            <div className="text-center py-10">
+              <div className="w-14 h-14 rounded-2xl bg-purple-50 border border-purple-100 flex items-center justify-center mx-auto mb-4">
+                <Sparkles className="w-7 h-7 text-purple-300" />
+              </div>
+              <p className="text-sm font-medium text-gray-700">Belum ada insight</p>
+              <p className="text-xs text-gray-400 mt-1.5 max-w-[280px] mx-auto">Klik tombol di atas untuk mendapatkan analisa AI tentang kondisi inventory kamu</p>
             </div>
           )}
           {aiLoading && (
-            <div className="text-center py-8">
-              <Loader2 className="w-6 h-6 text-purple-400 animate-spin mx-auto mb-3" />
-              <p className="text-sm text-gray-500">AI sedang menganalisa data inventory...</p>
+            <div className="text-center py-10">
+              <div className="w-14 h-14 rounded-2xl bg-purple-50 border border-purple-100 flex items-center justify-center mx-auto mb-4 animate-pulse">
+                <Sparkles className="w-7 h-7 text-purple-400" />
+              </div>
+              <p className="text-sm font-medium text-gray-700">AI sedang menganalisa...</p>
+              <p className="text-xs text-gray-400 mt-1.5">Memproses data inventory kamu</p>
             </div>
           )}
           {aiError && (
-            <div className="rounded-xl p-4 bg-red-50 border border-red-200">
-              <p className="text-sm text-red-700">{aiError}</p>
+            <div className="rounded-xl p-4 bg-red-50 border border-red-200 flex items-start gap-3">
+              <div className="w-8 h-8 rounded-lg bg-red-100 flex items-center justify-center shrink-0 mt-0.5">
+                <XCircle className="w-4 h-4 text-red-500" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-red-700">Gagal mendapatkan insight</p>
+                <p className="text-xs text-red-500 mt-1">{aiError}</p>
+              </div>
             </div>
           )}
           {aiInsight && (
-            <div className="prose prose-sm max-w-none text-gray-700 [&_h1]:text-lg [&_h1]:font-bold [&_h1]:text-gray-900 [&_h2]:text-base [&_h2]:font-semibold [&_h2]:text-gray-900 [&_h3]:text-sm [&_h3]:font-semibold [&_h3]:text-gray-900 [&_strong]:text-gray-900 [&_li]:text-gray-600 [&_p]:text-gray-600 [&_ul]:space-y-1 [&_ol]:space-y-1">
-              <div dangerouslySetInnerHTML={{ __html: formatMarkdown(aiInsight) }} />
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+              {parseAiSections(aiInsight).map((section, idx) => {
+                const style = sectionIcons[idx] || sectionIcons[0]
+                return (
+                  <div key={idx} className={`rounded-xl p-4 border ${style.bg} transition-all hover:shadow-sm`}>
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="text-lg">{style.icon}</span>
+                      <h3 className={`text-sm font-bold ${style.color}`}>{section.title}</h3>
+                    </div>
+                    <div className="space-y-2">
+                      {section.items.map((item, i) => (
+                        <p key={i} className="text-xs text-gray-600 leading-relaxed" dangerouslySetInnerHTML={{ __html: item }} />
+                      ))}
+                    </div>
+                  </div>
+                )
+              })}
             </div>
           )}
         </div>
