@@ -69,9 +69,9 @@ Format dalam markdown. Jaga respons tetap ringkas dan praktis.`
 
     if (!response.ok) {
       const errData = await response.text()
-      console.error('OpenAgentic API error:', errData)
+      console.error('OpenAgentic API error:', response.status, errData)
       return NextResponse.json(
-        { error: `AI API error: ${response.status}` },
+        { error: `AI API error: ${response.status}. ${errData}` },
         { status: response.status }
       )
     }
