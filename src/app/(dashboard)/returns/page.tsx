@@ -88,7 +88,7 @@ export default function ReturnsPage() {
           </div>
           <div className="flex flex-wrap gap-2">
             <Link
-              href="/reports"
+              href="/returns/analytics"
               className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-white/10 border border-white/20 text-white text-sm font-bold hover:bg-white/20 transition active:scale-95"
             >
               <BarChart3 className="w-4 h-4" />
