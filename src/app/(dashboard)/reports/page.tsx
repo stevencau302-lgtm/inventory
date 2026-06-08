@@ -784,7 +784,7 @@ export default function ReportsPage() {
         </div>
 
         {/* Ringkasan Transaksi */}
-        <div className="rounded-2xl border border-gray-200 bg-white shadow-sm overflow-hidden">
+        <div className="rounded-2xl border border-gray-200 bg-white shadow-sm overflow-hidden flex flex-col">
           <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center">
@@ -800,7 +800,7 @@ export default function ReportsPage() {
               <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-red-400" /><span className="text-[10px] text-gray-400">Keluar</span></div>
             </div>
           </div>
-          <div className="p-5 space-y-4">
+          <div className="p-5 space-y-4 flex-1">
             {/* Mini stat row */}
             <div className="grid grid-cols-3 gap-2">
               <div className="rounded-xl p-3 bg-emerald-50 border border-emerald-100 text-center">
