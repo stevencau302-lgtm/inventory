@@ -743,7 +743,7 @@ export default function ReportsPage() {
               <p className="text-[11px] text-gray-500">Distribusi nilai inventory</p>
             </div>
           </div>
-          <div className="p-5">
+          <div className="p-5 flex-1 flex flex-col justify-center">
             {/* Donut visualization */}
             <div className="flex items-center gap-6">
               <div className="relative w-32 h-32 shrink-0">
