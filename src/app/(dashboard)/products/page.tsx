@@ -436,44 +436,57 @@ export default function ProductsPage() {
           {/* Mobile Cards - Stock Report */}
           <div className="md:hidden space-y-2.5">
             {stockReports.length === 0 ? (
-              <div className="text-center py-16">
-                <p className="text-sm text-gray-500">Tidak ada data ditemukan</p>
+              <div className="text-center py-16 rounded-2xl border border-dashed border-gray-200 bg-white">
+                <div className="w-14 h-14 rounded-2xl bg-gray-50 flex items-center justify-center mx-auto mb-3">
+                  <svg className="w-7 h-7 text-gray-300" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25z" /></svg>
+                </div>
+                <p className="text-sm font-medium text-gray-600">Tidak ada data ditemukan</p>
               </div>
             ) : (
-              stockReports.map(r => (
-                <div key={r.product.id} className={`rounded-xl overflow-hidden border transition-all ${
-                  r.status === 'habis' ? 'border-red-200 bg-red-50/50' :
-                  r.status === 'menipis' ? 'border-amber-200 bg-amber-50/50' :
-                  'border-gray-200 bg-white'
-                }`}>
-                  <div className="px-4 pt-3 pb-2 flex items-center justify-between">
-                    <div className="min-w-0">
-                      <p className="text-[13px] font-semibold text-gray-900 truncate">{r.product.name}</p>
-                      <p className="text-[10px] text-gray-500 font-mono">{r.product.sku}</p>
+              stockReports.map(r => {
+                const accent = r.status === 'habis' ? 'border-l-[#DC2626]' : r.status === 'menipis' ? 'border-l-[#D97706]' : 'border-l-[#16A34A]'
+                const finalColor = r.status === 'habis' ? 'text-[#DC2626]' : r.status === 'menipis' ? 'text-[#D97706]' : 'text-[#16A34A]'
+                const finalBg = r.status === 'habis' ? 'bg-red-50' : r.status === 'menipis' ? 'bg-amber-50' : 'bg-emerald-50'
+                return (
+                  <div key={r.product.id} className={`rounded-2xl border border-gray-200 border-l-4 ${accent} bg-white p-3.5 shadow-sm`}>
+                    {/* Header */}
+                    <div className="flex items-center justify-between gap-2 mb-3">
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#FF5F03] to-[#072C2C] flex items-center justify-center text-white text-[11px] font-bold shrink-0">
+                          {r.product.name.substring(0, 2).toUpperCase()}
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-[13px] font-semibold text-gray-900 truncate">{r.product.name}</p>
+                          <p className="text-[10px] text-gray-500 font-mono truncate">{r.product.sku}</p>
+                        </div>
+                      </div>
+                      <StockStatusBadge status={r.status} />
                     </div>
-                    <StockStatusBadge status={r.status} />
-                  </div>
-                  <div className="px-4 pb-3">
-                    <div className="flex items-center justify-between bg-gray-50 rounded-lg px-3 py-2">
-                      <div className="text-center">
-                        <p className="text-[10px] text-gray-400">AWAL</p>
-                        <p className="text-sm font-semibold text-gray-500">{r.stockAwal}</p>
+
+                    {/* Stock flow */}
+                    <div className="grid grid-cols-3 gap-2">
+                      <div className="rounded-xl bg-gray-50 border border-gray-100 px-2 py-2 text-center">
+                        <p className="text-[9px] text-gray-400 uppercase tracking-wider">Awal</p>
+                        <p className="text-sm font-bold text-gray-600 mt-0.5">{r.stockAwal}</p>
                       </div>
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-[11px] font-bold text-[#16A34A]">+{r.masuk}</span>
-                        <svg className="w-3 h-3 text-gray-400" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" /></svg>
-                        <span className="text-[11px] font-bold text-[#DC2626]">-{r.keluar}</span>
+                      <div className="rounded-xl bg-emerald-50 border border-emerald-100 px-2 py-2 text-center">
+                        <p className="text-[9px] text-emerald-600/70 uppercase tracking-wider">Masuk</p>
+                        <p className="text-sm font-bold text-[#16A34A] mt-0.5">+{r.masuk}</p>
                       </div>
-                      <div className="text-center">
-                        <p className="text-[10px] text-gray-400">AKHIR</p>
-                        <p className={`text-sm font-bold ${
-                          r.status === 'habis' ? 'text-[#DC2626]' : r.status === 'menipis' ? 'text-[#D97706]' : 'text-[#16A34A]'
-                        }`}>{r.stockAkhir}</p>
+                      <div className="rounded-xl bg-red-50 border border-red-100 px-2 py-2 text-center">
+                        <p className="text-[9px] text-red-500/70 uppercase tracking-wider">Keluar</p>
+                        <p className="text-sm font-bold text-[#DC2626] mt-0.5">-{r.keluar}</p>
                       </div>
                     </div>
+
+                    {/* Final stock */}
+                    <div className={`mt-2 flex items-center justify-between rounded-xl ${finalBg} px-3 py-2.5`}>
+                      <span className="text-[11px] font-semibold text-gray-600 uppercase tracking-wider">Stok Akhir</span>
+                      <span className={`text-lg font-bold ${finalColor}`}>{r.stockAkhir}</span>
+                    </div>
                   </div>
-                </div>
-              ))
+                )
+              })
             )}
           </div>
         </div>
