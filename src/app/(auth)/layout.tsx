@@ -46,7 +46,7 @@ function FloatingParticles() {
       {Array.from({ length: 20 }).map((_, i) => (
         <motion.div
           key={i}
-          className="absolute w-1 h-1 rounded-full bg-[#F59E0B]/20"
+          className="absolute w-1 h-1 rounded-full bg-[#FF5F03]/20"
           initial={{
             x: `${Math.random() * 100}%`,
             y: `${Math.random() * 100}%`,
@@ -81,10 +81,10 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
               className="absolute inset-0 opacity-30"
               animate={{
                 background: [
-                  'radial-gradient(circle at 20% 50%, rgba(245,158,11,0.15) 0%, transparent 50%)',
-                  'radial-gradient(circle at 80% 50%, rgba(245,158,11,0.15) 0%, transparent 50%)',
-                  'radial-gradient(circle at 50% 80%, rgba(245,158,11,0.15) 0%, transparent 50%)',
-                  'radial-gradient(circle at 20% 50%, rgba(245,158,11,0.15) 0%, transparent 50%)',
+                  'radial-gradient(circle at 20% 50%, rgba(255,95,3,0.15) 0%, transparent 50%)',
+                  'radial-gradient(circle at 80% 50%, rgba(255,95,3,0.15) 0%, transparent 50%)',
+                  'radial-gradient(circle at 50% 80%, rgba(255,95,3,0.15) 0%, transparent 50%)',
+                  'radial-gradient(circle at 20% 50%, rgba(255,95,3,0.15) 0%, transparent 50%)',
                 ],
               }}
               transition={{ duration: 12, repeat: Infinity, ease: 'linear' }}
