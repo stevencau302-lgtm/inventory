@@ -2,15 +2,14 @@
 
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useState, useEffect } from 'react'
 import {
   LayoutDashboard,
   Package,
-  Tags,
   ClipboardCheck,
   BarChart3,
   Settings,
-  Box,
   Menu,
   X,
   PanelLeftClose,
@@ -18,6 +17,8 @@ import {
 } from 'lucide-react'
 import { getSetting, saveSetting } from '@/lib/store'
 import { useAuth } from '@/components/AuthProvider'
+
+const LOGO_URL = 'https://res.cloudinary.com/dqjh7utdb/image/upload/v1780900133/ir2utm5qy58xshaoij3m.webp'
 
 const navItems = [
   { href: '/', label: 'Dashboard', icon: LayoutDashboard },
