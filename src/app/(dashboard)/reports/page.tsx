@@ -619,12 +619,12 @@ export default function ReportsPage() {
         <div className="p-5 border-b border-gray-200">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-purple-500/20 to-indigo-500/20 border border-purple-200 flex items-center justify-center">
-                <Sparkles className="w-4.5 h-4.5 text-purple-500" />
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-purple-500 to-indigo-500 flex items-center justify-center shadow-lg shadow-purple-500/20">
+                <Sparkles className="w-4 h-4 text-white" />
               </div>
               <div>
                 <h2 className="font-semibold text-gray-900">AI Insight</h2>
-                <p className="text-[11px] text-gray-500">Analisa otomatis oleh AI berdasarkan data inventory</p>
+                <p className="text-[11px] text-gray-500">Analisa cerdas berdasarkan data inventory kamu</p>
               </div>
             </div>
             <button
@@ -640,7 +640,7 @@ export default function ReportsPage() {
               ) : (
                 <>
                   <Sparkles className="w-4 h-4" />
-                  <span>{aiInsight ? 'Refresh Insight' : 'Generate Insight'}</span>
+                  <span>{aiInsight ? 'Refresh' : 'Generate Insight'}</span>
                 </>
               )}
             </button>
@@ -653,16 +653,19 @@ export default function ReportsPage() {
                 <Sparkles className="w-7 h-7 text-purple-300" />
               </div>
               <p className="text-sm font-medium text-gray-700">Belum ada insight</p>
-              <p className="text-xs text-gray-400 mt-1.5 max-w-[280px] mx-auto">Klik tombol di atas untuk mendapatkan analisa AI tentang kondisi inventory kamu</p>
+              <p className="text-xs text-gray-400 mt-1.5 max-w-[280px] mx-auto">Klik tombol di atas untuk mendapatkan analisa AI</p>
             </div>
           )}
           {aiLoading && (
             <div className="text-center py-10">
-              <div className="w-14 h-14 rounded-2xl bg-purple-50 border border-purple-100 flex items-center justify-center mx-auto mb-4 animate-pulse">
-                <Sparkles className="w-7 h-7 text-purple-400" />
+              <div className="relative w-14 h-14 mx-auto mb-4">
+                <div className="absolute inset-0 rounded-2xl bg-purple-100 animate-ping opacity-30" />
+                <div className="relative w-14 h-14 rounded-2xl bg-purple-50 border border-purple-100 flex items-center justify-center">
+                  <Sparkles className="w-7 h-7 text-purple-400 animate-pulse" />
+                </div>
               </div>
-              <p className="text-sm font-medium text-gray-700">AI sedang menganalisa...</p>
-              <p className="text-xs text-gray-400 mt-1.5">Memproses data inventory kamu</p>
+              <p className="text-sm font-medium text-gray-700">Sedang menganalisa data...</p>
+              <p className="text-xs text-gray-400 mt-1.5">Biasanya 5-10 detik</p>
             </div>
           )}
           {aiError && (
@@ -677,18 +680,34 @@ export default function ReportsPage() {
             </div>
           )}
           {aiInsight && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            <div className="space-y-4">
               {parseAiSections(aiInsight).map((section, idx) => {
-                const style = sectionIcons[idx] || sectionIcons[0]
+                // SVG icons for each section type
+                const sectionConfig = [
+                  { color: 'blue', iconBg: 'bg-blue-100', iconColor: 'text-blue-600', borderColor: 'border-blue-200', headerBg: 'bg-blue-50', icon: <Activity className="w-4 h-4" /> },
+                  { color: 'amber', iconBg: 'bg-amber-100', iconColor: 'text-amber-600', borderColor: 'border-amber-200', headerBg: 'bg-amber-50', icon: <AlertTriangle className="w-4 h-4" /> },
+                  { color: 'emerald', iconBg: 'bg-emerald-100', iconColor: 'text-emerald-600', borderColor: 'border-emerald-200', headerBg: 'bg-emerald-50', icon: <TrendingUp className="w-4 h-4" /> },
+                  { color: 'rose', iconBg: 'bg-rose-100', iconColor: 'text-rose-600', borderColor: 'border-rose-200', headerBg: 'bg-rose-50', icon: <AlertTriangle className="w-4 h-4" /> },
+                ][idx % 4]
+
                 return (
-                  <div key={idx} className={`rounded-xl p-4 border ${style.bg} transition-all hover:shadow-sm`}>
-                    <div className="flex items-center gap-2 mb-3">
-                      <span className="text-lg">{style.icon}</span>
-                      <h3 className={`text-sm font-bold ${style.color}`}>{section.title}</h3>
+                  <div key={idx} className={`rounded-xl border ${sectionConfig.borderColor} overflow-hidden`}>
+                    {/* Section header */}
+                    <div className={`px-4 py-3 ${sectionConfig.headerBg} flex items-center gap-2.5`}>
+                      <div className={`w-7 h-7 rounded-lg ${sectionConfig.iconBg} ${sectionConfig.iconColor} flex items-center justify-center shrink-0`}>
+                        {sectionConfig.icon}
+                      </div>
+                      <h3 className="text-sm font-bold text-gray-900">{section.title}</h3>
                     </div>
-                    <div className="space-y-2">
+                    {/* Section content */}
+                    <div className="px-4 py-3 space-y-2.5 bg-white">
                       {section.items.map((item, i) => (
-                        <p key={i} className="text-xs text-gray-600 leading-relaxed" dangerouslySetInnerHTML={{ __html: item }} />
+                        <div key={i} className="flex items-start gap-2.5">
+                          <div className={`w-5 h-5 rounded-md ${sectionConfig.iconBg} ${sectionConfig.iconColor} flex items-center justify-center shrink-0 mt-0.5`}>
+                            <span className="text-[10px] font-bold">{i + 1}</span>
+                          </div>
+                          <p className="text-[13px] text-gray-600 leading-relaxed [&_strong]:text-gray-900 [&_strong]:font-semibold" dangerouslySetInnerHTML={{ __html: item }} />
+                        </div>
                       ))}
                     </div>
                   </div>
