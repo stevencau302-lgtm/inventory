@@ -287,7 +287,7 @@ async function exportToPDF(products: Product[], transactions: Transaction[], cat
     doc.line(14, pH - 14, pageWidth - 14, pH - 14)
     doc.setFontSize(7)
     doc.setTextColor(...gray)
-    doc.text('Nexa — Laporan digenerate otomatis', 14, pH - 8)
+    doc.text('Nexa Inventory — Laporan digenerate otomatis', 14, pH - 8)
     doc.text(`Halaman ${i} dari ${totalPages}`, pageWidth - 14, pH - 8, { align: 'right' })
   }
 

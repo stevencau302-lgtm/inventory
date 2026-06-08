@@ -170,7 +170,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
               transition={{ delay: 2.2, duration: 0.6 }}
               className="text-center text-[10px] text-zinc-600 mt-4"
             >
-              &copy; 2024 Nexa. All rights reserved.
+              &copy; 2024 Nexa Inventory. All rights reserved.
             </motion.p>
           </div>
         </div>
