@@ -150,6 +150,9 @@ export default function SettingsPage() {
       </div>
 
       {/* WhatsApp Notification (Fonnte) */}
+      <AISettings />
+
+      {/* WhatsApp Notification (Fonnte) */}
       <WhatsAppSettings />
 
       {/* About */}

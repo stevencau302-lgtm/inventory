@@ -1,16 +1,28 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { createClient } from '@supabase/supabase-js'
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://zhbsqpoxmzzeomdxqvoo.supabase.co'
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpoYnNxcG94bXp6ZW9tZHhxdm9vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg5NTE3MDIsImV4cCI6MjA5NDUyNzcwMn0.j66I_l-hHt0krVvra0SorjEFZjTXTRtcRPpoUkLvOfM'
 
 export async function POST(req: NextRequest) {
   try {
     const { products, transactions, categories, dateRange } = await req.json()
 
-    const apiKey = process.env.OPENAGENTIC_API_KEY
+    // Read API key from Supabase settings
+    const supabase = createClient(supabaseUrl, supabaseKey)
+    const { data: settings } = await supabase.from('settings').select('*')
+    const settingsMap: Record<string, string> = {}
+    ;(settings || []).forEach((s: any) => { settingsMap[s.key] = s.value })
+
+    const apiKey = settingsMap['ai_api_key']
     if (!apiKey) {
       return NextResponse.json(
-        { error: 'API key belum dikonfigurasi. Tambahkan OPENAGENTIC_API_KEY di .env.local' },
-        { status: 500 }
+        { error: 'API key belum dikonfigurasi. Tambahkan di menu Pengaturan → AI API Key.' },
+        { status: 400 }
       )
     }
+
+    const aiModel = settingsMap['ai_model'] || 'deepseek-3.2'
 
     // Build summary data for AI
     const totalProducts = products?.length || 0
@@ -50,14 +62,14 @@ Berikan:
 
 Format dalam markdown. Jaga respons tetap ringkas dan praktis.`
 
-    const response = await fetch('https://openagentic.id/api/v1/chat/completions', {
+    const response = await fetch('https://aimurah.my.id/api/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: 'deepseek-3.2',
+        model: aiModel,
         messages: [
           { role: 'system', content: 'Kamu adalah asisten analis inventory yang membantu pemilik bisnis memahami kondisi stok mereka. Berikan analisa dalam Bahasa Indonesia yang ringkas dan actionable.' },
           { role: 'user', content: prompt }
@@ -69,7 +81,7 @@ Format dalam markdown. Jaga respons tetap ringkas dan praktis.`
 
     if (!response.ok) {
       const errData = await response.text()
-      console.error('OpenAgentic API error:', response.status, errData)
+      console.error('AI API error:', response.status, errData)
       return NextResponse.json(
         { error: `AI API error: ${response.status}. ${errData}` },
         { status: response.status }
