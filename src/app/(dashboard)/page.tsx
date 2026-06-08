@@ -33,6 +33,7 @@ export default function Dashboard() {
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [mounted, setMounted] = useState(false)
   const [txPage, setTxPage] = useState(1)
+  const [rangeDays, setRangeDays] = useState(7)
   const txPerPage = 4
 
   useEffect(() => {
@@ -80,7 +81,7 @@ export default function Dashboard() {
   return (
     <div className="space-y-5">
       {/* Greeting */}
-      <Greeting transactions={transactions} totalValue={totalValue} />
+      <Greeting transactions={transactions} totalValue={totalValue} rangeDays={rangeDays} onRangeChange={setRangeDays} />
 
       {/* Row 1: Health Score + Quick Action */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
@@ -267,7 +268,7 @@ export default function Dashboard() {
       </div>
 
       {/* Row 4: Pergerakan Stok (full width) */}
-      <DashboardCharts products={products} transactions={transactions} />
+      <DashboardCharts products={products} transactions={transactions} rangeDays={rangeDays} />
     </div>
   )
 }
