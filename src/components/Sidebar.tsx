@@ -96,7 +96,7 @@ export default function Sidebar() {
               <Box className="w-4.5 h-4.5 text-white" />
             </div>
             {!isCollapsedView && (
-              <span className="text-sm font-bold text-white whitespace-nowrap">Nexo Inventory</span>
+              <span className="text-sm font-bold text-white whitespace-nowrap">Nexa</span>
             )}
           </div>
           {/* Close button mobile / Collapse desktop */}

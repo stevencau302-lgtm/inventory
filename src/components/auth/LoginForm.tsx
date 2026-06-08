@@ -82,7 +82,7 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-white mb-1">Selamat Datang</h1>
-        <p className="text-sm text-zinc-400">Masuk ke akun Nexo Inventory</p>
+        <p className="text-sm text-zinc-400">Masuk ke akun Nexa</p>
       </div>
 
       {/* Registered success banner */}
