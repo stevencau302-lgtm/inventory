@@ -548,3 +548,138 @@ function WhatsAppSettings() {
     </div>
   )
 }
+
+
+/* ─── AI Settings Component ─── */
+function AISettings() {
+  const [apiKey, setApiKey] = useState('')
+  const [model, setModel] = useState('deepseek-3.2')
+  const [saving, setSaving] = useState(false)
+  const [saved, setSaved] = useState(false)
+  const [hasChanges, setHasChanges] = useState(false)
+  const [loaded, setLoaded] = useState(false)
+  const { toast } = useToast()
+
+  useEffect(() => {
+    fetch('/api/settings').then(r => r.json()).then(data => {
+      if (data.ai_api_key) setApiKey(data.ai_api_key)
+      if (data.ai_model) setModel(data.ai_model)
+      setLoaded(true)
+      setSaved(!!data.ai_api_key)
+    }).catch(() => setLoaded(true))
+  }, [])
+
+  const markChanged = () => { setHasChanges(true); setSaved(false) }
+
+  const handleSave = async () => {
+    setSaving(true)
+    try {
+      const res = await fetch('/api/settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ai_api_key: apiKey, ai_model: model }),
+      })
+      if (res.ok) { setSaved(true); setHasChanges(false); toast('API Key tersimpan!', 'success') }
+      else toast('Gagal menyimpan', 'error')
+    } catch { toast('Gagal menyimpan', 'error') }
+    finally { setSaving(false) }
+  }
+
+  const inputClass = "w-full px-4 py-3 rounded-xl text-sm bg-gray-50 border border-gray-200 text-gray-900 placeholder-gray-400 outline-none focus:border-purple-500/50 focus:bg-white transition-all"
+
+  return (
+    <div className="rounded-2xl overflow-hidden border border-gray-200 bg-white">
+      <div className="px-5 py-4 border-b border-gray-200 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-purple-500/20 to-purple-600/10 border border-purple-500/20 flex items-center justify-center">
+            <svg className="w-4.5 h-4.5 text-purple-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456z" /></svg>
+          </div>
+          <div>
+            <h2 className="text-sm font-semibold text-gray-900">AI Insight</h2>
+            <p className="text-[10px] text-gray-500">Powered by OpenAgentic / AIMurah</p>
+          </div>
+        </div>
+        {saved && !hasChanges && (
+          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-purple-500/10 border border-purple-500/20 text-[10px] font-bold text-purple-500">
+            <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>
+            Aktif
+          </span>
+        )}
+        {hasChanges && (
+          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-50 border border-amber-500/20 text-[10px] font-bold text-[#D97706]">
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+            Belum disimpan
+          </span>
+        )}
+      </div>
+
+      <div className="p-5 space-y-5">
+        {/* API Key */}
+        <div className="space-y-2">
+          <label className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider flex items-center gap-2">
+            <svg className="w-3 h-3 text-gray-500" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 5.25a3 3 0 013 3m3 0a6 6 0 01-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1121.75 8.25z" /></svg>
+            API Key
+          </label>
+          <input
+            type="password"
+            value={apiKey}
+            onChange={e => { setApiKey(e.target.value); markChanged() }}
+            className={inputClass}
+            placeholder="sk-xxxxxxxxxxxxxxxx"
+          />
+          <p className="text-[10px] text-gray-400">Dapatkan API key gratis di <a href="https://openagentic.id/api-keys" target="_blank" rel="noopener noreferrer" className="text-purple-500 hover:underline">openagentic.id/api-keys</a></p>
+        </div>
+
+        {/* Model Selector */}
+        <div className="space-y-2">
+          <label className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider flex items-center gap-2">
+            <svg className="w-3 h-3 text-gray-500" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 3v1.5M4.5 8.25H3m18 0h-1.5M4.5 12H3m18 0h-1.5m-15 3.75H3m18 0h-1.5M8.25 19.5V21M12 3v1.5m0 15V21m3.75-18v1.5m0 15V21m-9-1.5h10.5a2.25 2.25 0 002.25-2.25V6.75a2.25 2.25 0 00-2.25-2.25H6.75A2.25 2.25 0 004.5 6.75v10.5a2.25 2.25 0 002.25 2.25z" /></svg>
+            Model AI
+          </label>
+          <select
+            value={model}
+            onChange={e => { setModel(e.target.value); markChanged() }}
+            className={inputClass}
+          >
+            <optgroup label="Free">
+              <option value="deepseek-3.2">DeepSeek 3.2 (Free)</option>
+              <option value="claude-sonnet-4.5">Claude Sonnet 4.5 (Free)</option>
+              <option value="claude-haiku-4.5">Claude Haiku 4.5 (Free)</option>
+              <option value="minimax-m2.5">MiniMax M2.5 (Free)</option>
+            </optgroup>
+            <optgroup label="Pro">
+              <option value="claude-opus-4.6">Claude Opus 4.6 (Pro)</option>
+              <option value="gpt-5.5">GPT-5.5 (Pro)</option>
+              <option value="gemini-2.5-pro">Gemini 2.5 Pro (Pro)</option>
+            </optgroup>
+          </select>
+        </div>
+
+        {/* Save button */}
+        <div className="pt-3">
+          <button
+            onClick={handleSave}
+            disabled={saving || !hasChanges}
+            className="w-full px-4 py-3 rounded-xl bg-purple-500 text-white text-xs font-bold hover:bg-purple-600 transition-all active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed shadow-lg shadow-purple-500/20"
+          >
+            {saving ? (
+              <span className="flex items-center justify-center gap-2"><span className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Menyimpan...</span>
+            ) : (
+              <span className="flex items-center justify-center gap-2">
+                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>
+                Simpan API Key
+              </span>
+            )}
+          </button>
+        </div>
+
+        {/* Info box */}
+        <div className="rounded-xl p-3.5 bg-purple-50 border border-purple-200">
+          <p className="text-[11px] text-purple-700 leading-relaxed">
+            <strong>Cara pakai:</strong> Daftar gratis di openagentic.id → Generate API Key → Paste di atas → Buka menu Analisa → Klik "Generate Insight"
+          </p>
+        </div>
+      </div>
+    </div>
+  )
+}
