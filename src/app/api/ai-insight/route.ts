@@ -57,7 +57,7 @@ Format dalam markdown. Jaga respons tetap ringkas dan praktis.`
         'Authorization': `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: 'deepseek-v3',
+        model: 'deepseek-3.2',
         messages: [
           { role: 'system', content: 'Kamu adalah asisten analis inventory yang membantu pemilik bisnis memahami kondisi stok mereka. Berikan analisa dalam Bahasa Indonesia yang ringkas dan actionable.' },
           { role: 'user', content: prompt }
