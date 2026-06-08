@@ -370,8 +370,8 @@ function RobotMascot() {
       <path d="M40 110 l2 5 5 2 -5 2 -2 5 -2 -5 -5 -2 5 -2 z" fill="#FF8A3D" opacity="0.7" />
       <path d="M165 110 l1.5 4 4 1.5 -4 1.5 -1.5 4 -1.5 -4 -4 -1.5 4 -1.5 z" fill="#FFC79E" opacity="0.6" />
       {/* Antenna */}
-      <line x1="100" y1="48" x2="100" y2="62" stroke="#FF7A28" strokeWidth="3" strokeLinecap="round" />
-      <circle cx="100" cy="44" r="6" fill="#FF7A28" />
+      <line x1="100" y1="48" x2="100" y2="62" stroke="#FF9A52" strokeWidth="3" strokeLinecap="round" />
+      <circle cx="100" cy="44" r="6" fill="#FF9A52" />
       <circle cx="100" cy="44" r="2.5" fill="#FFF1E6" />
       {/* Head */}
       <rect x="58" y="62" width="84" height="68" rx="24" fill="url(#robotHead)" />
