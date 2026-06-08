@@ -312,10 +312,6 @@ function Greeting({ transactions, totalValue, rangeDays, onRangeChange }: { tran
     </div>
   )
 }
-      </div>
-    </div>
-  )
-}
 
 function HealthCard({ score, className = '' }: { score: number; className?: string }) {
   const status = score >= 80
