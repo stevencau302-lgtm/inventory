@@ -339,10 +339,10 @@ function HealthCard({ score, className = '' }: { score: number; className?: stri
 
 function QuickAction({ className = '' }: { className?: string }) {
   const actions = [
-    { label: 'Tambah Produk', href: '/products/new', icon: <Plus className="w-5 h-5" />, tint: 'bg-violet-50 text-violet-500 group-hover:bg-violet-500 group-hover:text-white' },
+    { label: 'Tambah Produk', href: '/products/new', icon: <Plus className="w-5 h-5" />, tint: 'bg-[#072C2C]/10 text-[#072C2C] group-hover:bg-[#072C2C] group-hover:text-white' },
     { label: 'Stok Masuk', href: '/transactions/new', icon: <ArrowDownToLine className="w-5 h-5" />, tint: 'bg-emerald-50 text-emerald-500 group-hover:bg-emerald-500 group-hover:text-white' },
     { label: 'Stok Keluar', href: '/transactions/new', icon: <ArrowUpFromLine className="w-5 h-5" />, tint: 'bg-orange-50 text-orange-500 group-hover:bg-orange-500 group-hover:text-white' },
-    { label: 'Generate Insight', href: '/ai-chat', icon: <Sparkles className="w-5 h-5" />, tint: 'bg-blue-50 text-blue-500 group-hover:bg-blue-500 group-hover:text-white' },
+    { label: 'Generate Insight', href: '/ai-chat', icon: <Sparkles className="w-5 h-5" />, tint: 'bg-[#FF5F03]/10 text-[#FF5F03] group-hover:bg-[#FF5F03] group-hover:text-white' },
   ]
   return (
     <div className={`rounded-2xl bg-white border border-gray-200 p-5 ${className}`}>

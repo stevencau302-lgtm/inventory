@@ -92,7 +92,7 @@ async function exportToPDF(products: Product[], transactions: Transaction[], cat
   const timeStr = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
 
   // Colors
-  const primary = [79, 70, 229] // indigo
+  const primary = [255, 95, 3] // brand orange #FF5F03
   const dark = [24, 24, 27]
   const gray = [113, 113, 122]
   const success = [16, 185, 129]
