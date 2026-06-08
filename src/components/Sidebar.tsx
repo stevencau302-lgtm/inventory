@@ -2,7 +2,6 @@
 
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
-import Image from 'next/image'
 import { useState, useEffect } from 'react'
 import {
   LayoutDashboard,
@@ -19,7 +18,25 @@ import {
 import { getSetting, saveSetting } from '@/lib/store'
 import { useAuth } from '@/components/AuthProvider'
 
-const LOGO_URL = 'https://res.cloudinary.com/dqjh7utdb/image/upload/v1780900133/ir2utm5qy58xshaoij3m.webp'
+// Custom SVG logo component
+function NexaLogo({ size = 36 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="36" height="36" rx="10" fill="url(#logo-grad)" />
+      <path d="M10 13.5L18 9L26 13.5V22.5L18 27L10 22.5V13.5Z" stroke="white" strokeWidth="1.8" strokeLinejoin="round" fill="none" />
+      <path d="M18 9V27" stroke="white" strokeWidth="1.2" opacity="0.4" />
+      <path d="M10 13.5L26 22.5" stroke="white" strokeWidth="1.2" opacity="0.4" />
+      <path d="M26 13.5L10 22.5" stroke="white" strokeWidth="1.2" opacity="0.4" />
+      <circle cx="18" cy="18" r="3" fill="white" opacity="0.9" />
+      <defs>
+        <linearGradient id="logo-grad" x1="0" y1="0" x2="36" y2="36" gradientUnits="userSpaceOnUse">
+          <stop stopColor="#FF5F03" />
+          <stop offset="1" stopColor="#FF8A3D" />
+        </linearGradient>
+      </defs>
+    </svg>
+  )
+}
 
 const navItems = [
   { href: '/', label: 'Dashboard', icon: LayoutDashboard },
@@ -95,18 +112,14 @@ export default function Sidebar() {
         {/* Header */}
         <div className="h-14 flex items-center px-3 border-b border-white/10">
           <div className="flex items-center gap-2.5 min-w-0 flex-1">
-            <div className="w-9 h-9 rounded-xl overflow-hidden shrink-0">
-              <Image
-                src={LOGO_URL}
-                alt="Nexa"
-                width={36}
-                height={36}
-                className="w-full h-full object-cover"
-                unoptimized
-              />
+            <div className="shrink-0">
+              <NexaLogo size={34} />
             </div>
             {!isCollapsedView && (
-              <span className="text-sm font-bold text-white whitespace-nowrap">Nexa</span>
+              <div className="flex flex-col">
+                <span className="text-sm font-bold text-white whitespace-nowrap leading-tight">Nexa</span>
+                <span className="text-[9px] text-white/40 font-medium uppercase tracking-widest leading-tight">Inventory</span>
+              </div>
             )}
           </div>
           {/* Close button mobile / Collapse desktop */}
