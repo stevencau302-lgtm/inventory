@@ -385,17 +385,14 @@ function AnimatedValue({ value }: { value: string }) {
   return <>{value}</>
 }
 
-function StatCard({ icon, tint, label, value, trend, trendUp }: { icon: React.ReactNode; tint: string; label: string; value: string; trend: string; trendUp: boolean }) {
+function StatCard({ border, label, value, trend, trendUp }: { border: string; label: string; value: string; trend: string; trendUp: boolean }) {
   return (
-    <div className="rounded-2xl p-4 bg-white border border-gray-200 hover:shadow-sm transition-all">
-      <div className="flex items-start justify-between">
-        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">{label}</p>
-        <span className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${tint}`}>{icon}</span>
-      </div>
-      <p className="text-xl sm:text-2xl font-bold text-gray-900 mt-2">
+    <div className={`rounded-lg p-3 bg-white border border-gray-200 border-l-4 ${border} hover:shadow-sm transition-all`}>
+      <p className="text-[9px] text-gray-500 font-bold uppercase tracking-wider mb-1">{label}</p>
+      <p className="text-lg font-bold text-gray-900">
         <AnimatedValue value={value} />
       </p>
-      <p className={`text-[11px] mt-1 flex items-center gap-1 ${trendUp ? 'text-emerald-500' : 'text-amber-500'}`}>
+      <p className={`text-[10px] mt-0.5 flex items-center gap-0.5 ${trendUp ? 'text-emerald-500' : 'text-amber-500'}`}>
         {trendUp && <span>↑</span>}{trend}
       </p>
     </div>
