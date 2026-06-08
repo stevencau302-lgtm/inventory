@@ -148,6 +148,7 @@ async function seedDemoData() {
   await supabase.from('transactions').delete().eq('user_id', userId)
   await supabase.from('products').delete().eq('user_id', userId)
   await supabase.from('categories').delete().eq('user_id', userId)
+  await supabase.from('settings').delete().eq('user_id', userId)
 
   // Seed categories
   const categories = [
