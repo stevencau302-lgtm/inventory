@@ -597,25 +597,39 @@ export default function ReportsPage() {
       {/* ===== STAT CARDS (bento grid) ===== */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         {/* Big card - Total Nilai */}
-        <div className="col-span-2 lg:col-span-2 lg:row-span-2 relative overflow-hidden rounded-2xl p-6 bg-gradient-to-br from-violet-500 to-purple-600 text-white shadow-xl shadow-purple-500/15">
+        <div className="col-span-2 lg:col-span-2 lg:row-span-2 relative overflow-hidden rounded-2xl p-5 sm:p-6 bg-gradient-to-br from-violet-500 to-purple-600 text-white shadow-xl shadow-purple-500/15">
           <div className="absolute top-0 right-0 w-40 h-40 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/4" />
           <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/4" />
-          <div className="relative">
+          <div className="relative flex flex-col h-full">
             <div className="flex items-center justify-between mb-4">
               <p className="text-sm font-medium text-white/70">Total Nilai Inventory</p>
               <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center">
                 <DollarSign className="w-5 h-5 text-white/80" />
               </div>
             </div>
-            <p className="text-3xl sm:text-4xl font-extrabold mb-2">{formatRp(totalValue)}</p>
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/15 text-xs font-medium">
-              <TrendingUp className="w-3 h-3" />
-              <span>dibanding {rangeLabel.toLowerCase()}</span>
+            <p className="text-3xl sm:text-4xl font-extrabold mb-3">{formatRp(totalValue)}</p>
+            <div className="flex flex-wrap items-center gap-2 mb-auto">
+              <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold ${valueTrend >= 0 ? 'bg-emerald-400/20 text-emerald-50' : 'bg-red-400/20 text-red-50'}`}>
+                {valueTrend >= 0 ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
+                <span>{valueTrend >= 0 ? '+' : ''}{formatRp(Math.abs(valueTrend))}</span>
+              </div>
+              <span className="text-[11px] text-white/50">arus nilai {rangeLabel.toLowerCase()}</span>
+            </div>
+            {/* Mini breakdown */}
+            <div className="mt-4 pt-4 border-t border-white/15 grid grid-cols-2 gap-3">
+              <div>
+                <p className="text-[10px] text-white/50 uppercase tracking-wider mb-0.5">Produk Aktif</p>
+                <p className="text-lg font-bold">{inStockCount}<span className="text-xs font-normal text-white/60">/{products.length}</span></p>
+              </div>
+              <div>
+                <p className="text-[10px] text-white/50 uppercase tracking-wider mb-0.5">Kategori Teratas</p>
+                <p className="text-lg font-bold truncate">{topCategoryName || '—'}</p>
+              </div>
             </div>
           </div>
         </div>
         {/* Total Unit */}
-        <div className="rounded-2xl p-4 bg-white border border-gray-200 shadow-sm">
+        <div className="rounded-2xl p-4 bg-white border border-gray-200 shadow-sm hover:shadow-md hover:border-blue-200 transition-all">
           <div className="flex items-center justify-between mb-3">
             <p className="text-xs font-medium text-gray-500">Total Unit</p>
             <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center">
@@ -623,10 +637,18 @@ export default function ReportsPage() {
             </div>
           </div>
           <p className="text-2xl font-bold text-gray-900">{totalItems.toLocaleString()}</p>
-          <p className="text-[11px] text-gray-400 mt-1">unit</p>
+          <p className="text-[11px] mt-1 flex items-center gap-1">
+            {outStock.length > 0 ? (
+              <span className="text-red-500 font-medium">{outStock.length} produk habis</span>
+            ) : lowStock.length > 0 ? (
+              <span className="text-amber-500 font-medium">{lowStock.length} stok menipis</span>
+            ) : (
+              <span className="text-emerald-500 font-medium">semua stok aman</span>
+            )}
+          </p>
         </div>
         {/* Total Kategori */}
-        <div className="rounded-2xl p-4 bg-white border border-gray-200 shadow-sm">
+        <div className="rounded-2xl p-4 bg-white border border-gray-200 shadow-sm hover:shadow-md hover:border-indigo-200 transition-all">
           <div className="flex items-center justify-between mb-3">
             <p className="text-xs font-medium text-gray-500">Total Kategori</p>
             <div className="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center">
@@ -634,10 +656,12 @@ export default function ReportsPage() {
             </div>
           </div>
           <p className="text-2xl font-bold text-gray-900">{categories.length}</p>
-          <p className="text-[11px] text-gray-400 mt-1">kategori</p>
+          <p className="text-[11px] text-gray-400 mt-1 truncate">
+            {topCategoryName ? <>terbesar: <span className="text-gray-600 font-medium">{topCategoryName}</span></> : 'belum ada nilai'}
+          </p>
         </div>
         {/* Dead Stock */}
-        <div className="rounded-2xl p-4 bg-white border border-gray-200 shadow-sm">
+        <div className="rounded-2xl p-4 bg-white border border-gray-200 shadow-sm hover:shadow-md hover:border-amber-200 transition-all">
           <div className="flex items-center justify-between mb-3">
             <p className="text-xs font-medium text-gray-500">Dead Stock</p>
             <div className="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center">
@@ -645,10 +669,16 @@ export default function ReportsPage() {
             </div>
           </div>
           <p className="text-2xl font-bold text-gray-900">{deadStock.length}</p>
-          <p className="text-[11px] text-gray-400 mt-1">produk</p>
+          <p className="text-[11px] mt-1">
+            {deadStock.length > 0 ? (
+              <span className="text-amber-500 font-medium">{formatRp(deadStockValue)} tertahan</span>
+            ) : (
+              <span className="text-emerald-500 font-medium">tidak ada 🎉</span>
+            )}
+          </p>
         </div>
         {/* Rata-rata Harga */}
-        <div className="rounded-2xl p-4 bg-white border border-gray-200 shadow-sm">
+        <div className="rounded-2xl p-4 bg-white border border-gray-200 shadow-sm hover:shadow-md hover:border-emerald-200 transition-all">
           <div className="flex items-center justify-between mb-3">
             <p className="text-xs font-medium text-gray-500">Rata-rata Harga</p>
             <div className="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center">
@@ -656,7 +686,9 @@ export default function ReportsPage() {
             </div>
           </div>
           <p className="text-2xl font-bold text-gray-900">{formatRp(avgPrice)}</p>
-          <p className="text-[11px] text-gray-400 mt-1">per unit</p>
+          <p className="text-[11px] text-gray-400 mt-1 truncate">
+            {priceRange ? <>rentang {formatRp(priceRange.min)} – {formatRp(priceRange.max)}</> : 'belum ada produk'}
+          </p>
         </div>
       </div>
 
