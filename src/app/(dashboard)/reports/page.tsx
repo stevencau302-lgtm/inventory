@@ -92,7 +92,7 @@ async function exportToPDF(products: Product[], transactions: Transaction[], cat
   const timeStr = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
 
   // Colors
-  const primary = [79, 70, 229] // indigo
+  const primary = [255, 95, 3] // brand orange #FF5F03
   const dark = [24, 24, 27]
   const gray = [113, 113, 122]
   const success = [16, 185, 129]
@@ -363,45 +363,45 @@ function RobotMascot() {
     <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
       {/* Decorative blobs */}
       <circle cx="100" cy="100" r="85" fill="url(#robotBg)" opacity="0.5" />
-      <circle cx="45" cy="60" r="5" fill="#a78bfa" opacity="0.5" />
-      <circle cx="160" cy="80" r="4" fill="#c4b5fd" opacity="0.6" />
-      <circle cx="155" cy="140" r="6" fill="#a78bfa" opacity="0.4" />
+      <circle cx="45" cy="60" r="5" fill="#FF8A3D" opacity="0.5" />
+      <circle cx="160" cy="80" r="4" fill="#FFC79E" opacity="0.6" />
+      <circle cx="155" cy="140" r="6" fill="#FF8A3D" opacity="0.4" />
       {/* Sparkles */}
-      <path d="M40 110 l2 5 5 2 -5 2 -2 5 -2 -5 -5 -2 5 -2 z" fill="#a78bfa" opacity="0.7" />
-      <path d="M165 110 l1.5 4 4 1.5 -4 1.5 -1.5 4 -1.5 -4 -4 -1.5 4 -1.5 z" fill="#c4b5fd" opacity="0.6" />
+      <path d="M40 110 l2 5 5 2 -5 2 -2 5 -2 -5 -5 -2 5 -2 z" fill="#FF8A3D" opacity="0.7" />
+      <path d="M165 110 l1.5 4 4 1.5 -4 1.5 -1.5 4 -1.5 -4 -4 -1.5 4 -1.5 z" fill="#FFC79E" opacity="0.6" />
       {/* Antenna */}
-      <line x1="100" y1="48" x2="100" y2="62" stroke="#8b5cf6" strokeWidth="3" strokeLinecap="round" />
-      <circle cx="100" cy="44" r="6" fill="#8b5cf6" />
-      <circle cx="100" cy="44" r="2.5" fill="#ede9fe" />
+      <line x1="100" y1="48" x2="100" y2="62" stroke="#FF9A52" strokeWidth="3" strokeLinecap="round" />
+      <circle cx="100" cy="44" r="6" fill="#FF9A52" />
+      <circle cx="100" cy="44" r="2.5" fill="#FFF1E6" />
       {/* Head */}
       <rect x="58" y="62" width="84" height="68" rx="24" fill="url(#robotHead)" />
       {/* Face screen */}
-      <rect x="70" y="76" width="60" height="40" rx="16" fill="#1e1b4b" />
+      <rect x="70" y="76" width="60" height="40" rx="16" fill="#072C2C" />
       {/* Eyes */}
       <circle cx="87" cy="96" r="7" fill="#ffffff" />
       <circle cx="113" cy="96" r="7" fill="#ffffff" />
-      <circle cx="88" cy="97" r="3" fill="#1e1b4b" />
-      <circle cx="114" cy="97" r="3" fill="#1e1b4b" />
+      <circle cx="88" cy="97" r="3" fill="#072C2C" />
+      <circle cx="114" cy="97" r="3" fill="#072C2C" />
       {/* Smile */}
-      <path d="M90 106 Q100 112 110 106" stroke="#a78bfa" strokeWidth="2.5" strokeLinecap="round" fill="none" />
+      <path d="M90 106 Q100 112 110 106" stroke="#FF8A3D" strokeWidth="2.5" strokeLinecap="round" fill="none" />
       {/* Ears */}
-      <rect x="50" y="88" width="9" height="20" rx="4" fill="#c4b5fd" />
-      <rect x="141" y="88" width="9" height="20" rx="4" fill="#c4b5fd" />
+      <rect x="50" y="88" width="9" height="20" rx="4" fill="#FFC79E" />
+      <rect x="141" y="88" width="9" height="20" rx="4" fill="#FFC79E" />
       {/* Body */}
       <rect x="70" y="132" width="60" height="34" rx="16" fill="url(#robotBody)" />
-      <circle cx="100" cy="149" r="6" fill="#ede9fe" opacity="0.8" />
+      <circle cx="100" cy="149" r="6" fill="#FFF1E6" opacity="0.8" />
       <defs>
         <linearGradient id="robotBg" x1="15" y1="15" x2="185" y2="185" gradientUnits="userSpaceOnUse">
-          <stop stopColor="#ede9fe" />
-          <stop offset="1" stopColor="#f5f3ff" />
+          <stop stopColor="#FFF1E6" />
+          <stop offset="1" stopColor="#FFF8F2" />
         </linearGradient>
         <linearGradient id="robotHead" x1="58" y1="62" x2="142" y2="130" gradientUnits="userSpaceOnUse">
-          <stop stopColor="#a78bfa" />
-          <stop offset="1" stopColor="#7c3aed" />
+          <stop stopColor="#FFB375" />
+          <stop offset="1" stopColor="#FF9A52" />
         </linearGradient>
         <linearGradient id="robotBody" x1="70" y1="132" x2="130" y2="166" gradientUnits="userSpaceOnUse">
-          <stop stopColor="#8b5cf6" />
-          <stop offset="1" stopColor="#6d28d9" />
+          <stop stopColor="#FFA866" />
+          <stop offset="1" stopColor="#FF8A3D" />
         </linearGradient>
       </defs>
     </svg>
@@ -616,7 +616,7 @@ export default function ReportsPage() {
                       <button
                         key={opt.value}
                         onClick={() => { setDateRange(opt.value); setShowDatePicker(false) }}
-                        className={`w-full text-left px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${dateRange === opt.value ? 'bg-indigo-50 text-indigo-600' : 'text-gray-700 hover:bg-gray-50'}`}
+                        className={`w-full text-left px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${dateRange === opt.value ? 'bg-[#072C2C]/10 text-[#072C2C]' : 'text-gray-700 hover:bg-gray-50'}`}
                       >
                         {opt.label}
                       </button>
@@ -625,10 +625,10 @@ export default function ReportsPage() {
                   <div className="border-t border-gray-100 p-3 space-y-2">
                     <p className="text-[11px] text-gray-500 font-medium uppercase tracking-wider">Custom</p>
                     <div className="grid grid-cols-2 gap-2">
-                      <input type="date" value={customFrom} onChange={e => setCustomFrom(e.target.value)} className="w-full px-2.5 py-2 rounded-lg text-xs bg-gray-50 border border-gray-200 text-gray-700 outline-none focus:border-indigo-400" />
-                      <input type="date" value={customTo} onChange={e => setCustomTo(e.target.value)} className="w-full px-2.5 py-2 rounded-lg text-xs bg-gray-50 border border-gray-200 text-gray-700 outline-none focus:border-indigo-400" />
+                      <input type="date" value={customFrom} onChange={e => setCustomFrom(e.target.value)} className="w-full px-2.5 py-2 rounded-lg text-xs bg-gray-50 border border-gray-200 text-gray-700 outline-none focus:border-[#072C2C]" />
+                      <input type="date" value={customTo} onChange={e => setCustomTo(e.target.value)} className="w-full px-2.5 py-2 rounded-lg text-xs bg-gray-50 border border-gray-200 text-gray-700 outline-none focus:border-[#072C2C]" />
                     </div>
-                    <button onClick={() => { if (customFrom) { setDateRange('custom'); setShowDatePicker(false) } }} disabled={!customFrom} className="w-full py-2 rounded-lg text-xs font-semibold bg-indigo-50 text-indigo-600 hover:bg-indigo-100 disabled:opacity-40 transition-all">Terapkan</button>
+                    <button onClick={() => { if (customFrom) { setDateRange('custom'); setShowDatePicker(false) } }} disabled={!customFrom} className="w-full py-2 rounded-lg text-xs font-semibold bg-[#072C2C]/10 text-[#072C2C] hover:bg-[#072C2C]/15 disabled:opacity-40 transition-all">Terapkan</button>
                   </div>
                 </div>
               </>
@@ -648,7 +648,7 @@ export default function ReportsPage() {
       {/* ===== STAT CARDS (bento grid) ===== */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         {/* Big card - Total Nilai */}
-        <div className="col-span-2 lg:col-span-2 lg:row-span-2 relative overflow-hidden rounded-2xl p-5 sm:p-6 bg-gradient-to-br from-violet-500 to-purple-600 text-white shadow-xl shadow-purple-500/15">
+        <div className="col-span-2 lg:col-span-2 lg:row-span-2 relative overflow-hidden rounded-2xl p-5 sm:p-6 bg-gradient-to-br from-[#0F4C4C] to-[#072C2C] text-white shadow-lg shadow-[#072C2C]/20">
           <div className="absolute top-0 right-0 w-40 h-40 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/4" />
           <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/4" />
           <div className="relative flex flex-col h-full">
@@ -699,11 +699,11 @@ export default function ReportsPage() {
           </p>
         </div>
         {/* Total Kategori */}
-        <div className="rounded-2xl p-4 bg-white border border-gray-200 shadow-sm hover:shadow-md hover:border-indigo-200 transition-all">
+        <div className="rounded-2xl p-4 bg-white border border-gray-200 shadow-sm hover:shadow-md hover:border-[#072C2C]/20 transition-all">
           <div className="flex items-center justify-between mb-3">
             <p className="text-xs font-medium text-gray-500">Total Kategori</p>
-            <div className="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center">
-              <Tag className="w-4 h-4 text-indigo-500" />
+            <div className="w-8 h-8 rounded-lg bg-[#072C2C]/10 flex items-center justify-center">
+              <Tag className="w-4 h-4 text-[#072C2C]" />
             </div>
           </div>
           <p className="text-2xl font-bold text-gray-900">{categories.length}</p>
@@ -747,7 +747,7 @@ export default function ReportsPage() {
       <div className="rounded-2xl border border-gray-200 bg-white shadow-sm overflow-hidden">
         <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-500 to-purple-500 flex items-center justify-center shadow-md shadow-purple-500/20">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#072C2C] to-[#0a4a43] flex items-center justify-center shadow-md shadow-[#072C2C]/20">
               <Sparkles className="w-4 h-4 text-white" />
             </div>
             <div>
@@ -756,14 +756,14 @@ export default function ReportsPage() {
             </div>
           </div>
           <button onClick={handleAiInsight} disabled={aiLoading} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-50 transition-all">
-            {aiLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5 text-purple-500" />}
+            {aiLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5 text-[#FF5F03]" />}
             Generate AI Insight
           </button>
         </div>
         <div className="p-5">
           {aiLoading && (
             <div className="text-center py-8">
-              <Loader2 className="w-6 h-6 text-purple-400 animate-spin mx-auto mb-3" />
+              <Loader2 className="w-6 h-6 text-[#FF5F03] animate-spin mx-auto mb-3" />
               <p className="text-sm text-gray-500">AI sedang menganalisa...</p>
             </div>
           )}
@@ -787,14 +787,14 @@ export default function ReportsPage() {
                 <ul className="space-y-1.5">
                   {['Tambahkan produk pertama kamu', 'Catat stok masuk', 'Lakukan transaksi keluar', 'AI akan memberikan insight setelah minimal 5 transaksi'].map((t, i) => (
                     <li key={i} className="text-xs text-gray-500 flex items-start gap-2">
-                      <span className="w-1.5 h-1.5 rounded-full bg-violet-400 shrink-0 mt-1.5" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#FF5F03] shrink-0 mt-1.5" />
                       <span>{t}</span>
                     </li>
                   ))}
                 </ul>
               </div>
               {/* Benefits box */}
-              <div className="w-full lg:w-64 shrink-0 p-4 rounded-xl bg-violet-50/60 border border-violet-100">
+              <div className="w-full lg:w-64 shrink-0 p-4 rounded-xl bg-[#072C2C]/5 border border-[#072C2C]/10">
                 <p className="text-xs font-semibold text-gray-700 mb-3">Insight akan membantu kamu:</p>
                 <div className="space-y-2.5">
                   {['Mendeteksi slow moving item', 'Memprediksi kebutuhan stok', 'Mengoptimalkan nilai inventory', 'Mencegah kehabisan stok'].map((t, i) => (
@@ -843,8 +843,8 @@ export default function ReportsPage() {
         {/* Nilai Per Kategori */}
         <div className="rounded-2xl border border-gray-200 bg-white shadow-sm overflow-hidden flex flex-col">
           <div className="px-5 py-4 border-b border-gray-100 flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-violet-50 flex items-center justify-center">
-              <PieChart className="w-4 h-4 text-violet-500" />
+            <div className="w-8 h-8 rounded-lg bg-[#072C2C]/10 flex items-center justify-center">
+              <PieChart className="w-4 h-4 text-[#072C2C]" />
             </div>
             <div>
               <h2 className="text-sm font-semibold text-gray-900">Nilai Per Kategori</h2>
@@ -862,7 +862,7 @@ export default function ReportsPage() {
                       const pct = (cat.value / totalValue) * 100
                       if (pct <= 0) return null
                       const dashArray = `${pct * 2.51} ${251 - pct * 2.51}`
-                      const el = <circle key={i} cx="50" cy="50" r="40" fill="none" stroke={cat.color || '#a855f7'} strokeWidth="11" strokeDasharray={dashArray} strokeDashoffset={-offset * 2.51} strokeLinecap="round" />
+                      const el = <circle key={i} cx="50" cy="50" r="40" fill="none" stroke={cat.color || '#FF5F03'} strokeWidth="11" strokeDasharray={dashArray} strokeDashoffset={-offset * 2.51} strokeLinecap="round" />
                       offset += pct
                       return el
                     })
@@ -871,7 +871,7 @@ export default function ReportsPage() {
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
                   <p className="text-2xl font-extrabold text-gray-900">{topCategory.length}</p>
                   <p className="text-[10px] text-gray-400 -mt-0.5">kategori</p>
-                  <p className="text-xs font-bold text-violet-600 mt-1">{formatRp(totalValue)}</p>
+                  <p className="text-xs font-bold text-[#FF5F03] mt-1">{formatRp(totalValue)}</p>
                 </div>
               </div>
             </div>
@@ -883,7 +883,7 @@ export default function ReportsPage() {
                   <div key={cat.id}>
                     <div className="flex items-center justify-between mb-1">
                       <div className="flex items-center gap-2 min-w-0">
-                        <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: cat.color || '#a855f7' }} />
+                        <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: cat.color || '#FF5F03' }} />
                         <span className="text-xs font-medium text-gray-700 truncate">{cat.name}</span>
                         <span className="text-[10px] text-gray-400 bg-gray-50 px-1.5 py-0.5 rounded-full shrink-0">{cat.count}</span>
                       </div>
@@ -893,7 +893,7 @@ export default function ReportsPage() {
                       </div>
                     </div>
                     <div className="h-1.5 rounded-full bg-gray-100 overflow-hidden">
-                      <div className="h-full rounded-full transition-all duration-700" style={{ width: `${Math.max(pct, 2)}%`, background: cat.color || '#a855f7' }} />
+                      <div className="h-full rounded-full transition-all duration-700" style={{ width: `${Math.max(pct, 2)}%`, background: cat.color || '#FF5F03' }} />
                     </div>
                   </div>
                 )
@@ -912,8 +912,8 @@ export default function ReportsPage() {
         <div className="rounded-2xl border border-gray-200 bg-white shadow-sm overflow-hidden flex flex-col">
           <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center">
-                <Activity className="w-4 h-4 text-indigo-500" />
+              <div className="w-8 h-8 rounded-lg bg-[#072C2C]/10 flex items-center justify-center">
+                <Activity className="w-4 h-4 text-[#072C2C]" />
               </div>
               <div>
                 <h2 className="text-sm font-semibold text-gray-900">Ringkasan Transaksi</h2>
@@ -1194,7 +1194,7 @@ function DeadStockTable({ deadStock, transactions, formatRp }: { deadStock: Prod
 
   const SortIcon = ({ col }: { col: typeof sortCol }) => {
     if (sortCol !== col) return <span className="text-gray-400 ml-1">↕</span>
-    return <span className="text-purple-400 ml-1">{sortAsc ? '↑' : '↓'}</span>
+    return <span className="text-[#FF5F03] ml-1">{sortAsc ? '↑' : '↓'}</span>
   }
 
 
