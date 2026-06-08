@@ -1,10 +1,10 @@
 'use client'
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { Product, Transaction, Category, formatRp, fetchProducts, fetchTransactions, fetchCategories } from '@/lib/store'
+import { Product, Transaction, formatRp, fetchProducts, fetchTransactions } from '@/lib/store'
 import { useAuth } from '@/components/AuthProvider'
 import dynamic from 'next/dynamic'
-import { Plus, ArrowDownToLine, ArrowUpFromLine, Package, AlertTriangle, Activity, ArrowRight, CheckCircle2, ArrowLeftRight, Trophy, ChevronRight, DollarSign, XCircle, Tag, Skull, PieChart, TrendingUp, TrendingDown } from 'lucide-react'
+import { Plus, ArrowDownToLine, ArrowUpFromLine, Package, AlertTriangle, Activity, ArrowRight, CheckCircle2, ArrowLeftRight, Trophy, ChevronRight, DollarSign, XCircle } from 'lucide-react'
 
 const DashboardCharts = dynamic(() => import('@/components/DashboardCharts'), { ssr: false })
 const StockDonut = dynamic(() => import('@/components/DashboardCharts').then(m => m.StockDonut), { ssr: false })
