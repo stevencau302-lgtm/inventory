@@ -11,6 +11,7 @@ import { CardListSkeleton } from '@/components/PageSkeleton'
 import {
   RotateCcw, Search, X, Loader2, Undo2, AlertCircle,
   CheckCircle2, XCircle, AlertTriangle, MessageSquare, BarChart3,
+  Minus, Plus, Save, FileText,
 } from 'lucide-react'
 
 type Reason = 'wrong_product' | 'defective' | 'not_match' | 'other'
