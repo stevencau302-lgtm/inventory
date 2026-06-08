@@ -218,6 +218,17 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
           Daftar
         </button>
       </p>
+
+      {/* Demo button */}
+      <div className="mt-4 pt-4 border-t border-white/[0.06]">
+        <a
+          href="/demo"
+          className="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-medium bg-white/[0.04] border border-white/[0.08] text-zinc-400 hover:text-white hover:border-white/[0.15] hover:bg-white/[0.07] transition-all"
+        >
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.348a1.125 1.125 0 010 1.971l-11.54 6.347a1.125 1.125 0 01-1.667-.985V5.653z" /></svg>
+          Coba Demo Tanpa Daftar
+        </a>
+      </div>
     </motion.div>
   )
 }
