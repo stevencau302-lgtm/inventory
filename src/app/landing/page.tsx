@@ -84,6 +84,34 @@ export default function LandingPage() {
           </div>
           <p className="mt-5 text-[13px] text-zinc-600">Tanpa kartu kredit · Setup 30 detik · Data aman terenkripsi</p>
         </div>
+
+        {/* Dashboard screenshot mockup */}
+        <div className="relative z-10 max-w-5xl mx-auto mt-16">
+          <div className="relative rounded-xl overflow-hidden border border-white/[0.1] shadow-2xl shadow-black/50">
+            {/* Browser top bar */}
+            <div className="flex items-center gap-2 px-4 py-2.5 bg-[#1a1a1a] border-b border-white/[0.06]">
+              <div className="flex gap-1.5">
+                <div className="w-3 h-3 rounded-full bg-[#ff5f57]" />
+                <div className="w-3 h-3 rounded-full bg-[#ffbd2e]" />
+                <div className="w-3 h-3 rounded-full bg-[#28c840]" />
+              </div>
+              <div className="flex-1 mx-4">
+                <div className="max-w-xs mx-auto px-3 py-1 rounded-md bg-white/[0.05] border border-white/[0.08] text-[11px] text-zinc-500 text-center truncate">
+                  nexo-inventory.vercel.app
+                </div>
+              </div>
+            </div>
+            {/* Screenshot */}
+            <img
+              src="/analisa.png"
+              alt="Nexa Inventory - Dashboard Analisa"
+              className="w-full h-auto"
+              loading="eager"
+            />
+          </div>
+          {/* Glow below */}
+          <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 w-3/4 h-16 bg-[#FF5F03]/15 rounded-full blur-3xl pointer-events-none" />
+        </div>
       </section>
 
       {/* Social proof bar */}
