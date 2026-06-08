@@ -648,7 +648,7 @@ export default function ReportsPage() {
       {/* ===== STAT CARDS (bento grid) ===== */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         {/* Big card - Total Nilai */}
-        <div className="col-span-2 lg:col-span-2 lg:row-span-2 relative overflow-hidden rounded-2xl p-5 sm:p-6 bg-gradient-to-br from-violet-500 to-purple-600 text-white shadow-xl shadow-purple-500/15">
+        <div className="col-span-2 lg:col-span-2 lg:row-span-2 relative overflow-hidden rounded-2xl p-5 sm:p-6 bg-gradient-to-br from-[#FF5F03] to-[#FF8A3D] text-white shadow-xl shadow-[#FF5F03]/20">
           <div className="absolute top-0 right-0 w-40 h-40 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/4" />
           <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/4" />
           <div className="relative flex flex-col h-full">
@@ -699,11 +699,11 @@ export default function ReportsPage() {
           </p>
         </div>
         {/* Total Kategori */}
-        <div className="rounded-2xl p-4 bg-white border border-gray-200 shadow-sm hover:shadow-md hover:border-indigo-200 transition-all">
+        <div className="rounded-2xl p-4 bg-white border border-gray-200 shadow-sm hover:shadow-md hover:border-[#072C2C]/20 transition-all">
           <div className="flex items-center justify-between mb-3">
             <p className="text-xs font-medium text-gray-500">Total Kategori</p>
-            <div className="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center">
-              <Tag className="w-4 h-4 text-indigo-500" />
+            <div className="w-8 h-8 rounded-lg bg-[#072C2C]/10 flex items-center justify-center">
+              <Tag className="w-4 h-4 text-[#072C2C]" />
             </div>
           </div>
           <p className="text-2xl font-bold text-gray-900">{categories.length}</p>
