@@ -315,8 +315,8 @@ export default function StockOpnamePage() {
       </div>
 
       {/* Progress card */}
-      <div className="rounded-2xl bg-white border border-gray-200 p-5">
-        <div className="flex flex-wrap items-center justify-between gap-5">
+      <div className="rounded-2xl bg-white border border-gray-200 p-5 shadow-sm">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5">
           <div className="flex items-center gap-4">
             <div className="relative w-16 h-16 shrink-0">
               <svg className="w-16 h-16 -rotate-90" viewBox="0 0 36 36">
@@ -334,7 +334,7 @@ export default function StockOpnamePage() {
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="grid grid-cols-3 gap-2 w-full sm:flex sm:w-auto sm:gap-3">
             <MiniStat color="emerald" icon={<CheckCircle2 className="w-3.5 h-3.5" />} value={matchCount} label="Sesuai" />
             <MiniStat color="red" icon={<AlertTriangle className="w-3.5 h-3.5" />} value={mismatchCount} label="Selisih" />
             <MiniStat color="gray" icon={<Package className="w-3.5 h-3.5" />} value={uncheckedCount} label="Belum" />
