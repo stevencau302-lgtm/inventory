@@ -93,8 +93,15 @@ export default function Sidebar() {
         {/* Header */}
         <div className="h-14 flex items-center px-3 border-b border-white/10">
           <div className="flex items-center gap-2.5 min-w-0 flex-1">
-            <div className="w-9 h-9 rounded-xl bg-white/10 border border-white/15 flex items-center justify-center shrink-0">
-              <Box className="w-4.5 h-4.5 text-white" />
+            <div className="w-9 h-9 rounded-xl overflow-hidden shrink-0">
+              <Image
+                src={LOGO_URL}
+                alt="Nexa"
+                width={36}
+                height={36}
+                className="w-full h-full object-cover"
+                unoptimized
+              />
             </div>
             {!isCollapsedView && (
               <span className="text-sm font-bold text-white whitespace-nowrap">Nexa</span>
