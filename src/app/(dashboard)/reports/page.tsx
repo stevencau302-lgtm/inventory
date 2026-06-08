@@ -747,7 +747,7 @@ export default function ReportsPage() {
       <div className="rounded-2xl border border-gray-200 bg-white shadow-sm overflow-hidden">
         <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-500 to-purple-500 flex items-center justify-center shadow-md shadow-purple-500/20">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#072C2C] to-[#0a4a43] flex items-center justify-center shadow-md shadow-[#072C2C]/20">
               <Sparkles className="w-4 h-4 text-white" />
             </div>
             <div>
@@ -756,7 +756,7 @@ export default function ReportsPage() {
             </div>
           </div>
           <button onClick={handleAiInsight} disabled={aiLoading} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-50 transition-all">
-            {aiLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5 text-purple-500" />}
+            {aiLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5 text-[#FF5F03]" />}
             Generate AI Insight
           </button>
         </div>
