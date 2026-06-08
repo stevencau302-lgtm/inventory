@@ -396,12 +396,12 @@ function RobotMascot() {
           <stop offset="1" stopColor="#FFF8F2" />
         </linearGradient>
         <linearGradient id="robotHead" x1="58" y1="62" x2="142" y2="130" gradientUnits="userSpaceOnUse">
-          <stop stopColor="#FF8A3D" />
-          <stop offset="1" stopColor="#FF5F03" />
+          <stop stopColor="#FFB375" />
+          <stop offset="1" stopColor="#FF9A52" />
         </linearGradient>
         <linearGradient id="robotBody" x1="70" y1="132" x2="130" y2="166" gradientUnits="userSpaceOnUse">
-          <stop stopColor="#FF7A28" />
-          <stop offset="1" stopColor="#e85503" />
+          <stop stopColor="#FFA866" />
+          <stop offset="1" stopColor="#FF8A3D" />
         </linearGradient>
       </defs>
     </svg>
