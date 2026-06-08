@@ -357,8 +357,7 @@ function parseAiSections(md: string): { title: string; items: string[] }[] {
   return sections
 }
 
-export default function ReportsPage() {
-  const [products, setProducts] = useState<Product[]>([])
+export default function ReportsPage() {  const [products, setProducts] = useState<Product[]>([])
   const [categories, setCategories] = useState<Category[]>([])
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [mounted, setMounted] = useState(false)
