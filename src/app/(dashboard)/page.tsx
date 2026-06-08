@@ -89,14 +89,14 @@ export default function Dashboard() {
       </div>
 
       {/* Stat Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard icon={<Package className="w-4 h-4" />} tint="bg-violet-50 text-violet-500" label="Total produk"
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <StatCard border="border-l-[#072C2C]" label="Total produk"
           value={String(totalProducts)} trend={newProductsThisWeek > 0 ? `+${newProductsThisWeek} minggu ini` : 'Tidak ada produk baru'} trendUp={newProductsThisWeek > 0} />
-        <StatCard icon={<Coins className="w-4 h-4" />} tint="bg-emerald-50 text-emerald-500" label="Nilai inventory"
+        <StatCard border="border-l-[#FF5F03]" label="Nilai inventory"
           value={formatRp(totalValue)} trend="Total nilai stok saat ini" trendUp />
-        <StatCard icon={<AlertTriangle className="w-4 h-4" />} tint="bg-amber-50 text-amber-500" label="Stok menipis"
+        <StatCard border="border-l-[#D97706]" label="Stok menipis"
           value={String(lowStock)} trend={lowStock === 0 ? 'Semua stok aman' : 'Perlu restock segera'} trendUp={lowStock === 0} />
-        <StatCard icon={<Ban className="w-4 h-4" />} tint="bg-red-50 text-red-500" label="Stok habis"
+        <StatCard border="border-l-[#DC2626]" label="Stok habis"
           value={String(outOfStock)} trend={outOfStock === 0 ? 'Semua stok tersedia' : 'Produk tidak tersedia'} trendUp={outOfStock === 0} />
       </div>
 
