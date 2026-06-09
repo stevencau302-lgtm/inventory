@@ -364,7 +364,7 @@ export default function LandingPage() {
                 </div>
                 <div className="mt-3 mb-1">
                   <span className="text-3xl font-extrabold text-white">{plan.price}</span>
-                  <span className="text-sm text-zinc-500"> / bulan</span>
+                  <span className="text-sm text-zinc-500"> / tahun</span>
                 </div>
                 <p className="text-[13px] text-zinc-500 leading-relaxed mb-5 min-h-[40px]">{plan.tagline}</p>
                 <ul className="space-y-2.5 mb-7 flex-1">
