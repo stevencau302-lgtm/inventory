@@ -42,6 +42,29 @@ export async function POST(req: NextRequest) {
       return Object.values(outCounts).sort((a, b) => b.count - a.count).slice(0, 5)
     })()
 
+    // ── Ringkasan Retur ──
+    const priceOf = (id: string) => (products?.find((p: any) => p.id === id)?.price ?? 0)
+    const isReturn = (t: any) => t.note?.toUpperCase().startsWith('[RETURN]')
+    const parseAlasan = (note: string) => {
+      const m = note?.match(/Alasan:\s*([^|]+)/i)
+      return m ? m[1].trim() : 'Lainnya'
+    }
+    const returns = transactions?.filter(isReturn) || []
+    const returnUnits = returns.reduce((s: number, t: any) => s + t.quantity, 0)
+    const returnLoss = returns.reduce((s: number, t: any) => s + priceOf(t.productId) * t.quantity, 0)
+    const returnByProduct: Record<string, number> = {}
+    returns.forEach((t: any) => { returnByProduct[t.productName] = (returnByProduct[t.productName] || 0) + t.quantity })
+    const topReturned = Object.entries(returnByProduct).sort((a, b) => (b[1] as number) - (a[1] as number)).slice(0, 5)
+    const returnByReason: Record<string, number> = {}
+    returns.forEach((t: any) => { const r = parseAlasan(t.note); returnByReason[r] = (returnByReason[r] || 0) + 1 })
+    const reasonDist = Object.entries(returnByReason).sort((a, b) => (b[1] as number) - (a[1] as number))
+
+    const returnSummary = returns.length === 0
+      ? '- Retur: Belum ada data retur'
+      : `- Total retur: ${returns.length} kasus (${returnUnits} unit), potensi kerugian Rp ${returnLoss.toLocaleString('id-ID')}
+- Produk paling sering diretur: ${topReturned.map(([name, qty]) => `${name} (${qty} unit)`).join(', ')}
+- Alasan retur terbanyak: ${reasonDist.map(([reason, count]) => `${reason} (${count}x)`).join(', ')}`
+
     const prompt = `Kamu adalah AI analis inventory untuk bisnis retail/UMKM Indonesia. Berikan analisa singkat dan actionable dalam Bahasa Indonesia.
 
 Data Inventory saat ini (Periode: ${dateRange}):
@@ -54,9 +77,10 @@ Data Inventory saat ini (Periode: ${dateRange}):
 - Produk stok rendah: ${lowStock.length} (${lowStock.slice(0, 5).map((p: any) => `${p.name}: ${p.stock}/${p.minStock}`).join(', ')})
 - Produk stok habis: ${outStock.length} (${outStock.slice(0, 5).map((p: any) => p.name).join(', ')})
 - Top 5 produk terlaris: ${topSellingProducts.map((p, i) => `${i + 1}. ${p.name} (${p.count} unit)`).join(', ')}
+${returnSummary}
 
 Berikan:
-1. **Ringkasan Kondisi** (2-3 kalimat tentang kesehatan inventory)
+1. **Ringkasan Kondisi** (2-3 kalimat tentang kesehatan inventory, termasuk kondisi retur jika relevan)
 2. **Insight Utama** (3 poin penting yang perlu diperhatikan)
 3. **Rekomendasi Aksi** (3 langkah konkret yang bisa dilakukan segera)
 
