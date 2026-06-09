@@ -1,11 +1,15 @@
 'use client'
 
 import Link from 'next/link'
-import { Package, BarChart3, ClipboardCheck, Zap, Shield, Smartphone, ArrowRight, Play, CheckCircle2, Star, Sparkles } from 'lucide-react'
+import {
+  Package, BarChart3, ClipboardCheck, ArrowRight, Play, Star, Sparkles,
+  RefreshCw, ScanBarcode, Undo2, MessageCircle, Check, X, Cloud, Zap,
+  TrendingUp, AlertCircle,
+} from 'lucide-react'
 
 function NexaLogo() {
   return (
-    <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
       <rect width="36" height="36" rx="10" fill="url(#lp-grad)" />
       <path d="M10 13.5L18 9L26 13.5V22.5L18 27L10 22.5V13.5Z" stroke="white" strokeWidth="1.8" strokeLinejoin="round" fill="none" />
       <circle cx="18" cy="18" r="3" fill="white" opacity="0.9" />
@@ -20,18 +24,66 @@ function NexaLogo() {
 }
 
 const features = [
-  { icon: Package, title: 'Master Produk', desc: 'Kelola produk, SKU, kategori, dan stok awal dalam satu tempat yang rapi.' },
-  { icon: BarChart3, title: 'Analisa Real-time', desc: 'Dashboard interaktif dengan grafik tren, dead stock, dan nilai inventory.' },
-  { icon: ClipboardCheck, title: 'Stok Opname', desc: 'Proses stock opname digital — bandingkan stok sistem vs fisik secara instan.' },
-  { icon: Zap, title: 'Transaksi Cepat', desc: 'Catat barang masuk/keluar dengan barcode scanner dan bulk entry.' },
-  { icon: Shield, title: 'Retur Terlacak', desc: 'Catat retur dengan alasan, kondisi barang, dan analisis kerugian lengkap.' },
-  { icon: Sparkles, title: 'AI Asisten', desc: 'Asisten AI yang menganalisa inventory, memberikan insight, dan rekomendasi restock otomatis.' },
+  { icon: Package, emoji: '📦', title: 'Manajemen Produk', desc: 'Simpan semua data produk — SKU, kategori, harga, dan stok — dalam satu tempat yang terorganisir.' },
+  { icon: RefreshCw, emoji: '🔄', title: 'Transaksi Barang Masuk & Keluar', desc: 'Catat setiap mutasi stok dengan cepat. Riwayat lengkap, tidak ada yang terlewat.' },
+  { icon: ScanBarcode, emoji: '📱', title: 'Barcode Scanner', desc: 'Input stok lebih cepat pakai scanner atau kamera HP. Tidak perlu ketik manual satu per satu.' },
+  { icon: ClipboardCheck, emoji: '📋', title: 'Stok Opname Digital', desc: 'Bandingkan stok fisik dengan data sistem, temukan selisih, dan selesaikan lebih cepat dari sebelumnya.' },
+  { icon: Undo2, emoji: '↩️', title: 'Manajemen Retur', desc: 'Setiap retur tercatat — termasuk alasan pengembalian dan kondisi barang. Tidak ada yang jatuh di celah.' },
+  { icon: BarChart3, emoji: '📊', title: 'Analisa Inventory', desc: 'Lihat produk terlaris, produk stagnan, dan turnover stok dalam laporan yang mudah dibaca.' },
+  { icon: Sparkles, emoji: '🤖', title: 'AI Inventory Assistant', desc: 'Tanya kondisi stok dalam bahasa sehari-hari. AI bantu analisa dan kasih rekomendasi berdasarkan data nyata bisnismu.' },
+  { icon: MessageCircle, emoji: '📲', title: 'Laporan Harian via WhatsApp', desc: 'Setiap hari kamu terima ringkasan otomatis — barang masuk, keluar, dan stok menipis — langsung ke WhatsApp.' },
+]
+
+const problems = [
+  'Stok di sistem tidak cocok dengan stok fisik di gudang',
+  'Produk tiba-tiba habis padahal lagi ramai pembeli',
+  'Masih catat keluar-masuk barang di Excel atau buku manual',
+  'Tidak tahu produk mana yang paling cepat habis',
+  'Bingung kapan waktu yang tepat untuk restock',
+  'Retur dari pelanggan tidak ada catatannya sama sekali',
+]
+
+const benefits = [
+  'Stok lebih akurat, selisih pencatatan berkurang drastis',
+  'Proses stok opname jauh lebih cepat dan tidak melelahkan',
+  'Tahu produk mana yang perlu direstock sebelum kehabisan',
+  'Bisa dipantau dari laptop maupun HP kapan saja',
+  'Data tersimpan aman di cloud, tidak takut hilang',
+  'Tim bisa langsung pakai — tidak perlu training panjang',
+]
+
+const aiQuestions = [
+  'Produk apa yang paling sering keluar bulan ini?',
+  'Mana produk yang perlu segera direstock minggu ini?',
+  'Apa penyebab retur paling banyak di bulan lalu?',
+  'Produk mana yang sudah jadi dead stock lebih dari 30 hari?',
+]
+
+const plans = [
+  {
+    name: 'Starter', dot: 'bg-emerald-400', price: 'Rp 149.000', popular: false,
+    tagline: 'Cocok untuk toko kecil atau bisnis yang baru mulai digitalisasi stok.',
+    features: ['Hingga 500 produk', '2 pengguna', 'Barang masuk & keluar', 'Laporan dasar', 'Support via email'],
+    cta: 'Mulai Sekarang', href: '/register',
+  },
+  {
+    name: 'Pro', dot: 'bg-[#FF5F03]', price: 'Rp 349.000', popular: true,
+    tagline: 'Untuk bisnis yang sudah aktif dan butuh kontrol lebih penuh atas inventory-nya.',
+    features: ['Produk tidak terbatas', 'Hingga 10 pengguna', 'Semua fitur Starter', 'Stok opname digital', 'Manajemen retur', 'Laporan WhatsApp harian', 'AI Inventory Assistant', 'Support prioritas'],
+    cta: 'Mulai Sekarang', href: '/register',
+  },
+  {
+    name: 'Business', dot: 'bg-purple-400', price: 'Rp 749.000', popular: false,
+    tagline: 'Untuk tim besar, gudang multi-lokasi, atau bisnis dengan volume transaksi tinggi.',
+    features: ['Semua fitur Pro', 'Multi-gudang / multi-lokasi', 'Pengguna tidak terbatas', 'Integrasi API', 'Laporan custom', 'Onboarding & training tim', 'Dedicated account manager'],
+    cta: 'Hubungi Sales', href: '/register',
+  },
 ]
 
 const testimonials = [
-  { name: 'Andi S.', role: 'Pemilik Toko Elektronik', text: 'Akhirnya nemu app inventory yang simpel tapi powerful. Stok opname jadi 10x lebih cepat.' },
-  { name: 'Rina W.', role: 'Manager Gudang', text: 'Dashboard-nya bikin aku langsung tahu produk mana yang harus restock. Game changer!' },
-  { name: 'Bayu P.', role: 'UMKM F&B', text: 'Fitur retur dan laporan stok sangat membantu tracking barang yang sering bermasalah.' },
+  { name: 'Rudi', role: 'Owner Toko Online, Surabaya', text: 'Dulu tiap minggu harus rekap manual. Sekarang tinggal buka dashboard, semua sudah ada.' },
+  { name: 'Hendra', role: 'Distributor Sparepart Motor', text: 'Stok opname yang biasanya makan 2 hari sekarang beres dalam beberapa jam.' },
+  { name: 'Ibu Sari', role: 'Pemilik Toko Bangunan, Bandung', text: 'Laporan WhatsApp tiap pagi bantu saya pantau gudang meski lagi di luar kota.' },
 ]
 
 export default function LandingPage() {
@@ -47,7 +99,8 @@ export default function LandingPage() {
               <span className="text-[8px] text-white/40 font-medium uppercase tracking-widest">Inventory</span>
             </div>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <a href="#harga" className="hidden sm:inline-flex px-3 py-2 rounded-lg text-sm font-medium text-zinc-400 hover:text-white transition">Harga</a>
             <Link href="/demo" className="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium text-zinc-400 hover:text-white transition">
               <Play className="w-3.5 h-3.5" /> Demo
             </Link>
@@ -59,218 +112,62 @@ export default function LandingPage() {
       </nav>
 
       {/* Hero */}
-      <section className="relative pt-32 pb-20 sm:pt-40 sm:pb-28 px-4 sm:px-6">
-        {/* BG glow */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-[#FF5F03]/10 rounded-full blur-[120px] pointer-events-none" />
+      <header className="relative pt-28 pb-16 sm:pt-40 sm:pb-24 px-4 sm:px-6">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] max-w-full h-[500px] bg-[#FF5F03]/10 rounded-full blur-[120px] pointer-events-none" />
         <div className="relative z-10 max-w-4xl mx-auto text-center">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/[0.05] border border-white/[0.08] text-xs font-medium text-zinc-400 mb-6">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            Gratis untuk UMKM & bisnis kecil
+            Dipercaya ratusan bisnis di Indonesia
           </div>
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-tight tracking-tight">
-            Kelola Inventory<br />
-            <span className="bg-gradient-to-r from-[#FF5F03] to-[#FFA726] bg-clip-text text-transparent">Tanpa Ribet</span>
+          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold leading-[1.1] tracking-tight">
+            Kelola Stok Lebih Rapi.<br className="hidden sm:block" />
+            <span className="bg-gradient-to-r from-[#FF5F03] to-[#FFA726] bg-clip-text text-transparent">Tanpa Excel. Tanpa Drama.</span>
           </h1>
-          <p className="mt-6 text-lg sm:text-xl text-zinc-400 max-w-2xl mx-auto leading-relaxed">
-            Platform inventory modern untuk UMKM. Real-time analytics, stok opname digital, laporan otomatis — semua dari browser.
+          <p className="mt-5 sm:mt-6 text-base sm:text-xl text-zinc-400 max-w-2xl mx-auto leading-relaxed">
+            Barang masuk, barang keluar, stok opname, retur — semuanya tercatat otomatis dalam satu dashboard yang bisa dibuka kapan saja, dari mana saja.
           </p>
-          <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link href="/demo" className="w-full sm:w-auto px-8 py-4 rounded-xl text-base font-bold bg-[#FF5F03] text-white hover:bg-[#FF5F03]/90 transition shadow-xl shadow-[#FF5F03]/25 flex items-center justify-center gap-2">
-              <Play className="w-5 h-5" /> Coba Demo Gratis
-            </Link>
-            <Link href="/register" className="w-full sm:w-auto px-8 py-4 rounded-xl text-base font-semibold bg-white/[0.05] border border-white/[0.1] text-white hover:bg-white/[0.08] transition flex items-center justify-center gap-2">
-              Daftar Sekarang <ArrowRight className="w-4 h-4" />
-            </Link>
-          </div>
-          <p className="mt-5 text-[13px] text-zinc-600">Tanpa kartu kredit · Setup 30 detik · Data aman terenkripsi</p>
-        </div>
+          <p className="mt-4 text-sm sm:text-base text-zinc-500 max-w-2xl mx-auto leading-relaxed">
+            Nexa Inventory dipakai ratusan bisnis untuk menjaga stok tetap akurat, memangkas waktu cek gudang, dan tahu kondisi inventory tanpa harus tanya-tanya ke karyawan.
+          </p>
 
-        {/* Dashboard mockup - pure CSS */}
-        <div className="relative z-10 max-w-4xl mx-auto mt-12 sm:mt-16 px-4 sm:px-0">
-          <div className="relative rounded-xl overflow-hidden border border-white/[0.1] shadow-2xl shadow-black/50 bg-[#1a1a1a]">
-            {/* Browser top bar */}
-            <div className="flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 border-b border-white/[0.06]">
-              <div className="flex gap-1.5">
-                <div className="w-2.5 h-2.5 rounded-full bg-[#ff5f57]" />
-                <div className="w-2.5 h-2.5 rounded-full bg-[#ffbd2e]" />
-                <div className="w-2.5 h-2.5 rounded-full bg-[#28c840]" />
-              </div>
-              <div className="flex-1 mx-2 sm:mx-4">
-                <div className="max-w-[180px] sm:max-w-xs mx-auto px-2 sm:px-3 py-1 rounded-md bg-white/[0.05] border border-white/[0.08] text-[10px] sm:text-[11px] text-zinc-500 text-center truncate">
-                  nexo-inventory.vercel.app
-                </div>
-              </div>
-            </div>
-            {/* Fake dashboard content */}
-            <div className="p-3 sm:p-5 space-y-3 sm:space-y-4 bg-gradient-to-br from-[#111] to-[#0d0d0d]">
-              {/* Bento grid */}
-              <div className="grid grid-cols-4 gap-2 sm:gap-3">
-                {/* Big card left */}
-                <div className="col-span-4 sm:col-span-2 sm:row-span-2 rounded-xl p-4 sm:p-5 bg-gradient-to-br from-[#0F4C4C] to-[#072C2C] text-white">
-                  <p className="text-[10px] sm:text-xs text-white/50 mb-1">Total Nilai Inventory</p>
-                  <p className="text-lg sm:text-2xl font-bold">Rp 474.400</p>
-                  <div className="mt-2 flex items-center gap-1.5">
-                    <span className="px-2 py-0.5 rounded text-[9px] font-semibold bg-emerald-400/20 text-emerald-300">+Rp 73.600</span>
-                    <span className="text-[9px] text-white/40">30 hari</span>
-                  </div>
-                  <div className="mt-3 pt-3 border-t border-white/10 grid grid-cols-2 gap-2">
-                    <div>
-                      <p className="text-[9px] text-white/40">Produk Aktif</p>
-                      <p className="text-sm font-bold">2/2</p>
-                    </div>
-                    <div>
-                      <p className="text-[9px] text-white/40">Kategori</p>
-                      <p className="text-sm font-bold">Home</p>
-                    </div>
-                  </div>
-                </div>
-                {/* Small cards */}
-                <div className="col-span-2 sm:col-span-1 rounded-xl p-3 bg-white/[0.03] border border-white/[0.06]">
-                  <p className="text-[9px] text-zinc-500">Total Unit</p>
-                  <p className="text-base sm:text-lg font-bold text-white mt-1">11</p>
-                  <p className="text-[9px] text-emerald-400 mt-0.5">semua stok aman</p>
-                </div>
-                <div className="col-span-2 sm:col-span-1 rounded-xl p-3 bg-white/[0.03] border border-white/[0.06]">
-                  <p className="text-[9px] text-zinc-500">Total Kategori</p>
-                  <p className="text-base sm:text-lg font-bold text-white mt-1">7</p>
-                  <p className="text-[9px] text-zinc-500 mt-0.5">terbesar: Home</p>
-                </div>
-                <div className="col-span-2 sm:col-span-1 rounded-xl p-3 bg-white/[0.03] border border-white/[0.06]">
-                  <p className="text-[9px] text-zinc-500">Dead Stock</p>
-                  <p className="text-base sm:text-lg font-bold text-white mt-1">0</p>
-                  <p className="text-[9px] text-emerald-400 mt-0.5">tidak ada 🎉</p>
-                </div>
-                <div className="col-span-2 sm:col-span-1 rounded-xl p-3 bg-white/[0.03] border border-white/[0.06]">
-                  <p className="text-[9px] text-zinc-500">Rata-rata Harga</p>
-                  <p className="text-base sm:text-lg font-bold text-white mt-1">Rp 52.650</p>
-                  <p className="text-[9px] text-zinc-500 mt-0.5">Rp 31.700 – Rp 73.600</p>
-                </div>
-              </div>
-              {/* Chart placeholder */}
-              <div className="rounded-xl p-3 sm:p-4 bg-white/[0.03] border border-white/[0.06]">
-                <div className="flex items-center justify-between mb-3">
-                  <p className="text-[10px] sm:text-xs font-medium text-zinc-400">Pergerakan Stok</p>
-                  <div className="flex gap-2">
-                    <span className="flex items-center gap-1 text-[9px] text-zinc-500"><span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />Masuk</span>
-                    <span className="flex items-center gap-1 text-[9px] text-zinc-500"><span className="w-1.5 h-1.5 rounded-full bg-[#FF5F03]" />Keluar</span>
-                  </div>
-                </div>
-                {/* Fake chart bars */}
-                <div className="flex items-end gap-1 sm:gap-2 h-16 sm:h-24">
-                  {[40, 65, 30, 80, 55, 70, 45].map((h, i) => (
-                    <div key={i} className="flex-1 flex gap-0.5">
-                      <div className="flex-1 rounded-t bg-emerald-400/60" style={{ height: `${h}%` }} />
-                      <div className="flex-1 rounded-t bg-[#FF5F03]/60" style={{ height: `${h * 0.6}%` }} />
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-          {/* Glow below */}
-          <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 w-3/4 h-16 bg-[#FF5F03]/15 rounded-full blur-3xl pointer-events-none" />
-        </div>
-      </section>
-
-      {/* Social proof bar */}
-      <section className="border-y border-white/[0.06] py-6 px-4 sm:px-6">
-        <div className="max-w-5xl mx-auto flex flex-wrap items-center justify-center gap-6 sm:gap-10">
-          <div className="text-center">
-            <p className="text-2xl font-bold text-white">500+</p>
-            <p className="text-[11px] text-zinc-500 font-medium">Bisnis Aktif</p>
-          </div>
-          <div className="w-px h-8 bg-white/[0.08] hidden sm:block" />
-          <div className="text-center">
-            <p className="text-2xl font-bold text-white">50k+</p>
-            <p className="text-[11px] text-zinc-500 font-medium">Produk Dikelola</p>
-          </div>
-          <div className="w-px h-8 bg-white/[0.08] hidden sm:block" />
-          <div className="text-center">
-            <p className="text-2xl font-bold text-white">99.9%</p>
-            <p className="text-[11px] text-zinc-500 font-medium">Uptime</p>
-          </div>
-          <div className="w-px h-8 bg-white/[0.08] hidden sm:block" />
-          <div className="flex items-center gap-1">
-            {[...Array(5)].map((_, i) => <Star key={i} className="w-4 h-4 fill-[#FFA726] text-[#FFA726]" />)}
-            <span className="text-sm font-bold text-white ml-1.5">4.9</span>
-          </div>
-        </div>
-      </section>
-
-      {/* Features */}
-      <section className="py-20 sm:py-28 px-4 sm:px-6">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-14">
-            <h2 className="text-3xl sm:text-4xl font-bold">Semua yang kamu butuhkan</h2>
-            <p className="mt-3 text-zinc-400 text-lg max-w-xl mx-auto">Fitur lengkap untuk mengelola inventory dari mana saja.</p>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {features.map((f, i) => (
-              <div key={i} className="group rounded-2xl p-6 bg-white/[0.02] border border-white/[0.06] hover:border-[#FF5F03]/30 hover:bg-[#FF5F03]/[0.03] transition-all duration-300">
-                <div className="w-11 h-11 rounded-xl bg-[#FF5F03]/10 flex items-center justify-center mb-4 group-hover:bg-[#FF5F03]/20 transition">
-                  <f.icon className="w-5 h-5 text-[#FF5F03]" />
-                </div>
-                <h3 className="text-base font-bold text-white mb-2">{f.title}</h3>
-                <p className="text-sm text-zinc-500 leading-relaxed">{f.desc}</p>
+          {/* Checklist */}
+          <div className="mt-7 flex flex-col sm:flex-row sm:flex-wrap items-start sm:items-center justify-center gap-x-5 gap-y-2 max-w-2xl mx-auto text-left">
+            {['Stok terupdate secara real-time', 'Laporan lengkap barang masuk & keluar', 'AI Assistant untuk analisa & rekomendasi', 'Notifikasi ringkasan harian ke WhatsApp'].map((t, i) => (
+              <div key={i} className="flex items-center gap-2 text-sm text-zinc-300">
+                <Check className="w-4 h-4 text-emerald-400 shrink-0" />
+                <span>{t}</span>
               </div>
             ))}
           </div>
-        </div>
-      </section>
 
-      {/* Testimonials */}
-      <section className="py-20 sm:py-24 px-4 sm:px-6 border-t border-white/[0.06]">
+          <div className="mt-9 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
+            <Link href="/register" className="w-full sm:w-auto px-8 py-4 rounded-xl text-base font-bold bg-[#FF5F03] text-white hover:bg-[#FF5F03]/90 transition shadow-xl shadow-[#FF5F03]/25 flex items-center justify-center gap-2">
+              Coba Gratis 14 Hari <ArrowRight className="w-4 h-4" />
+            </Link>
+            <Link href="/demo" className="w-full sm:w-auto px-8 py-4 rounded-xl text-base font-semibold bg-white/[0.05] border border-white/[0.1] text-white hover:bg-white/[0.08] transition flex items-center justify-center gap-2">
+              <Play className="w-5 h-5" /> Lihat Demo
+            </Link>
+          </div>
+          <p className="mt-5 text-[13px] text-zinc-600">Tanpa kartu kredit · Setup kurang dari 5 menit · Data aman terenkripsi</p>
+        </div>
+      </header>
+
+      {/* Social proof */}
+      <section className="border-y border-white/[0.06] py-7 px-4 sm:px-6">
         <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl sm:text-4xl font-bold">Dipercaya Ratusan Bisnis</h2>
-            <p className="mt-3 text-zinc-400">Kata mereka tentang Nexa Inventory</p>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {testimonials.map((t, i) => (
-              <div key={i} className="rounded-2xl p-5 bg-white/[0.02] border border-white/[0.06]">
-                <div className="flex items-center gap-1 mb-3">
-                  {[...Array(5)].map((_, j) => <Star key={j} className="w-3.5 h-3.5 fill-[#FFA726] text-[#FFA726]" />)}
-                </div>
-                <p className="text-sm text-zinc-300 leading-relaxed mb-4">"{t.text}"</p>
-                <div>
-                  <p className="text-sm font-semibold text-white">{t.name}</p>
-                  <p className="text-[11px] text-zinc-500">{t.role}</p>
-                </div>
+          <p className="text-center text-xs uppercase tracking-widest text-zinc-600 font-semibold mb-5">Dipercaya Ribuan Bisnis di Indonesia</p>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            {[
+              { v: '500+', l: 'Bisnis Aktif' },
+              { v: '50.000+', l: 'Produk Dikelola' },
+              { v: '99.9%', l: 'Uptime' },
+              { v: '4.9/5', l: 'Rating Pengguna' },
+            ].map((s, i) => (
+              <div key={i} className="text-center">
+                <p className="text-2xl sm:text-3xl font-bold text-white">{s.v}</p>
+                <p className="text-[11px] sm:text-xs text-zinc-500 font-medium mt-0.5">{s.l}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
-
-      {/* CTA */}
-      <section className="py-20 sm:py-24 px-4 sm:px-6">
-        <div className="max-w-3xl mx-auto relative overflow-hidden rounded-3xl p-8 sm:p-12 bg-gradient-to-br from-[#FF5F03] to-[#B45309] text-center">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -mr-20 -mt-20" />
-          <div className="relative z-10">
-            <h2 className="text-2xl sm:text-3xl font-bold text-white mb-3">Siap Kelola Inventory Lebih Baik?</h2>
-            <p className="text-white/80 text-base mb-8 max-w-lg mx-auto">Gabung ratusan bisnis yang sudah beralih ke Nexa. Gratis, tanpa kartu kredit.</p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-              <Link href="/register" className="w-full sm:w-auto px-8 py-4 rounded-xl text-base font-bold bg-white text-[#B45309] hover:bg-white/90 transition shadow-xl flex items-center justify-center gap-2">
-                Mulai Gratis <ArrowRight className="w-4 h-4" />
-              </Link>
-              <Link href="/demo" className="w-full sm:w-auto px-8 py-4 rounded-xl text-base font-semibold bg-white/10 border border-white/20 text-white hover:bg-white/20 transition flex items-center justify-center gap-2">
-                <Play className="w-4 h-4" /> Lihat Demo
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="border-t border-white/[0.06] py-8 px-4 sm:px-6">
-        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <NexaLogo />
-            <span className="text-sm font-bold text-white">Nexa Inventory</span>
-          </div>
-          <p className="text-[12px] text-zinc-600">&copy; 2024 Nexa Inventory. All rights reserved.</p>
-        </div>
-      </footer>
-    </div>
-  )
-}
