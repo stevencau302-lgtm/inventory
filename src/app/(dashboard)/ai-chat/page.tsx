@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import { Send, Sparkles, Loader2, User, Trash2, Package, BarChart3, TrendingUp, HelpCircle } from 'lucide-react'
+import { Send, Sparkles, Loader2, User, Trash2, Package, BarChart3, TrendingUp, Undo2 } from 'lucide-react'
 import { fetchProducts, fetchCategories, fetchTransactions, formatRp } from '@/lib/store'
 
 interface Message {
@@ -15,7 +15,7 @@ const SUGGESTIONS = [
   { icon: Package, label: 'Produk mana yang harus di-restock?', color: 'text-blue-500 bg-blue-50 border-blue-200' },
   { icon: BarChart3, label: 'Analisa performa inventory bulan ini', color: 'text-purple-500 bg-purple-50 border-purple-200' },
   { icon: TrendingUp, label: 'Produk apa yang paling laku?', color: 'text-emerald-500 bg-emerald-50 border-emerald-200' },
-  { icon: HelpCircle, label: 'Tips kelola stok biar efisien', color: 'text-amber-500 bg-amber-50 border-amber-200' },
+  { icon: Undo2, label: 'Produk apa yang paling sering diretur?', color: 'text-amber-500 bg-amber-50 border-amber-200' },
 ]
 
 export default function AiChatPage() {
