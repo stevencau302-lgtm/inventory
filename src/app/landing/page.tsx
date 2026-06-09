@@ -86,10 +86,10 @@ export default function LandingPage() {
         </div>
 
         {/* Dashboard screenshot mockup */}
-        <div className="relative z-10 max-w-5xl mx-auto mt-16">
-          <div className="relative rounded-xl overflow-hidden border border-white/[0.1] shadow-2xl shadow-black/50">
-            {/* Browser top bar */}
-            <div className="flex items-center gap-2 px-4 py-2.5 bg-[#1a1a1a] border-b border-white/[0.06]">
+        <div className="relative z-10 max-w-5xl mx-auto mt-12 sm:mt-16 px-2 sm:px-0">
+          <div className="relative rounded-lg sm:rounded-xl overflow-hidden border border-white/[0.1] shadow-2xl shadow-black/50">
+            {/* Browser top bar - hidden on small mobile */}
+            <div className="hidden sm:flex items-center gap-2 px-4 py-2.5 bg-[#1a1a1a] border-b border-white/[0.06]">
               <div className="flex gap-1.5">
                 <div className="w-3 h-3 rounded-full bg-[#ff5f57]" />
                 <div className="w-3 h-3 rounded-full bg-[#ffbd2e]" />
@@ -102,12 +102,14 @@ export default function LandingPage() {
               </div>
             </div>
             {/* Screenshot */}
-            <img
-              src="/analisa.png"
-              alt="Nexa Inventory - Dashboard Analisa"
-              className="w-full h-auto"
-              loading="eager"
-            />
+            <div className="overflow-x-auto">
+              <img
+                src="/analisa.png"
+                alt="Nexa Inventory - Dashboard Analisa"
+                className="w-full min-w-[600px] sm:min-w-0 h-auto"
+                loading="eager"
+              />
+            </div>
           </div>
           {/* Glow below */}
           <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 w-3/4 h-16 bg-[#FF5F03]/15 rounded-full blur-3xl pointer-events-none" />
