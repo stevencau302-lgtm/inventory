@@ -85,33 +85,87 @@ export default function LandingPage() {
           <p className="mt-5 text-[13px] text-zinc-600">Tanpa kartu kredit · Setup 30 detik · Data aman terenkripsi</p>
         </div>
 
-        {/* Dashboard screenshot mockup */}
-        <div className="relative z-10 max-w-5xl mx-auto mt-12 sm:mt-16 px-4 sm:px-0">
-          <div className="relative rounded-lg sm:rounded-xl overflow-hidden border border-white/[0.1] shadow-2xl shadow-black/50">
+        {/* Dashboard mockup - pure CSS */}
+        <div className="relative z-10 max-w-4xl mx-auto mt-12 sm:mt-16 px-4 sm:px-0">
+          <div className="relative rounded-xl overflow-hidden border border-white/[0.1] shadow-2xl shadow-black/50 bg-[#1a1a1a]">
             {/* Browser top bar */}
-            <div className="flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 bg-[#1a1a1a] border-b border-white/[0.06]">
+            <div className="flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 border-b border-white/[0.06]">
               <div className="flex gap-1.5">
-                <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#ff5f57]" />
-                <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#ffbd2e]" />
-                <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#28c840]" />
+                <div className="w-2.5 h-2.5 rounded-full bg-[#ff5f57]" />
+                <div className="w-2.5 h-2.5 rounded-full bg-[#ffbd2e]" />
+                <div className="w-2.5 h-2.5 rounded-full bg-[#28c840]" />
               </div>
               <div className="flex-1 mx-2 sm:mx-4">
-                <div className="max-w-xs mx-auto px-2 sm:px-3 py-1 rounded-md bg-white/[0.05] border border-white/[0.08] text-[10px] sm:text-[11px] text-zinc-500 text-center truncate">
+                <div className="max-w-[180px] sm:max-w-xs mx-auto px-2 sm:px-3 py-1 rounded-md bg-white/[0.05] border border-white/[0.08] text-[10px] sm:text-[11px] text-zinc-500 text-center truncate">
                   nexo-inventory.vercel.app
                 </div>
               </div>
             </div>
-            {/* Screenshot - use next/image for proper optimization */}
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/analisa.png"
-              alt="Nexa Inventory - Dashboard Analisa"
-              width={1920}
-              height={1080}
-              className="w-full h-auto block"
-              loading="eager"
-              style={{ display: 'block' }}
-            />
+            {/* Fake dashboard content */}
+            <div className="p-3 sm:p-5 space-y-3 sm:space-y-4 bg-gradient-to-br from-[#111] to-[#0d0d0d]">
+              {/* Bento grid */}
+              <div className="grid grid-cols-4 gap-2 sm:gap-3">
+                {/* Big card left */}
+                <div className="col-span-4 sm:col-span-2 sm:row-span-2 rounded-xl p-4 sm:p-5 bg-gradient-to-br from-[#0F4C4C] to-[#072C2C] text-white">
+                  <p className="text-[10px] sm:text-xs text-white/50 mb-1">Total Nilai Inventory</p>
+                  <p className="text-lg sm:text-2xl font-bold">Rp 474.400</p>
+                  <div className="mt-2 flex items-center gap-1.5">
+                    <span className="px-2 py-0.5 rounded text-[9px] font-semibold bg-emerald-400/20 text-emerald-300">+Rp 73.600</span>
+                    <span className="text-[9px] text-white/40">30 hari</span>
+                  </div>
+                  <div className="mt-3 pt-3 border-t border-white/10 grid grid-cols-2 gap-2">
+                    <div>
+                      <p className="text-[9px] text-white/40">Produk Aktif</p>
+                      <p className="text-sm font-bold">2/2</p>
+                    </div>
+                    <div>
+                      <p className="text-[9px] text-white/40">Kategori</p>
+                      <p className="text-sm font-bold">Home</p>
+                    </div>
+                  </div>
+                </div>
+                {/* Small cards */}
+                <div className="col-span-2 sm:col-span-1 rounded-xl p-3 bg-white/[0.03] border border-white/[0.06]">
+                  <p className="text-[9px] text-zinc-500">Total Unit</p>
+                  <p className="text-base sm:text-lg font-bold text-white mt-1">11</p>
+                  <p className="text-[9px] text-emerald-400 mt-0.5">semua stok aman</p>
+                </div>
+                <div className="col-span-2 sm:col-span-1 rounded-xl p-3 bg-white/[0.03] border border-white/[0.06]">
+                  <p className="text-[9px] text-zinc-500">Total Kategori</p>
+                  <p className="text-base sm:text-lg font-bold text-white mt-1">7</p>
+                  <p className="text-[9px] text-zinc-500 mt-0.5">terbesar: Home</p>
+                </div>
+                <div className="col-span-2 sm:col-span-1 rounded-xl p-3 bg-white/[0.03] border border-white/[0.06]">
+                  <p className="text-[9px] text-zinc-500">Dead Stock</p>
+                  <p className="text-base sm:text-lg font-bold text-white mt-1">0</p>
+                  <p className="text-[9px] text-emerald-400 mt-0.5">tidak ada 🎉</p>
+                </div>
+                <div className="col-span-2 sm:col-span-1 rounded-xl p-3 bg-white/[0.03] border border-white/[0.06]">
+                  <p className="text-[9px] text-zinc-500">Rata-rata Harga</p>
+                  <p className="text-base sm:text-lg font-bold text-white mt-1">Rp 52.650</p>
+                  <p className="text-[9px] text-zinc-500 mt-0.5">Rp 31.700 – Rp 73.600</p>
+                </div>
+              </div>
+              {/* Chart placeholder */}
+              <div className="rounded-xl p-3 sm:p-4 bg-white/[0.03] border border-white/[0.06]">
+                <div className="flex items-center justify-between mb-3">
+                  <p className="text-[10px] sm:text-xs font-medium text-zinc-400">Pergerakan Stok</p>
+                  <div className="flex gap-2">
+                    <span className="flex items-center gap-1 text-[9px] text-zinc-500"><span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />Masuk</span>
+                    <span className="flex items-center gap-1 text-[9px] text-zinc-500"><span className="w-1.5 h-1.5 rounded-full bg-[#FF5F03]" />Keluar</span>
+                  </div>
+                </div>
+                {/* Fake chart bars */}
+                <div className="flex items-end gap-1 sm:gap-2 h-16 sm:h-24">
+                  {[40, 65, 30, 80, 55, 70, 45].map((h, i) => (
+                    <div key={i} className="flex-1 flex gap-0.5">
+                      <div className="flex-1 rounded-t bg-emerald-400/60" style={{ height: `${h}%` }} />
+                      <div className="flex-1 rounded-t bg-[#FF5F03]/60" style={{ height: `${h * 0.6}%` }} />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
           {/* Glow below */}
           <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 w-3/4 h-16 bg-[#FF5F03]/15 rounded-full blur-3xl pointer-events-none" />
