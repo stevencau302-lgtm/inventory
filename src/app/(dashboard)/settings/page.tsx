@@ -553,7 +553,10 @@ function WhatsAppSettings() {
 /* ─── AI Settings Component ─── */
 function AISettings() {
   const [apiKey, setApiKey] = useState('')
+  const [baseUrl, setBaseUrl] = useState('https://aimurah.my.id/api/v1')
   const [model, setModel] = useState('deepseek-3.2')
+  const [customModel, setCustomModel] = useState('')
+  const [useCustomModel, setUseCustomModel] = useState(false)
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
   const [hasChanges, setHasChanges] = useState(false)
@@ -563,7 +566,17 @@ function AISettings() {
   useEffect(() => {
     fetch('/api/settings').then(r => r.json()).then(data => {
       if (data.ai_api_key) setApiKey(data.ai_api_key)
-      if (data.ai_model) setModel(data.ai_model)
+      if (data.ai_base_url) setBaseUrl(data.ai_base_url)
+      if (data.ai_model) {
+        const presetModels = ['deepseek-3.2', 'claude-sonnet-4.5', 'claude-haiku-4.5', 'minimax-m2.5', 'claude-opus-4.6', 'gpt-5.5', 'gemini-2.5-pro']
+        if (presetModels.includes(data.ai_model)) {
+          setModel(data.ai_model)
+          setUseCustomModel(false)
+        } else {
+          setUseCustomModel(true)
+          setCustomModel(data.ai_model)
+        }
+      }
       setLoaded(true)
       setSaved(!!data.ai_api_key)
     }).catch(() => setLoaded(true))
@@ -572,14 +585,19 @@ function AISettings() {
   const markChanged = () => { setHasChanges(true); setSaved(false) }
 
   const handleSave = async () => {
+    const finalModel = useCustomModel ? customModel.trim() : model
+    if (!finalModel) {
+      toast('Pilih atau masukkan model AI!', 'error')
+      return
+    }
     setSaving(true)
     try {
       const res = await fetch('/api/settings', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ai_api_key: apiKey, ai_model: model }),
+        body: JSON.stringify({ ai_api_key: apiKey, ai_base_url: baseUrl, ai_model: finalModel }),
       })
-      if (res.ok) { setSaved(true); setHasChanges(false); toast('API Key tersimpan!', 'success') }
+      if (res.ok) { setSaved(true); setHasChanges(false); toast('Pengaturan AI tersimpan!', 'success') }
       else toast('Gagal menyimpan', 'error')
     } catch { toast('Gagal menyimpan', 'error') }
     finally { setSaving(false) }
@@ -595,8 +613,8 @@ function AISettings() {
             <svg className="w-4.5 h-4.5 text-purple-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456z" /></svg>
           </div>
           <div>
-            <h2 className="text-sm font-semibold text-gray-900">AI Insight</h2>
-            <p className="text-[10px] text-gray-500">Powered by OpenAgentic / AIMurah</p>
+            <h2 className="text-sm font-semibold text-gray-900">AI Asisten</h2>
+            <p className="text-[10px] text-gray-500">Custom provider &bull; OpenAI-compatible API</p>
           </div>
         </div>
         {saved && !hasChanges && (
@@ -614,6 +632,22 @@ function AISettings() {
       </div>
 
       <div className="p-5 space-y-5">
+        {/* Base URL */}
+        <div className="space-y-2">
+          <label className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider flex items-center gap-2">
+            <svg className="w-3 h-3 text-gray-500" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m9.86-2.556a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244" /></svg>
+            Base URL
+          </label>
+          <input
+            type="text"
+            value={baseUrl}
+            onChange={e => { setBaseUrl(e.target.value); markChanged() }}
+            className={inputClass}
+            placeholder="https://api.openai.com/v1"
+          />
+          <p className="text-[10px] text-gray-400">OpenAI-compatible endpoint. Tanpa trailing slash. Contoh: <code className="text-purple-500/70">https://api.openai.com/v1</code>, <code className="text-purple-500/70">https://api.deepseek.com</code>, <code className="text-purple-500/70">http://localhost:11434/v1</code></p>
+        </div>
+
         {/* API Key */}
         <div className="space-y-2">
           <label className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider flex items-center gap-2">
@@ -627,7 +661,7 @@ function AISettings() {
             className={inputClass}
             placeholder="sk-xxxxxxxxxxxxxxxx"
           />
-          <p className="text-[10px] text-gray-400">Dapatkan API key gratis di <a href="https://openagentic.id/api-keys" target="_blank" rel="noopener noreferrer" className="text-purple-500 hover:underline">openagentic.id/api-keys</a></p>
+          <p className="text-[10px] text-gray-400">API key dari provider yang kamu pakai (OpenAI, DeepSeek, OpenRouter, dll)</p>
         </div>
 
         {/* Model Selector */}
@@ -636,23 +670,54 @@ function AISettings() {
             <svg className="w-3 h-3 text-gray-500" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 3v1.5M4.5 8.25H3m18 0h-1.5M4.5 12H3m18 0h-1.5m-15 3.75H3m18 0h-1.5M8.25 19.5V21M12 3v1.5m0 15V21m3.75-18v1.5m0 15V21m-9-1.5h10.5a2.25 2.25 0 002.25-2.25V6.75a2.25 2.25 0 00-2.25-2.25H6.75A2.25 2.25 0 004.5 6.75v10.5a2.25 2.25 0 002.25 2.25z" /></svg>
             Model AI
           </label>
-          <select
-            value={model}
-            onChange={e => { setModel(e.target.value); markChanged() }}
-            className={inputClass}
-          >
-            <optgroup label="Free">
-              <option value="deepseek-3.2">DeepSeek 3.2 (Free)</option>
-              <option value="claude-sonnet-4.5">Claude Sonnet 4.5 (Free)</option>
-              <option value="claude-haiku-4.5">Claude Haiku 4.5 (Free)</option>
-              <option value="minimax-m2.5">MiniMax M2.5 (Free)</option>
-            </optgroup>
-            <optgroup label="Pro">
-              <option value="claude-opus-4.6">Claude Opus 4.6 (Pro)</option>
-              <option value="gpt-5.5">GPT-5.5 (Pro)</option>
-              <option value="gemini-2.5-pro">Gemini 2.5 Pro (Pro)</option>
-            </optgroup>
-          </select>
+          {!useCustomModel ? (
+            <div className="space-y-2">
+              <select
+                value={useCustomModel ? '__custom__' : model}
+                onChange={e => {
+                  if (e.target.value === '__custom__') {
+                    setUseCustomModel(true)
+                  } else {
+                    setModel(e.target.value)
+                  }
+                  markChanged()
+                }}
+                className={inputClass}
+              >
+                <optgroup label="Free / AIMurah">
+                  <option value="deepseek-3.2">DeepSeek 3.2 (Free)</option>
+                  <option value="claude-sonnet-4.5">Claude Sonnet 4.5 (Free)</option>
+                  <option value="claude-haiku-4.5">Claude Haiku 4.5 (Free)</option>
+                  <option value="minimax-m2.5">MiniMax M2.5 (Free)</option>
+                </optgroup>
+                <optgroup label="Pro / AIMurah">
+                  <option value="claude-opus-4.6">Claude Opus 4.6 (Pro)</option>
+                  <option value="gpt-5.5">GPT-5.5 (Pro)</option>
+                  <option value="gemini-2.5-pro">Gemini 2.5 Pro (Pro)</option>
+                </optgroup>
+                <optgroup label="Lainnya">
+                  <option value="__custom__">Custom model...</option>
+                </optgroup>
+              </select>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              <input
+                type="text"
+                value={customModel}
+                onChange={e => { setCustomModel(e.target.value); markChanged() }}
+                className={inputClass}
+                placeholder="gpt-4o, claude-3.5-sonnet, deepseek-chat, llama-3.1-70b..."
+              />
+              <button
+                type="button"
+                onClick={() => { setUseCustomModel(false); setCustomModel(''); markChanged() }}
+                className="text-[10px] text-purple-500 hover:underline"
+              >
+                Kembali ke model preset
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Save button */}
@@ -667,17 +732,24 @@ function AISettings() {
             ) : (
               <span className="flex items-center justify-center gap-2">
                 <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>
-                Simpan API Key
+                Simpan Pengaturan
               </span>
             )}
           </button>
         </div>
 
         {/* Info box */}
-        <div className="rounded-xl p-3.5 bg-purple-50 border border-purple-200">
+        <div className="rounded-xl p-3.5 bg-purple-50 border border-purple-200 space-y-2">
           <p className="text-[11px] text-purple-700 leading-relaxed">
-            <strong>Cara pakai:</strong> Daftar gratis di openagentic.id → Generate API Key → Paste di atas → Buka menu Analisa → Klik "Generate Insight"
+            <strong>Cara pakai:</strong> Isi Base URL, API Key, dan Model sesuai provider yang kamu punya.
           </p>
+          <div className="text-[10px] text-purple-600/80 leading-relaxed space-y-1">
+            <p><strong>Contoh provider:</strong></p>
+            <p>- OpenAI: <code className="bg-purple-100 px-1 rounded">https://api.openai.com/v1</code></p>
+            <p>- DeepSeek: <code className="bg-purple-100 px-1 rounded">https://api.deepseek.com</code></p>
+            <p>- OpenRouter: <code className="bg-purple-100 px-1 rounded">https://openrouter.ai/api/v1</code></p>
+            <p>- Ollama (lokal): <code className="bg-purple-100 px-1 rounded">http://localhost:11434/v1</code></p>
+          </div>
         </div>
       </div>
     </div>

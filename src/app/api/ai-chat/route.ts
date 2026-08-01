@@ -23,6 +23,7 @@ export async function POST(req: NextRequest) {
     }
 
     const aiModel = settingsMap['ai_model'] || 'deepseek-3.2'
+    const baseUrl = (settingsMap['ai_base_url'] || 'https://aimurah.my.id/api/v1').replace(/\/+$/, '')
 
     // Build inventory context summary
     const products = context?.products || []
@@ -96,7 +97,7 @@ ${inventoryContext}`
       { role: 'user', content: message },
     ]
 
-    const response = await fetch('https://aimurah.my.id/api/v1/chat/completions', {
+    const response = await fetch(`${baseUrl}/chat/completions`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
