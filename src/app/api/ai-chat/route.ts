@@ -107,6 +107,7 @@ ${inventoryContext}`
         messages,
         max_tokens: 1500,
         temperature: 0.7,
+        stream: false,
       }),
     })
 
@@ -119,8 +120,30 @@ ${inventoryContext}`
       )
     }
 
-    const data = await response.json()
-    const reply = data.choices?.[0]?.message?.content || 'Maaf, tidak bisa memproses permintaan.'
+    const rawText = await response.text()
+
+    // Try parsing as JSON first
+    let reply: string
+    try {
+      const data = JSON.parse(rawText)
+      reply = data.choices?.[0]?.message?.content || 'Maaf, tidak bisa memproses permintaan.'
+    } catch {
+      // If JSON fails, the response might be SSE streaming format — extract the last content chunk
+      const lines = rawText.split('\n')
+      const contentParts: string[] = []
+      for (const line of lines) {
+        if (line.startsWith('data: ') && line !== 'data: [DONE]') {
+          try {
+            const chunk = JSON.parse(line.slice(6))
+            const delta = chunk.choices?.[0]?.delta?.content
+            if (delta) contentParts.push(delta)
+          } catch { /* skip malformed chunks */ }
+        }
+      }
+      reply = contentParts.length > 0
+        ? contentParts.join('')
+        : 'Maaf, tidak bisa memproses permintaan.'
+    }
 
     return NextResponse.json({ reply })
   } catch (error: any) {
