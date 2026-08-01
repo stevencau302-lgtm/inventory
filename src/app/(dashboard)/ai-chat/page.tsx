@@ -1,13 +1,19 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
-import { Send, Sparkles, Loader2, User, Trash2, Package, BarChart3, TrendingUp, Undo2 } from 'lucide-react'
+import { useState, useRef, useEffect, useCallback } from 'react'
+import { Send, Sparkles, Loader2, User, Trash2, Package, BarChart3, TrendingUp, Undo2, ImagePlus, X } from 'lucide-react'
 import { fetchProducts, fetchCategories, fetchTransactions, formatRp } from '@/lib/store'
+
+interface ImageAttachment {
+  dataUrl: string
+  name: string
+}
 
 interface Message {
   id: string
   role: 'user' | 'assistant'
   content: string
+  images?: ImageAttachment[]
   timestamp: Date
 }
 
@@ -22,8 +28,10 @@ export default function AiChatPage() {
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
+  const [images, setImages] = useState<ImageAttachment[]>([])
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLTextAreaElement>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -41,18 +49,47 @@ export default function AiChatPage() {
     }
   }, [input])
 
-  const sendMessage = async (content: string) => {
-    if (!content.trim() || loading) return
+  const handleImageSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files
+    if (!files) return
+
+    Array.from(files).forEach(file => {
+      if (!file.type.startsWith('image/')) return
+      if (file.size > 10 * 1024 * 1024) {
+        alert('Ukuran gambar maksimal 10MB')
+        return
+      }
+      const reader = new FileReader()
+      reader.onload = (ev) => {
+        const dataUrl = ev.target?.result as string
+        setImages(prev => [...prev, { dataUrl, name: file.name }])
+      }
+      reader.readAsDataURL(file)
+    })
+
+    // Reset input so same file can be selected again
+    e.target.value = ''
+  }, [])
+
+  const removeImage = useCallback((index: number) => {
+    setImages(prev => prev.filter((_, i) => i !== index))
+  }, [])
+
+  const sendMessage = async (content: string, attachedImages?: ImageAttachment[]) => {
+    const imgs = attachedImages || images
+    if ((!content.trim() && imgs.length === 0) || loading) return
 
     const userMsg: Message = {
       id: Date.now().toString(),
       role: 'user',
       content: content.trim(),
+      images: imgs.length > 0 ? [...imgs] : undefined,
       timestamp: new Date(),
     }
 
     setMessages(prev => [...prev, userMsg])
     setInput('')
+    setImages([])
     setLoading(true)
 
     try {
@@ -68,6 +105,7 @@ export default function AiChatPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           message: content.trim(),
+          images: imgs.map(i => ({ dataUrl: i.dataUrl, name: i.name })),
           history: messages.slice(-10).map(m => ({ role: m.role, content: m.content })),
           context: { products, categories, transactions },
         }),
@@ -111,6 +149,8 @@ export default function AiChatPage() {
   const clearChat = () => {
     setMessages([])
   }
+
+  const canSend = (input.trim() || images.length > 0) && !loading
 
   return (
     <div className="flex flex-col h-[calc(100vh-2rem)] max-h-[calc(100vh-2rem)]">
@@ -170,10 +210,23 @@ export default function AiChatPage() {
               </div>
             )}
             <div className={`max-w-[80%] sm:max-w-[70%] ${
-              msg.role === 'user' 
-                ? 'bg-[#072C2C] text-white rounded-2xl rounded-br-md px-4 py-3' 
+              msg.role === 'user'
+                ? 'bg-[#072C2C] text-white rounded-2xl rounded-br-md px-4 py-3'
                 : 'bg-gray-50 border border-gray-200 text-gray-700 rounded-2xl rounded-bl-md px-4 py-3'
             }`}>
+              {/* Image attachments */}
+              {msg.images && msg.images.length > 0 && (
+                <div className="flex flex-wrap gap-2 mb-2">
+                  {msg.images.map((img, i) => (
+                    <img
+                      key={i}
+                      src={img.dataUrl}
+                      alt={img.name}
+                      className="rounded-lg max-w-[200px] max-h-[200px] object-cover border border-white/20"
+                    />
+                  ))}
+                </div>
+              )}
               <div className={`text-[13px] leading-relaxed whitespace-pre-wrap ${msg.role === 'assistant' ? 'ai-response' : ''}`}>
                 {msg.role === 'assistant' ? <FormattedResponse content={msg.content} /> : msg.content}
               </div>
@@ -208,27 +261,63 @@ export default function AiChatPage() {
 
       {/* Input area */}
       <div className="pt-4 border-t border-gray-200">
+        {/* Image previews */}
+        {images.length > 0 && (
+          <div className="flex flex-wrap gap-2 mb-3 px-1">
+            {images.map((img, i) => (
+              <div key={i} className="relative group">
+                <img src={img.dataUrl} alt={img.name} className="w-16 h-16 rounded-lg object-cover border border-gray-200" />
+                <button
+                  type="button"
+                  onClick={() => removeImage(i)}
+                  className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-red-500 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+
         <form onSubmit={handleSubmit} className="relative">
           <div className="flex items-end gap-2 bg-gray-50 border border-gray-200 rounded-2xl px-4 py-3 focus-within:border-purple-300 focus-within:bg-white focus-within:shadow-lg focus-within:shadow-purple-500/5 transition-all">
+            {/* Image upload button */}
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="w-9 h-9 rounded-xl bg-gray-100 hover:bg-purple-50 flex items-center justify-center text-gray-400 hover:text-purple-500 transition-all shrink-0"
+              title="Upload gambar"
+            >
+              <ImagePlus className="w-4 h-4" />
+            </button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              multiple
+              onChange={handleImageSelect}
+              className="hidden"
+            />
+
             <textarea
               ref={inputRef}
               value={input}
               onChange={e => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Tanya tentang inventory kamu..."
+              placeholder={images.length > 0 ? "Tambahkan pertanyaan tentang gambar..." : "Tanya tentang inventory kamu..."}
               rows={1}
               className="flex-1 bg-transparent text-sm text-gray-900 placeholder-gray-400 outline-none resize-none max-h-[120px]"
             />
             <button
               type="submit"
-              disabled={!input.trim() || loading}
+              disabled={!canSend}
               className="w-9 h-9 rounded-xl bg-gradient-to-r from-purple-500 to-indigo-500 flex items-center justify-center text-white shadow-md shadow-purple-500/20 hover:shadow-purple-500/30 hover:scale-105 disabled:opacity-30 disabled:hover:scale-100 disabled:shadow-none transition-all shrink-0"
             >
               <Send className="w-4 h-4" />
             </button>
           </div>
           <p className="text-[10px] text-gray-400 mt-2 text-center">
-            AI punya akses ke data inventory real-time. Tekan Enter untuk kirim, Shift+Enter untuk baris baru.
+            AI bisa baca gambar. Tekan Enter kirim, Shift+Enter baris baru.
           </p>
         </form>
       </div>

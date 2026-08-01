@@ -6,7 +6,7 @@ const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUz
 
 export async function POST(req: NextRequest) {
   try {
-    const { message, history, context } = await req.json()
+    const { message, images, history, context } = await req.json()
 
     // Get API key from settings
     const supabase = createClient(supabaseUrl, supabaseKey)
@@ -90,11 +90,25 @@ FORMAT JAWABAN:
 
 ${inventoryContext}`
 
+    // Build user message content (support images for vision)
+    let userContent: string | Array<{ type: string; text?: string; image_url?: { url: string } }>
+    if (images && images.length > 0) {
+      userContent = [
+        ...(message.trim() ? [{ type: 'text' as const, text: message.trim() }] : []),
+        ...images.map((img: { dataUrl: string; name: string }) => ({
+          type: 'image_url' as const,
+          image_url: { url: img.dataUrl },
+        })),
+      ]
+    } else {
+      userContent = message
+    }
+
     // Build messages array with history
     const messages = [
       { role: 'system', content: systemPrompt },
       ...(history || []).slice(-10),
-      { role: 'user', content: message },
+      { role: 'user', content: userContent },
     ]
 
     const response = await fetch(`${baseUrl}/chat/completions`, {
