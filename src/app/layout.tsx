@@ -3,11 +3,6 @@
 import './globals.css'
 import { useEffect } from 'react'
 import { registerServiceWorker } from '@/lib/offline'
-import { Geist } from "next/font/google";
-import { cn } from "@/lib/utils";
-
-const geist = Geist({subsets:['latin'],variable:'--font-sans'});
-
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   useEffect(() => {
@@ -15,7 +10,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   }, [])
 
   return (
-    <html lang="id" className={cn("font-sans", geist.variable)}>
+    <html lang="id">
       <head>
         <title>Nexa Inventory</title>
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
