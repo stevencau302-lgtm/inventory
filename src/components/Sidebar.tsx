@@ -3,6 +3,7 @@
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
+import { motion } from 'framer-motion'
 import {
   LayoutDashboard,
   Package,
@@ -15,6 +16,8 @@ import {
   PanelLeftOpen,
   MessageSquare,
   RotateCcw,
+  LogOut,
+  ChevronRight,
 } from 'lucide-react'
 import { getSetting, saveSetting } from '@/lib/store'
 import { useAuth } from '@/components/AuthProvider'
