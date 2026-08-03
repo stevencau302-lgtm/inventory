@@ -204,7 +204,6 @@ export default function ProductModal({ isOpen, onClose, onSave, product, categor
       {/* Mobile bottom sheet (Drawer, hanya di bawah sm) */}
       <Drawer open={isOpen} onOpenChange={(open) => { if (!open) onClose() }} direction="bottom">
         <DrawerContent className="sm:hidden max-h-[92vh] rounded-t-3xl border-t border-gray-200 bg-white pb-[env(safe-area-inset-bottom)]">
-          <div className="mx-auto mt-3 h-1.5 w-12 rounded-full bg-gray-200" />
           {header(title)}
           <div className="overflow-y-auto">{formBody}</div>
         </DrawerContent>
