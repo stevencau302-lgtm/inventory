@@ -136,7 +136,7 @@ function UserInfo({ collapsed, userName, userEmail, userInitial }: {
 export default function Sidebar() {
   const [collapsed, setCollapsed] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
-  const { user } = useAuth()
+  const { user, signOut } = useAuth()
 
   const userEmail = user?.email || ''
   const userName = user?.user_metadata?.full_name || userEmail.split('@')[0] || 'User'
@@ -220,27 +220,128 @@ export default function Sidebar() {
       {/* Mobile drawer */}
       <Drawer open={mobileOpen} onOpenChange={setMobileOpen} direction="left">
         <DrawerContent
-          className="!w-[280px] rounded-r-2xl border-r border-white/10"
-          style={{ background: '#072C2C' }}
+          className="!w-[300px] rounded-r-3xl border-r border-white/10 overflow-hidden"
+          style={{ background: 'linear-gradient(180deg, #0A3D3D 0%, #072C2C 55%, #042424 100%)' }}
         >
-          <div className="h-14 flex items-center px-3 border-b border-white/10">
-            <div className="flex items-center gap-2.5 min-w-0 flex-1">
-              <div className="shrink-0">
-                <NexaLogo size={34} />
+          {/* Ambient glow blobs */}
+          <div className="pointer-events-none absolute -top-24 -right-24 w-64 h-64 rounded-full bg-[#FF5F03]/20 blur-[100px]" />
+          <div className="pointer-events-none absolute bottom-0 -left-24 w-56 h-56 rounded-full bg-teal-400/10 blur-[90px]" />
+          <div className="pointer-events-none absolute top-1/3 right-0 w-32 h-32 rounded-full bg-[#FF8A3D]/10 blur-[70px]" />
+
+          {/* Frosted glass top bar */}
+          <div className="relative flex items-center justify-between px-5 pt-5 pb-4">
+            <motion.div
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+              className="flex items-center gap-3"
+            >
+              <div className="relative">
+                <NexaLogo size={40} />
+                <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-400 border-2 border-[#0A3D3D]" />
               </div>
-              <div className="flex flex-col">
-                <span className="text-sm font-bold text-white whitespace-nowrap leading-tight">Nexa</span>
-                <span className="text-[9px] text-white/40 font-medium uppercase tracking-widest leading-tight">Inventory</span>
+              <div className="flex flex-col leading-none">
+                <span className="text-base font-bold text-white tracking-wide">Nexa</span>
+                <span className="text-[9px] text-[#FF8A3D] font-semibold uppercase tracking-[0.25em] mt-1">Inventory</span>
               </div>
-            </div>
-            <DrawerClose className="w-7 h-7 rounded-lg flex items-center justify-center text-white/50 hover:text-white hover:bg-white/10 transition shrink-0" title="Tutup">
-              <X className="w-4 h-4" />
-            </DrawerClose>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.3, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+            >
+              <DrawerClose
+                className="w-9 h-9 rounded-xl flex items-center justify-center text-white/60 hover:text-white bg-white/[0.06] backdrop-blur-md border border-white/[0.08] hover:bg-white/[0.12] hover:border-white/20 transition-all duration-200 active:scale-90"
+                title="Tutup"
+              >
+                <X className="w-4.5 h-4.5" strokeWidth={2.2} />
+              </DrawerClose>
+            </motion.div>
           </div>
 
-          <NavContent collapsed={false} onNavigate={() => setMobileOpen(false)} />
+          {/* Section label */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.12, duration: 0.3 }}
+            className="relative px-6 pt-1 pb-2 text-[9px] font-bold uppercase tracking-[0.3em] text-white/35"
+          >
+            Menu Utama
+          </motion.div>
 
-          <UserInfo collapsed={false} userName={userName} userEmail={userEmail} userInitial={userInitial} />
+          {/* Navigation with stagger */}
+          <nav className="relative flex-1 px-3 pb-3 space-y-1 overflow-y-auto overflow-x-hidden">
+            {navItems.map((item, idx) => {
+              const isActive = pathname === item.href
+              const Icon = item.icon
+              return (
+                <motion.div
+                  key={item.href}
+                  initial={{ opacity: 0, x: -24 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.08 + idx * 0.06, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                >
+                  <Link
+                    href={item.href}
+                    onClick={() => setMobileOpen(false)}
+                    className={`
+                      group relative flex items-center gap-3.5 px-3 py-2.5 rounded-2xl transition-all duration-200 active:scale-[0.97]
+                      ${isActive
+                        ? 'bg-gradient-to-r from-[#FF5F03]/90 to-[#FF8A3D]/80 text-white shadow-lg shadow-[#FF5F03]/25'
+                        : 'text-white/60 hover:text-white hover:bg-white/[0.07]'
+                      }
+                    `}
+                  >
+                    <span
+                      className={`
+                        flex items-center justify-center w-10 h-10 rounded-xl transition-all duration-200 shrink-0
+                        ${isActive
+                          ? 'bg-white/20 backdrop-blur-sm'
+                          : 'bg-white/[0.05] border border-white/[0.06] group-hover:bg-white/[0.09] group-hover:border-white/[0.12]'
+                        }
+                      `}
+                    >
+                      <Icon className={`w-5 h-5 ${isActive ? 'text-white' : 'text-white/70 group-hover:text-white'}`} strokeWidth={1.9} />
+                    </span>
+                    <span className="flex-1 text-[13px] font-medium">{item.label}</span>
+                    {isActive ? (
+                      <span className="w-1.5 h-1.5 rounded-full bg-white shadow-[0_0_8px_rgba(255,255,255,0.8)]" />
+                    ) : (
+                      <ChevronRight className="w-4 h-4 text-white/25 group-hover:text-white/50 group-hover:translate-x-0.5 transition-all duration-200" />
+                    )}
+                  </Link>
+                </motion.div>
+              )
+            })}
+          </nav>
+
+          {/* User card */}
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.08 + navItems.length * 0.06, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+            className="relative m-3 rounded-2xl bg-white/[0.06] backdrop-blur-md border border-white/[0.08] p-3"
+          >
+            <div className="flex items-center gap-3">
+              <div className="relative shrink-0">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#FF5F03] to-[#FF8A3D] flex items-center justify-center text-xs font-bold text-white shadow-md shadow-[#FF5F03]/30">
+                  {userInitial}
+                </div>
+                <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-400 border-2 border-[#072C2C]" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="text-xs font-semibold text-white truncate">{userName}</p>
+                <p className="text-[10px] text-white/45 truncate mt-0.5">{userEmail}</p>
+              </div>
+              <button
+                onClick={signOut}
+                className="w-8 h-8 shrink-0 rounded-lg flex items-center justify-center text-white/40 hover:text-red-400 hover:bg-red-500/10 transition-all duration-200 active:scale-90"
+                title="Keluar"
+              >
+                <LogOut className="w-4 h-4" />
+              </button>
+            </div>
+          </motion.div>
         </DrawerContent>
       </Drawer>
     </>
