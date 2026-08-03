@@ -18,6 +18,7 @@ import {
 } from 'lucide-react'
 import { getSetting, saveSetting } from '@/lib/store'
 import { useAuth } from '@/components/AuthProvider'
+import { Drawer, DrawerClose, DrawerContent } from '@/components/ui/drawer'
 
 // Custom SVG logo component
 function NexaLogo({ size = 36 }: { size?: number }) {
@@ -62,8 +63,74 @@ function Tooltip({ children, label, show }: { children: React.ReactNode; label: 
   )
 }
 
-export default function Sidebar() {
+function NavContent({ collapsed, onNavigate }: { collapsed: boolean; onNavigate?: () => void }) {
   const pathname = usePathname()
+  return (
+    <nav className="flex-1 py-3 px-2 space-y-1 overflow-y-auto overflow-x-hidden">
+      {navItems.map(item => {
+        const isActive = pathname === item.href
+        const Icon = item.icon
+
+        const linkContent = (
+          <Link
+            key={item.href}
+            href={item.href}
+            onClick={onNavigate}
+            className={`
+              flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200
+              ${collapsed ? 'justify-center' : ''}
+              ${isActive
+                ? 'bg-[#FF5F03] text-white shadow-lg shadow-[#FF5F03]/20'
+                : 'text-white/60 hover:text-white hover:bg-white/[0.08]'
+              }
+            `}
+          >
+            <Icon className={`w-5 h-5 shrink-0 ${isActive ? 'text-white' : ''}`} strokeWidth={1.8} />
+            {!collapsed && (
+              <span className="text-[13px] font-medium whitespace-nowrap">{item.label}</span>
+            )}
+          </Link>
+        )
+
+        return (
+          <Tooltip key={item.href} label={item.label} show={collapsed}>
+            {linkContent}
+          </Tooltip>
+        )
+      })}
+    </nav>
+  )
+}
+
+function UserInfo({ collapsed, userName, userEmail, userInitial }: {
+  collapsed: boolean
+  userName: string
+  userEmail: string
+  userInitial: string
+}) {
+  return (
+    <>
+      <div className="mx-3 border-t border-white/10" />
+      <div className="p-3">
+        <Tooltip label={userName} show={collapsed}>
+          <div className={`flex items-center gap-3 px-2 py-2 rounded-xl hover:bg-white/[0.06] transition-all ${collapsed ? 'justify-center px-0' : ''}`}>
+            <div className="w-8 h-8 rounded-full bg-[#FF5F03] flex items-center justify-center text-[11px] font-bold text-white shrink-0">
+              {userInitial}
+            </div>
+            {!collapsed && (
+              <div className="min-w-0">
+                <p className="text-xs font-semibold text-white truncate">{userName}</p>
+                <p className="text-[10px] text-white/50 truncate">{userEmail}</p>
+              </div>
+            )}
+          </div>
+        </Tooltip>
+      </div>
+    </>
+  )
+}
+
+export default function Sidebar() {
   const [collapsed, setCollapsed] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
   const { user } = useAuth()
@@ -84,15 +151,10 @@ export default function Sidebar() {
     saveSetting('sidebar_collapsed', String(next))
   }
 
-  const isCollapsedView = collapsed && !mobileOpen
+  const isCollapsedView = collapsed
 
   return (
     <>
-      {/* Mobile overlay */}
-      {mobileOpen && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 lg:hidden" onClick={() => setMobileOpen(false)} />
-      )}
-
       {/* Mobile hamburger */}
       <button
         onClick={() => setMobileOpen(true)}
@@ -101,13 +163,12 @@ export default function Sidebar() {
         <Menu className="w-5 h-5" />
       </button>
 
-      {/* Sidebar */}
+      {/* Desktop sidebar */}
       <aside
         className={`
-          fixed lg:static inset-y-0 left-0 z-50 shrink-0 flex flex-col
-          transition-all duration-300 ease-in-out lg:translate-x-0
+          hidden lg:flex shrink-0 flex-col
+          transition-all duration-300 ease-in-out
           ${isCollapsedView ? 'w-[68px]' : 'w-[240px]'}
-          ${mobileOpen ? 'translate-x-0 !w-[240px]' : '-translate-x-full lg:translate-x-0'}
         `}
         style={{ background: '#072C2C', borderRight: '1px solid rgba(255,255,255,0.08)' }}
       >
@@ -124,14 +185,13 @@ export default function Sidebar() {
               </div>
             )}
           </div>
-          {/* Close button mobile / Collapse desktop */}
           {!isCollapsedView && (
             <button
-              onClick={() => mobileOpen ? setMobileOpen(false) : toggleCollapse()}
+              onClick={toggleCollapse}
               className="w-7 h-7 rounded-lg flex items-center justify-center text-white/50 hover:text-white hover:bg-white/10 transition shrink-0"
-              title={mobileOpen ? 'Tutup' : 'Kecilkan sidebar'}
+              title="Kecilkan sidebar"
             >
-              {mobileOpen ? <X className="w-4 h-4" /> : <PanelLeftClose className="w-4 h-4" />}
+              <PanelLeftClose className="w-4 h-4" />
             </button>
           )}
         </div>
@@ -149,61 +209,37 @@ export default function Sidebar() {
           </div>
         )}
 
-        {/* Navigation */}
-        <nav className="flex-1 py-3 px-2 space-y-1 overflow-y-auto overflow-x-hidden">
-          {navItems.map(item => {
-            const isActive = pathname === item.href
-            const Icon = item.icon
+        <NavContent collapsed={isCollapsedView} />
 
-            const linkContent = (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={() => mobileOpen && setMobileOpen(false)}
-                className={`
-                  flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200
-                  ${isCollapsedView ? 'justify-center' : ''}
-                  ${isActive
-                    ? 'bg-[#FF5F03] text-white shadow-lg shadow-[#FF5F03]/20'
-                    : 'text-white/60 hover:text-white hover:bg-white/[0.08]'
-                  }
-                `}
-              >
-                <Icon className={`w-5 h-5 shrink-0 ${isActive ? 'text-white' : ''}`} strokeWidth={1.8} />
-                {!isCollapsedView && (
-                  <span className="text-[13px] font-medium whitespace-nowrap">{item.label}</span>
-                )}
-              </Link>
-            )
-
-            return (
-              <Tooltip key={item.href} label={item.label} show={isCollapsedView}>
-                {linkContent}
-              </Tooltip>
-            )
-          })}
-        </nav>
-
-        {/* Separator */}
-        <div className="mx-3 border-t border-white/10" />
-
-        {/* User info */}
-        <div className="p-3">
-          <Tooltip label={userName} show={isCollapsedView}>
-            <div className={`flex items-center gap-3 px-2 py-2 rounded-xl hover:bg-white/[0.06] transition-all ${isCollapsedView ? 'justify-center px-0' : ''}`}>
-              <div className="w-8 h-8 rounded-full bg-[#FF5F03] flex items-center justify-center text-[11px] font-bold text-white shrink-0">
-                {userInitial}
-              </div>
-              {!isCollapsedView && (
-                <div className="min-w-0">
-                  <p className="text-xs font-semibold text-white truncate">{userName}</p>
-                  <p className="text-[10px] text-white/50 truncate">{userEmail}</p>
-                </div>
-              )}
-            </div>
-          </Tooltip>
-        </div>
+        <UserInfo collapsed={isCollapsedView} userName={userName} userEmail={userEmail} userInitial={userInitial} />
       </aside>
+
+      {/* Mobile drawer */}
+      <Drawer open={mobileOpen} onOpenChange={setMobileOpen} direction="left">
+        <DrawerContent
+          className="!w-[280px] rounded-r-2xl border-r border-white/10"
+          style={{ background: '#072C2C' }}
+        >
+          <div className="h-14 flex items-center px-3 border-b border-white/10">
+            <div className="flex items-center gap-2.5 min-w-0 flex-1">
+              <div className="shrink-0">
+                <NexaLogo size={34} />
+              </div>
+              <div className="flex flex-col">
+                <span className="text-sm font-bold text-white whitespace-nowrap leading-tight">Nexa</span>
+                <span className="text-[9px] text-white/40 font-medium uppercase tracking-widest leading-tight">Inventory</span>
+              </div>
+            </div>
+            <DrawerClose className="w-7 h-7 rounded-lg flex items-center justify-center text-white/50 hover:text-white hover:bg-white/10 transition shrink-0" title="Tutup">
+              <X className="w-4 h-4" />
+            </DrawerClose>
+          </div>
+
+          <NavContent collapsed={false} onNavigate={() => setMobileOpen(false)} />
+
+          <UserInfo collapsed={false} userName={userName} userEmail={userEmail} userInitial={userInitial} />
+        </DrawerContent>
+      </Drawer>
     </>
   )
 }
