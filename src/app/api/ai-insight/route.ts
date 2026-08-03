@@ -23,6 +23,7 @@ export async function POST(req: NextRequest) {
     }
 
     const aiModel = settingsMap['ai_model'] || 'deepseek-3.2'
+    const baseUrl = (settingsMap['ai_base_url'] || 'https://aimurah.my.id/api/v1').replace(/\/+$/, '')
 
     // Build summary data for AI
     const totalProducts = products?.length || 0
@@ -86,7 +87,7 @@ Berikan:
 
 Format dalam markdown. Jaga respons tetap ringkas dan praktis.`
 
-    const response = await fetch('https://aimurah.my.id/api/v1/chat/completions', {
+    const response = await fetch(`${baseUrl}/chat/completions`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
