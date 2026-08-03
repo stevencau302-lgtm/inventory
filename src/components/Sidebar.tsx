@@ -134,6 +134,7 @@ function UserInfo({ collapsed, userName, userEmail, userInitial }: {
 }
 
 export default function Sidebar() {
+  const pathname = usePathname()
   const [collapsed, setCollapsed] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
   const { user, signOut } = useAuth()
