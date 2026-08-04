@@ -97,18 +97,18 @@ export default function NewProductPage() {
   const stockStatus = stock === 0 ? 'Habis' : stock <= minStock ? 'Menipis' : 'Tersedia'
   const stockColor = stock === 0 ? 'text-red-400' : stock <= minStock ? 'text-amber-400' : 'text-emerald-400'
 
-  const inputBase = "w-full rounded-lg bg-white border border-gray-200 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#072C2C] focus:ring-1 focus:ring-[#072C2C]/10 transition"
+  const inputBase = "w-full rounded-xl bg-gray-50 border border-gray-200 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#072C2C] focus:bg-white focus:ring-2 focus:ring-[#072C2C]/10 transition-all duration-150"
 
   return (
     <div className="max-w-5xl mx-auto px-0 sm:px-4 lg:px-8 py-0 sm:py-2">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 sm:px-0 py-3 sm:py-0 sm:mb-6">
+      <div className="flex items-center justify-between px-4 sm:px-0 py-4 sm:py-0 sm:mb-6">
         <div className="flex items-center gap-3">
-          <button onClick={() => router.push('/products')} className="w-8 h-8 sm:w-auto sm:h-auto sm:px-0 rounded-full sm:rounded-none bg-gray-100 sm:bg-transparent flex items-center justify-center sm:inline-flex text-gray-600 hover:text-gray-900 transition">
+          <button onClick={() => router.push('/products')} className="w-9 h-9 sm:w-auto sm:h-auto sm:px-0 rounded-xl sm:rounded-none bg-gray-100 sm:bg-transparent flex items-center justify-center sm:inline-flex text-gray-600 hover:text-gray-900 transition-all duration-150">
             <ArrowLeft size={16} />
           </button>
           <div>
-            <h1 className="text-base sm:text-2xl font-bold text-gray-900">Tambah Produk</h1>
+            <h1 className="text-lg sm:text-2xl font-bold text-gray-900">Tambah Produk</h1>
             <p className="text-[11px] sm:text-sm text-gray-400 hidden sm:block">Lengkapi data produk yang akan ditambahkan</p>
           </div>
         </div>
@@ -120,19 +120,19 @@ export default function NewProductPage() {
 
       <form onSubmit={handleSubmit}>
         {/* ===== MOBILE LAYOUT ===== */}
-        <div className="sm:hidden px-4 pt-3 pb-6 space-y-5">
+        <div className="sm:hidden px-4 pt-4 pb-28 space-y-4">
 
           {/* Section: Informasi Produk */}
-          <div className="rounded-xl border border-gray-200 bg-white overflow-hidden shadow-sm">
-            <div className="px-4 py-2.5 bg-[#072C2C] flex items-center gap-2">
-              <Package size={14} className="text-white" />
-              <span className="text-xs font-semibold text-white">Informasi Produk</span>
+          <div className="rounded-2xl bg-white overflow-hidden shadow-[0_1px_3px_rgba(0,0,0,0.06),0_1px_2px_rgba(0,0,0,0.04)]">
+            <div className="px-4 py-3 bg-[#072C2C] flex items-center gap-2.5">
+              <Package size={16} className="text-white" />
+              <span className="text-sm font-semibold text-white">Informasi Produk</span>
             </div>
-            <div className="p-4 space-y-3.5">
+            <div className="p-4 space-y-4">
               {/* SKU + Nama grid */}
               <div className="grid grid-cols-1 gap-3.5">
                 <div>
-                  <label className="text-[11px] font-semibold text-gray-500 uppercase mb-1.5 block">Kode SKU *</label>
+                  <label className="text-xs font-medium text-gray-500 mb-1.5 block">Kode SKU *</label>
                   <div className="flex gap-2">
                     <div className="relative flex-1">
                       <Hash size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
@@ -149,7 +149,7 @@ export default function NewProductPage() {
                       </div>
                     </div>
                     <button type="button" onClick={() => setShowScanner(true)}
-                      className="shrink-0 w-[42px] h-[42px] rounded-lg border border-gray-200 bg-gray-50 flex items-center justify-center text-[#072C2C] active:bg-gray-100">
+                      className="shrink-0 w-[42px] h-[42px] rounded-xl border border-gray-200 bg-gray-50 flex items-center justify-center text-[#072C2C] active:bg-gray-100 transition-all duration-150">
                       <ScanBarcode size={16} />
                     </button>
                   </div>
@@ -157,7 +157,7 @@ export default function NewProductPage() {
                   {skuStatus === 'available' && <p className="text-[10px] text-emerald-500 mt-1">✓ Tersedia</p>}
                 </div>
                 <div>
-                  <label className="text-[11px] font-semibold text-gray-500 uppercase mb-1.5 block">Nama Produk *</label>
+                  <label className="text-xs font-medium text-gray-500 mb-1.5 block">Nama Produk *</label>
                   <div className="relative">
                     <Tag size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                     <input type="text" required value={name} onChange={e => setName(e.target.value)}
@@ -168,7 +168,7 @@ export default function NewProductPage() {
               </div>
               {/* Kategori */}
               <div>
-                <label className="text-[11px] font-semibold text-gray-500 uppercase mb-1.5 block">Kategori *</label>
+                <label className="text-xs font-medium text-gray-500 mb-1.5 block">Kategori *</label>
                 <select required value={category} onChange={e => setCategory(e.target.value)}
                   className={`${inputBase} px-3 py-2.5 appearance-none`}
                   style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 12px center' }}>
@@ -178,8 +178,8 @@ export default function NewProductPage() {
               </div>
               {/* Deskripsi */}
               <div>
-                <label className="text-[11px] font-semibold text-gray-500 uppercase mb-1.5 block">Deskripsi <span className="normal-case text-gray-300">(opsional)</span></label>
-                <textarea value={description} onChange={e => setDescription(e.target.value)} rows={2}
+                <label className="text-xs font-medium text-gray-500 mb-1.5 block">Deskripsi <span className="normal-case text-gray-300">(opsional)</span></label>
+                <textarea value={description} onChange={e => setDescription(e.target.value)} rows={3}
                   className={`${inputBase} px-3 py-2.5 resize-none`}
                   placeholder="Deskripsi singkat..." />
               </div>
@@ -187,15 +187,15 @@ export default function NewProductPage() {
           </div>
 
           {/* Section: Harga */}
-          <div className="rounded-xl border border-gray-200 bg-white overflow-hidden shadow-sm">
-            <div className="px-4 py-2.5 bg-[#426464] flex items-center gap-2">
-              <DollarSign size={14} className="text-white" />
-              <span className="text-xs font-semibold text-white">Harga</span>
+          <div className="rounded-2xl bg-white overflow-hidden shadow-[0_1px_3px_rgba(0,0,0,0.06),0_1px_2px_rgba(0,0,0,0.04)]">
+            <div className="px-4 py-3 bg-[#426464] flex items-center gap-2.5">
+              <DollarSign size={16} className="text-white" />
+              <span className="text-sm font-semibold text-white">Harga</span>
             </div>
-            <div className="p-4 space-y-3.5">
+            <div className="p-4 space-y-4">
               <div className="grid grid-cols-1 gap-3.5">
                 <div>
-                  <label className="text-[11px] font-semibold text-gray-500 uppercase mb-1.5 block">Harga Per Unit *</label>
+                  <label className="text-xs font-medium text-gray-500 mb-1.5 block">Harga Per Unit *</label>
                   <div className="relative">
                     <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-medium">Rp</span>
                     <input type="text" inputMode="numeric" required value={priceDisplay}
@@ -205,31 +205,31 @@ export default function NewProductPage() {
                       className={`${inputBase} pl-9 py-2.5`}
                       placeholder="0" />
                   </div>
-                  <p className="text-[10px] text-gray-400 mt-1">Harga jual per unit</p>
+                  <p className="text-[11px] text-gray-400 mt-1.5">Harga jual per unit</p>
                 </div>
                 <div>
-                  <label className="text-[11px] font-semibold text-gray-500 uppercase mb-1.5 block">Minimum Stok</label>
+                  <label className="text-xs font-medium text-gray-500 mb-1.5 block">Minimum Stok</label>
                   <input type="text" inputMode="numeric" value={minStockDisplay}
                     onChange={e => { const v = e.target.value.replace(/[^0-9]/g, ''); setMinStockDisplay(v); setMinStock(v ? parseInt(v) : 0) }}
                     onFocus={() => { if (minStock === 0) setMinStockDisplay('') }}
                     onBlur={() => { if (!minStockDisplay) setMinStockDisplay('0') }}
                     className={`${inputBase} px-3 py-2.5`}
                     placeholder="10" />
-                  <p className="text-[10px] text-gray-400 mt-1">Alert saat stok di bawah angka ini</p>
+                  <p className="text-[11px] text-gray-400 mt-1.5">Alert saat stok di bawah angka ini</p>
                 </div>
               </div>
             </div>
           </div>
 
           {/* Section: Stok Awal */}
-          <div className="rounded-xl border border-gray-200 bg-white overflow-hidden shadow-sm">
-            <div className="px-4 py-2.5 bg-[#16A34A] flex items-center gap-2">
-              <Package size={14} className="text-white" />
-              <span className="text-xs font-semibold text-white">Stok Awal</span>
+          <div className="rounded-2xl bg-white overflow-hidden shadow-[0_1px_3px_rgba(0,0,0,0.06),0_1px_2px_rgba(0,0,0,0.04)]">
+            <div className="px-4 py-3 bg-[#16A34A] flex items-center gap-2.5">
+              <Package size={16} className="text-white" />
+              <span className="text-sm font-semibold text-white">Stok Awal</span>
             </div>
-            <div className="p-4 space-y-3.5">
+            <div className="p-4 space-y-4">
               <div>
-                <label className="text-[11px] font-semibold text-gray-500 uppercase mb-1.5 block">Jumlah Stok Awal</label>
+                <label className="text-xs font-medium text-gray-500 mb-1.5 block">Jumlah Stok Awal</label>
                 <div className="relative">
                   <Hash size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                   <input type="text" inputMode="numeric" value={stockDisplay}
@@ -239,10 +239,10 @@ export default function NewProductPage() {
                     className={`${inputBase} pl-8 py-2.5`}
                     placeholder="0" />
                 </div>
-                <p className="text-[10px] text-gray-400 mt-1">Kosongkan jika belum ada stok</p>
+                <p className="text-[11px] text-gray-400 mt-1.5">Kosongkan jika belum ada stok</p>
               </div>
               {/* Status preview */}
-              <div className={`flex items-center justify-between px-3 py-2.5 rounded-lg border ${
+              <div className={`flex items-center justify-between px-4 py-3 rounded-xl border ${
                 stock === 0 ? 'bg-red-50/50 border-red-100' :
                 stock <= minStock ? 'bg-amber-50/50 border-amber-100' :
                 'bg-emerald-50/50 border-emerald-100'
@@ -262,13 +262,13 @@ export default function NewProductPage() {
         </div>
 
         {/* Fixed Action Bar - Mobile only */}
-        <div className="sm:hidden fixed bottom-[72px] left-0 w-full bg-white px-4 py-3 flex gap-3 items-center shadow-[0_-4px_10px_rgba(0,0,0,0.05)] z-40 border-t border-gray-200/30">
+        <div className="sm:hidden fixed bottom-[72px] left-0 w-full bg-white/95 backdrop-blur-sm px-4 py-3 flex gap-3 items-center shadow-[0_-2px_12px_rgba(0,0,0,0.08)] z-40 border-t border-gray-100 safe-area-bottom">
           <button type="button" onClick={() => router.push('/products')}
-            className="flex-1 py-2.5 text-gray-500 text-sm font-semibold flex items-center justify-center gap-1.5 hover:bg-gray-50 rounded-lg transition active:scale-95">
+            className="flex-1 py-3 text-gray-500 text-sm font-semibold flex items-center justify-center gap-1.5 border border-gray-200 rounded-xl transition active:scale-[0.97]">
             Batal
           </button>
           <button type="submit" disabled={loading || skuStatus === 'duplicate'}
-            className="flex-[1.5] py-2.5 bg-[#16A34A] text-white text-sm font-bold flex items-center justify-center gap-1.5 rounded-lg shadow-md disabled:opacity-50 hover:bg-[#16A34A]/90 transition active:scale-95">
+            className="flex-[1.5] py-3 bg-[#16A34A] text-white text-sm font-bold flex items-center justify-center gap-1.5 rounded-xl shadow-[0_2px_8px_rgba(22,163,74,0.3)] disabled:opacity-50 hover:bg-[#16A34A]/90 transition-all duration-150 active:scale-[0.97]">
             {loading ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
             Simpan Produk
           </button>
