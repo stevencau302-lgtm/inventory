@@ -129,44 +129,43 @@ export default function NewProductPage() {
               <span className="text-xs font-semibold text-white">Informasi Produk</span>
             </div>
             <div className="p-4 space-y-3.5">
-              {/* SKU */}
-              <div>
-                <label className="text-[11px] font-semibold text-gray-500 uppercase mb-1.5 block">Kode SKU *</label>
-                <div className="flex gap-2">
-                  <div className="relative flex-1">
-                    <Hash size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                    <input type="text" required value={sku} onChange={e => handleSkuChange(e.target.value)}
-                      className={`${inputBase} pl-8 pr-9 py-2.5 ${
-                        skuStatus === 'duplicate' ? 'border-red-400' :
-                        skuStatus === 'available' ? 'border-emerald-400' : ''
-                      }`}
-                      placeholder="PRD-001" />
-                    <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                      {skuStatus === 'checking' && <Loader2 className="w-3.5 h-3.5 text-gray-400 animate-spin" />}
-                      {skuStatus === 'available' && <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />}
-                      {skuStatus === 'duplicate' && <XCircle className="w-3.5 h-3.5 text-red-400" />}
+              {/* SKU + Nama grid */}
+              <div className="grid grid-cols-1 gap-3.5">
+                <div>
+                  <label className="text-[11px] font-semibold text-gray-500 uppercase mb-1.5 block">Kode SKU *</label>
+                  <div className="flex gap-2">
+                    <div className="relative flex-1">
+                      <Hash size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                      <input type="text" required value={sku} onChange={e => handleSkuChange(e.target.value)}
+                        className={`${inputBase} pl-8 pr-9 py-2.5 ${
+                          skuStatus === 'duplicate' ? 'border-red-400' :
+                          skuStatus === 'available' ? 'border-emerald-400' : ''
+                        }`}
+                        placeholder="PRD-001" />
+                      <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                        {skuStatus === 'checking' && <Loader2 className="w-3.5 h-3.5 text-gray-400 animate-spin" />}
+                        {skuStatus === 'available' && <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />}
+                        {skuStatus === 'duplicate' && <XCircle className="w-3.5 h-3.5 text-red-400" />}
+                      </div>
                     </div>
+                    <button type="button" onClick={() => setShowScanner(true)}
+                      className="shrink-0 w-[42px] h-[42px] rounded-lg border border-gray-200 bg-gray-50 flex items-center justify-center text-[#072C2C] active:bg-gray-100">
+                      <ScanBarcode size={16} />
+                    </button>
                   </div>
-                  <button type="button" onClick={() => setShowScanner(true)}
-                    className="shrink-0 w-[42px] h-[42px] rounded-lg border border-gray-200 bg-gray-50 flex items-center justify-center text-[#072C2C] active:bg-gray-100">
-                    <ScanBarcode size={16} />
-                  </button>
+                  {skuStatus === 'duplicate' && <p className="text-[10px] text-red-400 mt-1">⚠ Dipakai oleh &ldquo;{skuDuplicateName}&rdquo;</p>}
+                  {skuStatus === 'available' && <p className="text-[10px] text-emerald-500 mt-1">✓ Tersedia</p>}
                 </div>
-                {skuStatus === 'duplicate' && <p className="text-[10px] text-red-400 mt-1">⚠ Dipakai oleh &ldquo;{skuDuplicateName}&rdquo;</p>}
-                {skuStatus === 'available' && <p className="text-[10px] text-emerald-500 mt-1">✓ Tersedia</p>}
-              </div>
-
-              {/* Nama */}
-              <div>
-                <label className="text-[11px] font-semibold text-gray-500 uppercase mb-1.5 block">Nama Produk *</label>
-                <div className="relative">
-                  <Tag size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                  <input type="text" required value={name} onChange={e => setName(e.target.value)}
-                    className={`${inputBase} pl-8 py-2.5`}
-                    placeholder="Nama produk" />
+                <div>
+                  <label className="text-[11px] font-semibold text-gray-500 uppercase mb-1.5 block">Nama Produk *</label>
+                  <div className="relative">
+                    <Tag size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                    <input type="text" required value={name} onChange={e => setName(e.target.value)}
+                      className={`${inputBase} pl-8 py-2.5`}
+                      placeholder="Nama produk" />
+                  </div>
                 </div>
               </div>
-
               {/* Kategori */}
               <div>
                 <label className="text-[11px] font-semibold text-gray-500 uppercase mb-1.5 block">Kategori *</label>
@@ -177,7 +176,6 @@ export default function NewProductPage() {
                   {categories.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
                 </select>
               </div>
-
               {/* Deskripsi */}
               <div>
                 <label className="text-[11px] font-semibold text-gray-500 uppercase mb-1.5 block">Deskripsi <span className="normal-case text-gray-300">(opsional)</span></label>
@@ -188,58 +186,68 @@ export default function NewProductPage() {
             </div>
           </div>
 
-          {/* Section: Harga & Stok */}
+          {/* Section: Harga */}
           <div className="rounded-xl border border-gray-200 bg-white overflow-hidden shadow-sm">
-            <div className="px-4 py-2.5 bg-[#072C2C] flex items-center gap-2">
+            <div className="px-4 py-2.5 bg-[#426464] flex items-center gap-2">
               <DollarSign size={14} className="text-white" />
-              <span className="text-xs font-semibold text-white">Harga & Stok</span>
+              <span className="text-xs font-semibold text-white">Harga</span>
             </div>
             <div className="p-4 space-y-3.5">
-              {/* Harga */}
-              <div>
-                <label className="text-[11px] font-semibold text-gray-500 uppercase mb-1.5 block">Harga Per Unit *</label>
-                <div className="relative">
-                  <DollarSign size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                  <input type="text" inputMode="numeric" required value={priceDisplay}
-                    onChange={handlePriceChange}
-                    onFocus={() => { if (price === 0) setPriceDisplay('') }}
-                    onBlur={() => { if (!priceDisplay) setPriceDisplay('') }}
-                    className={`${inputBase} pl-8 py-2.5`}
-                    placeholder="Rp 0" />
-                </div>
-              </div>
-
-              {/* Min Stok & Stok Awal - 2 kolom */}
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 gap-3.5">
                 <div>
-                  <label className="text-[11px] font-semibold text-gray-500 uppercase mb-1.5 block">Min. Stok</label>
+                  <label className="text-[11px] font-semibold text-gray-500 uppercase mb-1.5 block">Harga Per Unit *</label>
+                  <div className="relative">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-medium">Rp</span>
+                    <input type="text" inputMode="numeric" required value={priceDisplay}
+                      onChange={handlePriceChange}
+                      onFocus={() => { if (price === 0) setPriceDisplay('') }}
+                      onBlur={() => { if (!priceDisplay) setPriceDisplay('') }}
+                      className={`${inputBase} pl-9 py-2.5`}
+                      placeholder="0" />
+                  </div>
+                  <p className="text-[10px] text-gray-400 mt-1">Harga jual per unit</p>
+                </div>
+                <div>
+                  <label className="text-[11px] font-semibold text-gray-500 uppercase mb-1.5 block">Minimum Stok</label>
                   <input type="text" inputMode="numeric" value={minStockDisplay}
                     onChange={e => { const v = e.target.value.replace(/[^0-9]/g, ''); setMinStockDisplay(v); setMinStock(v ? parseInt(v) : 0) }}
                     onFocus={() => { if (minStock === 0) setMinStockDisplay('') }}
                     onBlur={() => { if (!minStockDisplay) setMinStockDisplay('0') }}
                     className={`${inputBase} px-3 py-2.5`}
                     placeholder="10" />
-                </div>
-                <div>
-                  <label className="text-[11px] font-semibold text-gray-500 uppercase mb-1.5 block">Stok Awal</label>
-                  <div className="relative">
-                    <input type="text" inputMode="numeric" value={stockDisplay}
-                      onChange={e => { const v = e.target.value.replace(/[^0-9]/g, ''); setStockDisplay(v); setStock(v ? parseInt(v) : 0) }}
-                      onFocus={() => { if (stock === 0) setStockDisplay('') }}
-                      onBlur={() => { if (!stockDisplay) setStockDisplay('') }}
-                      className={`${inputBase} px-3 py-2.5`}
-                      placeholder="0" />
-                  </div>
+                  <p className="text-[10px] text-gray-400 mt-1">Alert saat stok di bawah angka ini</p>
                 </div>
               </div>
+            </div>
+          </div>
 
+          {/* Section: Stok Awal */}
+          <div className="rounded-xl border border-gray-200 bg-white overflow-hidden shadow-sm">
+            <div className="px-4 py-2.5 bg-[#16A34A] flex items-center gap-2">
+              <Package size={14} className="text-white" />
+              <span className="text-xs font-semibold text-white">Stok Awal</span>
+            </div>
+            <div className="p-4 space-y-3.5">
+              <div>
+                <label className="text-[11px] font-semibold text-gray-500 uppercase mb-1.5 block">Jumlah Stok Awal</label>
+                <div className="relative">
+                  <Hash size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                  <input type="text" inputMode="numeric" value={stockDisplay}
+                    onChange={e => { const v = e.target.value.replace(/[^0-9]/g, ''); setStockDisplay(v); setStock(v ? parseInt(v) : 0) }}
+                    onFocus={() => { if (stock === 0) setStockDisplay('') }}
+                    onBlur={() => { if (!stockDisplay) setStockDisplay('') }}
+                    className={`${inputBase} pl-8 py-2.5`}
+                    placeholder="0" />
+                </div>
+                <p className="text-[10px] text-gray-400 mt-1">Kosongkan jika belum ada stok</p>
+              </div>
               {/* Status preview */}
               <div className={`flex items-center justify-between px-3 py-2.5 rounded-lg border ${
                 stock === 0 ? 'bg-red-50/50 border-red-100' :
                 stock <= minStock ? 'bg-amber-50/50 border-amber-100' :
                 'bg-emerald-50/50 border-emerald-100'
               }`}>
-                <span className="text-[11px] text-gray-500">Status Stok</span>
+                <span className="text-[11px] text-gray-500">Status Stok:</span>
                 <div className="flex items-center gap-2">
                   <span className={`text-xs font-bold ${stockColor}`}>{stockStatus}</span>
                   <span className={`text-[11px] font-semibold px-2 py-0.5 rounded ${
@@ -251,24 +259,24 @@ export default function NewProductPage() {
               </div>
             </div>
           </div>
-
-          {/* Action Buttons - inline, NOT fixed */}
-          <div className="flex gap-3 pt-2">
-            <button type="button" onClick={() => router.push('/products')}
-              className="flex-1 py-3 rounded-xl border border-gray-200 text-sm font-medium text-gray-500 active:bg-gray-50 transition">
-              Batal
-            </button>
-            <button type="submit" disabled={loading || skuStatus === 'duplicate'}
-              className="flex-[2] py-3 rounded-xl bg-[#16A34A] text-white text-sm font-bold flex items-center justify-center gap-2 shadow-md shadow-[#16A34A]/25 disabled:opacity-50 active:scale-[0.98] transition">
-              {loading ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
-              Simpan Produk
-            </button>
-          </div>
         </div>
 
-        {/* ===== DESKTOP LAYOUT (unchanged) ===== */}
-        <div className="hidden sm:block space-y-8">
-          {/* Section 1: Informasi Dasar */}
+        {/* Fixed Action Bar - Mobile only */}
+        <div className="sm:hidden fixed bottom-[72px] left-0 w-full bg-white px-4 py-3 flex gap-3 items-center shadow-[0_-4px_10px_rgba(0,0,0,0.05)] z-40 border-t border-gray-200/30">
+          <button type="button" onClick={() => router.push('/products')}
+            className="flex-1 py-2.5 text-gray-500 text-sm font-semibold flex items-center justify-center gap-1.5 hover:bg-gray-50 rounded-lg transition active:scale-95">
+            Batal
+          </button>
+          <button type="submit" disabled={loading || skuStatus === 'duplicate'}
+            className="flex-[1.5] py-2.5 bg-[#16A34A] text-white text-sm font-bold flex items-center justify-center gap-1.5 rounded-lg shadow-md disabled:opacity-50 hover:bg-[#16A34A]/90 transition active:scale-95">
+            {loading ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
+            Simpan Produk
+          </button>
+        </div>
+
+        {/* ===== DESKTOP LAYOUT ===== */}
+        <div className="hidden sm:block max-w-4xl mx-auto space-y-8">
+          {/* Section 1: Informasi Dasar Produk */}
           <div>
             <div className="rounded-t-xl px-6 py-4 bg-[#072C2C]">
               <div className="flex items-center gap-3">
@@ -344,12 +352,12 @@ export default function NewProductPage() {
 
           {/* Section 2: Harga */}
           <div>
-            <div className="rounded-t-xl px-6 py-4 bg-[#072C2C]">
+            <div className="rounded-t-xl px-6 py-4 bg-[#426464]">
               <div className="flex items-center gap-3">
                 <DollarSign size={18} className="text-white" />
                 <div>
                   <p className="text-base font-bold text-white">Harga</p>
-                  <p className="text-xs text-white/80">Tentukan harga produk</p>
+                  <p className="text-xs text-white/80">Tentukan harga jual produk</p>
                 </div>
               </div>
             </div>
@@ -358,13 +366,13 @@ export default function NewProductPage() {
                 <div>
                   <label className="text-[11px] font-bold text-gray-700 uppercase tracking-wider mb-2 block">Harga Per Unit <span className="text-red-400">*</span></label>
                   <div className="relative">
-                    <DollarSign size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-medium">Rp</span>
                     <input type="text" inputMode="numeric" required value={priceDisplay}
                       onChange={handlePriceChange}
                       onFocus={() => { if (price === 0) setPriceDisplay('') }}
                       onBlur={() => { if (!priceDisplay) setPriceDisplay('') }}
                       className="w-full px-4 py-3 pl-9 rounded-lg bg-white border border-gray-200 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#072C2C] transition"
-                      placeholder="Rp 0" />
+                      placeholder="0" />
                   </div>
                   <p className="text-[10px] text-gray-400 mt-1.5">Harga jual per unit produk</p>
                 </div>
@@ -395,7 +403,7 @@ export default function NewProductPage() {
               </div>
             </div>
             <div className="rounded-b-xl border border-t-0 border-gray-200 bg-white p-6 lg:p-8">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-end">
                 <div>
                   <label className="text-[11px] font-bold text-gray-700 uppercase tracking-wider mb-2 block">Jumlah Stok Awal</label>
                   <div className="relative">
