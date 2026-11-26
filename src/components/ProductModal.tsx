@@ -2,8 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Product, Category, uid } from '@/lib/store'
-import { Drawer, DrawerClose, DrawerContent } from '@/components/ui/drawer'
-import { X } from 'lucide-react'
+import { Drawer, DrawerContent, DrawerTitle, DrawerDescription } from '@/components/ui/drawer'
 
 interface ProductModalProps {
   isOpen: boolean
@@ -22,6 +21,16 @@ export default function ProductModal({ isOpen, onClose, onSave, product, categor
   const [minStock, setMinStock] = useState(10)
   const [description, setDescription] = useState('')
   const [showScanner, setShowScanner] = useState(false)
+  // Drawer: dari samping di desktop (>=640px), dari bawah di HP
+  const [isMobile, setIsMobile] = useState(false)
+
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 639px)')
+    const sync = () => setIsMobile(mq.matches)
+    sync()
+    mq.addEventListener('change', sync)
+    return () => mq.removeEventListener('change', sync)
+  }, [])
 
   useEffect(() => {
     if (product) {
@@ -61,9 +70,10 @@ export default function ProductModal({ isOpen, onClose, onSave, product, categor
 
   const inputClass = "w-full rounded-lg text-sm px-3 py-2.5 sm:px-4 sm:py-3 font-medium bg-gray-50 border border-gray-200 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#072C2C] focus:ring-2 focus:ring-[#072C2C]/10 focus:bg-white transition"
 
-  // Shared form body (used by desktop modal + mobile drawer)
+  // Form body: area field bisa di-scroll, tombol aksi menempel di bawah drawer
   const formBody = (
-    <form onSubmit={handleSubmit} className="p-4 sm:p-5 space-y-4">
+    <form onSubmit={handleSubmit} data-vaul-no-drag className="flex min-h-0 flex-1 flex-col">
+      <div className="flex-1 overflow-y-auto overscroll-contain p-4 sm:p-6 space-y-4">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {/* Nama Produk */}
         <div className="space-y-1.5 sm:col-span-2">
@@ -149,8 +159,10 @@ export default function ProductModal({ isOpen, onClose, onSave, product, categor
         <textarea value={description} onChange={e => setDescription(e.target.value)} rows={3} className={`${inputClass} resize-none`} placeholder="Deskripsi produk..." />
       </div>
 
-      {/* Actions */}
-      <div className="flex flex-col-reverse sm:flex-row justify-end gap-2 sm:gap-3 pt-4 border-t border-gray-200">
+      </div>
+
+      {/* Actions (menempel di bawah) */}
+      <div className="shrink-0 flex flex-col-reverse sm:flex-row justify-end gap-2 sm:gap-3 p-4 sm:px-6 border-t border-gray-200 bg-white pb-[max(1rem,env(safe-area-inset-bottom))]">
         <button type="button" onClick={onClose} className="w-full sm:w-auto px-5 py-3 sm:py-2.5 rounded-lg text-sm font-bold text-gray-600 bg-gray-100 border border-gray-200 hover:bg-gray-200 transition text-center">
           Batal
         </button>
@@ -165,14 +177,19 @@ export default function ProductModal({ isOpen, onClose, onSave, product, categor
   )
 
   const header = (title: string) => (
-    <div className="sticky top-0 z-10 flex items-center justify-between p-4 sm:p-5 bg-white border-b border-gray-200">
+    <div className="shrink-0 flex items-center justify-between p-4 sm:px-6 sm:py-5 bg-white border-b border-gray-200">
       <div className="flex items-center gap-3">
         <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-[#FF5F03]/10 border border-[#FF5F03]/20 flex items-center justify-center">
           <svg className="w-4 h-4 sm:w-5 sm:h-5 text-[#FF5F03]" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" /></svg>
         </div>
-        <h2 className="text-base sm:text-lg font-bold text-gray-900">{title}</h2>
+        <div>
+          <DrawerTitle className="text-base sm:text-lg font-bold text-gray-900 leading-tight">{title}</DrawerTitle>
+          <DrawerDescription className="text-xs text-gray-500 mt-0.5">
+            {product ? 'Perbarui data produk' : 'Isi data produk baru'}
+          </DrawerDescription>
+        </div>
       </div>
-      <button onClick={onClose} className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center text-gray-500 hover:text-red-500 hover:bg-red-50 transition">
+      <button type="button" onClick={onClose} aria-label="Tutup" className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center text-gray-500 hover:text-red-500 hover:bg-red-50 transition active:scale-95">
         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
         </svg>
@@ -184,34 +201,27 @@ export default function ProductModal({ isOpen, onClose, onSave, product, categor
 
   return (
     <>
-      {/* Desktop modal (sm ke atas) */}
-      {isOpen && (
-        <div className="hidden sm:flex fixed inset-0 z-[9000] items-center justify-center sm:p-4" onClick={onClose}>
-          {/* Backdrop */}
-          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
-
-          {/* Modal */}
-          <div
-            className="relative rounded-2xl w-full sm:max-w-lg max-h-[90vh] overflow-y-auto shadow-2xl bg-white border border-gray-200"
-            onClick={e => e.stopPropagation()}
-          >
-            {header(title)}
-            {formBody}
-          </div>
-        </div>
-      )}
-
-      {/* Mobile bottom sheet (Drawer, hanya di bawah sm) */}
-      <Drawer open={isOpen} onOpenChange={(open) => { if (!open) onClose() }} direction="bottom">
-        <DrawerContent className="sm:hidden max-h-[92vh] rounded-t-3xl border-t border-gray-200 bg-white pb-[env(safe-area-inset-bottom)]">
+      {/* Satu Drawer saja: dari samping (desktop) atau dari bawah (HP) */}
+      <Drawer
+        open={isOpen}
+        onOpenChange={(open) => { if (!open) onClose() }}
+        direction={isMobile ? 'bottom' : 'right'}
+      >
+        <DrawerContent
+          className={
+            isMobile
+              ? 'max-h-[92vh] rounded-t-3xl border-t border-gray-200 bg-white'
+              : 'data-[vaul-drawer-direction=right]:w-full data-[vaul-drawer-direction=right]:sm:max-w-md rounded-l-3xl border-l border-gray-200 bg-white shadow-2xl'
+          }
+        >
           {header(title)}
-          <div className="overflow-y-auto">{formBody}</div>
+          {formBody}
         </DrawerContent>
       </Drawer>
 
-      {/* Barcode Scanner */}
+      {/* Barcode Scanner (pointer-events-auto: body dikunci oleh Drawer saat terbuka) */}
       {showScanner && (
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/90 backdrop-blur-sm">
+        <div className="pointer-events-auto fixed inset-0 z-[9999] flex items-center justify-center bg-black/90 backdrop-blur-sm">
           <div className="relative w-full max-w-sm mx-4">
             <button onClick={() => setShowScanner(false)} className="absolute -top-12 right-0 w-10 h-10 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-white hover:bg-white/20 transition-all z-10">
               <span className="text-lg">&times;</span>

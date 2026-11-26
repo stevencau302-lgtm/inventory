@@ -115,25 +115,31 @@ export default function ProductsPage() {
     }
   })
 
-  const handleSave = (product: Product) => {
+  const handleSave = async (product: Product) => {
     const duplicate = products.find(p => p.sku.toLowerCase() === product.sku.toLowerCase() && p.id !== product.id)
     if (duplicate) {
       toast(`SKU "${product.sku}" sudah dipakai oleh "${duplicate.name}"`, 'error')
       return
     }
 
-    let updated: Product[]
     const existing = products.findIndex(p => p.id === product.id)
+    const toSave = existing > -1 ? { ...product, stock: products[existing].stock } : product
+
+    // Tunggu hasil simpan ke database; jangan tampilkan sukses kalau gagal
+    const ok = await saveProduct(toSave)
+    if (!ok) {
+      toast('Gagal menyimpan produk. Perubahan belum tersimpan, coba lagi.', 'error')
+      return
+    }
+
+    let updated: Product[]
     if (existing > -1) {
-      const preservedProduct = { ...product, stock: products[existing].stock }
       updated = [...products]
-      updated[existing] = preservedProduct
+      updated[existing] = toSave
       toast('Produk berhasil diperbarui!', 'success')
-      saveProduct(preservedProduct)
     } else {
-      updated = [product, ...products]
+      updated = [toSave, ...products]
       toast('Produk berhasil ditambahkan!', 'success')
-      saveProduct(product)
     }
     setProducts(updated)
     setModalOpen(false)
