@@ -1,13 +1,16 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
-import { Product, fetchProducts, saveProduct } from '@/lib/store'
+import {
+  Product, fetchProducts, saveProduct, uid,
+  saveOpname, fetchOpnames, fetchOpnameItems, OpnameRecord, OpnameItemRecord,
+} from '@/lib/store'
 import { useToast } from '@/components/Toast'
 import { CardListSkeleton } from '@/components/PageSkeleton'
 import {
   ClipboardCheck, Search, Package, CheckCircle2,
   AlertTriangle, Save, Loader2, RotateCcw, Download,
-  Trash2, Equal, ArrowDown, ArrowUp
+  Trash2, Equal, ArrowDown, ArrowUp, History, ChevronDown
 } from 'lucide-react'
 
 interface OpnameProgress {
@@ -45,6 +48,7 @@ export default function StockOpnamePage() {
   const [search, setSearch] = useState('')
   const [filterStatus, setFilterStatus] = useState<FilterStatus>('all')
   const [saving, setSaving] = useState(false)
+  const [view, setView] = useState<'input' | 'riwayat'>('input')
   const [opnameDate, setOpnameDate] = useState('')
   const [savedSummary, setSavedSummary] = useState<{
     date: string; totalChecked: number; matchCount: number; mismatchCount: number
@@ -170,6 +174,29 @@ export default function StockOpnamePage() {
         await saveSetting('last_opname', JSON.stringify(summaryData))
       } catch {}
 
+      // Simpan riwayat lengkap (header + produk yang dikoreksi).
+      // Stok sudah terkoreksi di atas, jadi kegagalan di sini hanya peringatan.
+      const historyOk = await saveOpname(
+        {
+          id: uid(),
+          opnameDate: opnameDate,
+          totalChecked: checked.length,
+          matchCount: checked.filter(i => i.difference === 0).length,
+          mismatchCount: mismatched.length,
+          createdAt: new Date().toISOString(),
+        },
+        mismatched.map(i => ({
+          productId: i.product.id,
+          productName: i.product.name,
+          sku: i.product.sku,
+          systemStock: i.systemStock,
+          actualStock: i.actualStock!,
+          difference: i.difference,
+          note: i.note,
+        }))
+      )
+      if (!historyOk) toast('Stok sudah diperbarui, tapi riwayat opname gagal disimpan.', 'warning')
+
       setSavedSummary({
         date: opnameDate,
         totalChecked: checked.length,
@@ -255,6 +282,12 @@ export default function StockOpnamePage() {
           <ClipboardCheck className="w-4 h-4" />
           Mulai Opname Baru
         </button>
+        <button
+          onClick={async () => { await handleNewOpname(); setView('riwayat') }}
+          className="w-full py-3 rounded-xl border border-gray-200 bg-white text-gray-600 font-semibold text-sm hover:bg-gray-50 transition active:scale-[0.98] flex items-center justify-center gap-2">
+          <History className="w-4 h-4" />
+          Lihat Riwayat Opname
+        </button>
       </div>
     )
   }
@@ -283,6 +316,42 @@ export default function StockOpnamePage() {
     { key: 'match', label: 'Sesuai', count: matchCount },
     { key: 'mismatch', label: 'Selisih', count: mismatchCount },
   ]
+
+  const viewToggle = (
+    <div className="inline-flex gap-1 p-1 rounded-xl bg-white border border-gray-200">
+      {([
+        { key: 'input', label: 'Input Opname', icon: <ClipboardCheck className="w-3.5 h-3.5" /> },
+        { key: 'riwayat', label: 'Riwayat', icon: <History className="w-3.5 h-3.5" /> },
+      ] as const).map(t => (
+        <button key={t.key} onClick={() => setView(t.key)}
+          className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition ${
+            view === t.key ? 'bg-[#072C2C] text-white' : 'text-gray-500 hover:bg-gray-50'
+          }`}>
+          {t.icon}{t.label}
+        </button>
+      ))}
+    </div>
+  )
+
+  if (view === 'riwayat') {
+    return (
+      <div className="space-y-5">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-gray-200">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-[#072C2C]/10 border border-[#072C2C]/10 flex items-center justify-center shrink-0">
+              <History className="w-5 h-5 text-[#072C2C]" />
+            </div>
+            <div>
+              <h1 className="text-xl font-bold text-gray-900">Riwayat Opname</h1>
+              <p className="text-gray-500 text-xs mt-0.5">Catatan opname yang pernah disimpan</p>
+            </div>
+          </div>
+          {viewToggle}
+        </div>
+        <OpnameHistory />
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-5">
@@ -313,6 +382,8 @@ export default function StockOpnamePage() {
           </button>
         </div>
       </div>
+
+      {viewToggle}
 
       {/* Progress card */}
       <div className="rounded-2xl bg-white border border-gray-200 p-5 shadow-sm">
@@ -469,6 +540,115 @@ export default function StockOpnamePage() {
           </div>
         )}
       </div>
+    </div>
+  )
+}
+
+function formatOpnameDate(date: string): string {
+  const d = new Date(`${date}T00:00:00`)
+  if (isNaN(d.getTime())) return date
+  return d.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
+}
+
+function OpnameHistory() {
+  const [records, setRecords] = useState<OpnameRecord[] | null>(null)
+  const [openId, setOpenId] = useState<string | null>(null)
+  const [itemsById, setItemsById] = useState<Record<string, OpnameItemRecord[]>>({})
+  const [loadingId, setLoadingId] = useState<string | null>(null)
+
+  useEffect(() => {
+    fetchOpnames().then(setRecords)
+  }, [])
+
+  const toggle = async (id: string) => {
+    if (openId === id) { setOpenId(null); return }
+    setOpenId(id)
+    if (itemsById[id]) return
+    setLoadingId(id)
+    const items = await fetchOpnameItems(id)
+    setItemsById(prev => ({ ...prev, [id]: items }))
+    setLoadingId(null)
+  }
+
+  if (records === null) return <CardListSkeleton />
+
+  if (records.length === 0) {
+    return (
+      <div className="text-center py-16 rounded-2xl border border-dashed border-gray-200 bg-white">
+        <div className="w-14 h-14 rounded-2xl bg-gray-50 flex items-center justify-center mx-auto mb-3">
+          <History className="w-7 h-7 text-gray-300" />
+        </div>
+        <p className="text-sm font-medium text-gray-600">Belum ada riwayat opname</p>
+        <p className="text-xs text-gray-400 mt-1">Riwayat muncul setelah lu menekan Simpan di tab Input Opname</p>
+      </div>
+    )
+  }
+
+  return (
+    <div className="space-y-2.5">
+      {records.map(r => {
+        const isOpen = openId === r.id
+        const items = itemsById[r.id]
+        return (
+          <div key={r.id} className="rounded-2xl bg-white border border-gray-200 overflow-hidden shadow-sm">
+            <button onClick={() => toggle(r.id)}
+              className="w-full px-4 py-3.5 flex items-center gap-3 text-left hover:bg-gray-50/70 transition">
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-semibold text-gray-900">{formatOpnameDate(r.opnameDate)}</p>
+                <p className="text-[11px] text-gray-400 mt-0.5">
+                  Disimpan {new Date(r.createdAt).toLocaleString('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
+                </p>
+              </div>
+              <div className="hidden sm:flex items-center gap-2 shrink-0">
+                <span className="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-gray-100 text-gray-600">{r.totalChecked} diperiksa</span>
+                <span className="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-600">{r.matchCount} sesuai</span>
+                <span className={`text-[11px] font-semibold px-2.5 py-1 rounded-full ${r.mismatchCount > 0 ? 'bg-red-50 text-red-500' : 'bg-gray-100 text-gray-400'}`}>{r.mismatchCount} selisih</span>
+              </div>
+              <ChevronDown className={`w-4 h-4 text-gray-400 shrink-0 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
+            </button>
+
+            {/* Ringkasan di HP */}
+            <div className="sm:hidden px-4 pb-3 -mt-1 flex flex-wrap gap-1.5">
+              <span className="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-gray-100 text-gray-600">{r.totalChecked} diperiksa</span>
+              <span className="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-600">{r.matchCount} sesuai</span>
+              <span className={`text-[11px] font-semibold px-2.5 py-1 rounded-full ${r.mismatchCount > 0 ? 'bg-red-50 text-red-500' : 'bg-gray-100 text-gray-400'}`}>{r.mismatchCount} selisih</span>
+            </div>
+
+            {/* Detail: animasi buka/tutup halus lewat grid-rows */}
+            <div className={`grid transition-all duration-300 ease-out ${isOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}>
+              <div className="overflow-hidden">
+                <div className="border-t border-gray-100">
+                  {loadingId === r.id && (
+                    <div className="px-4 py-6 flex justify-center"><Loader2 className="w-4 h-4 animate-spin text-gray-400" /></div>
+                  )}
+                  {items && items.length === 0 && (
+                    <p className="px-4 py-5 text-xs text-gray-400 text-center">Semua stok sesuai, tidak ada koreksi.</p>
+                  )}
+                  {items && items.map(it => (
+                    <div key={it.id} className="px-4 py-3 border-b border-gray-100 last:border-0">
+                      <div className="flex items-center justify-between gap-3">
+                        <div className="min-w-0">
+                          <p className="text-sm font-medium text-gray-900 truncate">{it.productName}</p>
+                          <p className="text-[11px] text-gray-500 font-mono">{it.sku}</p>
+                        </div>
+                        <div className="flex items-center gap-2 shrink-0">
+                          <span className="text-sm text-gray-400">{it.systemStock}</span>
+                          <span className="text-gray-300">→</span>
+                          <span className="text-sm font-bold text-gray-900">{it.actualStock}</span>
+                          <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${it.difference > 0 ? 'text-emerald-600 bg-emerald-50' : 'text-red-500 bg-red-50'}`}>
+                            {it.difference > 0 ? '+' : ''}{it.difference}
+                          </span>
+                        </div>
+                      </div>
+                      {it.note && <p className="text-[11px] text-gray-500 mt-1.5 break-words">Catatan: {it.note}</p>}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        )
+      })}
     </div>
   )
 }

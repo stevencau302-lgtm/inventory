@@ -275,6 +275,115 @@ export async function saveTransactionsBatch(transactions: Transaction[]): Promis
 }
 
 
+// ─── Riwayat Stok Opname ───
+
+export interface OpnameItemRecord {
+  id: string
+  opnameId: string
+  productId: string
+  productName: string
+  sku: string
+  systemStock: number
+  actualStock: number
+  difference: number
+  note: string
+}
+
+export interface OpnameRecord {
+  id: string
+  opnameDate: string
+  totalChecked: number
+  matchCount: number
+  mismatchCount: number
+  createdAt: string
+}
+
+/** Simpan satu sesi opname (header + produk yang dikoreksi). Return false bila gagal. */
+export async function saveOpname(
+  record: OpnameRecord,
+  items: Omit<OpnameItemRecord, 'id' | 'opnameId'>[]
+): Promise<boolean> {
+  const userId = await getUserId()
+  const { error: headerError } = await supabase.from('stock_opnames').insert({
+    id: record.id,
+    user_id: userId,
+    opname_date: record.opnameDate,
+    total_checked: record.totalChecked,
+    match_count: record.matchCount,
+    mismatch_count: record.mismatchCount,
+    created_at: record.createdAt,
+  })
+  if (headerError) {
+    console.error('saveOpname header error:', headerError.message, headerError.code)
+    return false
+  }
+  if (items.length === 0) return true
+
+  const rows = items.map(i => ({
+    id: uid(),
+    opname_id: record.id,
+    user_id: userId,
+    product_id: i.productId,
+    product_name: i.productName,
+    sku: i.sku,
+    system_stock: i.systemStock,
+    actual_stock: i.actualStock,
+    difference: i.difference,
+    note: i.note,
+    created_at: record.createdAt,
+  }))
+  const { error: itemsError } = await supabase.from('stock_opname_items').insert(rows)
+  if (itemsError) {
+    console.error('saveOpname items error:', itemsError.message, itemsError.code)
+    // Batalkan header supaya tidak ada riwayat setengah jadi
+    await supabase.from('stock_opnames').delete().eq('id', record.id)
+    return false
+  }
+  return true
+}
+
+export async function fetchOpnames(limit = 100): Promise<OpnameRecord[]> {
+  const userId = await getUserId()
+  let query = supabase.from('stock_opnames').select('*')
+  if (userId) query = query.eq('user_id', userId)
+  const { data, error } = await query.order('created_at', { ascending: false }).limit(limit)
+  if (error) {
+    console.error('fetchOpnames error:', error)
+    return []
+  }
+  return (data || []).map((r: any) => ({
+    id: r.id,
+    opnameDate: r.opname_date,
+    totalChecked: r.total_checked,
+    matchCount: r.match_count,
+    mismatchCount: r.mismatch_count,
+    createdAt: r.created_at,
+  }))
+}
+
+export async function fetchOpnameItems(opnameId: string): Promise<OpnameItemRecord[]> {
+  const { data, error } = await supabase
+    .from('stock_opname_items')
+    .select('*')
+    .eq('opname_id', opnameId)
+    .order('product_name', { ascending: true })
+  if (error) {
+    console.error('fetchOpnameItems error:', error)
+    return []
+  }
+  return (data || []).map((r: any) => ({
+    id: r.id,
+    opnameId: r.opname_id,
+    productId: r.product_id || '',
+    productName: r.product_name,
+    sku: r.sku || '',
+    systemStock: r.system_stock,
+    actualStock: r.actual_stock,
+    difference: r.difference,
+    note: r.note || '',
+  }))
+}
+
 // ─── Settings (key-value) ───
 
 export async function saveSetting(key: string, value: string): Promise<void> {
