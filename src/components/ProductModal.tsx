@@ -38,17 +38,17 @@ const selectChevron = {
   backgroundPosition: 'right 14px center',
 }
 
-function Section({ icon, title, hint, children }: { icon: React.ReactNode; title: string; hint: string; children: React.ReactNode }) {
+function Section({ icon, title, hint, color, children }: { icon: React.ReactNode; title: string; hint: string; color: string; children: React.ReactNode }) {
   return (
-    <section className="rounded-2xl bg-white border border-gray-200 shadow-sm">
-      <div className="flex items-center gap-2.5 px-4 pt-4 pb-3">
-        <span className="w-8 h-8 rounded-lg bg-[#072C2C]/10 text-[#072C2C] flex items-center justify-center shrink-0">{icon}</span>
+    <section className="rounded-2xl bg-white border border-gray-200 shadow-sm overflow-hidden">
+      <div className="flex items-center gap-2.5 px-4 py-3" style={{ backgroundColor: color }}>
+        <span className="w-8 h-8 rounded-lg bg-white/15 text-white flex items-center justify-center shrink-0">{icon}</span>
         <div className="min-w-0">
-          <p className="text-sm font-bold text-gray-900 leading-tight">{title}</p>
-          <p className="text-[11px] text-gray-400 mt-0.5">{hint}</p>
+          <p className="text-sm font-bold text-white leading-tight">{title}</p>
+          <p className="text-[11px] text-white/75 mt-0.5">{hint}</p>
         </div>
       </div>
-      <div className="px-4 pb-4 space-y-3.5">{children}</div>
+      <div className="p-4 space-y-3.5">{children}</div>
     </section>
   )
 }
@@ -205,7 +205,7 @@ export default function ProductModal({ isOpen, onClose, onSave, product, categor
             <div className="flex-1 overflow-y-auto overscroll-contain px-4 sm:px-6 py-4 space-y-4 bg-gray-50/70">
 
               {/* Informasi Produk */}
-              <Section icon={<Package className="w-4 h-4" />} title="Informasi Produk" hint="Data utama dan identitas produk">
+              <Section icon={<Package className="w-4 h-4" />} title="Informasi Produk" hint="Data utama dan identitas produk" color="#072C2C">
                 <div>
                   <Label required>Kode SKU</Label>
                   <div className="flex gap-2">
@@ -258,7 +258,7 @@ export default function ProductModal({ isOpen, onClose, onSave, product, categor
               </Section>
 
               {/* Harga */}
-              <Section icon={<Wallet className="w-4 h-4" />} title="Harga" hint="Harga jual dan batas peringatan stok">
+              <Section icon={<Wallet className="w-4 h-4" />} title="Harga" hint="Harga jual dan batas peringatan stok" color="#426464">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                   <div>
                     <Label required>Harga per Unit</Label>
@@ -281,7 +281,8 @@ export default function ProductModal({ isOpen, onClose, onSave, product, categor
               <Section
                 icon={<Boxes className="w-4 h-4" />}
                 title={isEdit ? 'Stok Saat Ini' : 'Stok Awal'}
-                hint={isEdit ? 'Stok diubah lewat transaksi' : 'Jumlah stok saat produk ditambahkan'}>
+                hint={isEdit ? 'Stok diubah lewat transaksi' : 'Jumlah stok saat produk ditambahkan'}
+                color="#16A34A">
                 {isEdit ? (
                   <div className="rounded-xl bg-gray-100 border border-gray-200 px-4 py-3 flex items-center justify-between text-gray-500">
                     <span className="text-sm font-semibold">{stock} unit</span>
