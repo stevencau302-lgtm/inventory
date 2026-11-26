@@ -1,28 +1,85 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { Product, Category, uid } from '@/lib/store'
 import { Drawer, DrawerContent, DrawerTitle, DrawerDescription } from '@/components/ui/drawer'
+import {
+  Package, Tag, Hash, ScanBarcode, CheckCircle2, XCircle, Loader2,
+  Save, RotateCcw, X, Wallet, Boxes,
+} from 'lucide-react'
 
 interface ProductModalProps {
   isOpen: boolean
   onClose: () => void
-  onSave: (product: Product) => void
+  onSave: (product: Product) => void | Promise<void>
   product: Product | null
   categories: Category[]
+  /** Dipakai untuk cek SKU ganda secara langsung saat mengetik */
+  existingProducts?: Product[]
 }
 
-export default function ProductModal({ isOpen, onClose, onSave, product, categories }: ProductModalProps) {
+function formatRupiah(value: number): string {
+  if (value === 0) return ''
+  return 'Rp ' + value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+}
+
+function onlyDigits(str: string): number {
+  const cleaned = str.replace(/[^0-9]/g, '')
+  return cleaned === '' ? 0 : parseInt(cleaned, 10)
+}
+
+const inputClass =
+  'w-full rounded-xl bg-gray-50 border border-gray-200 text-[16px] sm:text-sm text-gray-900 placeholder-gray-400 ' +
+  'py-3 sm:py-2.5 focus:outline-none focus:border-[#072C2C] focus:bg-white focus:ring-2 focus:ring-[#072C2C]/10 transition'
+
+const selectChevron = {
+  backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E")`,
+  backgroundRepeat: 'no-repeat',
+  backgroundPosition: 'right 14px center',
+}
+
+function Section({ icon, title, hint, children }: { icon: React.ReactNode; title: string; hint: string; children: React.ReactNode }) {
+  return (
+    <section className="rounded-2xl bg-white border border-gray-200 shadow-sm">
+      <div className="flex items-center gap-2.5 px-4 pt-4 pb-3">
+        <span className="w-8 h-8 rounded-lg bg-[#072C2C]/10 text-[#072C2C] flex items-center justify-center shrink-0">{icon}</span>
+        <div className="min-w-0">
+          <p className="text-sm font-bold text-gray-900 leading-tight">{title}</p>
+          <p className="text-[11px] text-gray-400 mt-0.5">{hint}</p>
+        </div>
+      </div>
+      <div className="px-4 pb-4 space-y-3.5">{children}</div>
+    </section>
+  )
+}
+
+function Label({ children, optional, required }: { children: React.ReactNode; optional?: boolean; required?: boolean }) {
+  return (
+    <label className="text-xs font-semibold text-gray-600 mb-1.5 flex items-center gap-1">
+      {children}
+      {required && <span className="text-red-400">*</span>}
+      {optional && <span className="font-normal text-gray-300">(opsional)</span>}
+    </label>
+  )
+}
+
+export default function ProductModal({ isOpen, onClose, onSave, product, categories, existingProducts = [] }: ProductModalProps) {
   const [name, setName] = useState('')
   const [sku, setSku] = useState('')
   const [category, setCategory] = useState('')
   const [stock, setStock] = useState(0)
+  const [stockDisplay, setStockDisplay] = useState('')
   const [price, setPrice] = useState(0)
+  const [priceDisplay, setPriceDisplay] = useState('')
   const [minStock, setMinStock] = useState(10)
+  const [minStockDisplay, setMinStockDisplay] = useState('10')
   const [description, setDescription] = useState('')
   const [showScanner, setShowScanner] = useState(false)
+  const [saving, setSaving] = useState(false)
   // Drawer: dari samping di desktop (>=640px), dari bawah di HP
   const [isMobile, setIsMobile] = useState(false)
+
+  const isEdit = !!product
 
   useEffect(() => {
     const mq = window.matchMedia('(max-width: 639px)')
@@ -32,35 +89,53 @@ export default function ProductModal({ isOpen, onClose, onSave, product, categor
     return () => mq.removeEventListener('change', sync)
   }, [])
 
+  // Isi form saat drawer dibuka. Tidak direset saat menutup, supaya animasi tutup tidak berkedip.
   useEffect(() => {
-    if (product) {
-      setName(product.name)
-      setSku(product.sku)
-      setCategory(product.category)
-      setStock(product.stock)
-      setPrice(product.price)
-      setMinStock(product.minStock)
-      setDescription(product.description)
-    } else {
-      setName('')
-      setSku('')
-      setCategory('')
-      setStock(0)
-      setPrice(0)
-      setMinStock(10)
-      setDescription('')
-    }
+    if (!isOpen) return
+    const p = product
+    setName(p?.name ?? '')
+    setSku(p?.sku ?? '')
+    setCategory(p?.category ?? '')
+    setStock(p?.stock ?? 0)
+    setStockDisplay(p && p.stock ? String(p.stock) : '')
+    setPrice(p?.price ?? 0)
+    setPriceDisplay(p ? formatRupiah(p.price) : '')
+    setMinStock(p?.minStock ?? 10)
+    setMinStockDisplay(String(p?.minStock ?? 10))
+    setDescription(p?.description ?? '')
+    setSaving(false)
   }, [product, isOpen])
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Cek SKU ganda langsung (tanpa debounce, datanya sudah ada di memori)
+  const skuInfo = useMemo(() => {
+    const v = sku.trim().toLowerCase()
+    if (!v || (product && v === product.sku.toLowerCase())) return { status: 'idle' as const, name: '' }
+    const dup = existingProducts.find(p => p.sku.toLowerCase() === v && p.id !== product?.id)
+    return dup ? { status: 'duplicate' as const, name: dup.name } : { status: 'available' as const, name: '' }
+  }, [sku, existingProducts, product])
+
+  const handleReset = () => {
+    setName(''); setSku(''); setCategory(''); setDescription('')
+    setStock(0); setStockDisplay('')
+    setPrice(0); setPriceDisplay('')
+    setMinStock(10); setMinStockDisplay('10')
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    const now = new Date().toISOString()
-    onSave({
-      id: product?.id || uid(),
-      name, sku, category, stock, price, minStock, description,
-      createdAt: product?.createdAt || now,
-      updatedAt: now,
-    })
+    if (saving || skuInfo.status === 'duplicate') return
+    setSaving(true)
+    try {
+      const now = new Date().toISOString()
+      await onSave({
+        id: product?.id || uid(),
+        name: name.trim(), sku: sku.trim(), category, stock, price, minStock, description,
+        createdAt: product?.createdAt || now,
+        updatedAt: now,
+      })
+    } finally {
+      setSaving(false)
+    }
   }
 
   const handleScanResult = (code: string) => {
@@ -68,136 +143,16 @@ export default function ProductModal({ isOpen, onClose, onSave, product, categor
     setShowScanner(false)
   }
 
-  const inputClass = "w-full rounded-lg text-sm px-3 py-2.5 sm:px-4 sm:py-3 font-medium bg-gray-50 border border-gray-200 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#072C2C] focus:ring-2 focus:ring-[#072C2C]/10 focus:bg-white transition"
+  // Preview status stok
+  const stockLabel = stock === 0 ? 'Habis' : stock <= minStock ? 'Menipis' : 'Tersedia'
+  const tone =
+    stock === 0
+      ? { box: 'bg-red-50/60 border-red-100', text: 'text-red-600', chip: 'bg-red-100 text-red-600' }
+      : stock <= minStock
+        ? { box: 'bg-amber-50/60 border-amber-100', text: 'text-amber-600', chip: 'bg-amber-100 text-amber-700' }
+        : { box: 'bg-emerald-50/60 border-emerald-100', text: 'text-emerald-600', chip: 'bg-emerald-100 text-emerald-700' }
 
-  // Form body: area field bisa di-scroll, tombol aksi menempel di bawah drawer
-  const formBody = (
-    <form onSubmit={handleSubmit} data-vaul-no-drag className="flex min-h-0 flex-1 flex-col">
-      <div className="flex-1 overflow-y-auto overscroll-contain p-4 sm:p-6 space-y-4">
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {/* Nama Produk */}
-        <div className="space-y-1.5 sm:col-span-2">
-          <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider flex items-center gap-1.5">
-            <svg className="w-3.5 h-3.5 text-[#FF5F03]" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z" /></svg>
-            Nama Produk
-          </label>
-          <input type="text" required value={name} onChange={e => setName(e.target.value)} className={inputClass} placeholder="Masukkan nama produk" />
-        </div>
-
-        {/* SKU */}
-        <div className="space-y-1.5">
-          <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider flex items-center gap-1.5">
-            <svg className="w-3.5 h-3.5 text-[#072C2C]" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M3.75 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 013.75 9.375v-4.5zM3.75 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 01-1.125-1.125v-4.5zM13.5 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0113.5 9.375v-4.5z" /></svg>
-            SKU
-          </label>
-          <div className="flex gap-2">
-            <input type="text" required value={sku} onChange={e => setSku(e.target.value)} className={`flex-1 ${inputClass}`} placeholder="SKU-001" />
-            <button
-              type="button"
-              onClick={() => setShowScanner(true)}
-              className="shrink-0 w-10 h-10 sm:w-11 sm:h-11 rounded-lg bg-gray-50 border border-gray-200 flex items-center justify-center text-[#072C2C] hover:bg-[#072C2C]/5 transition"
-              title="Scan Barcode"
-            >
-              <svg className="w-[18px] h-[18px]" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z" /><path strokeLinecap="round" strokeLinejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0z" /></svg>
-            </button>
-          </div>
-        </div>
-
-        {/* Kategori */}
-        <div className="space-y-1.5">
-          <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider flex items-center gap-1.5">
-            <svg className="w-3.5 h-3.5 text-violet-500" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z M6 6h.008v.008H6V6z" /></svg>
-            Kategori
-          </label>
-          <select required value={category} onChange={e => setCategory(e.target.value)} className={inputClass}>
-            <option value="">Pilih Kategori</option>
-            {categories.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
-          </select>
-        </div>
-
-        {/* Stok */}
-        <div className="space-y-1.5">
-          <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider flex items-center gap-1.5">
-            <svg className="w-3.5 h-3.5 text-emerald-500" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" /></svg>
-            {product ? 'Stok Saat Ini' : 'Stok Awal'}
-          </label>
-          {product ? (
-            <div className="w-full rounded-lg text-sm px-3 py-2.5 sm:px-4 sm:py-3 font-medium bg-gray-100 border border-gray-200 text-gray-500 flex items-center justify-between">
-              <span>{stock}</span>
-              <span className="text-[10px] text-gray-400">Ubah via Transaksi</span>
-            </div>
-          ) : (
-            <input type="number" inputMode="numeric" required min={0} value={stock} onChange={e => setStock(+e.target.value)} className={inputClass} placeholder="0" />
-          )}
-        </div>
-
-        {/* Harga */}
-        <div className="space-y-1.5">
-          <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider flex items-center gap-1.5">
-            <svg className="w-3.5 h-3.5 text-amber-500" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z" /></svg>
-            Harga (Rp)
-          </label>
-          <input type="number" inputMode="numeric" required min={0} value={price} onChange={e => setPrice(+e.target.value)} className={inputClass} />
-        </div>
-
-        {/* Min. Stok */}
-        <div className="space-y-1.5">
-          <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider flex items-center gap-1.5">
-            <svg className="w-3.5 h-3.5 text-red-500" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" /></svg>
-            Min. Stok
-          </label>
-          <input type="number" inputMode="numeric" required min={0} value={minStock} onChange={e => setMinStock(+e.target.value)} className={inputClass} />
-        </div>
-      </div>
-
-      {/* Deskripsi */}
-      <div className="space-y-1.5">
-        <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider flex items-center gap-1.5">
-          <svg className="w-3.5 h-3.5 text-gray-400" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" /></svg>
-          Deskripsi
-        </label>
-        <textarea value={description} onChange={e => setDescription(e.target.value)} rows={3} className={`${inputClass} resize-none`} placeholder="Deskripsi produk..." />
-      </div>
-
-      </div>
-
-      {/* Actions (menempel di bawah) */}
-      <div className="shrink-0 flex flex-col-reverse sm:flex-row justify-end gap-2 sm:gap-3 p-4 sm:px-6 border-t border-gray-200 bg-white pb-[max(1rem,env(safe-area-inset-bottom))]">
-        <button type="button" onClick={onClose} className="w-full sm:w-auto px-5 py-3 sm:py-2.5 rounded-lg text-sm font-bold text-gray-600 bg-gray-100 border border-gray-200 hover:bg-gray-200 transition text-center">
-          Batal
-        </button>
-        <button type="submit" className="w-full sm:w-auto px-5 py-3 sm:py-2.5 rounded-lg text-sm font-bold bg-[#FF5F03] text-white hover:bg-[#e85503] transition flex items-center justify-center gap-2 shadow-lg shadow-[#FF5F03]/20">
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-          </svg>
-          Simpan
-        </button>
-      </div>
-    </form>
-  )
-
-  const header = (title: string) => (
-    <div className="shrink-0 flex items-center justify-between p-4 sm:px-6 sm:py-5 bg-white border-b border-gray-200">
-      <div className="flex items-center gap-3">
-        <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-[#FF5F03]/10 border border-[#FF5F03]/20 flex items-center justify-center">
-          <svg className="w-4 h-4 sm:w-5 sm:h-5 text-[#FF5F03]" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" /></svg>
-        </div>
-        <div>
-          <DrawerTitle className="text-base sm:text-lg font-bold text-gray-900 leading-tight">{title}</DrawerTitle>
-          <DrawerDescription className="text-xs text-gray-500 mt-0.5">
-            {product ? 'Perbarui data produk' : 'Isi data produk baru'}
-          </DrawerDescription>
-        </div>
-      </div>
-      <button type="button" onClick={onClose} aria-label="Tutup" className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center text-gray-500 hover:text-red-500 hover:bg-red-50 transition active:scale-95">
-        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-        </svg>
-      </button>
-    </div>
-  )
-
-  const title = product ? 'Edit Produk' : 'Tambah Produk'
+  const title = isEdit ? 'Edit Produk' : 'Tambah Produk'
 
   return (
     <>
@@ -208,23 +163,172 @@ export default function ProductModal({ isOpen, onClose, onSave, product, categor
         direction={isMobile ? 'bottom' : 'right'}
       >
         <DrawerContent
+          // Di atas BottomNav (z-9999); Toast sengaja lebih tinggi lagi
+          overlayClassName="z-[10000]"
+          onOpenAutoFocus={isMobile ? (e) => e.preventDefault() : undefined}
           className={
             isMobile
-              ? 'max-h-[92vh] rounded-t-3xl border-t border-gray-200 bg-white'
-              : 'data-[vaul-drawer-direction=right]:w-full data-[vaul-drawer-direction=right]:sm:max-w-md rounded-l-3xl border-l border-gray-200 bg-white shadow-2xl'
+              ? 'z-[10001] max-h-[92dvh] rounded-t-3xl border-t border-gray-200 bg-white'
+              : 'z-[10001] data-[vaul-drawer-direction=right]:w-full data-[vaul-drawer-direction=right]:sm:max-w-lg rounded-l-3xl border-l border-gray-200 bg-white shadow-2xl'
           }
         >
-          {header(title)}
-          {formBody}
+          {/* Header */}
+          <div className="shrink-0 flex items-center justify-between gap-3 px-4 sm:px-6 py-4 bg-white border-b border-gray-100">
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="w-10 h-10 rounded-xl bg-[#FF5F03]/10 border border-[#FF5F03]/20 flex items-center justify-center shrink-0">
+                <Package className="w-5 h-5 text-[#FF5F03]" />
+              </div>
+              <div className="min-w-0">
+                <DrawerTitle className="text-base sm:text-lg font-bold text-gray-900 leading-tight">{title}</DrawerTitle>
+                <DrawerDescription className="text-xs text-gray-500 mt-0.5 truncate">
+                  {isEdit ? 'Perbarui data produk' : 'Lengkapi data produk yang akan ditambahkan'}
+                </DrawerDescription>
+              </div>
+            </div>
+            <div className="flex items-center gap-1.5 shrink-0">
+              {!isEdit && (
+                <button type="button" onClick={handleReset}
+                  className="h-8 px-2.5 rounded-lg text-xs font-medium text-gray-400 hover:text-gray-700 hover:bg-gray-100 flex items-center gap-1 transition">
+                  <RotateCcw className="w-3.5 h-3.5" />
+                  Reset
+                </button>
+              )}
+              <button type="button" onClick={onClose} aria-label="Tutup"
+                className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center text-gray-500 hover:text-red-500 hover:bg-red-50 transition active:scale-95">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+
+          {/* Form */}
+          <form onSubmit={handleSubmit} data-vaul-no-drag className="flex min-h-0 flex-1 flex-col">
+            <div className="flex-1 overflow-y-auto overscroll-contain px-4 sm:px-6 py-4 space-y-4 bg-gray-50/70">
+
+              {/* Informasi Produk */}
+              <Section icon={<Package className="w-4 h-4" />} title="Informasi Produk" hint="Data utama dan identitas produk">
+                <div>
+                  <Label required>Kode SKU</Label>
+                  <div className="flex gap-2">
+                    <div className="relative flex-1">
+                      <Hash className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                      <input type="text" required value={sku} onChange={e => setSku(e.target.value)}
+                        autoCapitalize="characters" autoComplete="off"
+                        className={`${inputClass} pl-9 pr-9 ${
+                          skuInfo.status === 'duplicate' ? '!border-red-400' :
+                          skuInfo.status === 'available' ? '!border-emerald-400' : ''
+                        }`}
+                        placeholder="Contoh: PRD-001" />
+                      <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                        {skuInfo.status === 'available' && <CheckCircle2 className="w-4 h-4 text-emerald-500" />}
+                        {skuInfo.status === 'duplicate' && <XCircle className="w-4 h-4 text-red-400" />}
+                      </div>
+                    </div>
+                    <button type="button" onClick={() => setShowScanner(true)} title="Scan Barcode" aria-label="Scan barcode"
+                      className="shrink-0 w-[46px] sm:w-[42px] rounded-xl border border-gray-200 bg-gray-50 flex items-center justify-center text-[#072C2C] hover:bg-[#072C2C]/5 active:scale-95 transition">
+                      <ScanBarcode className="w-[18px] h-[18px]" />
+                    </button>
+                  </div>
+                  {skuInfo.status === 'duplicate' && <p className="text-[11px] text-red-500 mt-1.5">Sudah dipakai oleh &ldquo;{skuInfo.name}&rdquo;</p>}
+                  {skuInfo.status === 'available' && <p className="text-[11px] text-emerald-600 mt-1.5">SKU tersedia</p>}
+                </div>
+
+                <div>
+                  <Label required>Nama Produk</Label>
+                  <div className="relative">
+                    <Tag className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                    <input type="text" required value={name} onChange={e => setName(e.target.value)}
+                      className={`${inputClass} pl-9`} placeholder="Masukkan nama produk" />
+                  </div>
+                </div>
+
+                <div>
+                  <Label required>Kategori</Label>
+                  <select required value={category} onChange={e => setCategory(e.target.value)}
+                    className={`${inputClass} px-3.5 appearance-none`} style={selectChevron}>
+                    <option value="">Pilih Kategori</option>
+                    {categories.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
+                  </select>
+                </div>
+
+                <div>
+                  <Label optional>Deskripsi</Label>
+                  <textarea value={description} onChange={e => setDescription(e.target.value)} rows={3}
+                    className={`${inputClass} px-3.5 resize-none`} placeholder="Deskripsi singkat produk..." />
+                </div>
+              </Section>
+
+              {/* Harga */}
+              <Section icon={<Wallet className="w-4 h-4" />} title="Harga" hint="Harga jual dan batas peringatan stok">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                  <div>
+                    <Label required>Harga per Unit</Label>
+                    <input type="text" inputMode="numeric" required value={priceDisplay}
+                      onChange={e => { const n = onlyDigits(e.target.value); setPrice(n); setPriceDisplay(formatRupiah(n)) }}
+                      className={`${inputClass} px-3.5`} placeholder="Rp 0" />
+                  </div>
+                  <div>
+                    <Label>Minimum Stok</Label>
+                    <input type="text" inputMode="numeric" value={minStockDisplay}
+                      onChange={e => { const v = e.target.value.replace(/[^0-9]/g, ''); setMinStockDisplay(v); setMinStock(v ? parseInt(v, 10) : 0) }}
+                      onBlur={() => { if (!minStockDisplay) setMinStockDisplay('0') }}
+                      className={`${inputClass} px-3.5`} placeholder="10" />
+                  </div>
+                </div>
+                <p className="text-[11px] text-gray-400 -mt-1">Peringatan &ldquo;Menipis&rdquo; muncul saat stok sama dengan atau di bawah minimum.</p>
+              </Section>
+
+              {/* Stok */}
+              <Section
+                icon={<Boxes className="w-4 h-4" />}
+                title={isEdit ? 'Stok Saat Ini' : 'Stok Awal'}
+                hint={isEdit ? 'Stok diubah lewat transaksi' : 'Jumlah stok saat produk ditambahkan'}>
+                {isEdit ? (
+                  <div className="rounded-xl bg-gray-100 border border-gray-200 px-4 py-3 flex items-center justify-between text-gray-500">
+                    <span className="text-sm font-semibold">{stock} unit</span>
+                    <span className="text-[11px] text-gray-400">Ubah via Transaksi</span>
+                  </div>
+                ) : (
+                  <div>
+                    <Label>Jumlah Stok Awal</Label>
+                    <input type="text" inputMode="numeric" value={stockDisplay}
+                      onChange={e => { const v = e.target.value.replace(/[^0-9]/g, ''); setStockDisplay(v); setStock(v ? parseInt(v, 10) : 0) }}
+                      className={`${inputClass} px-3.5`} placeholder="0" />
+                    <p className="text-[11px] text-gray-400 mt-1.5">Kosongkan jika belum ada stok</p>
+                  </div>
+                )}
+                <div className={`flex items-center justify-between px-4 py-3 rounded-xl border transition-colors ${tone.box}`}>
+                  <span className="text-xs text-gray-500">Status stok</span>
+                  <div className="flex items-center gap-2">
+                    <span className={`text-sm font-bold ${tone.text}`}>{stockLabel}</span>
+                    <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-md ${tone.chip}`}>{stock} unit</span>
+                  </div>
+                </div>
+              </Section>
+            </div>
+
+            {/* Aksi (menempel di bawah) */}
+            <div className="shrink-0 flex gap-3 px-4 sm:px-6 pt-3 pb-[max(1rem,env(safe-area-inset-bottom))] border-t border-gray-100 bg-white">
+              <button type="button" onClick={onClose}
+                className="flex-1 sm:flex-none sm:px-6 py-3 rounded-xl border border-gray-200 text-sm font-semibold text-gray-600 hover:bg-gray-50 transition active:scale-[0.97]">
+                Batal
+              </button>
+              <button type="submit" disabled={saving || skuInfo.status === 'duplicate'}
+                className="flex-[1.6] sm:flex-none sm:px-8 py-3 rounded-xl bg-[#FF5F03] hover:bg-[#e85503] text-white text-sm font-bold flex items-center justify-center gap-2 shadow-lg shadow-[#FF5F03]/20 disabled:opacity-50 disabled:cursor-not-allowed transition active:scale-[0.97]">
+                {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                {isEdit ? 'Simpan Perubahan' : 'Simpan Produk'}
+              </button>
+            </div>
+          </form>
         </DrawerContent>
       </Drawer>
 
       {/* Barcode Scanner (pointer-events-auto: body dikunci oleh Drawer saat terbuka) */}
       {showScanner && (
-        <div className="pointer-events-auto fixed inset-0 z-[9999] flex items-center justify-center bg-black/90 backdrop-blur-sm">
+        <div className="pointer-events-auto fixed inset-0 z-[10060] flex items-center justify-center bg-black/90 backdrop-blur-sm">
           <div className="relative w-full max-w-sm mx-4">
-            <button onClick={() => setShowScanner(false)} className="absolute -top-12 right-0 w-10 h-10 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-white hover:bg-white/20 transition-all z-10">
-              <span className="text-lg">&times;</span>
+            <button type="button" onClick={() => setShowScanner(false)} aria-label="Tutup scanner"
+              className="absolute -top-12 right-0 w-10 h-10 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-white hover:bg-white/20 transition-all z-10">
+              <X className="w-5 h-5" />
             </button>
             <p className="text-center text-sm font-medium text-white/80 mb-4">Arahkan kamera ke barcode produk</p>
             <div className="rounded-2xl overflow-hidden border-2 border-[#072C2C]/30" id="barcode-scanner-modal" ref={(el) => {
