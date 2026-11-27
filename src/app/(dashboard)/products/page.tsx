@@ -2,7 +2,8 @@
 
 import { useEffect, useState, useMemo } from 'react'
 import Link from 'next/link'
-import { Product, Category, Transaction, formatRp, getStatus, getStatusLabel, fetchProducts, fetchCategories, fetchTransactions, deleteProduct, deleteTransaction, saveProduct } from '@/lib/store'
+import { Product, Category, Transaction, formatRp, getStatus, getStatusLabel, fetchProducts, fetchCategories, fetchTransactions, deleteProduct, deleteTransaction, saveProduct, getSetting } from '@/lib/store'
+import { exportLaporanStokCsv, exportLaporanStokPdf, LastOpnameInfo } from '@/lib/exportLaporanStok'
 import { useToast } from '@/components/Toast'
 import ProductModal from '@/components/ProductModal'
 import DeleteModal from '@/components/DeleteModal'
@@ -26,6 +27,8 @@ export default function ProductsPage() {
   const [csvModal, setCsvModal] = useState(false)
   const [mounted, setMounted] = useState(false)
   const [activeTab, setActiveTab] = useState<TabKey>('daftar-produk')
+  const [exportingPdf, setExportingPdf] = useState(false)
+  const [lastOpname, setLastOpname] = useState<LastOpnameInfo | null>(null)
   const { toast } = useToast()
 
   useEffect(() => {
@@ -34,6 +37,10 @@ export default function ProductsPage() {
       setProducts(p)
       setCategories(c)
       setTransactions(tx)
+      try {
+        const raw = await getSetting('last_opname')
+        if (raw) setLastOpname(JSON.parse(raw))
+      } catch {}
       setMounted(true)
     }
     loadData()
@@ -189,6 +196,28 @@ export default function ProductsPage() {
   const handleAdd = () => {
     setEditProduct(null)
     setModalOpen(true)
+  }
+
+  const handleExportPdf = async () => {
+    if (exportingPdf) return
+    setExportingPdf(true)
+    try {
+      await exportLaporanStokPdf({
+        rows: stockReports.map(r => ({ product: r.product, stockAwal: r.stockAwal, masuk: r.masuk, keluar: r.keluar, stockAkhir: r.stockAkhir, status: r.status })),
+        totalProduk: products.length,
+        totalMasuk: transactions.filter(t => t.type === 'in').reduce((s, t) => s + t.quantity, 0),
+        totalKeluar: totalBarangKeluar,
+        stokMenipis: products.filter(p => p.stock > 0 && p.stock <= p.minStock).length,
+        stokHabis: products.filter(p => p.stock === 0).length,
+        nilaiAset: totalNilaiStok,
+        lastOpname,
+      })
+    } catch (err) {
+      console.error('Export PDF gagal:', err)
+      toast('Gagal membuat PDF. Coba lagi.', 'error')
+    } finally {
+      setExportingPdf(false)
+    }
   }
 
   const handleCsvImport = (imported: Product[]) => {
@@ -411,6 +440,33 @@ export default function ProductsPage() {
 
       {activeTab === 'laporan-stok' && (
         <div className="space-y-4">
+          {/* Export */}
+          <div className="flex items-center justify-between gap-3">
+            <p className="text-xs text-gray-500 min-w-0">{products.length} produk &middot; rekap stok awal, masuk, dan keluar</p>
+            <div className="flex items-center gap-2 shrink-0">
+              <button
+                onClick={() => {
+                  if (!stockReports.length) { toast('Belum ada data untuk diexport', 'error'); return }
+                  exportLaporanStokCsv(stockReports)
+                }}
+                className="flex items-center gap-2 px-3.5 py-2 rounded-lg border border-emerald-500/30 text-[#16A34A] text-sm font-medium hover:bg-emerald-50 transition active:scale-95">
+                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" /></svg>
+                CSV
+              </button>
+              <button
+                onClick={handleExportPdf}
+                disabled={exportingPdf}
+                className="flex items-center gap-2 px-3.5 py-2 rounded-lg border border-red-500/30 text-[#DC2626] text-sm font-medium hover:bg-red-50 transition active:scale-95 disabled:opacity-60 disabled:cursor-wait">
+                {exportingPdf ? (
+                  <svg className="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" d="M12 3a9 9 0 109 9" /></svg>
+                ) : (
+                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H6.75a2.25 2.25 0 00-2.25 2.25v13.5a2.25 2.25 0 002.25 2.25h6" /></svg>
+                )}
+                {exportingPdf ? 'Membuat...' : 'PDF'}
+              </button>
+            </div>
+          </div>
+
           {/* Desktop Table - Stock Report */}
           <div className="hidden md:block overflow-hidden border border-gray-200">
             <div className="overflow-x-auto max-h-[600px]">
