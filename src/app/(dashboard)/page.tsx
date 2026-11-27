@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { Product, Transaction, formatRp, fetchProducts, fetchTransactions } from '@/lib/store'
 import { useAuth } from '@/components/AuthProvider'
+import { useTransactionDrawer, useOnTransactionSaved } from '@/components/TransactionDrawer'
 import dynamic from 'next/dynamic'
 import { Plus, ArrowDownToLine, ArrowUpFromLine, Package, AlertTriangle, Activity, ArrowRight, CheckCircle2, ArrowLeftRight, Trophy, ChevronRight, DollarSign, XCircle } from 'lucide-react'
 
@@ -35,6 +36,7 @@ export default function Dashboard() {
   const [txPage, setTxPage] = useState(1)
   const [rangeDays, setRangeDays] = useState(7)
   const txPerPage = 4
+  const { open: openTransactionDrawer } = useTransactionDrawer()
 
   useEffect(() => {
     async function loadData() {
@@ -46,6 +48,14 @@ export default function Dashboard() {
     }
     loadData()
   }, [])
+
+  // Setelah catat transaksi dari drawer: segarkan angka dan grafik dashboard
+  useOnTransactionSaved(() => {
+    Promise.all([fetchProducts(), fetchTransactions()]).then(([p, tx]) => {
+      setProducts(p)
+      setTransactions(tx)
+    })
+  })
 
   if (!mounted) return <DashboardSkeleton />
 
@@ -246,9 +256,9 @@ export default function Dashboard() {
                 </div>
                 <p className="text-[13px] font-medium text-gray-700">Belum ada data penjualan</p>
                 <p className="text-[11px] text-gray-400 mt-1 mb-4">Catat transaksi keluar untuk melihat<br />produk terlaris kamu.</p>
-                <Link href="/transactions/new" className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#072C2C] hover:bg-[#0a3d3d] text-white text-[12px] font-semibold transition active:scale-[0.98] shadow-sm">
+                <button onClick={() => openTransactionDrawer('out')} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#072C2C] hover:bg-[#0a3d3d] text-white text-[12px] font-semibold transition active:scale-[0.98] shadow-sm">
                   <Plus className="w-3.5 h-3.5" /> Catat Penjualan
-                </Link>
+                </button>
               </div>
             ) : (
               <div className="space-y-2">

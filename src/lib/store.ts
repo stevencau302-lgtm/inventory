@@ -254,12 +254,16 @@ export async function fetchTransactions(): Promise<Transaction[]> {
   return (data || []).map(rowToTransaction)
 }
 
-export async function saveTransaction(transaction: Transaction): Promise<void> {
+export async function saveTransaction(transaction: Transaction): Promise<boolean> {
   const userId = await getUserId()
   const { error } = await supabase
     .from('transactions')
     .upsert(transactionToRow(transaction, userId), { onConflict: 'id' })
-  if (error) console.error('saveTransaction error:', error)
+  if (error) {
+    console.error('saveTransaction error:', error)
+    return false
+  }
+  return true
 }
 
 export async function deleteTransaction(id: string): Promise<void> {

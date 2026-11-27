@@ -71,7 +71,8 @@ function CameraScannerModal({ isOpen, onClose, onScan }: { isOpen: boolean; onCl
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/90 backdrop-blur-sm">
+    // pointer-events-auto + z di atas Drawer: modal kamera ini bisa dibuka dari dalam drawer
+    <div className="pointer-events-auto fixed inset-0 z-[10060] flex items-center justify-center bg-black/90 backdrop-blur-sm">
       {/* Close button */}
       <button
         onClick={onClose}

@@ -6,6 +6,7 @@ import { useToast } from '@/components/Toast'
 import DeleteModal from '@/components/DeleteModal'
 import Link from 'next/link'
 import { CardListSkeleton } from '@/components/PageSkeleton'
+import { useTransactionDrawer, useOnTransactionSaved } from '@/components/TransactionDrawer'
 
 type TabFilter = 'all' | 'in' | 'out'
 type PeriodFilter = 'today' | '7days' | 'this-month' | 'last-month' | 'custom'
@@ -54,6 +55,7 @@ export default function TransactionsPage() {
   const [txPage, setTxPage] = useState(1)
   const txPerPage = 15
   const { toast } = useToast()
+  const { open: openTransactionDrawer } = useTransactionDrawer()
 
   useEffect(() => {
     async function loadData() {
@@ -65,6 +67,14 @@ export default function TransactionsPage() {
     }
     loadData()
   }, [])
+
+  // Setelah catat transaksi dari drawer: segarkan daftar transaksi dan stok
+  useOnTransactionSaved(() => {
+    Promise.all([fetchProducts(), fetchTransactions()]).then(([p, tx]) => {
+      setProducts(p)
+      setTransactions(tx)
+    })
+  })
   if (!mounted) return <CardListSkeleton />
 
   const { from: periodFrom, to: periodTo } = getDateRange(periodFilter, customFrom, customTo)
@@ -146,10 +156,10 @@ export default function TransactionsPage() {
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            <Link href="/transactions/new" className="px-4 py-2 rounded-lg bg-[#FF5F03] hover:bg-[#FF5F03]/90 text-[#1a1a1a] text-sm font-bold transition flex items-center gap-2 shadow-lg shadow-[#FF5F03]/20 active:scale-95">
+            <button onClick={() => openTransactionDrawer('in')} className="px-4 py-2 rounded-lg bg-[#FF5F03] hover:bg-[#FF5F03]/90 text-[#1a1a1a] text-sm font-bold transition flex items-center gap-2 shadow-lg shadow-[#FF5F03]/20 active:scale-95">
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
               Catat Transaksi
-            </Link>
+            </button>
             <Link href="/transactions/return" className="px-4 py-2 rounded-lg bg-amber-50 hover:bg-amber-100 border border-amber-200 text-[#D97706] text-sm font-bold transition flex items-center gap-2 active:scale-95">
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3" /></svg>
               Return Masuk
@@ -322,9 +332,9 @@ export default function TransactionsPage() {
             </div>
             <h3 className="text-lg font-semibold text-gray-700 mb-1">Belum ada transaksi</h3>
             <p className="text-sm text-gray-500 text-center max-w-xs mb-5">Catat barang masuk atau keluar untuk memulai tracking inventory.</p>
-            <Link href="/transactions/new" className="px-5 py-2.5 rounded-lg bg-[#FF5F03] text-[#000000] text-sm font-bold shadow-lg shadow-[#FF5F03]/20 hover:shadow-[#FF5F03]/30 hover:bg-[#FF5F03]/90 transition-all active:scale-95">
+            <button onClick={() => openTransactionDrawer('in')} className="px-5 py-2.5 rounded-lg bg-[#FF5F03] text-[#000000] text-sm font-bold shadow-lg shadow-[#FF5F03]/20 hover:shadow-[#FF5F03]/30 hover:bg-[#FF5F03]/90 transition-all active:scale-95">
               Catat Transaksi Pertama
-            </Link>
+            </button>
           </div>
         )}
 
@@ -418,9 +428,9 @@ export default function TransactionsPage() {
                       </div>
                       <h3 className="text-lg font-semibold text-gray-700 mb-1">Belum ada transaksi</h3>
                       <p className="text-sm text-gray-500 text-center max-w-xs mb-5">Catat barang masuk atau keluar untuk memulai tracking inventory.</p>
-                      <Link href="/transactions/new" className="px-5 py-2.5 rounded-lg bg-[#FF5F03] text-[#000000] text-sm font-bold shadow-lg shadow-[#FF5F03]/20 hover:shadow-[#FF5F03]/30 hover:bg-[#FF5F03]/90 transition-all active:scale-95">
+                      <button onClick={() => openTransactionDrawer('in')} className="px-5 py-2.5 rounded-lg bg-[#FF5F03] text-[#000000] text-sm font-bold shadow-lg shadow-[#FF5F03]/20 hover:shadow-[#FF5F03]/30 hover:bg-[#FF5F03]/90 transition-all active:scale-95">
                         Catat Transaksi Pertama
-                      </Link>
+                      </button>
                     </div>
                   </td>
                 </tr>

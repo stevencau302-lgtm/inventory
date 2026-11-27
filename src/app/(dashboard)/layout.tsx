@@ -7,6 +7,7 @@ import AuthProvider, { useAuth } from '@/components/AuthProvider'
 import { LogOut, Loader2, Wifi, WifiOff, Cloud } from 'lucide-react'
 import { useRealtimeSync } from '@/lib/useRealtimeSync'
 import { useToast } from '@/components/Toast'
+import { TransactionDrawerProvider } from '@/components/TransactionDrawer'
 
 function ConnectionStatus() {
   const { toast } = useToast()
@@ -95,8 +96,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   return (
     <AuthProvider>
       <ToastProvider>
-        <DashboardShell>{children}</DashboardShell>
-        <BottomNav />
+        <TransactionDrawerProvider>
+          <DashboardShell>{children}</DashboardShell>
+          <BottomNav />
+        </TransactionDrawerProvider>
       </ToastProvider>
     </AuthProvider>
   )

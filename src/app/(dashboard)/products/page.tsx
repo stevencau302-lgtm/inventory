@@ -4,6 +4,7 @@ import { useEffect, useState, useMemo } from 'react'
 import Link from 'next/link'
 import { Product, Category, Transaction, formatRp, getStatus, getStatusLabel, fetchProducts, fetchCategories, fetchTransactions, deleteProduct, deleteTransaction, saveProduct, getSetting } from '@/lib/store'
 import { exportLaporanStokCsv, exportLaporanStokPdf, LastOpnameInfo } from '@/lib/exportLaporanStok'
+import { useTransactionDrawer, useOnTransactionSaved } from '@/components/TransactionDrawer'
 import { useToast } from '@/components/Toast'
 import ProductModal from '@/components/ProductModal'
 import DeleteModal from '@/components/DeleteModal'
@@ -30,6 +31,15 @@ export default function ProductsPage() {
   const [exportingPdf, setExportingPdf] = useState(false)
   const [lastOpname, setLastOpname] = useState<LastOpnameInfo | null>(null)
   const { toast } = useToast()
+  const { open: openTransactionDrawer } = useTransactionDrawer()
+
+  // Setelah catat barang masuk/keluar dari drawer: segarkan stok dan riwayat transaksi
+  useOnTransactionSaved(() => {
+    Promise.all([fetchProducts(), fetchTransactions()]).then(([p, tx]) => {
+      setProducts(p)
+      setTransactions(tx)
+    })
+  })
 
   useEffect(() => {
     async function loadData() {
@@ -582,10 +592,10 @@ export default function ProductsPage() {
                 className="form-input pl-10"
               />
             </div>
-            <Link href="/transactions/new" className="px-4 py-2 rounded-lg bg-[#16A34A] hover:bg-[#16A34A]/90 text-white text-sm font-bold transition flex items-center gap-2 shadow-lg shadow-[#16A34A]/20 active:scale-95 shrink-0">
+            <button onClick={() => openTransactionDrawer('in')} className="px-4 py-2 rounded-lg bg-[#16A34A] hover:bg-[#16A34A]/90 text-white text-sm font-bold transition flex items-center gap-2 shadow-lg shadow-[#16A34A]/20 active:scale-95 shrink-0">
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
               Catat Barang Masuk
-            </Link>
+            </button>
           </div>
 
           {/* Mobile cards */}
@@ -675,10 +685,10 @@ export default function ProductsPage() {
                 className="form-input pl-10"
               />
             </div>
-            <Link href="/transactions/new" className="px-4 py-2 rounded-lg bg-[#DC2626] hover:bg-[#DC2626]/90 text-white text-sm font-bold transition flex items-center gap-2 shadow-lg shadow-[#DC2626]/20 active:scale-95 shrink-0">
+            <button onClick={() => openTransactionDrawer('out')} className="px-4 py-2 rounded-lg bg-[#DC2626] hover:bg-[#DC2626]/90 text-white text-sm font-bold transition flex items-center gap-2 shadow-lg shadow-[#DC2626]/20 active:scale-95 shrink-0">
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" /></svg>
               Catat Barang Keluar
-            </Link>
+            </button>
           </div>
 
           {/* Mobile cards */}
