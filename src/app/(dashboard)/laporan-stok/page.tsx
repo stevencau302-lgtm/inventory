@@ -21,6 +21,7 @@ export default function LaporanStok() {
   const [mounted, setMounted] = useState(false)
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all')
+  const [exportingPdf, setExportingPdf] = useState(false)
   const [lastOpname, setLastOpname] = useState<{ date: string; totalChecked: number; matchCount: number; mismatchCount: number; savedAt: string } | null>(null)
 
   useEffect(() => {
@@ -91,41 +92,179 @@ export default function LaporanStok() {
     URL.revokeObjectURL(url)
   }
 
-  function exportPDF() {
-    const printWindow = window.open('', '_blank')
-    if (!printWindow) return
-    const rows = filtered.map(r => `
-      <tr>
-        <td style="padding:8px;border:1px solid #ddd;font-family:monospace">${r.product.sku}</td>
-        <td style="padding:8px;border:1px solid #ddd">${r.product.name}</td>
-        <td style="padding:8px;border:1px solid #ddd;text-align:center">pcs</td>
-        <td style="padding:8px;border:1px solid #ddd;text-align:right">${r.stockAwal}</td>
-        <td style="padding:8px;border:1px solid #ddd;text-align:right;color:#16A34A">${r.masuk}</td>
-        <td style="padding:8px;border:1px solid #ddd;text-align:right;color:#DC2626">${r.keluar}</td>
-        <td style="padding:8px;border:1px solid #ddd;text-align:right;font-weight:bold;color:${r.status === 'habis' ? '#DC2626' : r.status === 'menipis' ? '#CA8A04' : '#16A34A'}">${r.stockAkhir}</td>
-      </tr>
-    `).join('')
-    printWindow.document.write(`
-      <html><head><title>Laporan Stok - ${new Date().toLocaleDateString('id-ID')}</title></head>
-      <body style="font-family:system-ui,sans-serif;padding:40px">
-        <h1 style="font-size:20px;margin-bottom:4px">Laporan Stok</h1>
-        <p style="color:#666;margin-bottom:20px">Dicetak: ${new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
-        <table style="width:100%;border-collapse:collapse;font-size:13px">
-          <thead><tr style="background:#f3f4f6">
-            <th style="padding:8px;border:1px solid #ddd;text-align:left">Kode</th>
-            <th style="padding:8px;border:1px solid #ddd;text-align:left">Nama Barang</th>
-            <th style="padding:8px;border:1px solid #ddd;text-align:center">Unit</th>
-            <th style="padding:8px;border:1px solid #ddd;text-align:right">Stok Awal</th>
-            <th style="padding:8px;border:1px solid #ddd;text-align:right">Masuk</th>
-            <th style="padding:8px;border:1px solid #ddd;text-align:right">Keluar</th>
-            <th style="padding:8px;border:1px solid #ddd;text-align:right">Stok Akhir</th>
-          </tr></thead>
-          <tbody>${rows}</tbody>
-        </table>
-      </body></html>
-    `)
-    printWindow.document.close()
-    setTimeout(() => printWindow.print(), 300)
+  async function exportPDF() {
+    if (exportingPdf) return
+    setExportingPdf(true)
+    try {
+      const jsPDF = (await import('jspdf')).default
+      await import('jspdf-autotable')
+
+      const doc = new jsPDF('p', 'mm', 'a4') as any
+      const pageWidth: number = doc.internal.pageSize.getWidth()
+      const now = new Date()
+      const dateStr = now.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })
+      const timeStr = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
+
+      // Warna
+      const brand = [255, 95, 3]
+      const teal = [7, 44, 44]
+      const dark = [24, 24, 27]
+      const gray = [113, 113, 122]
+      const green = [22, 163, 74]
+      const red = [220, 38, 38]
+      const amber = [217, 119, 6]
+      const statusColor = (s: StockReport['status']) => (s === 'habis' ? red : s === 'menipis' ? amber : green)
+      const statusLabel = (s: StockReport['status']) => (s === 'habis' ? 'Habis' : s === 'menipis' ? 'Menipis' : 'Aman')
+
+      // === HEADER ===
+      doc.setFillColor(...brand)
+      doc.rect(0, 0, pageWidth, 38, 'F')
+      doc.setTextColor(255, 255, 255)
+      doc.setFont('helvetica', 'bold')
+      doc.setFontSize(22)
+      doc.text('Laporan Stok', 14, 17)
+      doc.setFont('helvetica', 'normal')
+      doc.setFontSize(9.5)
+      const filterParts: string[] = []
+      if (statusFilter !== 'all') filterParts.push(`Status: ${statusFilter === 'aman' ? 'Aman' : statusFilter === 'menipis' ? 'Menipis' : 'Habis'}`)
+      if (search.trim()) filterParts.push(`Pencarian: "${search.trim()}"`)
+      doc.text(filterParts.length ? filterParts.join('  |  ') : 'Semua produk', 14, 25)
+      doc.text(`${filtered.length} dari ${totalProduk} produk`, 14, 31)
+      doc.setFontSize(9)
+      doc.text('Nexa Inventory', pageWidth - 14, 17, { align: 'right' })
+      doc.text(`Dicetak ${dateStr}, ${timeStr}`, pageWidth - 14, 24, { align: 'right' })
+
+      let y = 48
+
+      // === RINGKASAN (seluruh produk, sama seperti kartu di layar) ===
+      doc.setTextColor(...dark)
+      doc.setFont('helvetica', 'bold')
+      doc.setFontSize(12)
+      doc.text('Ringkasan', 14, y)
+      y += 5
+
+      const stats = [
+        { label: 'Total Produk', value: `${totalProduk}`, color: teal },
+        { label: 'Total Masuk', value: `+${totalMasuk.toLocaleString('id-ID')}`, color: green },
+        { label: 'Total Keluar', value: `-${totalKeluar.toLocaleString('id-ID')}`, color: red },
+        { label: 'Stok Menipis', value: `${stokMenipis} produk`, color: amber },
+        { label: 'Stok Habis', value: `${stokHabis} produk`, color: red },
+        { label: 'Nilai Aset', value: formatRp(nilaiAset), color: teal },
+      ]
+      const gap = 6
+      const boxW = (pageWidth - 28 - gap * 2) / 3
+      stats.forEach((st, i) => {
+        const bx = 14 + (i % 3) * (boxW + gap)
+        const by = y + Math.floor(i / 3) * 21
+        doc.setFillColor(248, 250, 252)
+        doc.roundedRect(bx, by, boxW, 17, 2, 2, 'F')
+        doc.setFillColor(...st.color)
+        doc.roundedRect(bx, by, 1.8, 17, 0.9, 0.9, 'F')
+        doc.setFont('helvetica', 'normal')
+        doc.setFontSize(7)
+        doc.setTextColor(...gray)
+        doc.text(st.label.toUpperCase(), bx + 5, by + 6)
+        doc.setFont('helvetica', 'bold')
+        doc.setFontSize(12)
+        doc.setTextColor(...dark)
+        doc.text(st.value, bx + 5, by + 13)
+      })
+      y += 21 * 2 + 1
+
+      // === OPNAME TERAKHIR (kalau ada) ===
+      if (lastOpname) {
+        const od = new Date(`${lastOpname.date}T00:00:00`)
+        const opnameDateLabel = isNaN(od.getTime())
+          ? lastOpname.date
+          : od.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })
+        doc.setFillColor(255, 244, 237)
+        doc.roundedRect(14, y, pageWidth - 28, 10, 2, 2, 'F')
+        doc.setFont('helvetica', 'bold')
+        doc.setFontSize(8)
+        doc.setTextColor(...brand)
+        doc.text('OPNAME TERAKHIR', 18, y + 6.3)
+        doc.setFont('helvetica', 'normal')
+        doc.setTextColor(...dark)
+        doc.text(
+          `${opnameDateLabel}  -  ${lastOpname.totalChecked} diperiksa, ${lastOpname.matchCount} sesuai, ${lastOpname.mismatchCount} selisih`,
+          52, y + 6.3
+        )
+        y += 14
+      }
+
+      // === TABEL ===
+      doc.setFont('helvetica', 'bold')
+      doc.setFontSize(12)
+      doc.setTextColor(...dark)
+      doc.text('Rincian Stok', 14, y + 2)
+
+      const body = filtered.length
+        ? filtered.map((r, i) => [
+            String(i + 1),
+            r.product.sku,
+            r.product.name,
+            'pcs',
+            String(r.stockAwal),
+            r.masuk > 0 ? `+${r.masuk}` : '0',
+            r.keluar > 0 ? `-${r.keluar}` : '0',
+            String(r.stockAkhir),
+            statusLabel(r.status),
+          ])
+        : [[{ content: 'Tidak ada data ditemukan', colSpan: 9, styles: { halign: 'center', textColor: gray } }]]
+
+      doc.autoTable({
+        startY: y + 5,
+        head: [['No', 'Kode', 'Nama Barang', 'Unit', 'Stok Awal', 'Masuk', 'Keluar', 'Stok Akhir', 'Status']],
+        body,
+        theme: 'striped',
+        headStyles: { fillColor: teal, textColor: [255, 255, 255], fontStyle: 'bold', fontSize: 8, cellPadding: 3, halign: 'center' },
+        bodyStyles: { fontSize: 8, cellPadding: 2.6, textColor: dark, lineColor: [235, 235, 238], lineWidth: 0.1, valign: 'middle' },
+        alternateRowStyles: { fillColor: [249, 250, 251] },
+        columnStyles: {
+          0: { cellWidth: 10, halign: 'center', textColor: gray },
+          1: { cellWidth: 27, font: 'courier', fontSize: 7.5, halign: 'left' },
+          2: { cellWidth: 'auto' },
+          3: { cellWidth: 12, halign: 'center', textColor: gray },
+          4: { cellWidth: 17, halign: 'center' },
+          5: { cellWidth: 15, halign: 'center' },
+          6: { cellWidth: 15, halign: 'center' },
+          7: { cellWidth: 18, halign: 'center' },
+          8: { cellWidth: 19, halign: 'center' },
+        },
+        didParseCell: (data: any) => {
+          // Judul kolom teks rata kiri, sejajar dengan isinya
+          if (data.section === 'head' && (data.column.index === 1 || data.column.index === 2)) data.cell.styles.halign = 'left'
+          if (data.section !== 'body' || !filtered.length) return
+          const r = filtered[data.row.index]
+          if (!r) return
+          const col = data.column.index
+          if (col === 5 && r.masuk > 0) { data.cell.styles.textColor = green; data.cell.styles.fontStyle = 'bold' }
+          if (col === 6 && r.keluar > 0) { data.cell.styles.textColor = red; data.cell.styles.fontStyle = 'bold' }
+          if (col === 7 || col === 8) { data.cell.styles.textColor = statusColor(r.status); data.cell.styles.fontStyle = 'bold' }
+          if (col === 2) data.cell.styles.fontStyle = 'bold'
+        },
+        margin: { left: 14, right: 14, top: 16, bottom: 20 },
+      })
+
+      // === FOOTER (semua halaman) ===
+      const totalPages = doc.internal.getNumberOfPages()
+      for (let i = 1; i <= totalPages; i++) {
+        doc.setPage(i)
+        const pH: number = doc.internal.pageSize.getHeight()
+        doc.setDrawColor(228, 228, 231)
+        doc.setLineWidth(0.2)
+        doc.line(14, pH - 14, pageWidth - 14, pH - 14)
+        doc.setFont('helvetica', 'normal')
+        doc.setFontSize(7)
+        doc.setTextColor(...gray)
+        doc.text(`Nexa Inventory - Laporan Stok - ${dateStr}`, 14, pH - 8)
+        doc.text(`Halaman ${i} dari ${totalPages}`, pageWidth - 14, pH - 8, { align: 'right' })
+      }
+
+      doc.save(`laporan-stok-${now.toISOString().slice(0, 10)}.pdf`)
+    } finally {
+      setExportingPdf(false)
+    }
   }
 
   if (!mounted) return <TableSkeleton />
@@ -148,9 +287,13 @@ export default function LaporanStok() {
             <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" /></svg>
             CSV
           </button>
-          <button onClick={exportPDF} className="flex items-center gap-2 px-4 py-2 rounded-lg border border-red-500/30 text-[#DC2626] text-sm font-medium hover:bg-red-50 transition">
-            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H6.75a2.25 2.25 0 00-2.25 2.25v13.5a2.25 2.25 0 002.25 2.25h6" /></svg>
-            PDF
+          <button onClick={exportPDF} disabled={exportingPdf} className="flex items-center gap-2 px-4 py-2 rounded-lg border border-red-500/30 text-[#DC2626] text-sm font-medium hover:bg-red-50 transition active:scale-95 disabled:opacity-60 disabled:cursor-wait">
+            {exportingPdf ? (
+              <svg className="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" d="M12 3a9 9 0 109 9" /></svg>
+            ) : (
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H6.75a2.25 2.25 0 00-2.25 2.25v13.5a2.25 2.25 0 002.25 2.25h6" /></svg>
+            )}
+            {exportingPdf ? 'Membuat...' : 'PDF'}
           </button>
         </div>
       </div>
